@@ -72,7 +72,7 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 
 				currentGame = {
 					id: gameID,
-					me: playerData != null ? { playerIndex: playerData.playerIndex, hand: playerData.hand?.map(Card.fromJson) || null, deck: playerData.deck?.map(Card.fromJson) || null, cardsUsed: playerData.cardsUsed } : null,
+					me: playerData != null ? { playerIndex: playerData.playerIndex, hand: playerData.hand?.map(Card.fromJson) || null, deck: playerData.deck?.map(Card.fromJson) || null, cardsUsed: playerData.cardsUsed, move: playerData.move } : null,
 					players: response.game.players,
 					webSocket: webSocket
 				};
@@ -80,12 +80,9 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 				for (const li of playerListItems)
 					playerList.removeChild(li);
 				playerListItems.splice(0);
-				for (var player of currentGame.players) {
+				for (let i = 0; i < 2; i++) {
 					var el = document.createElement('li');
-					if (player)
-						el.innerText = player.name;
-					else
-						el.innerText = "Waiting...";
+					el.innerText = i < currentGame.players.length ? currentGame.players[i].name : 'Waiting...';
 					playerListItems.push(el);
 					playerList.appendChild(el);
 				}
@@ -93,7 +90,7 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 				onGameStateChange(response.game, playerData);
 
 				for (let i = 0; i < response.game.players.length; i++) {
-					if (response.game.players[i]?.isReady)
+					if (response.game.players[i].isReady)
 						showReady(i);
 				}
 
@@ -124,11 +121,11 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 		if (s) {
 			let payload = JSON.parse(s);
 			if (payload.event == 'join') {
-				currentGame.players[payload.data.playerIndex] = payload.data.player;
+				currentGame.players.push(payload.data.player);
 				playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
 				updatePlayerListItem(payload.data.playerIndex);
 			} else if (payload.event == 'playerReady') {
-				currentGame.players[payload.data.playerIndex]!.isReady = true;
+				currentGame.players[payload.data.playerIndex].isReady = true;
 				updatePlayerListItem(payload.data.playerIndex);
 
 				if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
@@ -148,25 +145,23 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 					clearPlayContainers();
 					for (let i = 0; i < currentGame.players.length; i++) {
 						const player = currentGame.players[i];
-						if (player != null) {
-							player.specialPoints = payload.data.game.players[i].specialPoints;
-							player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
-							player.passes = payload.data.game.players[i].passes;
+						player.specialPoints = payload.data.game.players[i].specialPoints;
+						player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
+						player.passes = payload.data.game.players[i].passes;
 
-							const move = payload.data.moves[i];
-							const button = new CardButton('checkbox', move.card);
-							if (move.isSpecialAttack) {
-								anySpecialAttacks = true;
-								button.element.classList.add('specialAttack');
-							} else if (move.isPass) {
-								const el = document.createElement('div');
-								el.className = 'passLabel';
-								el.innerText = 'Pass';
-								button.element.appendChild(el);
-							}
-							button.inputElement.hidden = true;
-							playContainers[i].append(button.element);
+						const move = payload.data.moves[i];
+						const button = new CardButton('checkbox', move.card);
+						if (move.isSpecialAttack) {
+							anySpecialAttacks = true;
+							button.element.classList.add('specialAttack');
+						} else if (move.isPass) {
+							const el = document.createElement('div');
+							el.className = 'passLabel';
+							el.innerText = 'Pass';
+							button.element.appendChild(el);
 						}
+						button.inputElement.hidden = true;
+						playContainers[i].append(button.element);
 					}
 
 					await playInkAnimations(payload.data, anySpecialAttacks);

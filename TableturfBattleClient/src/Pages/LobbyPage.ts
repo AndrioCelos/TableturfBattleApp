@@ -4,11 +4,8 @@ let submitDeckButton = document.getElementById('submitDeckButton') as HTMLButton
 function clearReady() {
 	if (currentGame == null) return;
 	for (var i = 0; i < currentGame.players.length; i++) {
-		const player = currentGame.players[i];
-		if (player != null) {
-			player.isReady = false;
-			updatePlayerListItem(i);
-		}
+		currentGame.players[i].isReady = false;
+		updatePlayerListItem(i);
 	}
 }
 
@@ -17,7 +14,7 @@ function updatePlayerListItem(playerIndex: number) {
 	const listItem = playerListItems[playerIndex];
 	if (player != null) {
 		listItem.innerText = player.name;
-		if (player)
+		if (player.isReady)
 			listItem.innerText += ' (Ready)';
 	} else
 		listItem.innerText = "Waiting...";

@@ -59,7 +59,7 @@ function onGameStateChange(game: any, playerData: any) {
 				case GameState.Ongoing:
 					turnNumberLabel.setTurnNumber(game.turnNumber);
 					board.autoHighlight = true;
-					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex]?.isReady;
+					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
 					setupControlsForPlay();
 					break;
 				case GameState.Ended:

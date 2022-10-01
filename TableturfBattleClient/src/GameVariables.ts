@@ -3,15 +3,10 @@ let clientToken = window.localStorage.getItem('clientToken') || '';
 /** The data of the current game, or null if not in a game. */
 let currentGame: {
 	id: string,
-	/** The list of players in the current game. May have empty slots. */
-	players: (Player | null)[],
+	/** The list of players in the current game. */
+	players: Player[],
 	/** The user's player data, or null if they are spectating. */
-	me: {
-		playerIndex: number,
-		hand: Card[] | null,
-		deck: Card[] | null,
-		cardsUsed: number[]
-	} | null,
+	me: PlayerData | null,
 	/** The WebSocket used for receiving game events, or null if not yet connected. */
 	webSocket: WebSocket
 } | null;

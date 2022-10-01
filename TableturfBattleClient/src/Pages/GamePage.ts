@@ -32,17 +32,15 @@ cols[4][4] = Space.SpecialInactive2;
 cols[4][21] = Space.SpecialInactive1;
 board.resize(cols);
 
-function loadPlayers(players: (Player | null)[]) {
+function loadPlayers(players: Player[]) {
 	for (let i = 0; i < players.length; i++) {
 		const player = players[i];
-		if (player != null) {
-			currentGame!.players[i] = players[i];
-			playerBars[i].name = player.name;
-			updateStats(i);
-			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
-			document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
-			document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
-		}
+		currentGame!.players[i] = players[i];
+		playerBars[i].name = player.name;
+		updateStats(i);
+		document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
+		document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
+		document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
 	}
 }
 
@@ -51,9 +49,9 @@ function updateStats(playerIndex: number) {
 	playerBars[playerIndex].points = board.getScore(playerIndex);
 	playerBars[playerIndex].pointsDelta = 0;
 	playerBars[playerIndex].pointsTo = 0;
-	playerBars[playerIndex].specialPoints = currentGame.players[playerIndex]!.specialPoints;
-	playerBars[playerIndex].statSpecialPointsElement.innerText = currentGame.players[playerIndex]!.totalSpecialPoints.toString();
-	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex]!.passes.toString();
+	playerBars[playerIndex].specialPoints = currentGame.players[playerIndex].specialPoints;
+	playerBars[playerIndex].statSpecialPointsElement.innerText = currentGame.players[playerIndex].totalSpecialPoints.toString();
+	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
 }
 
 function showReady(playerIndex: number) {
@@ -80,7 +78,7 @@ function setupControlsForPlay() {
 
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
-			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex]!.specialPoints >= currentGame.me.hand[i].specialCost
+			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
 				&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
 			handButtons[i].inputElement.disabled = !canPlayCard[i];
 		}
@@ -97,7 +95,7 @@ function setupControlsForPlay() {
 }
 
 async function playInkAnimations(data: {
-	game: { state: GameState, board: Space[][], turnNumber: number, players: (Player | null)[] },
+	game: { state: GameState, board: Space[][], turnNumber: number, players: Player[] },
 	placements: { cards: { playerIndex: number, card: Card }[], spacesAffected: { space: { x: number, y: number }, newState: Space }[] }[],
 	specialSpacesActivated: { x: number, y: number }[]
 }, anySpecialAttacks: boolean) {
@@ -127,27 +125,24 @@ async function playInkAnimations(data: {
 	board.refresh();
 	if (data.specialSpacesActivated.length > 0)
 		await delay(1000);  // Delay if we expect that this changed the board.
-	for (let i = 0; i < playerBars.length; i++) {
-		const player = data.game.players[i];
-		if (player)
-			playerBars[i].specialPoints = player.specialPoints;
-	}
-	for (let i = 0; i < playerBars.length; i++) {
+	for (let i = 0; i < data.game.players.length; i++) {
+		playerBars[i].specialPoints = data.game.players[i].specialPoints;
 		playerBars[i].pointsDelta = board.getScore(i) - playerBars[i].points;
 	}
 	await delay(1000);
-	for (let i = 0; i < playerBars.length; i++) {
+	for (let i = 0; i < data.game.players.length; i++) {
 		updateStats(i);
 	}
 	await delay(1000);
 }
 
 function showResult() {
+	if (currentGame == null) return;
 	midGameContainer.hidden = true;
 	resultContainer.hidden = false;
 
 	let winners = [ 0 ]; let maxPoints = playerBars[0].points;
-	for (let i = 1; i < playerBars.length; i++) {
+	for (let i = 1; i < currentGame.players.length; i++) {
 		if (playerBars[i].points > maxPoints) {
 			winners.splice(0);
 			winners.push(i);
@@ -156,7 +151,6 @@ function showResult() {
 			winners.push(i);
 	}
 
-	if (currentGame == null) return;
 	for (let i = 0; i < currentGame.players.length; i++) {
 		const el = playerBars[i].resultElement;
 		if (winners.includes(i)) {
@@ -201,10 +195,6 @@ function updateHand(cards: any[]) {
 							// Send the play to the server.
 							let req = new XMLHttpRequest();
 							req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
-							req.addEventListener('load', e => {
-								if (req.status == 204) {
-								}
-							});
 							let data = new URLSearchParams();
 							data.append('clientToken', clientToken);
 							data.append('cardNumber', card.number.toString());
