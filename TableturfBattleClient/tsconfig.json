@@ -1,0 +1,14 @@
+{
+	"files": [ "src/_header.ts" ],
+	"include": [ "src/**/*.ts" ],
+	"compilerOptions": {
+		"target": "ES2022",
+		"outFile": "build/tsbuild.js",
+		"noFallthroughCasesInSwitch": true,
+		"strict": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+
+	}
+}

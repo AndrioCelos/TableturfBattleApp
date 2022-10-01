@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Tableturf Battle</title>
+		<link rel="stylesheet" href="tableturf.css"/>
+	</head>
+	<body>
+		<div id="noJSSection">This application requires JavaScript.</div>
+		<div id="loadingSection">Loading game data...</div>
+		<div id="preGameSection" hidden>
+			<p><img title="Tableturf Battle" alt="Tableturf Battle logo" id="logo" src="assets/logo.png"></p>
+			<h1>Tableturf Battle</h1>
+			<p><input type="text" id="nameBox" placeholder="Choose a name"></p>
+			<p><button type="button" id="newGameButton">New game</button></p>
+			<p><input type="text" id="gameIDBox" placeholder="Game link or UUID"> <button type="button" id="joinGameButton">Join game</button></p>
+			<footer>
+				<p>This website is not affiliated with Nintendo. All product names, logos, and brands are property of their respective owners.</p>
+				<p><a href="https://github.com/AndrioCelos/TableturfBattleApp">GitHub</a></p>
+			</footer>
+		</div>
+		<div id="lobbySection" hidden>
+			<p>Waiting for players to join.</p>
+			<ul id="playerList"></ul>
+		</div>
+		<div id="deckSection" hidden>
+			<p>Choose your deck.</p>
+			<p><span id='countLabel'>0</span>/15 cards chosen</p>
+			<p><button type="button" id="submitDeckButton" disabled>Submit</button></p>
+			<p id="cardListLoadingSection">Loading cards...</p>
+			<ul id="cardList"></ul>
+		</div>
+		<div id="gameSection" hidden>
+			<div id="sidebarSection">
+				<div class="playerBar" data-index="1">
+					<div class="result"></div>
+					<div class="name">Player 2</div>
+					<div class="specialPoints">&nbsp;</div>
+					<div class="playerStats">
+						<div class="statSpecialPoints">
+							<div class="statLabel">Special points</div>
+							<div class="statValue">0</div>
+						</div>
+						<div class="statPasses">
+							<div class="statLabel">Turns passed</div>
+							<div class="statValue">0</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="midGameContainer">
+					<div id="handContainer"></div>
+					<label for="passButton">
+						<input type="checkbox" id="passButton"/> Pass
+					</label>
+					<label for="specialButton">
+						<input type="checkbox" id="specialButton"/> Special Attack
+					</label>
+				</div>
+				<div id="resultContainer" hidden>
+					<div id="result">Result</div>
+				</div>
+
+				<div class="playerBar" data-index="0">
+					<div class="result"></div>
+					<div class="name">Player 1</div>
+					<div class="specialPoints">&nbsp;</div>
+					<div class="playerStats">
+						<div class="statSpecialPoints">
+							<div class="statLabel">Special points</div>
+							<div class="statValue">0</div>
+						</div>
+						<div class="statPasses">
+							<div class="statLabel">Turns passed</div>
+							<div class="statValue">0</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="scoreSection">
+				<div id="turnNumberContainer" hidden>
+					<p>Turns left</p>
+					<div id="turnNumberLabel">12</div>
+				</div>
+				<div id="pointsContainers">
+					<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+					<div class="pointsContainer" data-index="0"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+				</div>
+			</div>
+			<div id="boardSection">
+				<table id="gameBoard"></table>
+				<div id="redrawModal" hidden>
+					<div id="redrawBox">
+						<p>Redraw your starting hand?</p>
+						<p><button type="button" id="redrawNoButton" data-redraw="false">Hold steady</button></p>
+						<p><button type="button" id="redrawYesButton" data-redraw="true">Redraw</button></p>
+					</div>
+				</div>
+			</div>
+			<div id="playsSection">
+				<div class="playContainer" data-index="1"></div>
+				<div class="playContainer" data-index="0"></div>
+			</div>
+		</div>
+		<div id="errorModal" hidden>
+			<div id="errorModalBox">A communication error has occurred.</div>
+		</div>
+	<script src="build/tsbuild.js"></script>
+	</body>
+</html>

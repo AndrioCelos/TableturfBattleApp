@@ -1,0 +1,519 @@
+/* Fonts */
+
+@font-face {
+	font-family: 'Splatoon 1';
+	src: url('assets/splatoon1.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Splatoon 2';
+	src: url('assets/splatoon2.woff2') format('woff2');
+}
+
+/* Body */
+
+body {
+	color: white;
+	background: black;
+	font-family: 'Splatoon 2', sans-serif;
+	/* Default colours - normally the game data sent from the server will override these */
+	--primary-colour-1       : hsl(63, 99%, 49%);
+	--special-colour-1       : hsl(38, 100%, 49%);
+	--special-accent-colour-1: hsl(60, 95%, 55%);
+	--primary-colour-2       : hsl(234, 97%, 64%);
+	--special-colour-2       : hsl(184, 99%, 50%);
+	--special-accent-colour-2: hsl(180, 17%, 86%);
+	--primary-colour-3       : hsl(306, 95%, 50%);
+	--special-colour-3       : hsl(270, 95%, 50%);
+	--special-accent-colour-3: hsl(285, 95%, 85%);
+	--primary-colour-4       : hsl(155, 95%, 50%);
+	--special-colour-4       : hsl(120, 95%, 50%);
+	--special-accent-colour-4: hsl(135, 95%, 85%);
+}
+
+/* Start section */
+
+#preGameSection {
+	text-align: center;
+}
+
+#logo {
+	height: 8em;
+}
+
+h1 {
+	font-family: 'Splatoon 1', sans-serif;
+	font-weight: normal;
+}
+
+footer {
+	font-family: sans-serif;
+}
+
+/* Cards */
+
+.cardBack {
+	width: 10rem;
+	height: 13rem;
+	border: 1px solid grey;
+	border-radius: 0.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: large;
+}
+
+.card {
+	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
+	font-weight: 599;
+	display: inline-block;
+	border: 1px solid;
+	border-radius: 0.5em;
+	width: 10em;
+	margin: 5px;
+	position: relative;
+}
+
+.card.common {
+	border-color: #5931FF;
+}
+
+.card.rare {
+	border-color: yellow;
+}
+
+.card.fresh {
+	border-color: white;
+}
+
+.cardHeader {
+	height: 2.5em;
+	display: flex;
+	position: relative;
+	align-items: center;
+	padding: 0 5px;
+	justify-content: center;
+}
+
+.card input {
+	position: absolute;
+	z-index: -1;
+	left: 0;
+	top: 0;
+}
+
+.cardNumber {
+	display: none;
+}
+
+
+.cardName {
+	text-align: center;
+	line-height: 1.25em;
+	flex-grow: 1;
+}
+
+.card.common .cardName {
+	color: rgb(89, 49, 255);
+}
+.card.rare .cardName {
+	background: yellow;
+	background: -webkit-linear-gradient(0, rgb(255, 242, 129) 0%, rgb(255, 255, 224) 15%, rgb(231, 180, 39) 50%, rgb(255, 255, 224) 85%, rgb(255, 242, 129) 100%);
+	background-clip: text;
+	color: transparent;
+}
+.card.fresh .cardName {
+	background: white;
+	background: -webkit-linear-gradient(-30deg, rgba(253, 217, 169, 1) 0%, rgba(200, 58, 141, 1) 50%, rgba(55, 233, 207, 1) 100%);
+	background-clip: text;
+	color: transparent;
+	flex-grow: 0;
+}
+
+.cardGrid {
+	margin: 0 auto;
+}
+.cardGrid td {
+	width: 0.5em;
+	height: 0.5em;
+	border: 1px solid gray;
+}
+.cardGrid td.ink { background: hsl(63, 99%, 49%); }
+.cardGrid td.special { background: hsl(38, 100%, 49%); }
+
+.cardFooter {
+	display: flex;
+	align-items: center;
+	height: 2.5em;
+}
+
+.cardSize {
+	display: inline-block;
+	width: 2em;
+	text-align: center;
+}
+
+.cardSpecialCost {
+	display: inline-flex;
+	width: 6em;
+	flex-wrap: wrap-reverse;
+	row-gap: 4px;
+}
+
+.cardSpecialPoint {
+	display: inline-block;
+	color: transparent;
+	background: var(--special-colour-1);
+	width: 1ch;
+	height: 1ch;
+	margin-right: 0.3em;
+}
+
+/* Board */
+
+#gameBoard {
+	height: 98vh;
+	aspect-ratio: var(--board-width)/var(--board-height);
+	table-layout: fixed;
+	border-spacing: 0;
+}
+
+#gameBoard td { border: 1px solid grey; }
+#gameBoard td.Wall { background: grey; }
+#gameBoard td.Ink1 { background: var(--primary-colour-1); }
+#gameBoard td.Ink2 { background: var(--primary-colour-2); }
+#gameBoard td.SpecialInactive1 { background: var(--special-colour-1); }
+#gameBoard td.SpecialInactive2 { background: var(--special-colour-2); }
+#gameBoard td.SpecialActive1 { background: radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
+#gameBoard td.SpecialActive2 { background: radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
+
+#gameBoard td.hover {
+	position: relative;
+}
+
+#gameBoard td.hover::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0.5;
+}
+
+#gameBoard td.hover1:not(.hoverillegal)::after { background: var(--primary-colour-1); }
+#gameBoard td.hover2:not(.hoverillegal)::after { background: var(--primary-colour-2); }
+#gameBoard td.hover3:not(.hoverillegal)::after { background: var(--primary-colour-3); }
+#gameBoard td.hover4:not(.hoverillegal)::after { background: var(--primary-colour-4); }
+#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-1); }
+#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-2); }
+#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-3); }
+#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-4); }
+
+#gameBoard td.hoverillegal::after { background: grey; }
+
+/* Card list */
+
+#cardList {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+/* Game UI */
+
+#gameSection:not([hidden]) {
+	display: flex;
+}
+
+#sidebarSection {
+	width: 24em;
+	display: flex;
+	flex-flow: column;
+	justify-content: space-between;
+}
+
+.playerBar {
+	border-left: 4px solid var(--colour);
+	padding-left: 10px;
+}
+.playerBar[data-index="0"] { --colour: var(--primary-colour-1); --special-colour: var(--special-colour-1); }
+.playerBar[data-index="1"] { --colour: var(--primary-colour-2); --special-colour: var(--special-colour-2); }
+.playerBar[data-index="2"] { --colour: var(--primary-colour-3); --special-colour: var(--special-colour-3); }
+.playerBar[data-index="3"] { --colour: var(--primary-colour-4); --special-colour: var(--special-colour-4); }
+
+.name {
+	font-size: x-large;
+	font-weight: bold;
+	margin: 0.5em 0;
+}
+
+.specialPoints div {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	border: 1px solid;
+	text-align: center;
+}
+
+.playerBar .specialPoint {
+	color: transparent;
+	background: var(--special-colour);
+}
+
+.specialPoints div {
+	margin-right: 0.25em;
+}
+
+.specialPoint:nth-of-type(5n) {
+	margin-right: 0.5em;
+}
+
+.result {
+	font-family: 'Splatoon 1';
+	color: var(--colour);
+	text-transform: uppercase;
+}
+.result.win {
+	font-size: larger;
+}
+
+.playerStats {
+	margin: 0 1em;
+	background: rgba(64, 64, 64);
+	color: white;
+	display: flex;
+	justify-content: space-around;
+	text-align: center;
+}
+#gameSection:not(.gameEnded) .playerStats {
+	display: none;
+}
+
+.statValue {
+	font-family: 'Splatoon 1';
+	font-size: x-large;
+	line-height: 1.5em;
+}
+
+#midGameContainer {
+	height: 28em;
+}
+
+#resultContainer {
+	display: none;
+}
+
+/* Score bar */
+
+#scoreSection {
+	display: grid;
+	grid-template-rows: 1fr 2fr 1fr;
+	place-items: center;
+	margin: 0 2em;
+}
+
+#turnNumberContainer {
+	width: 5em;
+	height: 5em;
+	background: radial-gradient(circle, rgb(128, 128, 128) 0%, rgb(128, 128, 128) 70%, rgba(0, 0, 0, 0) 70%);
+	font-family: 'Splatoon 1', sans-serif;
+}
+
+#turnNumberContainer p {
+	text-align: center;
+	margin: 0;
+	font-size: small;
+}
+
+#turnNumberLabel {
+	text-align: center;
+	font-size: x-large;
+}
+#turnNumberLabel.nowOrNever {
+	color: red;
+}
+
+#pointsContainers {
+	grid-row: 2;
+}
+
+.pointsContainer {
+	width: 5em;
+	height: 5em;
+}
+
+.pointsContainer {
+	position: relative;
+	display: flex;
+	font-family: 'Splatoon 1', sans-serif;
+	justify-content: center;
+	align-items: center;
+}
+
+.points {
+	font-size: xx-large;
+}
+
+.pointsToContainer {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.pointsContainer[data-index="1"] {
+	--colour: var(--primary-colour-2);
+}
+
+.pointsContainer::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0.5;
+	z-index: -1;
+	background: radial-gradient(circle, var(--colour) 0%, var(--colour) 70%, rgba(0, 0, 0, 0) 70%);
+}
+
+.pointsContainer[data-index="0"] {
+	--colour: var(--primary-colour-1);
+}
+
+.pointsContainer {
+	color: var(--colour);
+	margin: 2em 0;
+}
+
+.pointsDelta {
+	position: absolute;
+	bottom: 0;
+	right: 1em;
+}
+
+/* Board section */
+
+#boardSection {
+	position: relative;
+}
+
+#redrawModal {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: #000000C0;
+}
+
+#redrawModel:not([hidden]) {
+	display: flex;
+	align-items: center;
+	flex-flow: column;
+}
+
+#redrawBox {
+	/* display: flex; */
+	border: 1px solid grey;
+	width: 15em;
+	height: 10em;
+	background: black;
+	text-align: center;
+	margin-top: 12em;
+}
+
+#playsSection {
+	display: flex;
+	flex-flow: column;
+	justify-content: space-between;
+}
+
+/* Error UI */
+
+#errorModal {
+	background: #00000080;
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+#errorModal:not([hidden]) {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#errorModalBox {
+	width: 20em;
+	background: black;
+	height: 12em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid gray;
+}
+
+
+.specialAttack, .specialAttack::after {
+	box-shadow: 0px 0 8px 4px var(--colour);
+}
+
+.specialAttack::after {
+	content: 'Special Attack!';
+	position: absolute;
+	left: -2em;
+	top: 5em;
+	right: -2em;
+	height: 2em;
+	background: var(--colour);
+	color: black;
+	text-align: center;
+	font-size: large;
+	border-radius: 0.5em;
+	animation: 3s forwards specialAttackAnimation;
+}
+
+@keyframes specialAttackAnimation {
+	from {
+		transform: scale(0);
+		opacity: 0;
+	}
+	15% {
+		transform: scale(0.9);
+		opacity: 1;
+	}
+	85% {
+		transform: scale(1.1);
+		opacity: 1;
+	}
+	to {
+		transform: scale(1.1);
+		opacity: 0;
+	}
+}
+
+.playContainer[data-index="0"] { --colour: var(--primary-colour-1); }
+.playContainer[data-index="1"] { --colour: var(--primary-colour-2); }
+.playContainer[data-index="2"] { --colour: var(--primary-colour-3); }
+.playContainer[data-index="3"] { --colour: var(--primary-colour-4); }
+
+.passLabel {
+	font-family: 'Splatoon 2', sans-serif;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	background: #00000080;
+	justify-content: center;
+	align-items: center;
+	font-size: large;
+}
+
+
+
+
+/* Score section */
