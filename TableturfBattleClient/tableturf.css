@@ -206,9 +206,9 @@ footer {
 #gameBoard td.hover3:not(.hoverillegal)::after { background: var(--primary-colour-3); }
 #gameBoard td.hover4:not(.hoverillegal)::after { background: var(--primary-colour-4); }
 #gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-1); }
-#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-2); }
-#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-3); }
-#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-4); }
+#gameBoard td.hoverspecial.hover2:not(.hoverillegal)::after { background: var(--special-colour-2); }
+#gameBoard td.hoverspecial.hover3:not(.hoverillegal)::after { background: var(--special-colour-3); }
+#gameBoard td.hoverspecial.hover4:not(.hoverillegal)::after { background: var(--special-colour-4); }
 
 #gameBoard td.hoverillegal::after { background: grey; }
 
