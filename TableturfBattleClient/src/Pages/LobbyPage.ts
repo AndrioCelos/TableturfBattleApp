@@ -25,7 +25,7 @@ function updatePlayerListItem(playerIndex: number) {
 
 submitDeckButton.addEventListener('click', e => {
 	let req = new XMLHttpRequest();
-	req.open('POST', `http://localhost:3333/api/games/${currentGame!.id}/chooseDeck`);
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseDeck`);
 	req.addEventListener('load', e => {
 		if (req.status == 204) {
 			showSection('lobby');

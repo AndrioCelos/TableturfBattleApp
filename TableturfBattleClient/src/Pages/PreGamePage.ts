@@ -6,7 +6,7 @@ newGameButton.addEventListener('click', e => {
 	window.localStorage.setItem('name', name);
 
 	let request = new XMLHttpRequest();
-	request.open('POST', 'http://localhost:3333/api/games/new');
+	request.open('POST', `${config.apiBaseUrl}/games/new`);
 	request.addEventListener('load', e => {
 		if (request.status == 200) {
 			let response = JSON.parse(request.responseText);
@@ -36,7 +36,7 @@ function tryJoinGame(name: string, idOrUrl: string) {
 	}
 
 	let request = new XMLHttpRequest();
-	request.open('POST', `http://localhost:3333/api/games/${gameID}/join`);
+	request.open('POST', `${config.apiBaseUrl}/games/${gameID}/join`);
 	request.addEventListener('load', e => {
 		if (request.status == 200) {
 			let response = JSON.parse(request.responseText);
@@ -61,10 +61,10 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	board.playerIndex = myPlayerIndex;
 	window.location.hash = `#${gameID}`;
 
-	const webSocket = new WebSocket(`ws://localhost:3333/api/websocket?gameID=${gameID}&clientToken=${clientToken}`);
+	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
 	webSocket.addEventListener('open', e => {
 		const request2 = new XMLHttpRequest();
-		request2.open('GET', `http://localhost:3333/api/games/${gameID}/playerData/${clientToken}`);
+		request2.open('GET', `${config.apiBaseUrl}/games/${gameID}/playerData/${clientToken}`);
 		request2.addEventListener('load', e => {
 			if (request2.status == 200) {
 				const response = JSON.parse(request2.responseText);

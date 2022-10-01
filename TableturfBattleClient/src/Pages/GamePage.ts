@@ -200,7 +200,7 @@ function updateHand(cards: any[]) {
 							canPlay = false;
 							// Send the play to the server.
 							let req = new XMLHttpRequest();
-							req.open('POST', `http://localhost:3333/api/games/${currentGame!.id}/play`);
+							req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
 							req.addEventListener('load', e => {
 								if (req.status == 204) {
 								}
@@ -227,7 +227,7 @@ function updateHand(cards: any[]) {
 (document.getElementById('redrawYesButton') as HTMLButtonElement).addEventListener('click', redrawButton_click);
 function redrawButton_click(e: MouseEvent) {
 	let req = new XMLHttpRequest();
-	req.open('POST', `http://localhost:3333/api/games/${currentGame!.id}/redraw`);
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);
 	let data = new URLSearchParams();
 	data.append('clientToken', clientToken);
 	data.append('redraw', (e.target as HTMLButtonElement).dataset.redraw!);
@@ -292,7 +292,7 @@ board.onclick = (x, y) => {
 		canPlay = false;
 		// Send the play to the server.
 		let req = new XMLHttpRequest();
-		req.open('POST', `http://localhost:3333/api/games/${currentGame.id}/play`);
+		req.open('POST', `${config.apiBaseUrl}/games/${currentGame.id}/play`);
 		req.addEventListener('load', e => {
 			if (req.status != 204) {
 				alert(req.responseText);

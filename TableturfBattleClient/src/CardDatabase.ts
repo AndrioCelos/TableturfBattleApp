@@ -7,7 +7,7 @@ const cardDatabase = {
 				return;
 			}
 			const cardListRequest = new XMLHttpRequest();
-			cardListRequest.open('GET', 'http://localhost:3333/api/cards');
+			cardListRequest.open('GET', `${config.apiBaseUrl}/cards`);
 			cardListRequest.addEventListener('load', e => {
 				const cards = [ ];
 				if (cardListRequest.status == 200) {
