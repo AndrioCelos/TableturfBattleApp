@@ -66,7 +66,7 @@ internal class Program {
 					var game = new Game(9, 26);
 					game.Board[4, 4] = Space.SpecialInactive2;
 					game.Board[4, 21] = Space.SpecialInactive1;
-					game.Players[0] = new(name, clientToken);
+					game.Players.Add(new(name, clientToken));
 					games.Add(game.ID, game);
 
 					SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { gameID = game.ID, clientToken }));
