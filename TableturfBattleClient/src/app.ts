@@ -4,7 +4,7 @@ function delay(ms: number) { return new Promise(resolve => setTimeout(() => reso
 
 // Sections
 const sections = new Map<string, HTMLDivElement>();
-for (var id of [ 'noJS', 'loading', 'preGame', 'lobby', 'deck', 'game' ]) {
+for (var id of [ 'noJS', 'preGame', 'lobby', 'deck', 'game' ]) {
 	let el = document.getElementById(`${id}Section`) as HTMLDivElement;
 	if (!el) throw new EvalError(`Element not found: ${id}Section`);
 	sections.set(id, el);

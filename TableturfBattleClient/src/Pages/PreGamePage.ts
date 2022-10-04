@@ -60,6 +60,7 @@ function tryJoinGame(name: string, idOrUrl: string) {
 function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	board.playerIndex = myPlayerIndex;
 	window.location.hash = `#${gameID}`;
+	initLobbyPage(window.location.toString());
 
 	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
 	webSocket.addEventListener('open', e => {

@@ -1,5 +1,25 @@
 let cardButtons: CardButton[] = [ ];
+let shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 let submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
+let lobbyShareData: ShareData | null;
+
+function initLobbyPage(url: string) {
+	lobbyShareData = { url: url, title: 'Tableturf Battle' };
+	if (navigator.canShare && navigator.canShare(lobbyShareData)) {
+		shareLinkButton.innerText = 'Share link';
+	} else {
+		lobbyShareData = null;
+		shareLinkButton.innerText = 'Copy link';
+	}
+}
+
+shareLinkButton.addEventListener('click', () => {
+	if (lobbyShareData != null) {
+		navigator.share(lobbyShareData);
+	} else {
+		navigator.clipboard.writeText(window.location.toString()).then(() => shareLinkButton.innerText = 'Copied');
+	}
+});
 
 function clearReady() {
 	if (currentGame == null) return;
