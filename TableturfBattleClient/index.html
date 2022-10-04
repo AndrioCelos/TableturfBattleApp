@@ -11,9 +11,19 @@
 		<div id="preGameSection" hidden>
 			<p><img title="Tableturf Battle" alt="Tableturf Battle logo" id="logo" src="assets/logo.png"></p>
 			<h1>Tableturf Battle</h1>
-			<p><input type="text" id="nameBox" placeholder="Choose a name"></p>
-			<p><button type="button" id="newGameButton">New game</button></p>
-			<p><input type="text" id="gameIDBox" placeholder="Game link or UUID"> <button type="button" id="joinGameButton">Join game</button></p>
+			<form id="preGameForm">
+				<p><label for="nameBox">Choose a nickname: <input type="text" id="nameBox" required minlength="1" maxlength="20"/></label></p>
+				<div id="preGameDefaultSection">
+					<p><button type="submit" id="newGameButton">Create a room</button></p>
+					<p><label for="gameIDBox">Enter a game link or ID to join a game:<br/>
+						<input type="text" id="gameIDBox" placeholder="Game link or ID"/></label>
+						<button type="submit" id="joinGameButton">Join game</button></p>
+				</div>
+				<div id="preGameJoinSection" hidden>
+					<p><button type="submit" id="joinGameButton2">Join game</button></p>
+					<a id="preGameBackButton" href="../..">Create or join a different room</a>
+				</div>
+			</form>
 			<footer>
 				<p>This website is not affiliated with Nintendo. All product names, logos, and brands are property of their respective owners.</p>
 				<p><a href="https://github.com/AndrioCelos/TableturfBattleApp">GitHub</a></p>

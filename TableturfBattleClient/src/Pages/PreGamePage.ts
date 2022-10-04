@@ -1,31 +1,32 @@
 const newGameButton = document.getElementById('newGameButton')!;
 const joinGameButton = document.getElementById('joinGameButton')!;
 
-newGameButton.addEventListener('click', e => {
-	const name = (document.getElementById('nameBox') as HTMLInputElement).value;
-	window.localStorage.setItem('name', name);
+(document.getElementById('preGameForm') as HTMLFormElement).addEventListener('submit', e => {
+	e.preventDefault();
+	if (e.submitter?.id == 'joinGameButton') {
+		const name = (document.getElementById('nameBox') as HTMLInputElement).value;
+		window.localStorage.setItem('name', name);
+		tryJoinGame(name, (document.getElementById('gameIDBox') as HTMLInputElement).value);
+	} else {
+		const name = (document.getElementById('nameBox') as HTMLInputElement).value;
+		window.localStorage.setItem('name', name);
 
-	let request = new XMLHttpRequest();
-	request.open('POST', `${config.apiBaseUrl}/games/new`);
-	request.addEventListener('load', e => {
-		if (request.status == 200) {
-			let response = JSON.parse(request.responseText);
-			if (!clientToken)
-				setClientToken(response.clientToken);
-			getGameInfo(response.gameID, 0);
-		}
-	});
+		let request = new XMLHttpRequest();
+		request.open('POST', `${config.apiBaseUrl}/games/new`);
+		request.addEventListener('load', e => {
+			if (request.status == 200) {
+				let response = JSON.parse(request.responseText);
+				if (!clientToken)
+					setClientToken(response.clientToken);
+				getGameInfo(response.gameID, 0);
+			}
+		});
 
-	let data = new URLSearchParams();
-	data.append('name', name);
-	data.append('clientToken', clientToken);
-	request.send(data.toString());
-});
-
-joinGameButton.addEventListener('click', e => {
-	const name = (document.getElementById('nameBox') as HTMLInputElement).value;
-	window.localStorage.setItem('name', name);
-	tryJoinGame(name, (document.getElementById('gameIDBox') as HTMLInputElement).value);
+		let data = new URLSearchParams();
+		data.append('name', name);
+		data.append('clientToken', clientToken);
+		request.send(data.toString());
+	}
 });
 
 function tryJoinGame(name: string, idOrUrl: string) {
@@ -186,12 +187,19 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	});
 }
 
-{
-	const name = window.localStorage.getItem('name');
-	(document.getElementById('nameBox') as HTMLInputElement).value = name || '';
-	if (window.location.hash != '')	{
-		(document.getElementById('gameIDBox') as HTMLInputElement).value = window.location.hash;
-		if (name != null)
-			tryJoinGame(name, window.location.hash)
-	}
+document.getElementById('preGameBackButton')!.addEventListener('click', e => {
+	e.preventDefault();
+	document.getElementById('preGameDefaultSection')!.hidden = false;
+	document.getElementById('preGameJoinSection')!.hidden = true;
+	window.location.hash = '';
+})
+
+const playerName = window.localStorage.getItem('name');
+(document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
+if (window.location.hash != '')	{
+	document.getElementById('preGameDefaultSection')!.hidden = true;
+	document.getElementById('preGameJoinSection')!.hidden = false;
+	(document.getElementById('gameIDBox') as HTMLInputElement).value = window.location.hash;
+	if (playerName != null)
+		tryJoinGame(playerName, window.location.hash)
 }
