@@ -82,7 +82,7 @@ cardDatabase.loadAsync().then(cards => {
 	for (const card of cards) {
 		const button = new CardButton('checkbox', card);
 		cardButtons.push(button);
-		button.inputElement.checked = lastDeck != null && lastDeck.includes(card.number);
+		button.checked = lastDeck != null && lastDeck.includes(card.number);
 		button.inputElement.addEventListener('input', updateDeckCount);
 		cardList.appendChild(button.element);
 	}

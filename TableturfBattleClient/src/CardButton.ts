@@ -95,4 +95,13 @@ class CardButton {
 		else
 			this.element.classList.add('disabled');
 	}
+
+	get checked() { return this.inputElement.checked; }
+	set checked(value: boolean) {
+		this.inputElement.checked = value;
+		if (this.inputElement.checked)
+			this.element.classList.add('checked');
+		else
+			this.element.classList.remove('checked');
+	}
 }

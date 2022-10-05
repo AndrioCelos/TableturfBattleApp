@@ -67,7 +67,7 @@ footer {
 	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
 	font-weight: 599;
 	display: inline-block;
-	border: 1px solid;
+	border: 1px solid var(--colour);
 	border-radius: 0.5em;
 	width: 10em;
 	margin: 5px;
@@ -75,15 +75,15 @@ footer {
 }
 
 .card.common {
-	border-color: #5931FF;
+	--colour: rgb(89, 49, 255);
 }
 
 .card.rare {
-	border-color: yellow;
+	--colour: rgb(231, 180, 39);
 }
 
 .card.fresh {
-	border-color: white;
+	--colour: white;
 }
 
 .cardHeader {
@@ -114,17 +114,17 @@ footer {
 }
 
 .card.common .cardName {
-	color: rgb(89, 49, 255);
+	color: var(--colour);
 }
 .card.rare .cardName {
-	background: yellow;
-	background: -webkit-linear-gradient(0, rgb(255, 242, 129) 0%, rgb(255, 255, 224) 15%, rgb(231, 180, 39) 50%, rgb(255, 255, 224) 85%, rgb(255, 242, 129) 100%);
+	background: var(--colour);
+	background: linear-gradient(90deg, rgb(255, 242, 129) 0%, rgb(255, 255, 224) 15%, rgb(231, 180, 39) 50%, rgb(255, 255, 224) 85%, rgb(255, 242, 129) 100%);
 	background-clip: text;
 	color: transparent;
 }
 .card.fresh .cardName {
-	background: white;
-	background: -webkit-linear-gradient(-30deg, rgba(253, 217, 169, 1) 0%, rgba(200, 58, 141, 1) 50%, rgba(55, 233, 207, 1) 100%);
+	background: var(--colour);
+	background: linear-gradient(120deg, rgba(253, 217, 169, 1) 0%, rgba(200, 58, 141, 1) 50%, rgba(55, 233, 207, 1) 100%);
 	background-clip: text;
 	color: transparent;
 	flex-grow: 0;
@@ -167,6 +167,29 @@ footer {
 	width: 1ch;
 	height: 1ch;
 	margin-right: 0.3em;
+}
+
+.card::before {
+	/* If it exists */
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	z-index: -2;
+	opacity: 0.25;
+}
+.card:hover:not(.checked):not(.disabled)::before {
+	content: '';
+	background: grey;
+}
+.card.checked::before {
+	content: '';
+	background: var(--colour);
+}
+
+.card.disabled {
+	opacity: 0.5;
 }
 
 /* Board */

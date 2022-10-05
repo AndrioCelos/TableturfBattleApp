@@ -80,14 +80,14 @@ function setupControlsForPlay() {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
 			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
 				&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
-			handButtons[i].inputElement.disabled = !canPlayCard[i];
+			handButtons[i].enabled = canPlayCard[i];
 		}
 
 		specialButton.disabled = !canPlayCardAsSpecialAttack.includes(true);
 		board.autoHighlight = true;
 	} else {
 		for (const button of handButtons) {
-			button.inputElement.disabled = true;
+			button.enabled = false;
 			passButton.disabled = true;
 			specialButton.disabled = true;
 		}
@@ -188,7 +188,11 @@ function updateHand(cards: any[]) {
 			button.inputElement.name = 'handCard';
 			handButtons.push(button);
 			button.inputElement.addEventListener('change', e => {
-				if (button.inputElement.checked) {
+				if (button.checked) {
+					for (const button2 of handButtons) {
+						if (button2 != button)
+							button2.element.classList.remove('checked');
+					}
 					if (passButton.checked) {
 						if (canPlay) {
 							canPlay = false;
@@ -232,12 +236,12 @@ passButton.addEventListener('change', e => {
 		board.cardPlaying = null;
 		board.specialAttack = false;
 		for (const el of handButtons) {
-			el.inputElement.disabled = false;
-			el.inputElement.checked = false;
+			el.enabled = true;
+			el.checked = false;
 		}
 	} else {
 		for (let i = 0; i < 4; i++) {
-			handButtons[i].inputElement.disabled = !canPlayCard[i];
+			handButtons[i].enabled = canPlayCard[i];
 		}
 	}
 });
@@ -247,15 +251,15 @@ specialButton.addEventListener('change', e => {
 		passButton.checked = false;
 		board.autoHighlight = true;
 		for (let i = 0; i < 4; i++) {
-			handButtons[i].inputElement.disabled = !canPlayCardAsSpecialAttack[i];
+			handButtons[i].enabled = canPlayCardAsSpecialAttack[i];
 			if (!canPlayCardAsSpecialAttack[i])
-				handButtons[i].inputElement.checked = false;
+				handButtons[i].checked = false;
 		}
 	} else {
 		for (let i = 0; i < 4; i++) {
-			handButtons[i].inputElement.disabled = !canPlayCard[i];
+			handButtons[i].enabled = canPlayCard[i];
 			if (!canPlayCard[i])
-				handButtons[i].inputElement.checked = false;
+				handButtons[i].checked = false;
 		}
 	}
 });
