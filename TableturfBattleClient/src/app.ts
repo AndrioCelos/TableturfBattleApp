@@ -36,10 +36,6 @@ function onGameStateChange(game: any, playerData: any) {
 			break;
 		case GameState.Preparing:
 			showSection('deck');
-			for (const button of cardButtons.slice(0, 15)) {
-				button.inputElement.checked = true;
-			}
-			submitDeckButton.disabled = false;
 			break;
 		case GameState.Redraw:
 		case GameState.Ongoing:
@@ -74,25 +70,6 @@ function onGameStateChange(game: any, playerData: any) {
 }
 
 showSection('preGame');
-
-cardDatabase.loadAsync().then(cards => {
-	const cardList = document.getElementById('cardList')!;
-	for (var card of cards) {
-		const button = new CardButton('checkbox', card);
-		cardButtons.push(button);
-		button.inputElement.addEventListener('input', e => {
-			var count = 0;
-			for (var el of cardButtons) {
-				if (el.inputElement.checked)
-					count++;
-			}
-			document.getElementById('countLabel')!.innerText = count.toString();
-			submitDeckButton.disabled = (count != 15);
-		});
-		cardList.appendChild(button.element);
-	}
-	document.getElementById('cardListLoadingSection')!.hidden = true;
-}).catch(e => document.getElementById('errorModal')!.hidden = false);
 
 function isInternetExplorer() {
 	return !!(window.document as any).documentMode;  // This is a non-standard property implemented only by Internet Explorer.
