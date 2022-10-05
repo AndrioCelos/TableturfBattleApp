@@ -14,13 +14,63 @@ class Board {
 	highlightY = NaN;
 	private highlightedCells: [x: number, y: number][] = [ ];
 
+	startSpaces: { x: number, y: number }[] = [ ];
+
 	onclick: ((x: number, y: number) => void) | null = null;
+	oncancel: (() => void) | null = null;
 
 	constructor(table: HTMLTableElement) {
 		this.table = table;
 		table.addEventListener('mouseleave', _ => {
 			if (this.autoHighlight) this.clearHighlight()
 		});
+		table.addEventListener('keydown', e => {
+			if (this.autoHighlight) {
+				switch (e.key) {
+					case 'r':
+						this.moveHighlight((x, y, r) => [x, y, r + 1], false);
+						break;
+					case 'R':
+						this.moveHighlight((x, y, r) => [x, y, r - 1], false);
+						break;
+					case 'ArrowUp':
+						this.moveHighlight((x, y, r) => [x, y - 1, r], true);
+						break;
+					case 'ArrowDown':
+						this.moveHighlight((x, y, r) => [x, y + 1, r], true);
+						break;
+					case 'ArrowLeft':
+						this.moveHighlight((x, y, r) => [x - 1, y, r], true);
+						break;
+					case 'ArrowRight':
+						this.moveHighlight((x, y, r) => [x + 1, y, r], true);
+						break;
+					case 'Enter': case ' ':
+						if (this.onclick)
+							this.onclick(this.highlightX, this.highlightY);
+						break;
+					case 'Escape': case 'Backspace':
+						if (this.oncancel)
+							this.oncancel();
+						break;
+				}
+			}
+		})
+	}
+
+	moveHighlight(move: (x: number, y: number, r: number) => [number, number, number], clamp: boolean) {
+		if (this.playerIndex == null) return;
+		if (this.highlightedCells.length == 0 || isNaN(this.highlightX) || isNaN(this.highlightY) || isNaN(this.cardRotation)) {
+			const startSpace = this.startSpaces[this.playerIndex];
+			[this.highlightX, this.highlightY, this.cardRotation] = [startSpace.x - 3, startSpace.y - 3, 0];
+		} else {
+			let [x, y, r] = move(this.highlightX, this.highlightY, this.cardRotation);
+			let clampedPosition = clamp
+				? this.cardPlaying!.clampPosition(x, y, this.grid.length, this.grid[0].length, r)
+				: { x, y };
+			[this.highlightX, this.highlightY, this.cardRotation] = [clampedPosition.x, clampedPosition.y, r];
+		}
+		this.refreshHighlight();
 	}
 
 	checkMoveLegality(playerIndex: number, card: Card, x: number, y: number, rotation: number, isSpecialAttack: boolean): string | null {
@@ -133,7 +183,7 @@ class Board {
 				trs[y].appendChild(td);
 				col.push(td);
 				td.addEventListener('mousemove', e => {
-					if (this.autoHighlight) {
+					if (this.autoHighlight && this.cardPlaying != null) {
 						const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
 						const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
 						if (x != this.highlightX || y != this.highlightY) {
@@ -144,14 +194,14 @@ class Board {
 					}
 				});
 				td.addEventListener('click', e => {
-					if (this.autoHighlight && this.onclick) {
+					if (this.autoHighlight && this.cardPlaying != null && this.onclick) {
 						const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
 						const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
 						this.onclick(x, y);
 					}
 				});
 				td.addEventListener('wheel', e => {
-					if (this.autoHighlight) {
+					if (this.autoHighlight && this.cardPlaying != null) {
 						e.preventDefault();
 						if (e.deltaY > 0) this.cardRotation++;
 						else if (e.deltaY < 0) this.cardRotation--;

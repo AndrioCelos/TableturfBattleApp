@@ -28,8 +28,10 @@ for (let x = 0; x < 9; x++) {
 		col.push(Space.Empty);
 	cols.push(col);
 }
-cols[4][4] = Space.SpecialInactive2;
+board.startSpaces.push({ x: 4, y: 21 });
+board.startSpaces.push({ x: 4, y: 4 });
 cols[4][21] = Space.SpecialInactive1;
+cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
 function loadPlayers(players: Player[]) {
@@ -102,8 +104,9 @@ async function playInkAnimations(data: {
 	const inkPlaced = new Set<number>();
 	const placements = data.placements;
 	board.clearHighlight();
-	canPlay = false;
+	board.cardPlaying = null;
 	board.autoHighlight = false;
+	canPlay = false;
 	await delay(anySpecialAttacks ? 3000 : 1000);
 	for (const placement of placements) {
 		// Skip the delay when cards don't overlap.
@@ -184,11 +187,12 @@ function updateHand(cards: any[]) {
 	if (!currentGame?.me) return;
 	currentGame.me.hand = cards.map(Card.fromJson);
 	if (cards) {
-		for (const card of currentGame.me.hand) {
+		for (let i = 0; i < currentGame.me.hand.length; i++) {
+			const card = currentGame.me.hand[i];
 			const button = new CardButton('radio', card);
 			button.inputElement.name = 'handCard';
 			handButtons.push(button);
-			button.inputElement.addEventListener('change', e => {
+			button.inputElement.addEventListener('input', e => {
 				if (button.checked) {
 					for (const button2 of handButtons) {
 						if (button2 != button)
@@ -208,9 +212,40 @@ function updateHand(cards: any[]) {
 
 							board.autoHighlight = false;
 						}
+					} else {
+						board.cardPlaying = card;
+						if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+							board.highlightX = board.startSpaces[board.playerIndex!].x - 3;
+							board.highlightY = board.startSpaces[board.playerIndex!].y - 3;
+						}
+						board.cardRotation = 0;
+						board.refreshHighlight();
+						board.table.focus();
 					}
-					board.cardPlaying = card;
-					board.cardRotation = 0;
+				}
+			});
+			button.inputElement.addEventListener('keydown', e => {
+				switch (e.key) {
+					case 'ArrowUp':
+						if (i >= 2)
+							handButtons[i - 2].inputElement.focus();
+						e.preventDefault();
+						break;
+					case 'ArrowDown':
+						if (i < 2)
+							handButtons[i + 2].inputElement.focus();
+						e.preventDefault();
+						break;
+					case 'ArrowLeft':
+						if (i % 2 != 0)
+							handButtons[i - 1].inputElement.focus();
+						e.preventDefault();
+						break;
+					case 'ArrowRight':
+						if (i % 2 == 0)
+							handButtons[i + 1].inputElement.focus();
+						e.preventDefault();
+						break;
 				}
 			});
 			handContainer.appendChild(button.element);
@@ -230,12 +265,13 @@ function redrawButton_click(e: MouseEvent) {
 	redrawModal.hidden = true;
 }
 
-passButton.addEventListener('change', e => {
+function passButton_input() {
 	board.autoHighlight = !passButton.checked;
 	if (passButton.checked) {
 		specialButton.checked = false;
 		board.cardPlaying = null;
 		board.specialAttack = false;
+		board.clearHighlight();
 		for (const el of handButtons) {
 			el.enabled = true;
 			el.checked = false;
@@ -245,8 +281,10 @@ passButton.addEventListener('change', e => {
 			handButtons[i].enabled = canPlayCard[i];
 		}
 	}
-});
-specialButton.addEventListener('change', e => {
+}
+passButton.addEventListener('input', passButton_input);
+
+function specialButton_input() {
 	board.specialAttack = specialButton.checked;
 	if (specialButton.checked) {
 		passButton.checked = false;
@@ -263,7 +301,8 @@ specialButton.addEventListener('change', e => {
 				handButtons[i].checked = false;
 		}
 	}
-});
+}
+specialButton.addEventListener('input', specialButton_input);
 
 board.onclick = (x, y) => {
 	if (board.cardPlaying == null || !currentGame?.me)
@@ -307,6 +346,55 @@ board.onclick = (x, y) => {
 		board.autoHighlight = false;
 	}
 };
+
+board.oncancel = () => {
+	board.cardPlaying = null;
+	board.clearHighlight();
+	for (const button of handButtons) {
+		if (button.checked) {
+			button.checked = false;
+			button.inputElement.focus();
+		}
+	}
+};
+
+function focusFirstEnabledHandCard() {
+	const input = document.activeElement as HTMLInputElement;
+	if (input.name == 'handCard') {
+		if (input.disabled)
+			input.checked = false;
+		else {
+			// An enabled hand button is already active; don't move the focus.
+			return;
+		}
+	}
+	const firstEnabledButton = handButtons.find(b => b.enabled);
+	if (firstEnabledButton)
+		firstEnabledButton.inputElement.focus();
+}
+
+document.addEventListener('keydown', e => {
+	if (!sections.get('game')!.hidden) {
+		switch (e.key) {
+			case 'p':
+				if (!passButton.disabled) {
+					passButton.checked = !passButton.checked;
+					passButton_input();
+					focusFirstEnabledHandCard();
+				}
+				e.preventDefault();
+				break;
+			case 's':
+				if (!specialButton.disabled) {
+					specialButton.checked = !specialButton.checked;
+					specialButton_input();
+					focusFirstEnabledHandCard();
+				}
+				e.preventDefault();
+				break;
+		}
+	}
+});
 
 document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
 	e.preventDefault();

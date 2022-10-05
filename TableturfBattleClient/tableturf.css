@@ -179,7 +179,7 @@ footer {
 	z-index: -2;
 	opacity: 0.25;
 }
-.card:hover:not(.checked):not(.disabled)::before {
+.card:is(:hover, :focus-within):not(.checked, .disabled)::before {
 	content: '';
 	background: grey;
 }
