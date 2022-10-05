@@ -123,9 +123,12 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 		if (s) {
 			let payload = JSON.parse(s);
 			if (payload.event == 'join') {
-				currentGame.players.push(payload.data.player);
-				playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
-				updatePlayerListItem(payload.data.playerIndex);
+				if (payload.data.playerIndex == currentGame.players.length) {
+					currentGame.players.push(payload.data.player);
+					playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
+					updatePlayerListItem(payload.data.playerIndex);
+				} else
+					communicationError();
 			} else if (payload.event == 'playerReady') {
 				currentGame.players[payload.data.playerIndex].isReady = true;
 				updatePlayerListItem(payload.data.playerIndex);

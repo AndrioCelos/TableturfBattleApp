@@ -69,6 +69,10 @@ function onGameStateChange(game: any, playerData: any) {
 	}
 }
 
+function communicationError() {
+	document.getElementById('errorModal')!.hidden = false;
+}
+
 showSection('preGame');
 
 function isInternetExplorer() {

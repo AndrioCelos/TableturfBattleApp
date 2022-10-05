@@ -162,10 +162,11 @@ internal class Program {
 												SetErrorResponse(e.Response, error.Code == "GameAlreadyStarted" ? (int) HttpStatusCode.Gone : 422, error);
 												return;
 											}
+
+											game.SendEvent("join", new { playerIndex, player }, false);
 										}
 										// If they're already in the game, resend the original join response instead of an error.
 										SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { playerIndex, clientToken }));
-										game.SendEvent("join", new { playerIndex, player }, false);
 										timer.Start();
 									} catch (ArgumentException) {
 										e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
