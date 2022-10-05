@@ -140,6 +140,7 @@ function showResult() {
 	if (currentGame == null) return;
 	midGameContainer.hidden = true;
 	resultContainer.hidden = false;
+	turnNumberLabel.setTurnNumber(null);
 
 	let winners = [ 0 ]; let maxPoints = playerBars[0].points;
 	for (let i = 1; i < currentGame.players.length; i++) {
@@ -158,18 +159,18 @@ function showResult() {
 				el.classList.add('win');
 				el.classList.remove('lose');
 				el.classList.remove('draw');
-				el.innerText = 'Win!';
+				el.innerText = 'Victory';
 			} else {
 				el.classList.remove('win');
 				el.classList.remove('lose');
 				el.classList.add('draw');
-				el.innerText = 'Draw!';
+				el.innerText = 'Draw';
 			}
 		} else {
 			el.classList.remove('win');
 			el.classList.add('lose');
 			el.classList.remove('draw');
-			el.innerText = 'Lose...';
+			el.innerText = 'Defeat';
 		}
 	}
 }
@@ -306,3 +307,14 @@ board.onclick = (x, y) => {
 		board.autoHighlight = false;
 	}
 };
+
+document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
+	e.preventDefault();
+	document.getElementById('preGameDefaultSection')!.hidden = false;
+	document.getElementById('preGameJoinSection')!.hidden = true;
+	window.location.hash = '#';
+	currentGame = null;
+	gameIDBox.value = '';
+	showSection('preGame');
+	newGameButton.focus();
+});

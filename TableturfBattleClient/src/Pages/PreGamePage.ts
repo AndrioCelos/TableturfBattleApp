@@ -1,14 +1,16 @@
 const newGameButton = document.getElementById('newGameButton')!;
 const joinGameButton = document.getElementById('joinGameButton')!;
+const nameBox = document.getElementById('nameBox') as HTMLInputElement;
+const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 
 (document.getElementById('preGameForm') as HTMLFormElement).addEventListener('submit', e => {
 	e.preventDefault();
 	if (e.submitter?.id == 'joinGameButton') {
-		const name = (document.getElementById('nameBox') as HTMLInputElement).value;
+		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
-		tryJoinGame(name, (document.getElementById('gameIDBox') as HTMLInputElement).value);
+		tryJoinGame(name, gameIDBox.value);
 	} else {
-		const name = (document.getElementById('nameBox') as HTMLInputElement).value;
+		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
 
 		let request = new XMLHttpRequest();
