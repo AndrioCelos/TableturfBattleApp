@@ -227,6 +227,6 @@ if (window.location.hash != '')	{
 	document.getElementById('preGameDefaultSection')!.hidden = true;
 	document.getElementById('preGameJoinSection')!.hidden = false;
 	(document.getElementById('gameIDBox') as HTMLInputElement).value = window.location.hash;
-	if (playerName != null)
+	if (playerName)
 		tryJoinGame(playerName, window.location.hash, true);
 }
