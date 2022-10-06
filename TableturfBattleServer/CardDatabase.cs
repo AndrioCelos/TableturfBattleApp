@@ -1631,6 +1631,7 @@ public static class CardDatabase {
 	};
 
 	public static Version Version { get; } = new(1, 1, 0, 0);
+	public static DateTime LastModified { get; } = new(2022, 9, 2, 0, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 

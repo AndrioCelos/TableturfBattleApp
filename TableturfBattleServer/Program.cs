@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
@@ -8,6 +9,8 @@ using Newtonsoft.Json;
 
 using WebSocketSharp.Server;
 
+using HttpListenerRequest = WebSocketSharp.Net.HttpListenerRequest;
+using HttpListenerResponse = WebSocketSharp.Net.HttpListenerResponse;
 using Timer = System.Timers.Timer;
 
 namespace TableturfBattleServer;
@@ -75,18 +78,7 @@ internal class Program {
 				}
 			}
 		} else if (e.Request.RawUrl == "/api/cards") {
-			if (e.Request.HttpMethod is not ("GET" or "HEAD")) {
-				e.Response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
-				e.Response.AddHeader("Allow", "GET, HEAD");
-				return;
-			}
-			e.Response.AppendHeader("Cache-Control", "max-age=86400");
-			e.Response.AppendHeader("ETag", CardDatabase.Version.ToString());
-			if (e.Response.Headers["If-None-Match"] == CardDatabase.Version.ToString()) {
-				e.Response.StatusCode = (int) HttpStatusCode.NotModified;
-			} else {
-				SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", CardDatabase.JSON);
-			}
+			SetStaticResponse(e.Request, e.Response, CardDatabase.JSON, CardDatabase.Version.ToString(), CardDatabase.LastModified);
 		} else {
 			var m = Regex.Match(e.Request.RawUrl, @"^/api/games/([\w-]+)(?:/(\w+)(?:/([\w-]+))?)?$", RegexOptions.Compiled);
 			if (m.Success) {
@@ -371,5 +363,30 @@ internal class Program {
 			? s.Split(new[] { '&' }).Select(s => s.Split('=')).Select(a => a.Length == 2 ? a : throw new ArgumentException("Invalid form data"))
 				.ToDictionary(a => HttpUtility.UrlDecode(a[0]), a => HttpUtility.UrlDecode(a[1]))
 			: new();
+	}
+
+	private static void SetStaticResponse(HttpListenerRequest request, HttpListenerResponse response, string jsonContent, string eTag, DateTime lastModified) {
+		if (request.HttpMethod is not ("GET" or "HEAD")) {
+			response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
+			response.AddHeader("Allow", "GET, HEAD");
+			return;
+		}
+		response.AppendHeader("Cache-Control", "max-age=86400");
+		response.AppendHeader("ETag", eTag);
+		response.AppendHeader("Last-Modified", CardDatabase.LastModified.ToString("ddd, dd MMM yyyy HH:mm:ss \"GMT\""));
+
+		var ifNoneMatch = request.Headers["If-None-Match"];
+		if (ifNoneMatch != null) {
+			if (request.Headers["If-None-Match"] == eTag)
+				response.StatusCode = (int) HttpStatusCode.NotModified;
+			else
+				SetResponse(response, (int) HttpStatusCode.OK, "application/json", jsonContent);
+		} else {
+			if (DateTime.TryParseExact(request.Headers["If-Modified-Since"], "ddd, dd MMM yyyy HH:mm:ss \"GMT\"", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var dateTime)
+				&& dateTime >= lastModified.ToUniversalTime())
+				response.StatusCode = (int) HttpStatusCode.NotModified;
+			else
+				SetResponse(response, (int) HttpStatusCode.OK, "application/json", jsonContent);
+		}
 	}
 }
