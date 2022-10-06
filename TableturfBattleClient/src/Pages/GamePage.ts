@@ -398,11 +398,7 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
 	e.preventDefault();
-	document.getElementById('preGameDefaultSection')!.hidden = false;
-	document.getElementById('preGameJoinSection')!.hidden = true;
-	window.location.hash = '#';
-	currentGame = null;
-	gameIDBox.value = '';
+	clearPreGameForm();
 	showSection('preGame');
 	newGameButton.focus();
 });

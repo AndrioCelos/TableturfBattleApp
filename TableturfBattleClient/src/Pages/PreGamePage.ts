@@ -8,7 +8,7 @@ const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 	if (e.submitter?.id == 'joinGameButton') {
 		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
-		tryJoinGame(name, gameIDBox.value);
+		tryJoinGame(name, gameIDBox.value, false);
 	} else {
 		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
@@ -31,10 +31,16 @@ const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 	}
 });
 
-function tryJoinGame(name: string, idOrUrl: string) {
+function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 	const gameID = idOrUrl.substring(idOrUrl.lastIndexOf('#') + 1);
 	if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(gameID)) {
 		alert("Invalid game ID or link");
+		if (fromInitialLoad)
+			clearPreGameForm();
+		else {
+			gameIDBox.focus();
+			gameIDBox.setSelectionRange(0, gameIDBox.value.length);
+		}
 		return;
 	}
 
@@ -46,12 +52,19 @@ function tryJoinGame(name: string, idOrUrl: string) {
 			if (!clientToken)
 				setClientToken(response.clientToken);
 			getGameInfo(gameID, response.playerIndex);
-		} else if (request.status == 404) {
-			alert("The game was not found.");
-			window.location.hash = '#';
-		} else if (request.status == 410) {
-			alert("The game has already started.");
-			window.location.hash = '#';
+		} else {
+			if (request.status == 404)
+				alert('The game was not found.');
+			else if (request.status == 410)
+				alert('The game has already started.');
+			else
+				alert('Unable to join the room.');
+			if (fromInitialLoad)
+				clearPreGameForm();
+			else {
+				gameIDBox.focus();
+				gameIDBox.setSelectionRange(0, gameIDBox.value.length);
+			}
 		}
 	});
 	let data = new URLSearchParams();
@@ -192,11 +205,20 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	});
 }
 
-document.getElementById('preGameBackButton')!.addEventListener('click', e => {
-	e.preventDefault();
+function backPreGameForm() {
 	document.getElementById('preGameDefaultSection')!.hidden = false;
 	document.getElementById('preGameJoinSection')!.hidden = true;
 	window.location.hash = '';
+}
+function clearPreGameForm() {
+	backPreGameForm();
+	currentGame = null;
+	gameIDBox.value = '';
+}
+
+document.getElementById('preGameBackButton')!.addEventListener('click', e => {
+	e.preventDefault();
+	backPreGameForm();
 })
 
 const playerName = window.localStorage.getItem('name');
@@ -206,5 +228,5 @@ if (window.location.hash != '')	{
 	document.getElementById('preGameJoinSection')!.hidden = false;
 	(document.getElementById('gameIDBox') as HTMLInputElement).value = window.location.hash;
 	if (playerName != null)
-		tryJoinGame(playerName, window.location.hash)
+		tryJoinGame(playerName, window.location.hash, true);
 }
