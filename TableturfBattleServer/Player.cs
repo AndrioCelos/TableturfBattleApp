@@ -23,8 +23,14 @@ public class Player {
 	public int Passes { get; set; }
 
 	[JsonProperty("isReady")]
-	public bool IsReady => this.Move != null || (this.Deck != null && this.Hand == null);
+	public bool IsReady => this.game.State switch {
+		GameState.WaitingForPlayers => this.selectedStageIndex != null,
+		GameState.Preparing => this.Deck != null,
+		_ => this.Move != null
+	};
 
+	[JsonIgnore]
+	private readonly Game game;
 	[JsonIgnore]
 	internal Card[]? Deck;
 	[JsonIgnore]
@@ -35,8 +41,11 @@ public class Player {
 	internal Move? Move;
 	[JsonIgnore]
 	internal int[]? drawOrder;
+	[JsonIgnore]
+	internal int? selectedStageIndex;
 
-	public Player(string name, Guid token) {
+	public Player(Game game, string name, Guid token) {
+		this.game = game ?? throw new ArgumentNullException(nameof(game));
 		this.Name = name ?? throw new ArgumentNullException(nameof(name));
 		this.Token = token;
 	}

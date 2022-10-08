@@ -5,6 +5,8 @@ let currentGame: {
 	id: string,
 	/** The list of players in the current game. */
 	players: Player[],
+	/** The maximum number of players in the game. */
+	maxPlayers: number,
 	/** The user's player data, or null if they are spectating. */
 	me: PlayerData | null,
 	/** The WebSocket used for receiving game events, or null if not yet connected. */

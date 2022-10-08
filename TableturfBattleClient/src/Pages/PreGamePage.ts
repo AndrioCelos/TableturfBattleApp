@@ -2,14 +2,22 @@ const newGameButton = document.getElementById('newGameButton')!;
 const joinGameButton = document.getElementById('joinGameButton')!;
 const nameBox = document.getElementById('nameBox') as HTMLInputElement;
 const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
+const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
+
+let shownMaxPlayersWarning = false;
+
+maxPlayersBox.addEventListener('change', () => {
+	if (!shownMaxPlayersWarning && maxPlayersBox.value != '2') {
+		if (confirm('Tableturf Battle is designed for two players and may not be well-balanced for more. Do you want to continue?'))
+			shownMaxPlayersWarning = true;
+		else
+		maxPlayersBox.value = '2';
+	}
+});
 
 (document.getElementById('preGameForm') as HTMLFormElement).addEventListener('submit', e => {
 	e.preventDefault();
-	if (e.submitter?.id == 'joinGameButton') {
-		const name = nameBox.value;
-		window.localStorage.setItem('name', name);
-		tryJoinGame(name, gameIDBox.value, false);
-	} else {
+	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
 		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
 
@@ -27,7 +35,12 @@ const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 		let data = new URLSearchParams();
 		data.append('name', name);
 		data.append('clientToken', clientToken);
+		data.append('maxPlayers', maxPlayersBox.value);
 		request.send(data.toString());
+	} else {
+		const name = nameBox.value;
+		window.localStorage.setItem('name', name);
+		tryJoinGame(name, gameIDBox.value, false);
 	}
 });
 

@@ -40,9 +40,11 @@ function loadPlayers(players: Player[]) {
 		currentGame!.players[i] = players[i];
 		playerBars[i].name = player.name;
 		updateStats(i);
-		document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
-		document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
-		document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
+		if (player.colour.r || player.colour.g || player.colour.b) {
+			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
+			document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
+			document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
+		}
 	}
 }
 
@@ -97,10 +99,12 @@ function setupControlsForPlay() {
 }
 
 async function playInkAnimations(data: {
-	game: { state: GameState, board: Space[][], turnNumber: number, players: Player[] },
+	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
 	placements: { cards: { playerIndex: number, card: Card }[], spacesAffected: { space: { x: number, y: number }, newState: Space }[] }[],
 	specialSpacesActivated: { x: number, y: number }[]
 }, anySpecialAttacks: boolean) {
+	if (!data.game.board) throw new Error("Board is null during game");
+
 	const inkPlaced = new Set<number>();
 	const placements = data.placements;
 	board.clearHighlight();

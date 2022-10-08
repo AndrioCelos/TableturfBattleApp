@@ -1,6 +1,8 @@
 class PlayerBar {
 	readonly playerIndex: number;
 
+	readonly element: HTMLElement;
+
 	private nameElement: HTMLElement;
 	private specialPointsContainer: HTMLElement;
 	private pointsElement: HTMLElement;
@@ -14,6 +16,7 @@ class PlayerBar {
 	statPassesElement: HTMLElement;
 
 	constructor(element: HTMLDivElement) {
+		this.element = element;
 		this.playerIndex = parseInt(element.dataset.index!);
 		if (isNaN(this.playerIndex))
 			throw new Error('Missing player index');
@@ -84,5 +87,10 @@ class PlayerBar {
 			else
 				this.pointsDeltaElement.innerText = value.toString();
 		}
+	}
+
+	set visible(value: boolean) {
+		this.element.hidden = !value;
+		this.pointsContainer.hidden = !value;
 	}
 }

@@ -50,6 +50,65 @@ footer {
 	font-family: sans-serif;
 }
 
+#preGameImplicitSubmitButton {
+	position: absolute;
+	left: -9999px;
+}
+
+/* Stages */
+
+#stageList {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.stage, .stageRandom {
+	width: 12rem;
+	height: 18rem;
+	border: 1px solid grey;
+	position: relative;
+	text-align: center;
+	display: flex;
+	flex-flow: column;
+	margin: 5px;
+}
+
+:is(.stage, .stageRandom) input {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.stageBody {
+	flex-grow: 1;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+}
+
+.stageGrid {
+	margin: 0 auto;
+	border-spacing: 0;
+}
+
+.stageGrid td {
+  width: 0.3em;
+	height: 0.3em;
+}
+
+.stageGrid td.Empty { border: 1px solid grey; }
+.stageGrid td.Start1 { background: var(--special-colour-1); }
+.stageGrid td.Start2 { background: var(--special-colour-2); }
+.stageGrid td.Start3 { background: var(--special-colour-3); }
+.stageGrid td.Start4 { background: var(--special-colour-4); }
+
+:is(.stage, .stageRandom):is(:hover, :focus-within):not(.checked, .disabled) {
+	background: #80808040;
+}
+:is(.stage, .stageRandom).checked {
+	background: #FFFFFF40;
+}
+
 /* Cards */
 
 .cardBack {
@@ -202,13 +261,20 @@ footer {
 }
 
 #gameBoard td { border: 1px solid grey; }
+#gameBoard td.OutOfBounds { border-color: transparent; }
 #gameBoard td.Wall { background: grey; }
 #gameBoard td.Ink1 { background: var(--primary-colour-1); }
 #gameBoard td.Ink2 { background: var(--primary-colour-2); }
+#gameBoard td.Ink3 { background: var(--primary-colour-3); }
+#gameBoard td.Ink4 { background: var(--primary-colour-4); }
 #gameBoard td.SpecialInactive1 { background: var(--special-colour-1); }
 #gameBoard td.SpecialInactive2 { background: var(--special-colour-2); }
+#gameBoard td.SpecialInactive3 { background: var(--special-colour-3); }
+#gameBoard td.SpecialInactive4 { background: var(--special-colour-4); }
 #gameBoard td.SpecialActive1 { background: radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
 #gameBoard td.SpecialActive2 { background: radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
+#gameBoard td.SpecialActive3 { background: radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
+#gameBoard td.SpecialActive4 { background: radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
 
 #gameBoard td.hover {
 	position: relative;
@@ -361,7 +427,7 @@ footer {
 	height: 5em;
 }
 
-.pointsContainer {
+.pointsContainer:not([hidden]) {
 	position: relative;
 	display: flex;
 	font-family: 'Splatoon 1', sans-serif;
@@ -379,9 +445,10 @@ footer {
 	right: 0;
 }
 
-.pointsContainer[data-index="1"] {
-	--colour: var(--primary-colour-2);
-}
+.pointsContainer[data-index="0"] { --colour: var(--primary-colour-1); }
+.pointsContainer[data-index="1"] { --colour: var(--primary-colour-2); }
+.pointsContainer[data-index="2"] { --colour: var(--primary-colour-3); }
+.pointsContainer[data-index="3"] { --colour: var(--primary-colour-4); }
 
 .pointsContainer::before {
 	content: '';
@@ -393,10 +460,6 @@ footer {
 	opacity: 0.5;
 	z-index: -1;
 	background: radial-gradient(circle, var(--colour) 0%, var(--colour) 70%, rgba(0, 0, 0, 0) 70%);
-}
-
-.pointsContainer[data-index="0"] {
-	--colour: var(--primary-colour-1);
 }
 
 .pointsContainer {
@@ -476,7 +539,7 @@ footer {
 
 
 .specialAttack, .specialAttack::after {
-	box-shadow: 0px 0 8px 4px var(--colour);
+	box-shadow: 0px 0 8px 4px var(--player-colour);
 }
 
 .specialAttack::after {
@@ -486,7 +549,7 @@ footer {
 	top: 5em;
 	right: -2em;
 	height: 2em;
-	background: var(--colour);
+	background: var(--player-colour);
 	color: black;
 	text-align: center;
 	font-size: large;
@@ -513,10 +576,10 @@ footer {
 	}
 }
 
-.playContainer[data-index="0"] { --colour: var(--primary-colour-1); }
-.playContainer[data-index="1"] { --colour: var(--primary-colour-2); }
-.playContainer[data-index="2"] { --colour: var(--primary-colour-3); }
-.playContainer[data-index="3"] { --colour: var(--primary-colour-4); }
+.playContainer[data-index="0"] { --player-colour: var(--primary-colour-1); }
+.playContainer[data-index="1"] { --player-colour: var(--primary-colour-2); }
+.playContainer[data-index="2"] { --player-colour: var(--primary-colour-3); }
+.playContainer[data-index="3"] { --player-colour: var(--primary-colour-4); }
 
 .passLabel {
 	font-family: 'Splatoon 2', sans-serif;

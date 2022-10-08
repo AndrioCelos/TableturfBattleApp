@@ -19,7 +19,18 @@
 			<form id="preGameForm">
 				<p><label for="nameBox">Choose a nickname: <input type="text" id="nameBox" required minlength="1" maxlength="20"/></label></p>
 				<div id="preGameDefaultSection">
-					<p><button type="submit" id="newGameButton">Create a room</button></p>
+					<input type="submit" id="preGameImplicitSubmitButton" tabindex="-1"/>
+					<p>
+						<button type="submit" id="newGameButton">Create a room</button>
+						<label for="maxPlayersBox">
+							Number of players:
+							<select id="maxPlayersBox">
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+							</select>
+						</label>
+					</p>
 					<p><label for="gameIDBox">Enter a game link or ID to join a game:<br/>
 						<input type="text" id="gameIDBox" placeholder="Game link or ID"/></label>
 						<button type="submit" id="joinGameButton">Join game</button></p>
@@ -37,6 +48,15 @@
 		<div id="lobbySection" hidden>
 			<p>Other players can join using a link to this page. <button type="button" id="shareLinkButton">Share link</button></p>
 			<ul id="playerList"></ul>
+			<form id="stageSelectionForm">
+				<div id="stageList">
+					<label id="stageRandomLabel" for="stageRandomButton" class="stageRandom">
+						<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
+					</label>
+				</div>
+				<p id="stageListLoadingSection">Loading stages...</p>
+				<button type="submit">Select</button>
+			</form>
 		</div>
 		<div id="deckSection" hidden>
 			<p>Choose your deck.</p>
@@ -50,6 +70,21 @@
 				<div class="playerBar" data-index="1">
 					<div class="result"></div>
 					<div class="name">Player 2</div>
+					<div class="specialPoints">&nbsp;</div>
+					<div class="playerStats">
+						<div class="statSpecialPoints">
+							<div class="statLabel">Special points</div>
+							<div class="statValue">0</div>
+						</div>
+						<div class="statPasses">
+							<div class="statLabel">Turns passed</div>
+							<div class="statValue">0</div>
+						</div>
+					</div>
+				</div>
+				<div class="playerBar" data-index="2">
+					<div class="result"></div>
+					<div class="name">Player 3</div>
 					<div class="specialPoints">&nbsp;</div>
 					<div class="playerStats">
 						<div class="statSpecialPoints">
@@ -91,6 +126,21 @@
 						</div>
 					</div>
 				</div>
+				<div class="playerBar" data-index="3">
+					<div class="result"></div>
+					<div class="name">Player 4</div>
+					<div class="specialPoints">&nbsp;</div>
+					<div class="playerStats">
+						<div class="statSpecialPoints">
+							<div class="statLabel">Special points</div>
+							<div class="statValue">0</div>
+						</div>
+						<div class="statPasses">
+							<div class="statLabel">Turns passed</div>
+							<div class="statValue">0</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div id="scoreSection">
 				<div id="turnNumberContainer" hidden>
@@ -98,8 +148,10 @@
 					<div id="turnNumberLabel">12</div>
 				</div>
 				<div id="pointsContainers">
+					<div class="pointsContainer" data-index="2"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
 					<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
 					<div class="pointsContainer" data-index="0"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+					<div class="pointsContainer" data-index="3"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
 				</div>
 			</div>
 			<div id="boardSection">
@@ -113,13 +165,14 @@
 				</div>
 			</div>
 			<div id="playsSection">
+				<div class="playContainer" data-index="2"></div>
 				<div class="playContainer" data-index="1"></div>
 				<div class="playContainer" data-index="0"></div>
+				<div class="playContainer" data-index="3"></div>
 			</div>
 		</div>
 		<div id="errorModal" hidden>
 			<div id="errorModalBox">A communication error has occurred.</div>
 		</div>
 		<script src="build/tsbuild.js"></script>
-	</body>
-</html>
+	</bo

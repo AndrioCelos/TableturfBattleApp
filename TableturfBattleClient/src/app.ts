@@ -1,5 +1,3 @@
-/// <reference path="CardDatabase.ts"/>
-
 function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
 
 // Sections
@@ -25,8 +23,10 @@ function onGameStateChange(game: any, playerData: any) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
 	clearPlayContainers();
-	board.resize(game.board);
-	board.refresh();
+	if (game.board) {
+		board.resize(game.board);
+		board.refresh();
+	}
 	loadPlayers(game.players);
 	redrawModal.hidden = true;
 	document.getElementById('gameSection')!.classList.remove('gameEnded');
@@ -87,18 +87,26 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					id: gameID,
 					me: playerData != null ? { playerIndex: playerData.playerIndex, hand: playerData.hand?.map(Card.fromJson) || null, deck: playerData.deck?.map(Card.fromJson) || null, cardsUsed: playerData.cardsUsed, move: playerData.move } : null,
 					players: response.game.players,
+					maxPlayers: response.game.maxPlayers,
 					webSocket: webSocket
 				};
 
 				for (const li of playerListItems)
 					playerList.removeChild(li);
 				playerListItems.splice(0);
-				for (let i = 0; i < 2; i++) {
+				for (let i = 0; i < currentGame.maxPlayers; i++) {
 					var el = document.createElement('li');
 					el.innerText = i < currentGame.players.length ? currentGame.players[i].name : 'Waiting...';
 					playerListItems.push(el);
 					playerList.appendChild(el);
 				}
+
+				for (let i = 0; i < playerBars.length; i++) {
+					playerBars[i].visible = i < currentGame.maxPlayers;
+				}
+
+				for (const button of stageButtons)
+					button.setStartSpaces(currentGame.maxPlayers);
 
 				onGameStateChange(response.game, playerData);
 

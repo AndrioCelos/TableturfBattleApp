@@ -59,6 +59,13 @@ internal class Program {
 						SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("InvalidName", "Missing name."));
 						return;
 					}
+					var maxPlayers = 2;
+					if (d.TryGetValue("maxPlayers", out var maxPlayersString)) {
+						if (!int.TryParse(maxPlayersString, out maxPlayers) || maxPlayers < 2 || maxPlayers > 4) {
+							SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("InvalidMaxPlayers", "Invalid player limit."));
+							return;
+						}
+					}
 					if (d.TryGetValue("clientToken", out var tokenString) && tokenString != "") {
 						if (!Guid.TryParse(tokenString, out clientToken)) {
 							SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("InvalidClientToken", "Invalid client token."));
@@ -66,19 +73,19 @@ internal class Program {
 						}
 					} else
 						clientToken = Guid.NewGuid();
-					var game = new Game(9, 26);
-					game.Board[4, 4] = Space.SpecialInactive2;
-					game.Board[4, 21] = Space.SpecialInactive1;
-					game.Players.Add(new(name, clientToken));
+					var game = new Game(maxPlayers);
+					game.Players.Add(new(game, name, clientToken));
 					games.Add(game.ID, game);
 
-					SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { gameID = game.ID, clientToken }));
+					SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { gameID = game.ID, clientToken, maxPlayers }));
 				} catch (ArgumentException) {
 					e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
 				}
 			}
 		} else if (e.Request.RawUrl == "/api/cards") {
 			SetStaticResponse(e.Request, e.Response, CardDatabase.JSON, CardDatabase.Version.ToString(), CardDatabase.LastModified);
+		} else if (e.Request.RawUrl == "/api/stages") {
+			SetStaticResponse(e.Request, e.Response, StageDatabase.JSON, StageDatabase.Version.ToString(), StageDatabase.LastModified);
 		} else {
 			var m = Regex.Match(e.Request.RawUrl, @"^/api/games/([\w-]+)(?:/(\w+)(?:/([\w-]+))?)?$", RegexOptions.Compiled);
 			if (m.Success) {
@@ -149,7 +156,7 @@ internal class Program {
 												return;
 											}
 
-											player = new Player(name, clientToken);
+											player = new Player(game, name, clientToken);
 											if (!game.TryAddPlayer(player, out playerIndex, out var error)) {
 												SetErrorResponse(e.Response, error.Code == "GameAlreadyStarted" ? (int) HttpStatusCode.Gone : 422, error);
 												return;
@@ -163,6 +170,54 @@ internal class Program {
 									} catch (ArgumentException) {
 										e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
 									}
+								}
+								break;
+							}
+							case "chooseStage": {
+								if (e.Request.HttpMethod != "POST") {
+									e.Response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
+									e.Response.AddHeader("Allow", "POST");
+								} else if (e.Request.ContentLength64 >= 65536) {
+									e.Response.StatusCode = (int) HttpStatusCode.RequestEntityTooLarge;
+								} else {
+									var d = DecodeFormData(e.Request.InputStream);
+									if (!d.TryGetValue("clientToken", out var tokenString) || !Guid.TryParse(tokenString, out var clientToken)) {
+										SetErrorResponse(e.Response, (int) HttpStatusCode.BadRequest, new("InvalidClientToken", "Invalid client token."));
+										return;
+									}
+									if (!game.GetPlayer(clientToken, out var playerIndex, out var player)) {
+										SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("NotInGame", "You're not in the game."));
+										return;
+									}
+									if (player.selectedStageIndex != null) {
+										SetErrorResponse(e.Response, (int) HttpStatusCode.Conflict, new("StageAlreadyChosen", "You've already chosen a stage."));
+										return;
+									}
+
+									if (!d.TryGetValue("stage", out var stageName)) {
+										SetErrorResponse(e.Response, (int) HttpStatusCode.BadRequest, new("InvalidStage", "Missing stage name."));
+										return;
+									}
+
+									if (stageName == "random") {
+										player.selectedStageIndex = -1;
+										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
+										game.SendPlayerReadyEvent(playerIndex);
+										timer.Start();
+										return;
+									} else {
+										for (var i = 0; i < StageDatabase.Stages.Count; i++) {
+											var stage = StageDatabase.Stages[i];
+											if (stageName == stage.Name) {
+												player.selectedStageIndex = i;
+												e.Response.StatusCode = (int) HttpStatusCode.NoContent;
+												game.SendPlayerReadyEvent(playerIndex);
+												timer.Start();
+												return;
+											}
+										}
+									}
+									SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("StageNotFound", "No such stage is known."));
 								}
 								break;
 							}
@@ -212,6 +267,15 @@ internal class Program {
 												return;
 											}
 											cards[i] = cardNumber;
+										}
+
+										if (d.TryGetValue("stageIndex", out var stageIndexString) && stageIndexString is not ("" or "null" or "undefined")) {
+											if (int.TryParse(stageIndexString, out var stageIndex) && stageIndex >= 0 && stageIndex < StageDatabase.Stages.Count)
+												player.selectedStageIndex = stageIndex;
+											else {
+												SetErrorResponse(e.Response, (int) HttpStatusCode.UnprocessableEntity, new("InvalidStage", "Invalid stage index."));
+												return;
+											}
 										}
 
 										player.Deck = cards.Select(CardDatabase.GetCard).ToArray();
@@ -341,15 +405,15 @@ internal class Program {
 		}
 	}
 
-	private static void SetErrorResponse(WebSocketSharp.Net.HttpListenerResponse response, int statusCode, Error error) {
+	private static void SetErrorResponse(HttpListenerResponse response, int statusCode, Error error) {
 		var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(error));
 		SetResponse(response, statusCode, "application/json", bytes);
 	}
-	private static void SetResponse(WebSocketSharp.Net.HttpListenerResponse response, int statusCode, string contentType, string content) {
+	private static void SetResponse(HttpListenerResponse response, int statusCode, string contentType, string content) {
 		var bytes = Encoding.UTF8.GetBytes(content);
 		SetResponse(response, statusCode, contentType, bytes);
 	}
-	private static void SetResponse(WebSocketSharp.Net.HttpListenerResponse response, int statusCode, string contentType, byte[] content) {
+	private static void SetResponse(HttpListenerResponse response, int statusCode, string contentType, byte[] content) {
 		response.StatusCode = statusCode;
 		response.ContentType = contentType;
 		response.ContentLength64 = content.Length;
@@ -373,7 +437,7 @@ internal class Program {
 		}
 		response.AppendHeader("Cache-Control", "max-age=86400");
 		response.AppendHeader("ETag", eTag);
-		response.AppendHeader("Last-Modified", CardDatabase.LastModified.ToString("ddd, dd MMM yyyy HH:mm:ss \"GMT\""));
+		response.AppendHeader("Last-Modified", lastModified.ToString("ddd, dd MMM yyyy HH:mm:ss \"GMT\""));
 
 		var ifNoneMatch = request.Headers["If-None-Match"];
 		if (ifNoneMatch != null) {

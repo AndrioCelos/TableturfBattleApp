@@ -14,10 +14,14 @@ public class Game {
 	public int TurnNumber { get; set; }
 	[JsonProperty("players")]
 	public List<Player> Players { get; } = new(4);
+	[JsonProperty("maxPlayers")]
+	public int MaxPlayers { get; set; }
+	[JsonProperty("stage")]
+	public string? StageName { get; private set; }
 	[JsonProperty("board")]
-	public Space[,] Board { get; }
+	public Space[,]? Board { get; private set; }
 
-	public Game(int boardWidth, int boardHeight) => this.Board = new Space[boardWidth, boardHeight];
+	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
 	public bool TryAddPlayer(Player player, out int playerIndex, out Error error) {
 		lock (this.Players) {
@@ -31,7 +35,7 @@ public class Game {
 				error = new("PlayerAlreadyJoined", "You're already in the game.");
 				return false;
 			}
-			if (this.Players.Count >= 4) {
+			if (this.Players.Count >= this.MaxPlayers) {
 				playerIndex = -1;
 				error = new("GameFull", "The game is full.");
 				return false;
@@ -59,6 +63,7 @@ public class Game {
 
 	public bool CanPlay(int playerIndex, Card card, int x, int y, int rotation, bool isSpecialAttack) {
 		if (card is null) throw new ArgumentNullException(nameof(card));
+		if (this.Board == null) return false;
 
 		if (isSpecialAttack && (this.Players[playerIndex].SpecialPoints < card.SpecialCost))
 			return false;
@@ -109,13 +114,42 @@ public class Game {
 	}
 
 	internal void Tick() {
-		if (this.State == GameState.WaitingForPlayers && this.Players.Count >= 2) {
-			this.Players[0].Colour = new Colour(236, 249, 1);
-			this.Players[0].SpecialColour = new Colour(250, 158, 0);
-			this.Players[0].SpecialAccentColour = new Colour(249, 249, 31);
-			this.Players[1].Colour = new Colour(74, 92, 252);
-			this.Players[1].SpecialColour = new Colour(1, 237, 254);
-			this.Players[1].SpecialAccentColour = new Colour(213, 225, 225);
+		if (this.State == GameState.WaitingForPlayers && this.Players.Count >= 2 && this.Players.All(p => p.selectedStageIndex != null)) {
+			// Choose colours.
+			for (int i = 0; i < this.Players.Count; i++) {
+				this.Players[i].Colour = i switch {
+					0 => new(236, 249,   1),
+					1 => new( 74,  92, 252),
+					2 => new(249,   6, 224),
+					_ => new(  6, 249, 148),
+				};
+				this.Players[i].SpecialColour = i switch {
+					0 => new(250, 158,   0),
+					1 => new(  1, 237, 254),
+					2 => new(128,   6, 249),
+					_ => new(  6, 249,   6),
+				};
+				this.Players[i].SpecialAccentColour = i switch {
+					0 => new(249, 249,  31),
+					1 => new(213, 225, 225),
+					2 => new(235, 180, 253),
+					_ => new(180, 253, 199),
+				};
+			}
+
+			// Choose the stage.
+			var random = new Random();
+			var stageIndex = this.Players[random.Next(this.Players.Count)].selectedStageIndex!.Value;
+			if (stageIndex < 0) stageIndex = random.Next(StageDatabase.Stages.Count);
+			var stage = StageDatabase.Stages[stageIndex];
+			this.StageName = stage.Name;
+			this.Board = (Space[,]) stage.grid.Clone();
+
+			// Place starting positions.
+			var list = stage.startSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
+			for (int i = 0; i < this.Players.Count; i++)
+				this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;
+
 			this.State = GameState.Preparing;
 			this.SendEvent("stateChange", this, true);
 		} else if (this.State == GameState.Preparing && this.Players.All(p => p.Deck != null)) {

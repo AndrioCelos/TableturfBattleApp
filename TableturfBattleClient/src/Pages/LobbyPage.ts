@@ -1,7 +1,14 @@
+/// <reference path="../CardDatabase.ts"/>
+/// <reference path="../StageDatabase.ts"/>
+
+let stageButtons: StageButton[] = [ ];
 let cardButtons: CardButton[] = [ ];
 let shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 let submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 let lobbyShareData: ShareData | null;
+const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
+const stageRandomLabel = document.getElementById('stageRandomLabel')!;
+const stageRandomButton = document.getElementById('stageRandomButton') as HTMLInputElement;
 
 function initLobbyPage(url: string) {
 	lobbyShareData = { url: url, title: 'Tableturf Battle' };
@@ -88,4 +95,45 @@ cardDatabase.loadAsync().then(cards => {
 	}
 	updateDeckCount();
 	document.getElementById('cardListLoadingSection')!.hidden = true;
-}).catch(e => document.getElementById('errorModal')!.hidden = false);
+}).catch(() => communicationError);
+
+stageDatabase.loadAsync().then(stages => {
+	const stageList = document.getElementById('stageList')!;
+	for (const stage of stages) {
+		const button = new StageButton(stage);
+		stageButtons.push(button);
+		button.inputElement.name = 'stage';
+		button.inputElement.addEventListener('input', () => {
+			if (button.inputElement.checked) {
+				stageRandomLabel.classList.remove('checked');
+				for (const button2 of stageButtons) {
+					if (button2 != button)
+						button2.element.classList.remove('checked');
+				}
+			}
+		});
+		button.setStartSpaces(2);
+		stageList.appendChild(button.element);
+	}
+	document.getElementById('stageListLoadingSection')!.hidden = true;
+}).catch(() => communicationError);
+
+stageRandomButton.addEventListener('input', () => {
+	if (stageRandomButton.checked) {
+		stageRandomLabel.classList.add('checked');
+		for (const button of stageButtons)
+			button.element.classList.remove('checked');
+	}
+});
+
+stageSelectionForm.addEventListener('submit', e => {
+	e.preventDefault();
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseStage`);
+	let data = new URLSearchParams();
+	const stageName = stageRandomButton.checked ? 'random' : stageButtons.find(b => b.checked)!.stage.name;
+	data.append('clientToken', clientToken);
+	data.append('stage', stageName);
+	req.send(data.toString());
+	localStorage.setItem('lastStage', stageName);
+});
