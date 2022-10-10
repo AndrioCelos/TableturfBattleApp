@@ -33,6 +33,7 @@ function onGameStateChange(game: any, playerData: any) {
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
 			showSection('lobby');
+			document.getElementById('lobbyStageSection')!.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.Preparing:
 			showSection('deck');
@@ -153,6 +154,10 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 			} else if (payload.event == 'playerReady') {
 				currentGame.players[payload.data.playerIndex].isReady = true;
 				updatePlayerListItem(payload.data.playerIndex);
+
+				if (payload.data.playerIndex == currentGame.me?.playerIndex) {
+					document.getElementById('lobbyStageSection')!.hidden = true;
+				}
 
 				if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
 					showReady(payload.data.playerIndex);

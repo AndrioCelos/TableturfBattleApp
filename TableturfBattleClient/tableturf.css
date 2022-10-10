@@ -31,6 +31,11 @@ body {
 	--special-accent-colour-4: hsl(135, 95%, 85%);
 }
 
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Splatoon 1', sans-serif;
+	font-weight: normal;
+}
+
 /* Start section */
 
 #preGameSection {
@@ -41,11 +46,6 @@ body {
 	height: 8em;
 }
 
-h1 {
-	font-family: 'Splatoon 1', sans-serif;
-	font-weight: normal;
-}
-
 footer {
 	font-family: sans-serif;
 }
@@ -53,6 +53,19 @@ footer {
 #preGameImplicitSubmitButton {
 	position: absolute;
 	left: -9999px;
+}
+
+/* Lobby page */
+
+#lobbySection:not([hidden]) {
+	display: grid;
+	grid-template-columns: 27em 1fr;
+}
+
+#lobbyStageSection {
+	overflow-y: scroll;
+	height: calc(100vh - 16px);
+	box-sizing: border-box;
 }
 
 /* Stages */
@@ -92,8 +105,9 @@ footer {
 }
 
 .stageGrid td {
-  width: 0.3em;
-	height: 0.3em;
+  width: 0.5em;
+	height: 0.5em;
+	box-sizing: border-box;
 }
 
 .stageGrid td.Empty { border: 1px solid grey; }

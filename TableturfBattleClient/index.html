@@ -23,11 +23,10 @@
 					<p>
 						<button type="submit" id="newGameButton">Create a room</button>
 						<label for="maxPlayersBox">
-							Number of players:
 							<select id="maxPlayersBox">
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
+								<option value="2">2 players</option>
+								<option value="3">3 players</option>
+								<option value="4">4 players</option>
 							</select>
 						</label>
 					</p>
@@ -46,17 +45,22 @@
 			</footer>
 		</div>
 		<div id="lobbySection" hidden>
-			<p>Other players can join using a link to this page. <button type="button" id="shareLinkButton">Share link</button></p>
-			<ul id="playerList"></ul>
-			<form id="stageSelectionForm">
-				<div id="stageList">
-					<label id="stageRandomLabel" for="stageRandomButton" class="stageRandom">
-						<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
-					</label>
-				</div>
-				<p id="stageListLoadingSection">Loading stages...</p>
-				<button type="submit">Select</button>
-			</form>
+			<section id="lobbyPlayerListSection">
+				<p>Other players can join using a link to this page. <button type="button" id="shareLinkButton">Share link</button></p>
+				<ul id="playerList"></ul>
+			</section>
+			<section id="lobbyStageSection" hidden>
+				<h3>Vote for the stage.</h3>
+				<form id="stageSelectionForm">
+					<button type="submit">Select</button>
+					<div id="stageList">
+						<label id="stageRandomLabel" for="stageRandomButton" class="stageRandom checked">
+							<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
+						</label>
+					</div>
+					<p id="stageListLoadingSection">Loading stages...</p>
+				</form>
+			</section>
 		</div>
 		<div id="deckSection" hidden>
 			<p>Choose your deck.</p>
