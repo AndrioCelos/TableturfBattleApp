@@ -2,7 +2,7 @@ function delay(ms: number) { return new Promise(resolve => setTimeout(() => reso
 
 // Sections
 const sections = new Map<string, HTMLDivElement>();
-for (var id of [ 'noJS', 'preGame', 'lobby', 'deck', 'game' ]) {
+for (var id of [ 'noJS', 'preGame', 'lobby', 'game' ]) {
 	let el = document.getElementById(`${id}Section`) as HTMLDivElement;
 	if (!el) throw new EvalError(`Element not found: ${id}Section`);
 	sections.set(id, el);
@@ -33,10 +33,22 @@ function onGameStateChange(game: any, playerData: any) {
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
 			showSection('lobby');
-			document.getElementById('lobbyStageSection')!.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
+			lobbySelectedStageSection.hidden = true;
+			lobbyStageSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.Preparing:
-			showSection('deck');
+			showSection('lobby');
+			if (selectedStageButton)
+				lobbySelectedStageSection.removeChild(selectedStageButton.element);
+			selectedStageButton = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
+			selectedStageButton.element.id = 'selectedStageButton';
+			selectedStageButton.inputElement.disabled = true;
+			selectedStageButton.inputElement.hidden = true;
+			selectedStageButton.setStartSpaces(game.players.length);
+			lobbySelectedStageSection.appendChild(selectedStageButton.element);
+
+			lobbySelectedStageSection.hidden = false;
+			lobbyDeckSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.Redraw:
 		case GameState.Ongoing:
@@ -156,7 +168,8 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 				updatePlayerListItem(payload.data.playerIndex);
 
 				if (payload.data.playerIndex == currentGame.me?.playerIndex) {
-					document.getElementById('lobbyStageSection')!.hidden = true;
+					lobbyStageSection.hidden = true;
+					lobbyDeckSection.hidden = true;
 				}
 
 				if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {

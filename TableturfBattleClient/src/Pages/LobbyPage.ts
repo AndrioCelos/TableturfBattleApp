@@ -1,14 +1,20 @@
 /// <reference path="../CardDatabase.ts"/>
 /// <reference path="../StageDatabase.ts"/>
 
-let stageButtons: StageButton[] = [ ];
-let cardButtons: CardButton[] = [ ];
-let shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
-let submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
+const stageButtons: StageButton[] = [ ];
+const cardButtons: CardButton[] = [ ];
+const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
+const submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 let lobbyShareData: ShareData | null;
 const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
 const stageRandomLabel = document.getElementById('stageRandomLabel')!;
 const stageRandomButton = document.getElementById('stageRandomButton') as HTMLInputElement;
+
+const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSection')!;
+const lobbyStageSection = document.getElementById('lobbyStageSection')!;
+const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
+
+let selectedStageButton = null as StageButton | null;
 
 function initLobbyPage(url: string) {
 	lobbyShareData = { url: url, title: 'Tableturf Battle' };

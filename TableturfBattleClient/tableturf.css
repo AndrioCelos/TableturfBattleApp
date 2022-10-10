@@ -62,7 +62,11 @@ footer {
 	grid-template-columns: 27em 1fr;
 }
 
-#lobbyStageSection {
+#lobbyPlayerListSection {
+	overflow-y: auto;
+}
+
+#lobbyStageSection, #lobbyDeckSection {
 	overflow-y: scroll;
 	height: calc(100vh - 16px);
 	box-sizing: border-box;
