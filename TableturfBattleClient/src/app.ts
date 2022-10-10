@@ -109,9 +109,9 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 				playerListItems.splice(0);
 				for (let i = 0; i < currentGame.maxPlayers; i++) {
 					var el = document.createElement('li');
-					el.innerText = i < currentGame.players.length ? currentGame.players[i].name : 'Waiting...';
 					playerListItems.push(el);
 					playerList.appendChild(el);
+					updatePlayerListItem(i);
 				}
 
 				for (let i = 0; i < playerBars.length; i++) {

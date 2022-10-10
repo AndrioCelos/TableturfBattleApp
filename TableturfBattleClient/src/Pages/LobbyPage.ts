@@ -43,14 +43,15 @@ function clearReady() {
 }
 
 function updatePlayerListItem(playerIndex: number) {
-	const player = currentGame != null ? currentGame.players[playerIndex] : null;
 	const listItem = playerListItems[playerIndex];
-	if (player != null) {
+	if (!currentGame?.players || playerIndex >= currentGame.players.length) {
+		listItem.className = 'empty';
+		listItem.innerText = 'Waiting...';
+	} else {
+		const player = currentGame.players[playerIndex];
 		listItem.innerText = player.name;
-		if (player.isReady)
-			listItem.innerText += ' (Ready)';
-	} else
-		listItem.innerText = "Waiting...";
+		listItem.className = player.isReady ? 'filled ready' : 'filled';
+	}
 }
 
 function updateDeckCount() {
