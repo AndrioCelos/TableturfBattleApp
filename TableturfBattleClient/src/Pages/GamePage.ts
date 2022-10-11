@@ -402,7 +402,7 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
 	e.preventDefault();
-	clearPreGameForm();
+	clearPreGameForm(true);
 	showSection('preGame');
 	newGameButton.focus();
 });

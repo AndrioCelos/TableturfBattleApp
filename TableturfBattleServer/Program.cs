@@ -16,7 +16,7 @@ using Timer = System.Timers.Timer;
 namespace TableturfBattleServer;
 
 internal class Program {
-	internal static HttpServer httpServer = new(IPAddress.Loopback, 3333);
+	internal static HttpServer httpServer = new(IPAddress.Loopback, 3333) { DocumentRootPath = Path.Combine("..", "..", "..", "..", "TableturfBattleClient") };
 	internal static Dictionary<Guid, Game> games = new();
 	internal static readonly Timer timer = new(500);
 	private static readonly List<Guid> gameIdsToRemove = new();
@@ -45,7 +45,22 @@ internal class Program {
 
 	private static void HttpServer_OnRequest(object? sender, HttpRequestEventArgs e) {
 		e.Response.AppendHeader("Access-Control-Allow-Origin", "*");
-		if (e.Request.RawUrl == "/api/games/new") {
+		if (!e.Request.RawUrl.StartsWith("/api/")) {
+			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/game/") ? "index.html" : e.Request.RawUrl[1..];
+			if (e.TryReadFile(path, out var bytes))
+				SetResponse(e.Response, 200,
+					Path.GetExtension(path) switch {
+						".html" or ".htm" => "text/html",
+						".css" => "text/css",
+						".js" => "text/javascript",
+						".png" => "image/png",
+						".woff" or ".woff2" => "font/woff",
+						_ => "application/octet-stream"
+					}, bytes);
+			else
+				SetErrorResponse(e.Response, 404, new("FileNotFound", "File not found."));
+			return;
+		} else if (e.Request.RawUrl == "/api/games/new") {
 			if (e.Request.HttpMethod != "POST") {
 				e.Response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
 				e.Response.AddHeader("Allow", "POST");
@@ -87,7 +102,7 @@ internal class Program {
 		} else if (e.Request.RawUrl == "/api/stages") {
 			SetStaticResponse(e.Request, e.Response, StageDatabase.JSON, StageDatabase.Version.ToString(), StageDatabase.LastModified);
 		} else {
-			var m = Regex.Match(e.Request.RawUrl, @"^/api/games/([\w-]+)(?:/(\w+)(?:/([\w-]+))?)?$", RegexOptions.Compiled);
+			var m = Regex.Match(e.Request.RawUrl, @"^/api/games/([\w-]+)(?:/(\w+)(?:\?clientToken=([\w-]+))?)?$", RegexOptions.Compiled);
 			if (m.Success) {
 				if (!Guid.TryParse(m.Groups[1].Value, out var gameID)) {
 					SetResponse(e.Response, 400, "text/plain", "Invalid game ID");

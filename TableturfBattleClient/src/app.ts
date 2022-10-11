@@ -1,3 +1,5 @@
+let canPushState = isSecureContext && location.protocol != 'file:';
+
 function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
 
 // Sections
@@ -90,7 +92,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
 	webSocket.addEventListener('open', e => {
 		const request2 = new XMLHttpRequest();
-		request2.open('GET', `${config.apiBaseUrl}/games/${gameID}/playerData/${clientToken}`);
+		request2.open('GET', `${config.apiBaseUrl}/games/${gameID}/playerData?clientToken=${clientToken}`);
 		request2.addEventListener('load', e => {
 			if (request2.status == 200) {
 				const response = JSON.parse(request2.responseText);
@@ -229,8 +231,6 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	});
 	return myPlayerIndex;
 }
-
-showSection('preGame');
 
 function isInternetExplorer() {
 	return !!(window.document as any).documentMode;  // This is a non-standard property implemented only by Internet Explorer.

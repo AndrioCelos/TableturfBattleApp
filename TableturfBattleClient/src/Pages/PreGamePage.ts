@@ -28,6 +28,9 @@ maxPlayersBox.addEventListener('change', () => {
 				let response = JSON.parse(request.responseText);
 				if (!clientToken)
 					setClientToken(response.clientToken);
+
+				setGameUrl(response.gameID);
+
 				getGameInfo(response.gameID, 0);
 			}
 		});
@@ -44,18 +47,34 @@ maxPlayersBox.addEventListener('change', () => {
 	}
 });
 
+function setGameUrl(gameID: string | null) {
+	if (canPushState) {
+		try {
+			history.pushState(null, '', `game/${gameID}`);
+		} catch {
+			canPushState = false;
+			location.hash = `#game/${gameID}`;
+		}
+	} else
+		location.hash = `#game/${gameID}`;
+}
+
 function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
-	const gameID = idOrUrl.substring(idOrUrl.lastIndexOf('#') + 1);
-	if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(gameID)) {
+	const m = /(?:^|[#/])([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(idOrUrl);
+	if (!m) {
 		alert("Invalid game ID or link");
 		if (fromInitialLoad)
-			clearPreGameForm();
+			clearPreGameForm(true);
 		else {
 			gameIDBox.focus();
 			gameIDBox.setSelectionRange(0, gameIDBox.value.length);
 		}
 		return;
 	}
+	const gameID = m[1];
+
+	if (!fromInitialLoad)
+		setGameUrl(gameID);
 
 	let request = new XMLHttpRequest();
 	request.open('POST', `${config.apiBaseUrl}/games/${gameID}/join`);
@@ -73,7 +92,7 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 			else
 				alert('Unable to join the room.');
 			if (fromInitialLoad)
-				clearPreGameForm();
+				clearPreGameForm(true);
 			else {
 				gameIDBox.focus();
 				gameIDBox.setSelectionRange(0, gameIDBox.value.length);
@@ -88,34 +107,63 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 
 function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	board.playerIndex = myPlayerIndex;
-	window.location.hash = `#${gameID}`;
 	initLobbyPage(window.location.toString());
 
 	myPlayerIndex = setupWebSocket(gameID, myPlayerIndex);
 }
 
-function backPreGameForm() {
+function backPreGameForm(updateUrl: boolean) {
 	document.getElementById('preGameDefaultSection')!.hidden = false;
 	document.getElementById('preGameJoinSection')!.hidden = true;
-	window.location.hash = '';
+
+	if (updateUrl) {
+		if (canPushState) {
+			try {
+				history.pushState(null, '', '../..');
+			} catch {
+				canPushState = false;
+			}
+		}
+		if (location.hash)
+			location.hash = '';
+	}
 }
-function clearPreGameForm() {
-	backPreGameForm();
+function clearPreGameForm(updateUrl: boolean) {
+	backPreGameForm(updateUrl);
 	currentGame = null;
 	gameIDBox.value = '';
 }
 
 document.getElementById('preGameBackButton')!.addEventListener('click', e => {
 	e.preventDefault();
-	backPreGameForm();
+	backPreGameForm(true);
 })
 
-const playerName = window.localStorage.getItem('name');
-(document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
-if (window.location.hash != '')	{
+function presetGameID(url: string) {
 	document.getElementById('preGameDefaultSection')!.hidden = true;
 	document.getElementById('preGameJoinSection')!.hidden = false;
-	(document.getElementById('gameIDBox') as HTMLInputElement).value = window.location.hash;
+	(document.getElementById('gameIDBox') as HTMLInputElement).value = url;
 	if (playerName)
-		tryJoinGame(playerName, window.location.hash, true);
+		tryJoinGame(playerName, url, true);
 }
+
+const playerName = localStorage.getItem('name');
+(document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
+
+function processUrl() {
+	const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
+	if (m)
+		presetGameID(m[2]);
+	else if (location.hash) {
+		canPushState = false;
+		presetGameID(location.hash);
+	} else {
+		clearPreGameForm(false);
+		showSection('preGame');
+	}
+}
+
+window.addEventListener('popstate', () => {
+	processUrl();
+});
+processUrl();
