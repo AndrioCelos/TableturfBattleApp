@@ -49,15 +49,20 @@ maxPlayersBox.addEventListener('change', () => {
 });
 
 function setUrl(path: string) {
-	if (canPushState) {
-		try {
-			history.pushState(null, '', path);
-		} catch {
-			canPushState = false;
+	settingUrl = true;
+	try {
+		if (canPushState) {
+			try {
+				history.pushState(null, '', path);
+			} catch {
+				canPushState = false;
+				location.hash = `#${path}`;
+			}
+		} else
 			location.hash = `#${path}`;
-		}
-	} else
-		location.hash = `#${path}`;
+	} finally {
+		settingUrl = false;
+	}
 }
 function setGameUrl(gameID: string) { setUrl(`game/${gameID}`); }
 
@@ -177,8 +182,10 @@ function processUrl() {
 	}
 }
 
+let settingUrl = false;
 window.addEventListener('popstate', () => {
-	processUrl();
+	if (!settingUrl)
+		processUrl();
 });
 processUrl();
 
