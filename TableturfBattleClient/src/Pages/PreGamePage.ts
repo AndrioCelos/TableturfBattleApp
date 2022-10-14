@@ -147,6 +147,8 @@ function presetGameID(url: string) {
 	(document.getElementById('gameIDBox') as HTMLInputElement).value = url;
 	if (playerName)
 		tryJoinGame(playerName, url, true);
+	else
+		showSection('preGame');
 }
 
 preGameDeckEditorButton.addEventListener('click', e => {
