@@ -24,7 +24,7 @@ deckListBackButton.addEventListener('click', e => {
 
 	if (canPushState) {
 		try {
-			history.pushState(null, '', '..');
+			history.pushState(null, '', '.');
 		} catch {
 			canPushState = false;
 		}
