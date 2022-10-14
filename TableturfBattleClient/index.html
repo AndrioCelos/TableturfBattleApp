@@ -42,6 +42,9 @@
 					<p><button type="submit" id="joinGameButton2">Join game</button></p>
 					<a id="preGameBackButton" href="../..">Create or join a different room</a>
 				</div>
+				<p>
+					<a id="preGameDeckEditorButton" href="deckeditor">Edit decks</a>
+				</p>
 			</form>
 			<footer>
 				<p>This website is not affiliated with Nintendo. All product names, logos, and brands are property of their respective owners.</p>
@@ -70,10 +73,8 @@
 			</section>
 			<div id="lobbyDeckSection" hidden>
 				<h3>Choose your deck.</h3>
-				<p><span id="countLabel">0</span>/15 cards chosen</p>
 				<p><button type="button" id="submitDeckButton" disabled>Submit</button></p>
-				<p id="cardListLoadingSection">Loading cards...</p>
-				<div id="cardList"></div>
+				<div id="lobbyDeckList"></div>
 			</div>
 		</div>
 		<div id="gameSection" hidden>
@@ -184,6 +185,52 @@
 		</div>
 		<div id="errorModal" hidden>
 			<div id="errorModalBox">A communication error has occurred.</div>
+		</div>
+		<div id="deckListSection" hidden>
+			<section id="deckEditorDeckListSection">
+				<a id="deckListBackButton" href="..">Back</a>
+				<h3>Deck list</h3>
+				<div id="deckList">
+					<button id="newDeckButton">New deck</label>
+				</div>
+			</section>
+			<section id="deckEditorDeckViewSection" hidden>
+				<h3 id="deckName">Deck</h3>
+				<div>
+					<button type="button" id="deckEditButton">Edit</button>
+					<button type="button" id="deckRenameButton">Rename</button>
+					<button type="button" id="deckCopyButton">Copy</button>
+					<button type="button" id="deckDeleteButton" class="danger">Delete</button>
+				</div>
+				<div class="deckSizeContainer">Total: <div id="deckViewSize">0</div></div>
+				<div id="deckCardListView">
+				</div>
+			</section>
+		</div>
+		<div id="deckEditSection" hidden>
+			<section id="deckEditorDeckEditSection">
+				<h3 id="deckName2">Deck</h3>
+				<div>
+					<button type="button" id="deckTestButton">Test</button>
+					<button type="button" id="deckSaveButton">Save</button>
+					<button type="button" id="deckCancelButton">Cancel</button>
+				</div>
+				<div class="deckSizeContainer">Total: <div id="deckEditSize">0</div></div>
+				<div id="deckCardListEdit">
+				</div>
+			</section>
+			<section id="deckEditorCardListSection">
+				<label for="cardListSortBox">
+					Sort by
+					<select id="cardListSortBox" autocomplete="off">
+						<option value="number">number</option>
+						<option value="name">name</option>
+						<option value="size">size</option>
+						<option value="rarity">rarity</option>
+					</select>
+				</label>
+				<div id="cardList"></div>
+			</section>
 		</div>
 		<script src="build/tsbuild.js"></script>
 	</body>

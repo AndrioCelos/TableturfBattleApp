@@ -2,7 +2,6 @@
 /// <reference path="../StageDatabase.ts"/>
 
 const stageButtons: StageButton[] = [ ];
-const cardButtons: CardButton[] = [ ];
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 const submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 let lobbyShareData: ShareData | null;
@@ -13,6 +12,7 @@ const stageRandomButton = document.getElementById('stageRandomButton') as HTMLIn
 const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSection')!;
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
+const lobbyDeckList = document.getElementById('lobbyDeckList')!;
 
 let selectedStageButton = null as StageButton | null;
 
@@ -64,7 +64,50 @@ function updateDeckCount() {
 	submitDeckButton.disabled = (count != 15);
 }
 
-submitDeckButton.addEventListener('click', e => {
+function initDeckSelection() {
+	const lastDeckName = localStorage.getItem('lastDeckName');
+
+	selectedDeck = null;
+	if (currentGame?.me) {
+		clearChildren(lobbyDeckList);
+
+		for (let i = 0; i < decks.length; i++) {
+			const deck = decks[i];
+
+			const label = document.createElement('label');
+
+			const button = document.createElement('input');
+			button.name = 'gameSelectedDeck';
+			button.type = 'radio';
+			button.dataset.index = i.toString();
+			button.addEventListener('click', () => {
+				selectedDeck = deck;
+				submitDeckButton.disabled = false;
+			});
+			label.appendChild(button);
+
+			label.appendChild(document.createTextNode(deck.name));
+
+			if (!deck.isValid) {
+				label.classList.add('disabled');
+				button.disabled = true;
+			} else if (deck.name == lastDeckName) {
+				selectedDeck = deck;
+				button.checked = true;
+			}
+
+			lobbyDeckList.appendChild(label);
+		}
+		submitDeckButton.disabled = selectedDeck == null;
+		lobbyDeckSection.hidden = false;
+	} else {
+		lobbyDeckSection.hidden = true;
+	}
+}
+
+submitDeckButton.addEventListener('click', () => {
+	if (selectedDeck == null) return;
+
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseDeck`);
 	req.addEventListener('load', e => {
@@ -73,36 +116,12 @@ submitDeckButton.addEventListener('click', e => {
 		}
 	});
 	let data = new URLSearchParams();
-	let cardsString = '';
-	for (var el of cardButtons) {
-		if (el.inputElement.checked) {
-			if (cardsString != '') cardsString += '+';
-			cardsString += el.card.number.toString();
-		}
-	}
 	data.append('clientToken', clientToken);
-	data.append('deckName', 'Deck');
-	data.append('deckCards', cardsString);
+	data.append('deckName', selectedDeck.name);
+	data.append('deckCards', selectedDeck.cards.join('+'));
 	req.send(data.toString());
-	localStorage.setItem('lastDeck', cardsString);
+	localStorage.setItem('lastDeckName', selectedDeck.name);
 });
-
-const starterDeck = [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ];
-const lastDeckString = localStorage.getItem('lastDeck');
-const lastDeck = lastDeckString?.split(/\+/)?.map(s => parseInt(s)) || starterDeck;
-
-cardDatabase.loadAsync().then(cards => {
-	const cardList = document.getElementById('cardList')!;
-	for (const card of cards) {
-		const button = new CardButton('checkbox', card);
-		cardButtons.push(button);
-		button.checked = lastDeck != null && lastDeck.includes(card.number);
-		button.inputElement.addEventListener('input', updateDeckCount);
-		cardList.appendChild(button.element);
-	}
-	updateDeckCount();
-	document.getElementById('cardListLoadingSection')!.hidden = true;
-}).catch(() => communicationError);
 
 stageDatabase.loadAsync().then(stages => {
 	const stageList = document.getElementById('stageList')!;

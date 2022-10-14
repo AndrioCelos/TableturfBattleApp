@@ -3,6 +3,7 @@ const joinGameButton = document.getElementById('joinGameButton')!;
 const nameBox = document.getElementById('nameBox') as HTMLInputElement;
 const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
+const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton') as HTMLLinkElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -47,17 +48,18 @@ maxPlayersBox.addEventListener('change', () => {
 	}
 });
 
-function setGameUrl(gameID: string | null) {
+function setUrl(path: string) {
 	if (canPushState) {
 		try {
-			history.pushState(null, '', `game/${gameID}`);
+			history.pushState(null, '', path);
 		} catch {
 			canPushState = false;
-			location.hash = `#game/${gameID}`;
+			location.hash = `#${path}`;
 		}
 	} else
-		location.hash = `#game/${gameID}`;
+		location.hash = `#${path}`;
 }
+function setGameUrl(gameID: string) { setUrl(`game/${gameID}`); }
 
 function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 	const m = /(?:^|[#/])([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(idOrUrl);
@@ -147,19 +149,29 @@ function presetGameID(url: string) {
 		tryJoinGame(playerName, url, true);
 }
 
+preGameDeckEditorButton.addEventListener('click', e => {
+	e.preventDefault();
+	showDeckList();
+	setUrl('deckeditor');
+});
+
 const playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
 
 function processUrl() {
-	const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
-	if (m)
-		presetGameID(m[2]);
-	else if (location.hash) {
-		canPushState = false;
-		presetGameID(location.hash);
-	} else {
-		clearPreGameForm(false);
-		showSection('preGame');
+	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
+		showDeckList();
+	else {
+		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
+		if (m)
+			presetGameID(m[2]);
+		else if (location.hash) {
+			canPushState = false;
+			presetGameID(location.hash);
+		} else {
+			clearPreGameForm(false);
+			showSection('preGame');
+		}
 	}
 }
 
@@ -167,3 +179,6 @@ window.addEventListener('popstate', () => {
 	processUrl();
 });
 processUrl();
+
+if (!canPushState)
+	preGameDeckEditorButton.href = '#deckeditor';

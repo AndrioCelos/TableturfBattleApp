@@ -1,10 +1,13 @@
 let canPushState = isSecureContext && location.protocol != 'file:';
 
+const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], true) ];
+let selectedDeck: Deck | null = null;
+
 function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
 
 // Sections
 const sections = new Map<string, HTMLDivElement>();
-for (var id of [ 'noJS', 'preGame', 'lobby', 'game' ]) {
+for (var id of [ 'noJS', 'preGame', 'lobby', 'game', 'deckList', 'deckEdit' ]) {
 	let el = document.getElementById(`${id}Section`) as HTMLDivElement;
 	if (!el) throw new EvalError(`Element not found: ${id}Section`);
 	sections.set(id, el);
@@ -50,7 +53,7 @@ function onGameStateChange(game: any, playerData: any) {
 			lobbySelectedStageSection.appendChild(selectedStageButton.element);
 
 			lobbySelectedStageSection.hidden = false;
-			lobbyDeckSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
+			initDeckSelection();
 			break;
 		case GameState.Redraw:
 		case GameState.Ongoing:
@@ -239,3 +242,11 @@ function isInternetExplorer() {
 if (isInternetExplorer()) {
 	alert("You seem to be using an unsupported browser. Some layout or features of this app may not work correctly.");
 }
+
+function clearChildren(el: Element) {
+	let el2;
+	while (el2 = el.firstChild)
+		el.removeChild(el2);
+}
+
+cardDatabase.loadAsync().then(initCardDatabase).catch(() => communicationError);
