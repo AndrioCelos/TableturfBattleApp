@@ -34,7 +34,7 @@ function onGameStateChange(game: any, playerData: any) {
 	}
 	loadPlayers(game.players);
 	redrawModal.hidden = true;
-	document.getElementById('gameSection')!.classList.remove('gameEnded');
+	gamePage.classList.remove('gameEnded');
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
 			showSection('lobby');
@@ -77,7 +77,7 @@ function onGameStateChange(game: any, playerData: any) {
 					setupControlsForPlay();
 					break;
 				case GameState.Ended:
-					document.getElementById('gameSection')!.classList.add('gameEnded');
+					gamePage.classList.add('gameEnded');
 					turnNumberLabel.setTurnNumber(null);
 					canPlay = false;
 					showResult();
@@ -218,7 +218,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 					clearPlayContainers();
 					if (payload.event == 'gameEnd') {
-						document.getElementById('gameSection')!.classList.add('gameEnded');
+						gamePage.classList.add('gameEnded');
 						showResult();
 					} else {
 						canPlay = myPlayerIndex != null;

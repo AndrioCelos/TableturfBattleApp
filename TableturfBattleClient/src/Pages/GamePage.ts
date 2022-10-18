@@ -1,3 +1,4 @@
+const gamePage = document.getElementById('gameSection')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
 const handButtons: CardButton[] = [ ];
@@ -8,7 +9,7 @@ const specialButton = document.getElementById('specialButton') as HTMLInputEleme
 const handContainer = document.getElementById('handContainer')!;
 const redrawModal = document.getElementById('redrawModal')!;
 
-const midGameContainer = document.getElementById('midGameContainer')!;
+const playControls = document.getElementById('playControls')!;
 const resultContainer = document.getElementById('resultContainer')!;
 const resultElement = document.getElementById('result')!;
 
@@ -35,6 +36,7 @@ cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
 function loadPlayers(players: Player[]) {
+	gamePage.dataset.players = players.length.toString();
 	for (let i = 0; i < players.length; i++) {
 		const player = players[i];
 		currentGame!.players[i] = players[i];
@@ -145,7 +147,7 @@ async function playInkAnimations(data: {
 
 function showResult() {
 	if (currentGame == null) return;
-	midGameContainer.hidden = true;
+	playControls.hidden = true;
 	resultContainer.hidden = false;
 	turnNumberLabel.setTurnNumber(null);
 

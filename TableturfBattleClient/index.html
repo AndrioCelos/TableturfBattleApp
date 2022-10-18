@@ -13,6 +13,7 @@
 		<link rel="manifest" href="assets/site.webmanifest">
 		<link rel="stylesheet" href="tableturf.css"/>
 		<script src="config/config.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta property="og:type" content="website"/>
 		<meta name="title" property="og:title" content="Tableturf Battle"/>
 		<meta name="description" property="og:description" content="(Beta) An unofficial simulator for Tableturf Battle from Splatoon 3. Play online with friends using any in-game cards!"/>
@@ -78,91 +79,90 @@
 			<div id="lobbyDeckSection" hidden>
 				<h3>Choose your deck.</h3>
 				<p><button type="button" id="submitDeckButton" disabled>Submit</button></p>
-				<div id="lobbyDeckList"></div>
+				<div id="lobbyDeckList" class="deckList"></div>
 			</div>
 		</div>
 		<div id="gameSection" hidden>
-			<div id="sidebarSection">
-				<div class="playerBar" data-index="1">
-					<div class="result"></div>
-					<div class="name">Player 2</div>
-					<div class="specialPoints">&nbsp;</div>
-					<div class="playerStats">
-						<div class="statSpecialPoints">
-							<div class="statLabel">Special points</div>
-							<div class="statValue">0</div>
-						</div>
-						<div class="statPasses">
-							<div class="statLabel">Turns passed</div>
-							<div class="statValue">0</div>
-						</div>
+			<div class="playerBar" data-index="1">
+				<div class="result"></div>
+				<div class="name">Player 2</div>
+				<div class="specialPoints">&nbsp;</div>
+				<div class="playerStats">
+					<div class="statSpecialPoints">
+						<div class="statLabel">Special points</div>
+						<div class="statValue">0</div>
 					</div>
-				</div>
-				<div class="playerBar" data-index="2">
-					<div class="result"></div>
-					<div class="name">Player 3</div>
-					<div class="specialPoints">&nbsp;</div>
-					<div class="playerStats">
-						<div class="statSpecialPoints">
-							<div class="statLabel">Special points</div>
-							<div class="statValue">0</div>
-						</div>
-						<div class="statPasses">
-							<div class="statLabel">Turns passed</div>
-							<div class="statValue">0</div>
-						</div>
-					</div>
-				</div>
-
-				<div id="midGameContainer">
-					<div id="handContainer"></div>
-					<label for="passButton">
-						<input type="checkbox" id="passButton"/> Pass
-					</label>
-					<label for="specialButton">
-						<input type="checkbox" id="specialButton"/> Special Attack
-					</label>
-				</div>
-				<div id="resultContainer" hidden>
-					<a id="resultLeaveButton" href="#">Leave game</a>
-				</div>
-
-				<div class="playerBar" data-index="0">
-					<div class="result"></div>
-					<div class="name">Player 1</div>
-					<div class="specialPoints">&nbsp;</div>
-					<div class="playerStats">
-						<div class="statSpecialPoints">
-							<div class="statLabel">Special points</div>
-							<div class="statValue">0</div>
-						</div>
-						<div class="statPasses">
-							<div class="statLabel">Turns passed</div>
-							<div class="statValue">0</div>
-						</div>
-					</div>
-				</div>
-				<div class="playerBar" data-index="3">
-					<div class="result"></div>
-					<div class="name">Player 4</div>
-					<div class="specialPoints">&nbsp;</div>
-					<div class="playerStats">
-						<div class="statSpecialPoints">
-							<div class="statLabel">Special points</div>
-							<div class="statValue">0</div>
-						</div>
-						<div class="statPasses">
-							<div class="statLabel">Turns passed</div>
-							<div class="statValue">0</div>
-						</div>
+					<div class="statPasses">
+						<div class="statLabel">Turns passed</div>
+						<div class="statValue">0</div>
 					</div>
 				</div>
 			</div>
-			<div id="scoreSection">
-				<div id="turnNumberContainer" hidden>
-					<p>Turns left</p>
-					<div id="turnNumberLabel">12</div>
+			<div class="playerBar" data-index="3">
+				<div class="result"></div>
+				<div class="name">Player 4</div>
+				<div class="specialPoints">&nbsp;</div>
+				<div class="playerStats">
+					<div class="statSpecialPoints">
+						<div class="statLabel">Special points</div>
+						<div class="statValue">0</div>
+					</div>
+					<div class="statPasses">
+						<div class="statLabel">Turns passed</div>
+						<div class="statValue">0</div>
+					</div>
 				</div>
+			</div>
+
+			<div id="playControls">
+				<div id="handContainer"></div>
+				<label for="passButton">
+					<input type="checkbox" id="passButton"/> Pass
+				</label>
+				<label for="specialButton">
+					<input type="checkbox" id="specialButton"/> Special Attack
+				</label>
+			</div>
+			<div id="resultContainer" hidden>
+				<a id="resultLeaveButton" href="#">Leave game</a>
+			</div>
+
+			<div class="playerBar" data-index="0">
+				<div class="result"></div>
+				<div class="name">Player 1</div>
+				<div class="specialPoints">&nbsp;</div>
+				<div class="playerStats">
+					<div class="statSpecialPoints">
+						<div class="statLabel">Special points</div>
+						<div class="statValue">0</div>
+					</div>
+					<div class="statPasses">
+						<div class="statLabel">Turns passed</div>
+						<div class="statValue">0</div>
+					</div>
+				</div>
+			</div>
+			<div class="playerBar" data-index="2">
+				<div class="result"></div>
+				<div class="name">Player 3</div>
+				<div class="specialPoints">&nbsp;</div>
+				<div class="playerStats">
+					<div class="statSpecialPoints">
+						<div class="statLabel">Special points</div>
+						<div class="statValue">0</div>
+					</div>
+					<div class="statPasses">
+						<div class="statLabel">Turns passed</div>
+						<div class="statValue">0</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="turnNumberContainer" hidden>
+				<p>Turns left</p>
+				<div id="turnNumberLabel">12</div>
+			</div>
+			<div id="scoreSection">
 				<div id="pointsContainers">
 					<div class="pointsContainer" data-index="2"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
 					<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
@@ -180,12 +180,17 @@
 					</div>
 				</div>
 			</div>
-			<div id="playsSection">
-				<div class="playContainer" data-index="2"></div>
-				<div class="playContainer" data-index="1"></div>
-				<div class="playContainer" data-index="0"></div>
-				<div class="playContainer" data-index="3"></div>
+
+			<div id="gameButtonsContainer">
+				<button id="rotateLeftButton" title="Rotate card anticlockwise">&cularr;</button>
+				<button id="rotateRightButton" title="Rotate card clockwise">&curarr;</button>
+				<button id="gameDeckButton" title="Show deck">&#x1F0A0;</button>
 			</div>
+
+			<div class="playContainer" data-index="1"></div>
+			<div class="playContainer" data-index="3"></div>
+			<div class="playContainer" data-index="0"></div>
+			<div class="playContainer" data-index="2"></div>
 		</div>
 		<div id="errorModal" hidden>
 			<div id="errorModalBox">A communication error has occurred.</div>
@@ -194,7 +199,7 @@
 			<section id="deckEditorDeckListSection">
 				<a id="deckListBackButton" href=".">Back</a>
 				<h3>Deck list</h3>
-				<div id="deckList">
+				<div id="deckList" class="deckList">
 					<button id="newDeckButton">New deck</label>
 				</div>
 			</section>

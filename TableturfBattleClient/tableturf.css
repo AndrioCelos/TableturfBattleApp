@@ -1,5 +1,3 @@
-/* Fonts */
-
 @font-face {
 	font-family: 'Splatoon 1';
 	src: url('assets/splatoon1.woff2') format('woff2');
@@ -32,10 +30,10 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
 	font-family: 'Splatoon 1', sans-serif;
-	font-weight: normal;
+	font-weight: 599;
 }
 
-/* Start section */
+/* Home page */
 
 #preGameSection {
 	text-align: center;
@@ -63,7 +61,6 @@ footer {
 
 #lobbyPlayerListSection {
 	overflow-y: auto;
-	height: calc(100vh - 16px);
 	box-sizing: border-box;
 }
 
@@ -115,8 +112,8 @@ footer {
 }
 
 .stage, .stageRandom {
-	width: 12rem;
-	height: 18rem;
+	width: 12em;
+	height: 18em;
 	border: 1px solid grey;
 	position: relative;
 	text-align: center;
@@ -129,6 +126,7 @@ footer {
 	position: absolute;
 	left: 0;
 	top: 0;
+	z-index: -1;
 }
 
 .stageBody {
@@ -164,40 +162,32 @@ footer {
 
 /* Cards */
 
+.card, .cardBack {
+	box-sizing: border-box;
+	width: 10em;
+	height: 12em;
+	border: 1px solid var(--colour);
+	border-radius: 0.5em;
+}
+
 .cardBack {
-	width: 10rem;
-	height: 13rem;
-	border: 1px solid grey;
-	border-radius: 0.5rem;
+	--colour: grey;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: large;
 }
 
 .card {
+	position: relative;
 	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
 	font-weight: 599;
 	display: inline-block;
-	border: 1px solid var(--colour);
-	border-radius: 0.5em;
-	width: 10em;
-	height: 12em;
-	margin: 5px;
-	position: relative;
+	margin: 0.5em;
 }
 
-.card.common {
-	--colour: rgb(89, 49, 255);
-}
-
-.card.rare {
-	--colour: rgb(231, 180, 39);
-}
-
-.card.fresh {
-	--colour: white;
-}
+.card.common { --colour: rgb(89, 49, 255); }
+.card.rare { --colour: rgb(231, 180, 39); }
+.card.fresh { --colour: white; }
 
 .cardHeader {
 	height: 2.5em;
@@ -218,7 +208,6 @@ footer {
 .cardNumber {
 	display: none;
 }
-
 
 .cardName {
 	text-align: center;
@@ -245,14 +234,15 @@ footer {
 
 .cardGrid {
 	margin: 0 auto;
+	border-spacing: 0;
 }
 .cardGrid td {
 	width: 0.5em;
 	height: 0.5em;
-	border: 1px solid gray;
+	border: 1px solid grey;
 }
-.cardGrid td.ink { background: hsl(63, 99%, 49%); }
-.cardGrid td.special { background: hsl(38, 100%, 49%); }
+.cardGrid td.ink { background: hsl(63, 99%, 49%); border: 1px solid hsl(63, 99%, 49%);}
+.cardGrid td.special { background: hsl(38, 100%, 49%); border: 1px solid hsl(38, 100%, 49%);}
 
 .cardFooter {
 	display: flex;
@@ -308,10 +298,11 @@ footer {
 /* Board */
 
 #gameBoard {
-	height: 98vh;
+	height: calc(3.5% * var(--board-height));
 	aspect-ratio: var(--board-width)/var(--board-height);
 	table-layout: fixed;
 	border-spacing: 0;
+	margin: auto;
 }
 
 #gameBoard td { border: 1px solid grey; }
@@ -363,31 +354,139 @@ footer {
 	overflow-y: scroll;
 }
 
-/* Game UI */
+/* Game page */
 
 #gameSection:not([hidden]) {
-	display: flex;
+	display: grid;
+	grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1] 10em [play-column-2] 10em;
+	grid-template-rows: [player-row-1] auto [player-row-3] auto [hand-row] 1fr [player-row-2] auto [player-row-0] auto;
+	height: 100vh;
 }
 
-#sidebarSection {
-	width: 24em;
-	display: flex;
-	flex-flow: column;
-	justify-content: space-between;
+.playerBar[data-index="0"] {
+	--colour: var(--primary-colour-1);
+	--special-colour: var(--special-colour-1);
+	grid-row: player-row-0;
+}
+.playerBar[data-index="1"] {
+	--colour: var(--primary-colour-2);
+	--special-colour: var(--special-colour-2);
+	grid-row: player-row-1;
+}
+.playerBar[data-index="2"] {
+	--colour: var(--primary-colour-3);
+	--special-colour: var(--special-colour-3);
+	grid-row: player-row-2;
+}
+.playerBar[data-index="3"] {
+	--colour: var(--primary-colour-4);
+	--special-colour: var(--special-colour-4);
+	grid-row: player-row-3;
 }
 
 .playerBar {
-	border-left: 4px solid var(--colour);
+	grid-column: 1 / span 2;
+	margin: 0 10px;
+	border-left: 8px solid var(--colour);
 	padding-left: 10px;
 }
-.playerBar[data-index="0"] { --colour: var(--primary-colour-1); --special-colour: var(--special-colour-1); }
-.playerBar[data-index="1"] { --colour: var(--primary-colour-2); --special-colour: var(--special-colour-2); }
-.playerBar[data-index="2"] { --colour: var(--primary-colour-3); --special-colour: var(--special-colour-3); }
-.playerBar[data-index="3"] { --colour: var(--primary-colour-4); --special-colour: var(--special-colour-4); }
+#gameSection:not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) {
+	text-align: right;
+	border-right: 8px solid var(--colour);
+	padding-right: 10px;
+}
+
+#scoreSection {
+	grid-column: score-column;
+	grid-row: 2 / -2;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#playControls, #resultContainer {
+	grid-column: 1 / span 2;
+	grid-row: hand-row;
+	align-self: center;
+}
+#playControls:not([hidden]) {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: [hand-row] auto [button-row] auto;
+}
+
+#handContainer {
+	grid-column: 1 / -1;
+	grid-row: hand-row;
+	text-align: center;
+}
+
+#playControls > label {
+	grid-row: button-row;
+	margin: 0.5em;
+	padding: 0 0.5em;
+	text-align: center;
+	background: var(--special-colour-1);
+	text-shadow: 0 0 4px black;
+	border-radius: 0.5em;
+}
+#playControls > label input {
+	display: none;
+}
+#playControls > label.checked {
+	background: var(--special-accent-colour-1);
+}
+#playControls > label:disabled {
+	background: grey;
+}
+
+.playContainer[data-index="0"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
+.playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
+.playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
+.playContainer[data-index="3"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
+
+#gameButtonsContainer {
+    grid-column: score-column;
+	grid-row: 1 / -1;
+	align-self: end;
+	display: flex;
+    flex-flow: column;
+    align-items: center;
+	z-index: 1;
+}
+
+#gameButtonsContainer button {
+	background: none;
+	border: none;
+	color: var(--special-colour-1);
+	opacity: 0.5;
+	font-size: 400%;
+	width: 1.5em;
+	height: 1.5em;
+}
+#gameButtonsContainer button:hover {
+	opacity: 1;
+}
+#gameButtonsContainer button:active {
+	opacity: 1;
+	color: var(--primary-colour-1);
+}
+
+#boardSection {
+	grid-column: board-column;
+	grid-row: 1 / -1;
+	align-self: center;
+	position: relative;
+	height: min(100vh, calc(100vw - 30em));
+	aspect-ratio: 19 / 26;
+	display: flex;
+}
+
+/* Player bars */
 
 .name {
-	font-size: x-large;
-	font-weight: bold;
+	font-size: 150%;
+	font-weight: 599;
 	margin: 0.5em 0;
 }
 
@@ -435,7 +534,7 @@ footer {
 
 .statValue {
 	font-family: 'Splatoon 1';
-	font-size: x-large;
+	font-size: 150%;
 	line-height: 1.5em;
 }
 
@@ -445,36 +544,29 @@ footer {
 
 /* Score bar */
 
-#scoreSection {
-	display: grid;
-	grid-template-rows: 1fr 2fr 1fr;
-	place-items: center;
-	margin: 0 2em;
-}
-
 #turnNumberContainer {
+	grid-column: score-column;
+	grid-row: 1 / 4;
 	width: 5em;
 	height: 5em;
 	background: radial-gradient(circle, rgb(128, 128, 128) 0%, rgb(128, 128, 128) 70%, rgba(0, 0, 0, 0) 70%);
 	font-family: 'Splatoon 1', sans-serif;
+	justify-self: center;
+	margin-top: 2em;
 }
 
 #turnNumberContainer p {
 	text-align: center;
 	margin: 0;
-	font-size: small;
+	font-size: smaller;
 }
 
 #turnNumberLabel {
 	text-align: center;
-	font-size: x-large;
+	font-size: 150%;
 }
 #turnNumberLabel.nowOrNever {
 	color: red;
-}
-
-#pointsContainers {
-	grid-row: 2;
 }
 
 .pointsContainer {
@@ -491,7 +583,7 @@ footer {
 }
 
 .points {
-	font-size: xx-large;
+	font-size: 200%;
 }
 
 .pointsToContainer {
@@ -530,10 +622,6 @@ footer {
 
 /* Board section */
 
-#boardSection {
-	position: relative;
-}
-
 #redrawModal {
 	position: absolute;
 	left: 0;
@@ -543,20 +631,18 @@ footer {
 	background: #000000C0;
 }
 
-#redrawModel:not([hidden]) {
+#redrawModal:not([hidden]) {
 	display: flex;
+	justify-content: center;
 	align-items: center;
-	flex-flow: column;
 }
 
 #redrawBox {
-	/* display: flex; */
 	border: 1px solid grey;
 	width: 15em;
 	height: 10em;
 	background: black;
 	text-align: center;
-	margin-top: 12em;
 }
 
 #playsSection {
@@ -647,7 +733,7 @@ footer {
 	background: #00000080;
 	justify-content: center;
 	align-items: center;
-	font-size: large;
+	font-size: larger;
 }
 
 /* Deck editor */
@@ -658,7 +744,7 @@ footer {
 	grid-template-columns: 1fr 1fr;
 }
 
-#deckList :is(label, button) {
+.deckList :is(label, button) {
 	width: 20rem;
 	height: 3rem;
 	background: dimgrey;
@@ -672,12 +758,12 @@ footer {
 	border: inherit;
 }
 
-#deckList {
+.deckList {
 	display: flex;
 	flex-flow: column;
 }
 
-#deckList input {
+.deckList input {
 	display: none;
 }
 
@@ -720,4 +806,152 @@ footer {
 	height: 100vh;
 	display: grid;
 	grid-template-rows: auto 1fr;
+}
+
+/* Small display layout */ 
+@media (max-width: 89rem) or (max-height: 42rem) {
+	#gameSection {
+		font-size: small;
+	}
+	
+	#gameSection:not([hidden]) {
+		grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 10em;
+	}
+
+	.playContainer { position: relative; }
+	#gameSection:not([data-players="2"]) .playContainer[data-index="0"] {
+		left: -3em;
+	}
+	#gameSection:not([data-players="2"]) .playContainer[data-index="2"] {
+		top: -3em;
+	}
+	#gameSection:not([data-players="2"]) .playContainer[data-index="3"] {
+		left: -3em;
+		top: 3em;
+	}
+	.playerBar[data-index="0"] {
+		grid-row: player-row-0;
+	}
+	.playerBar[data-index="1"] {
+		grid-row: player-row-1;
+	}
+	.playerBar[data-index="2"] {
+		grid-row: player-row-0;
+	}
+	.playerBar[data-index="3"] {
+		grid-row: player-row-1;
+	}
+}
+
+@media (max-width: 40rem) {
+	.card {
+		margin: 0;
+		width: auto;
+	}
+
+    /* Lobby - Mobile layout */
+
+	#lobbySection:not([hidden]) {
+		grid-template-rows: auto 1fr;
+		grid-template-columns: initial;
+		height: 100vh;
+	}
+
+	#lobbyStageSection, #lobbyDeckSection {
+		height: initial;
+	}
+
+	#stageList {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		font-size: x-small;
+	}
+
+	.stage, .stageRandom {
+		width: auto;
+	}
+
+	/* Game - Mobile layout */
+
+	#gameSection:not([hidden]) {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-rows: auto 1fr auto auto auto;
+		height: 100vh;
+	}
+
+	.playerBar[data-index="0"] { grid-column: 1 / span 4; grid-row: 3; }
+	.playerBar[data-index="1"] { grid-column: 1 / span 4; grid-row: 1; }
+	.playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 3; }
+	.playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 1; }
+
+	#boardSection {
+		grid-column: 2 / -1;
+		grid-row: 2;
+		height: initial;
+		align-self: stretch;
+	}
+	
+	#gameBoard {
+		width: calc(75vw - 0.5em);
+		height: initial;
+		margin: auto;
+	}
+	
+	#playControls:not([hidden]) {
+		grid-template-rows: [button-row] auto [hand-row] auto;
+	}
+
+	#playControls, #resultContainer {
+		grid-column: 1 / -1;
+		grid-row: 5;
+		width: initial;
+	}
+
+	#scoreSection {
+		grid-column: 1;
+		grid-row: 2;		
+		grid-template-rows: 1fr;
+		grid-template-columns: 1fr;
+	}
+	
+	#turnNumberContainer {
+		grid-column: 1;
+		grid-row: 2;
+		margin: 0;
+	}
+
+	.pointsContainer {
+		margin: 0.5em 0;
+	}
+
+	#handContainer {
+		font-size: x-small;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-rows: auto;
+		width: 100vw;
+		overflow: scroll visible;
+	}
+
+	.playContainer:is([data-index="0"], [data-index="1"], [data-index="2"], [data-index="3"]) {
+		font-size: x-small;
+		grid-column: 1 / -1;
+		z-index: -1;
+		display: flex;
+	}
+	.playContainer[data-index="0"] { grid-row: 2 / span 2; justify-content: start; margin: 0 0 2em 1em; }
+	.playContainer[data-index="1"] { grid-row: 1 / span 2; justify-content: end; margin: 2em 1em 0 0; }
+	#gameSection[data-players="2"] .playContainer[data-index="0"],
+	.playContainer[data-index="2"] { grid-row: 2 / span 2; justify-content: end; margin: 0 1em 2em 0; }
+	.playContainer[data-index="3"] { grid-row: 1 / span 2; justify-content: start; margin: 2em 0 0 1em; }
+	
+	#gameButtonsContainer {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	#gameButtonsContainer button {
+		font-size: 250%;
+	}
 }
