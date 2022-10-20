@@ -5,6 +5,9 @@ const handButtons: CardButton[] = [ ];
 
 const passButton = document.getElementById('passButton') as HTMLInputElement;
 const specialButton = document.getElementById('specialButton') as HTMLInputElement;
+const rotateLeftButton = document.getElementById('rotateLeftButton') as HTMLButtonElement;
+const rotateRightButton = document.getElementById('rotateRightButton') as HTMLButtonElement;
+const gameDeckButton = document.getElementById('gameDeckButton') as HTMLButtonElement;
 
 const handContainer = document.getElementById('handContainer')!;
 const redrawModal = document.getElementById('redrawModal')!;
@@ -378,6 +381,15 @@ function focusFirstEnabledHandCard() {
 	if (firstEnabledButton)
 		firstEnabledButton.inputElement.focus();
 }
+
+rotateLeftButton.addEventListener('click', () => {
+	board.cardRotation--;
+	board.refreshHighlight();
+});
+rotateRightButton.addEventListener('click', () => {
+	board.cardRotation++;
+	board.refreshHighlight();
+});
 
 document.addEventListener('keydown', e => {
 	if (!sections.get('game')!.hidden) {

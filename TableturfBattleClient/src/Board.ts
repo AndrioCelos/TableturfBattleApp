@@ -9,10 +9,12 @@ class Board {
 	specialAttack = false;
 
 	autoHighlight = true;
+	touchscreenMode = false;
 
 	highlightX = NaN;
 	highlightY = NaN;
 	private highlightedCells: [x: number, y: number][] = [ ];
+	private touch: [index: number, x: number, y: number, highlightX: number, highlightY: number] | null = null;
 
 	startSpaces: { x: number, y: number }[] = [ ];
 
@@ -20,6 +22,8 @@ class Board {
 	oncancel: (() => void) | null = null;
 
 	constructor(table: HTMLTableElement) {
+		const boardSection = table.parentElement;
+
 		this.table = table;
 		table.addEventListener('mouseleave', _ => {
 			if (this.autoHighlight) this.clearHighlight()
@@ -55,7 +59,47 @@ class Board {
 						break;
 				}
 			}
-		})
+		});
+		table.addEventListener('touchstart', e => {
+			this.touchscreenMode = true;
+			if (this.playerIndex == null) return;
+			if (this.touch == null) {
+				const touch = e.changedTouches[0];
+				if (isNaN(this.highlightX) || isNaN(this.highlightY) || isNaN(this.cardRotation)) {
+					const startSpace = this.startSpaces[this.playerIndex];
+					this.highlightX = startSpace.x - 3;
+					this.highlightY = startSpace.y - 3;
+					this.cardRotation = 0;
+					this.refreshHighlight();
+				}
+				this.touch = [touch.identifier, touch.pageX, touch.pageY, this.highlightX, this.highlightY];
+			}
+		});
+		table.addEventListener('touchmove', e => {
+			if (this.playerIndex == null) return;
+			if (this.touch != null) {
+				const touch = Array.from(e.changedTouches).find(t => t.identifier == this.touch![0]);
+				if (touch) {
+					const dx = Math.round((touch.pageX - this.touch[1]) / 20);
+					const dy = Math.round((touch.pageY - this.touch[2]) / 20);
+					const x2 = this.touch[3] + dx;
+					const y2 = this.touch[4] + dy;
+					if (this.highlightX != x2 || this.highlightY != y2) {
+						this.highlightX = x2;
+						this.highlightY = y2;
+					}
+					this.refreshHighlight();
+				}
+			}
+		});
+		table.addEventListener('touchend', e => {
+			if (this.touch != null && Array.from(e.changedTouches).find(t => t.identifier == this.touch![0]))
+				this.touch = null;
+		});
+		table.addEventListener('touchcancel', e => {
+			if (this.touch != null && Array.from(e.changedTouches).find(t => t.identifier == this.touch![0]))
+				this.touch = null;
+		});
 	}
 
 	moveHighlight(move: (x: number, y: number, r: number) => [number, number, number], clamp: boolean) {
@@ -183,21 +227,29 @@ class Board {
 				trs[y].appendChild(td);
 				col.push(td);
 				td.addEventListener('mousemove', e => {
-					if (this.autoHighlight && this.cardPlaying != null) {
-						const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
-						const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
-						if (x != this.highlightX || y != this.highlightY) {
-							this.highlightX = x;
-							this.highlightY = y;
-							this.refreshHighlight();
+					if (e.buttons == 0)
+						this.touchscreenMode = false;
+					if (!this.touchscreenMode) {
+						if (this.autoHighlight && this.cardPlaying != null) {
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
+							if (x != this.highlightX || y != this.highlightY) {
+								this.highlightX = x;
+								this.highlightY = y;
+								this.refreshHighlight();
+							}
 						}
 					}
 				});
 				td.addEventListener('click', e => {
 					if (this.autoHighlight && this.cardPlaying != null && this.onclick) {
-						const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
-						const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
-						this.onclick(x, y);
+						if (this.touchscreenMode) {
+							this.onclick(this.highlightX, this.highlightY);
+						} else {
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
+							this.onclick(x, y);
+						}
 					}
 				});
 				td.addEventListener('wheel', e => {
