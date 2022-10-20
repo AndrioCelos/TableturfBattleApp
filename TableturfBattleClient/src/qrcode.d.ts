@@ -1,11 +1,12 @@
 declare class QRCode {
 	constructor(el: HTMLElement | string, vOption: string | {
-		width: number | undefined,
-		height: number | undefined,
-		colorDark: string | undefined,
-		colorLight: string | undefined,
-		correctLevel: QRCode.CorrectLevel | undefined
-	} | undefined);
+		text: string,
+		width?: number,
+		height?: number,
+		colorDark?: string,
+		colorLight?: string,
+		correctLevel?: QRCode.CorrectLevel
+	});
 
 	makeCode(sText: string) : void;
 	clear() : void;
@@ -13,5 +14,5 @@ declare class QRCode {
 }
 
 declare namespace QRCode {
-	enum CorrectLevel { M, L, H, Q }
+	enum CorrectLevel { L = 1, M = 0, Q = 3, H = 2 }
 }

@@ -42,8 +42,14 @@ showQrCodeButton.addEventListener('click', () => {
 	const qrCodeUrl = config.qrCodeGameUrl ? config.qrCodeGameUrl.replace('$id', currentGame!.id) : window.location.href;
 	if (qrCode)
 		qrCode.makeCode(qrCodeUrl);
-	else
-		qrCode = new QRCode(document.getElementById("qrCode")!, qrCodeUrl);
+	else {
+		const correctLevel = config.qrCodeCorrectionLevel ?
+			(typeof(config.qrCodeCorrectionLevel) == 'string'
+				? QRCode.CorrectLevel[config.qrCodeCorrectionLevel as keyof typeof QRCode.CorrectLevel]
+				: config.qrCodeCorrectionLevel)
+			: QRCode.CorrectLevel.H;
+		qrCode = new QRCode(document.getElementById("qrCode")!, { text: qrCodeUrl, correctLevel });
+	}
 	qrCodeDialog.showModal();
 });
 
