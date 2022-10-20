@@ -446,13 +446,15 @@ footer {
 .playContainer[data-index="3"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
 
 #gameButtonsContainer {
-    grid-column: score-column;
+	grid-column: score-column;
 	grid-row: 1 / -1;
 	align-self: end;
-	display: flex;
-    flex-flow: column;
-    align-items: center;
+	flex-flow: column;
+	align-items: center;
 	z-index: 1;
+}
+#gameButtonsContainer:not([hidden]) {
+	display: flex;
 }
 
 #gameButtonsContainer button {
@@ -809,12 +811,12 @@ footer {
 	grid-template-rows: auto 1fr;
 }
 
-/* Small display layout */ 
+/* Small display layout */
 @media (max-width: 89rem) or (max-height: 42rem) {
 	#gameSection {
 		font-size: small;
 	}
-	
+
 	#gameSection:not([hidden]) {
 		grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 10em;
 	}
@@ -850,7 +852,7 @@ footer {
 		width: auto;
 	}
 
-    /* Lobby - Mobile layout */
+	/* Lobby - Mobile layout */
 
 	#lobbySection:not([hidden]) {
 		grid-template-rows: auto 1fr;
@@ -892,13 +894,13 @@ footer {
 		height: initial;
 		align-self: stretch;
 	}
-	
+
 	#gameBoard {
 		width: calc(75vw - 0.5em);
 		height: initial;
 		margin: auto;
 	}
-	
+
 	#playControls:not([hidden]) {
 		grid-template-rows: [button-row] auto [hand-row] auto;
 	}
@@ -911,11 +913,11 @@ footer {
 
 	#scoreSection {
 		grid-column: 1;
-		grid-row: 2;		
+		grid-row: 2;
 		grid-template-rows: 1fr;
 		grid-template-columns: 1fr;
 	}
-	
+
 	#turnNumberContainer {
 		grid-column: 1;
 		grid-row: 2;
@@ -946,7 +948,7 @@ footer {
 	#gameSection[data-players="2"] .playContainer[data-index="0"],
 	.playContainer[data-index="2"] { grid-row: 2 / span 2; justify-content: end; margin: 0 1em 2em 0; }
 	.playContainer[data-index="3"] { grid-row: 1 / span 2; justify-content: start; margin: 2em 0 0 1em; }
-	
+
 	#gameButtonsContainer {
 		grid-column: 1;
 		grid-row: 2;

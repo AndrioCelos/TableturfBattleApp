@@ -5,6 +5,7 @@ const handButtons: CardButton[] = [ ];
 
 const passButton = document.getElementById('passButton') as HTMLInputElement;
 const specialButton = document.getElementById('specialButton') as HTMLInputElement;
+const gameButtonsContainer = document.getElementById('gameButtonsContainer')!;
 const rotateLeftButton = document.getElementById('rotateLeftButton') as HTMLButtonElement;
 const rotateRightButton = document.getElementById('rotateRightButton') as HTMLButtonElement;
 const gameDeckButton = document.getElementById('gameDeckButton') as HTMLButtonElement;

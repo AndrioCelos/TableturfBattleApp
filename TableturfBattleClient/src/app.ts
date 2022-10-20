@@ -64,6 +64,8 @@ function onGameStateChange(game: any, playerData: any) {
 			redrawModal.hidden = true;
 			showSection('game');
 
+			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
+
 			switch (game.state) {
 				case GameState.Redraw:
 					redrawModal.hidden = false;
@@ -218,6 +220,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 					clearPlayContainers();
 					if (payload.event == 'gameEnd') {
+						gameButtonsContainer.hidden = true;
 						gamePage.classList.add('gameEnded');
 						showResult();
 					} else {
