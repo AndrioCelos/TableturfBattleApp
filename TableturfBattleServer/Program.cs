@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
@@ -16,12 +17,24 @@ using Timer = System.Timers.Timer;
 namespace TableturfBattleServer;
 
 internal class Program {
-	internal static HttpServer httpServer = new(IPAddress.Loopback, 3333) { DocumentRootPath = Path.Combine("..", "..", "..", "..", "TableturfBattleClient") };
+	internal static HttpServer? httpServer;
+
 	internal static Dictionary<Guid, Game> games = new();
 	internal static readonly Timer timer = new(500);
-	private static readonly List<Guid> gameIdsToRemove = new();
 
-	internal static void Main() {
+	private static string? GetClientRootPath() {
+		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		while (true) {
+			if (directory == null) return null;
+			var directory2 = Path.Combine(directory, "TableturfBattleClient");
+			if (Directory.Exists(directory2)) return directory2;
+			directory = Path.GetDirectoryName(directory);
+		}
+	}
+
+	internal static void Main(string[] args) {
+		httpServer = new(args.Contains("--open") ? IPAddress.Any : IPAddress.Loopback, 3333) { DocumentRootPath = GetClientRootPath() };
+
 		timer.Elapsed += Timer_Elapsed;
 
 		httpServer.AddWebSocketService<TableturfWebSocketBehaviour>("/api/websocket");
@@ -29,6 +42,10 @@ internal class Program {
 		httpServer.OnPost += HttpServer_OnRequest;
 		httpServer.Start();
 		Console.WriteLine($"Listening on http://{httpServer.Address}:{httpServer.Port}");
+		if (httpServer.DocumentRootPath != null)
+			Console.WriteLine($"Serving client files from {httpServer.DocumentRootPath}");
+		else
+			Console.WriteLine($"Client files were not found.");
 
 		Thread.Sleep(Timeout.Infinite);
 	}
@@ -312,8 +329,7 @@ internal class Program {
 								} else {
 									try {
 										var d = DecodeFormData(e.Request.InputStream);
-										Guid clientToken;
-										if (!d.TryGetValue("clientToken", out var tokenString) || !Guid.TryParse(tokenString, out clientToken)) {
+										if (!d.TryGetValue("clientToken", out var tokenString) || !Guid.TryParse(tokenString, out var clientToken)) {
 											SetResponse(e.Response, (int) HttpStatusCode.BadRequest, "text/plain", "Invalid client token");
 											return;
 										}
