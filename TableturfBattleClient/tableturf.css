@@ -8,10 +8,12 @@
 	src: url('assets/splatoon2.woff2') format('woff2');
 }
 
-body {
-	margin: 0;
+body, dialog {
 	color: white;
 	background: black;
+}
+body {
+	margin: 0;
 	font-family: 'Splatoon 2', sans-serif;
 	/* Default colours - normally the game data sent from the server will override these */
 	--primary-colour-1       : hsl(63, 99%, 49%);
@@ -102,6 +104,19 @@ footer {
 @keyframes playerListFlyIn {
 	from { left: -100%; }
 	to { left: 0; }
+}
+
+dialog {
+	text-align: center;
+}
+dialog::backdrop {
+	background: black;
+	opacity: 0.5;
+}
+
+#qrCode {
+	background: white;
+	border: 1em solid white;
 }
 
 /* Stages */

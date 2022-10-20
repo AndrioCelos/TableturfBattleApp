@@ -13,6 +13,7 @@
 		<link rel="manifest" href="assets/site.webmanifest">
 		<link rel="stylesheet" href="tableturf.css"/>
 		<script src="config/config.js"></script>
+		<script src="qrcodejs/qrcode.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta property="og:type" content="website"/>
 		<meta name="title" property="og:title" content="Tableturf Battle"/>
@@ -58,7 +59,8 @@
 		</div>
 		<div id="lobbySection" hidden>
 			<section id="lobbyPlayerListSection">
-				<p>Other players can join using a link to this page. <button type="button" id="shareLinkButton">Share link</button></p>
+				<p>Other players can join using a link to this page.<br/>
+					<button type="button" id="shareLinkButton">Share link</button><button type="button" id="showQrCodeButton">Show QR code</button></p>
 				<ul id="playerList"></ul>
 				<div id="lobbySelectedStageSection" hidden>
 					<h3>Stage</h3>
@@ -81,6 +83,13 @@
 				<p><button type="button" id="submitDeckButton" disabled>Submit</button></p>
 				<div id="lobbyDeckList" class="deckList"></div>
 			</div>
+			<dialog id="qrCodeDialog">
+				<form method="dialog">
+					<p>Scan this QR code to join the game.</p>
+					<div id="qrCode"></div>
+					<button type="submit">Close</button>
+				</form>
+			</dialog>
 		</div>
 		<div id="gameSection" hidden>
 			<div class="playerBar" data-index="1">

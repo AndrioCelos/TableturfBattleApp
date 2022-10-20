@@ -1,5 +1,6 @@
 interface Config {
-	apiBaseUrl: string
+	apiBaseUrl: string,
+	qrCodeGameUrl: string | null | undefined
 }
 
-var config: Config;
+declare var config: Config;

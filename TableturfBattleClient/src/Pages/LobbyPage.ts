@@ -3,8 +3,8 @@
 
 const stageButtons: StageButton[] = [ ];
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
+const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
 const submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
-let lobbyShareData: ShareData | null;
 const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
 const stageRandomLabel = document.getElementById('stageRandomLabel')!;
 const stageRandomButton = document.getElementById('stageRandomButton') as HTMLInputElement;
@@ -13,6 +13,10 @@ const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSec
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
+
+const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElement;
+let qrCode: QRCode | null;
+let lobbyShareData: ShareData | null;
 
 let selectedStageButton = null as StageButton | null;
 
@@ -27,12 +31,28 @@ function initLobbyPage(url: string) {
 }
 
 shareLinkButton.addEventListener('click', () => {
-	if (lobbyShareData != null) {
+	if (lobbyShareData) {
 		navigator.share(lobbyShareData);
 	} else {
 		navigator.clipboard.writeText(window.location.toString()).then(() => shareLinkButton.innerText = 'Copied');
 	}
 });
+
+showQrCodeButton.addEventListener('click', () => {
+	const qrCodeUrl = config.qrCodeGameUrl ? config.qrCodeGameUrl.replace('$id', currentGame!.id) : window.location.href;
+	if (qrCode)
+		qrCode.makeCode(qrCodeUrl);
+	else
+		qrCode = new QRCode(document.getElementById("qrCode")!, qrCodeUrl);
+	qrCodeDialog.showModal();
+});
+
+qrCodeDialog.addEventListener('click', e => {
+	if (e.target == qrCodeDialog && (e.offsetX < 0 || e.offsetY < 0 || e.offsetX >= qrCodeDialog.offsetWidth || e.offsetY >= qrCodeDialog.offsetHeight)) {
+		// Background was clicked.
+		qrCodeDialog.close();
+	}
+})
 
 function clearReady() {
 	if (currentGame == null) return;

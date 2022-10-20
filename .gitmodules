@@ -1,0 +1,3 @@
+[submodule "TableturfBattleClient/qrcodejs"]
+	path = TableturfBattleClient/qrcodejs
+	url = https://github.com/davidshimjs/qrcodejs.git
