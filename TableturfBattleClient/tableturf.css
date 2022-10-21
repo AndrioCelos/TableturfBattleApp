@@ -488,6 +488,9 @@ dialog::backdrop {
 	opacity: 1;
 	color: var(--primary-colour-1);
 }
+#gameDeckButton {
+	display: none;
+}
 
 #boardSection {
 	grid-column: board-column;
@@ -938,8 +941,7 @@ dialog::backdrop {
 	}
 
 	#gameBoard {
-		width: calc(75vw - 0.5em);
-		height: initial;
+		height: min(calc(min(3.5%, calc(75vw / var(--board-width))) * var(--board-height)));
 		margin: auto;
 	}
 

@@ -85,8 +85,7 @@ class Board {
 					const x2 = this.touch[3] + dx;
 					const y2 = this.touch[4] + dy;
 					if (this.highlightX != x2 || this.highlightY != y2) {
-						this.highlightX = x2;
-						this.highlightY = y2;
+						this.moveHighlight((x, y, r) => [x2, y2, r], true);
 					}
 					this.refreshHighlight();
 				}
@@ -200,10 +199,9 @@ class Board {
 
 		this.grid = grid || this.grid;
 
-		while (this.table.firstChild) {
-			this.table.removeChild(this.table.firstChild);
-		}
+		clearChildren(this.table);
 		this.cells.splice(0);
+		this.highlightedCells.splice(0);
 
 		const boardWidth = grid.length;
 		const boardHeight = grid[0].length;

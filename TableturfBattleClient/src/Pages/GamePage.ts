@@ -73,8 +73,7 @@ function showReady(playerIndex: number) {
 
 function clearPlayContainers() {
 	for (const container of playContainers) {
-		while (container.firstChild)
-			container.removeChild(container.firstChild);
+		clearChildren(container);
 	}
 }
 
