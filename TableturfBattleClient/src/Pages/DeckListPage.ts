@@ -5,11 +5,24 @@ const deckNameLabel = document.getElementById('deckName')!;
 const deckViewSize = document.getElementById('deckViewSize')!;
 const deckList = document.getElementById('deckList')!;
 const deckCardListView = document.getElementById('deckCardListView')!;
+const addDeckControls = document.getElementById('addDeckControls')!;
 const newDeckButton = document.getElementById('newDeckButton') as HTMLButtonElement;
+const importDeckButton = document.getElementById('importDeckButton') as HTMLButtonElement;
 const deckEditButton = document.getElementById('deckEditButton') as HTMLButtonElement;
+const deckExportButton = document.getElementById('deckExportButton') as HTMLButtonElement;
 const deckRenameButton = document.getElementById('deckRenameButton') as HTMLButtonElement;
 const deckCopyButton = document.getElementById('deckCopyButton') as HTMLButtonElement;
 const deckDeleteButton = document.getElementById('deckDeleteButton') as HTMLButtonElement;
+
+const deckExportDialog = document.getElementById('deckExportDialog') as HTMLDialogElement;
+const deckExportCopyButton = document.getElementById('deckExportCopyButton') as HTMLButtonElement;
+const deckExportTextBox = document.getElementById('deckExportTextBox') as HTMLTextAreaElement;
+
+const deckImportDialog = document.getElementById('deckImportDialog') as HTMLDialogElement;
+const deckImportForm = document.getElementById('deckImportForm') as HTMLFormElement;
+const deckImportTextBox = document.getElementById('deckImportTextBox') as HTMLTextAreaElement;
+const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
+const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
 function showDeckList() {
 	showSection('deckList');
@@ -82,15 +95,36 @@ function createDeckButton(index: number, deck: Deck) {
 
 	label.appendChild(document.createTextNode(deck.name));
 
-	deckList.insertBefore(label, newDeckButton);
+	deckList.insertBefore(label, addDeckControls);
 	return label;
 }
 
 newDeckButton.addEventListener('click', () => {
-	selectedDeck = new Deck(`Deck ${decks.length}`, [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], false);
+	selectedDeck = new Deck(`Deck ${decks.length + 1}`, [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], false);
 	createDeckButton(decks.length, selectedDeck);
 	decks.push(selectedDeck);
 	editDeck();
+});
+importDeckButton.addEventListener('click', () => {
+	deckImportErrorBox.hidden = true;
+	deckImportDialog.showModal();
+});
+deckImportForm.addEventListener('submit', e => {
+	if (e.submitter == deckImportOkButton) {
+		try {
+			const deck = JSON.parse(deckImportTextBox.value) as Deck;
+			if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => i < 0 || i > cardDatabase.cards!.length))
+				throw new SyntaxError('Invalid JSON deck');
+			if (!deck.name) deck.name = `Deck ${decks.length + 1}`;
+			createDeckButton(decks.length, deck);
+			decks.push(deck);
+		} catch (ex: any) {
+			e.preventDefault();
+			deckImportErrorBox.innerText = ex.message;
+			deckImportErrorBox.hidden = false;
+			deckImportTextBox.focus();
+		}
+	}
 });
 
 deckEditButton.addEventListener('click', editDeck);
@@ -129,6 +163,19 @@ function deselectDeck() {
 	deckCopyButton.disabled = true;
 	deckDeleteButton.disabled = true;
 }
+
+deckExportButton.addEventListener('click', () => {
+	if (selectedDeck == null) return;
+	const json = JSON.stringify(selectedDeck, [ 'name', 'cards' ], '\t');
+	deckExportTextBox.value = json;
+	deckExportCopyButton.innerText = 'Copy';
+	deckExportDialog.showModal();
+});
+deckExportCopyButton.addEventListener('click', () => {
+	if (selectedDeck == null) return;
+	navigator.clipboard.writeText(deckExportTextBox.value);
+	deckExportCopyButton.innerText = 'Copied';
+});
 
 deckRenameButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;

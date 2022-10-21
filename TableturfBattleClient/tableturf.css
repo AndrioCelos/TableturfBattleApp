@@ -35,6 +35,12 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: 599;
 }
 
+.error {
+	border: 1px solid red;
+	background: #ff000040;
+	padding: 0 0.5em;
+}
+
 /* Home page */
 
 #preGameSection {
@@ -367,6 +373,8 @@ dialog::backdrop {
 	display: flex;
 	flex-wrap: wrap;
 	overflow-y: scroll;
+	grid-row: 2;
+	grid-column: 1 / -1;
 }
 
 /* Game page */
@@ -762,14 +770,11 @@ dialog::backdrop {
 :is(#deckListSection, #deckEditSection):not([hidden]) {
 	height: 100vh;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: auto auto;
 }
 
-.deckList :is(label, button) {
-	width: 20rem;
-	height: 3rem;
+.deckList > label, #addDeckControls > button {
 	background: dimgrey;
-	margin: 0.5em;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -777,6 +782,19 @@ dialog::backdrop {
 	color: inherit;
 	font-size: inherit;
 	border: inherit;
+}
+.deckList > * {
+	width: 20rem;
+	height: 3rem;
+	margin: 0.5em;
+}
+#addDeckControls {
+	display: flex;
+	align-items: stretch;
+	gap: 1em;
+}
+#addDeckControls > button {
+	flex-grow: 1;
 }
 
 .deckList {
@@ -803,7 +821,7 @@ dialog::backdrop {
 
 #deckEditorDeckViewSection:not([hidden]), #deckEditorDeckEditSection {
 	display: grid;
-	grid-template-columns: 1fr auto;
+	grid-template-columns: minmax(min-content, auto) min-content;
 	grid-template-rows: auto auto auto 1fr;
 	height: 100vh;
 }

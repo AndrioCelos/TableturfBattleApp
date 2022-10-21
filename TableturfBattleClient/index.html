@@ -209,7 +209,10 @@
 				<a id="deckListBackButton" href=".">Back</a>
 				<h3>Deck list</h3>
 				<div id="deckList" class="deckList">
-					<button id="newDeckButton">New deck</label>
+					<div id="addDeckControls">
+						<button id="newDeckButton">New deck</button>
+						<button id="importDeckButton">Import deck</button>
+					</div>
 				</div>
 			</section>
 			<section id="deckEditorDeckViewSection" hidden>
@@ -217,6 +220,7 @@
 				<h3 id="deckName">Deck</h3>
 				<div>
 					<button type="button" id="deckEditButton">Edit</button>
+					<button type="button" id="deckExportButton">Export</button>
 					<button type="button" id="deckRenameButton">Rename</button>
 					<button type="button" id="deckCopyButton">Copy</button>
 					<button type="button" id="deckDeleteButton" class="danger">Delete</button>
@@ -225,6 +229,25 @@
 				<div id="deckCardListView">
 				</div>
 			</section>
+			<dialog id="deckImportDialog">
+				<form id="deckImportForm" method="dialog">
+					<textarea id="deckImportTextBox" rows="24" cols="45"></textarea>
+					<div id="deckImportErrorBox" class="error" hidden></div>
+					<div>
+						<button type="submit" id="deckImportOkButton">OK</button>
+						<button type="submit" id="deckImportCancelButton">Cancel</button>
+					</div>
+				</form>
+			</dialog>
+			<dialog id="deckExportDialog">
+				<form method="dialog">
+					<textarea id="deckExportTextBox" readonly rows="24" cols="45"></textarea>
+					<div>
+						<button type="button" id="deckExportCopyButton">Copy</button>
+						<button type="submit">Close</button>
+					</div>
+				</form>
+			</dialog>
 		</div>
 		<div id="deckEditSection" hidden>
 			<section id="deckEditorDeckEditSection">
