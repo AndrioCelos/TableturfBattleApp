@@ -800,9 +800,13 @@ dialog::backdrop {
 
 #deckEditorDeckViewSection:not([hidden]), #deckEditorDeckEditSection {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: 1fr auto;
 	grid-template-rows: auto auto auto 1fr;
 	height: 100vh;
+}
+
+#deckViewBackButton, #deckCardListBackButton {
+	display: none;
 }
 
 #deckName, #deckName2 {
@@ -824,12 +828,35 @@ dialog::backdrop {
 	height: 100vh;
 	display: grid;
 	grid-template-rows: auto 1fr;
+	grid-template-columns: auto 1fr;
+	gap: 1em;
+}
+
+#deckEditorCardListSection > label {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+#deckEditorCardListBackdrop {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: black;
+	opacity: 0.5;
 }
 
 /* Small display layout */
 @media (max-width: 89rem) or (max-height: 42rem) {
-	#gameSection {
+	#gameSection, #deckCardListView, #deckCardListEdit {
 		font-size: small;
+	}
+	#cardList {
+		font-size: 75%;
+		grid-row: 2;
+		grid-column: 1 / -1;
 	}
 
 	#gameSection:not([hidden]) {
@@ -971,5 +998,84 @@ dialog::backdrop {
 
 	#gameButtonsContainer button {
 		font-size: 250%;
+	}
+
+	/* Deck editor - Mobile layout */
+
+	:is(#deckListSection, #deckEditSection):not([hidden]) {
+		display: block;
+	}
+
+	:is(#deckListSection, #deckEditSection) section {
+		position: absolute;
+		background: black;
+		left: 0;
+		right: 0;
+		top: 0;
+	}
+
+	#deckEditorDeckViewSection:not([hidden]) {
+		z-index: 10;
+		grid-template-columns: auto 1fr 1fr;
+		grid-template-rows: auto auto 1fr;
+	}
+
+	#deckViewBackButton {
+		display: block;
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	#deckCardListBackButton {
+		display: block;
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	#deckName {
+		grid-column: 2;
+	}
+
+	:is(#deckEditorDeckViewSection, #deckEditorDeckEditSection) > h3 + div {
+		grid-row: 1;
+		grid-column: -2;
+	}
+
+	.deckSizeContainer {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		justify-self: end;
+	}
+
+	#deckCardListView, #deckCardListEdit {
+		grid-column: 1 / -1;
+		grid-row: 3;
+		overflow-y: scroll;
+		font-size: 80%;
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	#deckEditorCardListSection:not(.selecting) {
+		display: none;
+	}
+
+	#deckEditorCardListSection.selecting + #deckEditorCardListBackdrop {
+		display: block;
+	}
+
+	#deckEditSection #deckEditorCardListSection {
+		z-index: 1;
+		top: 4em;
+		height: calc(100vh - 4em);
+	}
+
+	#cardList {
+		font-size: 50%;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
+
+	#cardList .card {
+		height: 13em;
 	}
 }

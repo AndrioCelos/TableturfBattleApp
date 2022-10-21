@@ -1,4 +1,5 @@
 const deckListBackButton = document.getElementById('deckListBackButton') as HTMLLinkElement;
+const deckViewBackButton = document.getElementById('deckViewBackButton') as HTMLLinkElement;
 const deckEditorDeckViewSection = document.getElementById('deckEditorDeckViewSection')!;
 const deckNameLabel = document.getElementById('deckName')!;
 const deckViewSize = document.getElementById('deckViewSize')!;
@@ -12,7 +13,7 @@ const deckDeleteButton = document.getElementById('deckDeleteButton') as HTMLButt
 
 function showDeckList() {
 	showSection('deckList');
-	selectedDeck = null;
+	deselectDeck();
 	for (const el of deckList.getElementsByTagName('input')) {
 		(el as HTMLInputElement).checked = false;
 	}
@@ -31,6 +32,13 @@ deckListBackButton.addEventListener('click', e => {
 	}
 	if (location.hash)
 		location.hash = '';
+});
+
+deckViewBackButton.addEventListener('click', e => {
+	e.preventDefault();
+	clearChildren(deckCardListView);
+	deselectDeck();
+	deckEditorDeckViewSection.hidden = true;
 });
 
 function saveDecks() {
@@ -114,6 +122,14 @@ function selectDeck() {
 	deckEditorDeckViewSection.hidden = false;
 }
 
+function deselectDeck() {
+	selectedDeck = null;
+	deckEditButton.disabled = true;
+	deckRenameButton.disabled = true;
+	deckCopyButton.disabled = true;
+	deckDeleteButton.disabled = true;
+}
+
 deckRenameButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
 	const name = prompt(`What will you rename ${selectedDeck.name} to?`, selectedDeck.name)?.trim();
@@ -159,4 +175,4 @@ deckDeleteButton.addEventListener('click', () => {
 });
 
 if (!canPushState)
-	deckListBackButton.href = '#';
+	deckListBackButton.href = '#'

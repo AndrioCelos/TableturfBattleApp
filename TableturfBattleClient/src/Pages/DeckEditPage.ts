@@ -5,6 +5,7 @@ const cardList = document.getElementById('cardList')!;
 const deckTestButton = document.getElementById('deckTestButton') as HTMLButtonElement;
 const deckSaveButton = document.getElementById('deckSaveButton') as HTMLButtonElement;
 const deckCancelButton = document.getElementById('deckCancelButton') as HTMLButtonElement;
+const deckCardListBackButton = document.getElementById('deckCardListBackButton') as HTMLLinkElement;
 const cardListSortBox = document.getElementById('cardListSortBox') as HTMLSelectElement;
 
 const cardButtons: CardButton[] = [ ];
@@ -56,6 +57,7 @@ function createDeckEditCardButton(index: number, card: number) {
 			for (const button2 of cardButtons) {
 				button2.checked = button2.card.number == card;
 			}
+			cardList.parentElement!.classList.add('selecting');
 		}
 	});
 	return button;
@@ -83,6 +85,7 @@ function createDeckEditEmptySlotButton(index: number) {
 			for (const button2 of cardButtons) {
 				button2.checked = false;
 			}
+			cardList.parentElement!.classList.add('selecting');
 		}
 	});
 	element.appendChild(input);
@@ -137,11 +140,26 @@ function initCardDatabase(cards: Card[]) {
 
 				deckEditCardButtons[selectedDeckCardIndex] = button3;
 				deckEditUpdateSize();
+
+				cardList.parentElement!.classList.remove('selecting');
 			}
 		});
 		cardList.appendChild(button.element);
 	}
 }
+
+deckCardListBackButton.addEventListener('click', e => {
+	e.preventDefault();
+	for (const o of deckEditCardButtons) {
+		if ((o as CardButton).card)
+			(o as CardButton).checked = false;
+		else {
+			(o as HTMLElement).getElementsByTagName('input')[0].checked = false;
+			(o as HTMLElement).classList.remove('checked');
+		}
+	}
+	cardList.parentElement!.classList.remove('selecting');
+});
 
 const cardSortOrders: { [key: string]: ((a: Card, b: Card) => number) | undefined } = {
 	'number': (a, b) => a.number - b.number,
