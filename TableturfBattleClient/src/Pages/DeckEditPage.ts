@@ -11,6 +11,7 @@ const cardListSortBox = document.getElementById('cardListSortBox') as HTMLSelect
 const cardButtons: CardButton[] = [ ];
 const deckEditCardButtons: (CardButton | HTMLLabelElement)[] = [ ];
 
+let deckModified = false;
 let selectedDeckCardIndex: number | null = null;
 
 function editDeck() {
@@ -98,12 +99,14 @@ deckSaveButton.addEventListener('click', () => {
 	selectedDeck.cards = deckEditCardButtons.map(o => (o as CardButton).card?.number ?? 0);
 	saveDecks();
 	selectDeck();
+	stopEditingDeck();
 	showSection('deckList');
 });
 
 deckCancelButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
 	if (!confirm('Are you sure you want to stop editing this deck without saving?')) return;
+	stopEditingDeck();
 	showSection('deckList');
 });
 
@@ -142,6 +145,10 @@ function initCardDatabase(cards: Card[]) {
 				deckEditUpdateSize();
 
 				cardList.parentElement!.classList.remove('selecting');
+				if (!deckModified) {
+					deckModified = true;
+					window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
+				}
 			}
 		});
 		cardList.appendChild(button.element);
@@ -177,3 +184,15 @@ cardListSortBox.addEventListener('change', () => {
 			cardList.appendChild(button.element);
 	}
 });
+
+function stopEditingDeck() {
+	if (deckModified) {
+		deckModified = false;
+		window.removeEventListener('beforeunload', onBeforeUnload_deckEditor);
+	}
+}
+
+function onBeforeUnload_deckEditor(e: BeforeUnloadEvent) {
+	e.preventDefault();
+	return 'You have unsaved changes to your deck that will be lost. Are you sure you want to continue?';
+}

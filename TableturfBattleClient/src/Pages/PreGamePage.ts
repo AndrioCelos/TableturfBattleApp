@@ -165,25 +165,8 @@ preGameDeckEditorButton.addEventListener('click', e => {
 const playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
 
-function processUrl() {
-	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
-		showDeckList();
-	else {
-		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
-		if (m)
-			presetGameID(m[2]);
-		else if (location.hash) {
-			canPushState = false;
-			presetGameID(location.hash);
-		} else {
-			clearPreGameForm(false);
-			showSection('preGame');
-		}
-	}
-}
-
 let settingUrl = false;
-window.addEventListener('popstate', () => {
+window.addEventListener('popstate', e => {
 	if (!settingUrl)
 		processUrl();
 });

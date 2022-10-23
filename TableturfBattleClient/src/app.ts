@@ -238,6 +238,31 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	return myPlayerIndex;
 }
 
+function processUrl() {
+	if (deckModified) {
+		if (!confirm('You have unsaved changes to your deck. Are you sure you want to leave?')) {
+			setUrl('deckeditor');
+			return false;
+		}
+	}
+	stopEditingDeck();
+	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
+		showDeckList();
+	else {
+		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
+		if (m)
+			presetGameID(m[2]);
+		else if (location.hash) {
+			canPushState = false;
+			presetGameID(location.hash);
+		} else {
+			clearPreGameForm(false);
+			showSection('preGame');
+		}
+	}
+	return true;
+}
+
 function isInternetExplorer() {
 	return !!(window.document as any).documentMode;  // This is a non-standard property implemented only by Internet Explorer.
 }
