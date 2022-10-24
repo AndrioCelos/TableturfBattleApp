@@ -25,7 +25,7 @@ const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
 function showDeckList() {
-	showSection('deckList');
+	showPage('deckList');
 	deselectDeck();
 	for (const el of deckList.getElementsByTagName('input')) {
 		(el as HTMLInputElement).checked = false;
@@ -34,7 +34,7 @@ function showDeckList() {
 
 deckListBackButton.addEventListener('click', e => {
 	e.preventDefault();
-	showSection('preGame');
+	showPage('preGame');
 
 	if (canPushState) {
 		try {

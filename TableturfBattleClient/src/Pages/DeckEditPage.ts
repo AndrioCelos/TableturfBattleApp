@@ -36,7 +36,7 @@ function editDeck() {
 	}
 
 	deckEditUpdateSize();
-	showSection('deckEdit');
+	showPage('deckEdit');
 }
 
 function createDeckEditCardButton(index: number, card: number) {
@@ -100,14 +100,14 @@ deckSaveButton.addEventListener('click', () => {
 	saveDecks();
 	selectDeck();
 	stopEditingDeck();
-	showSection('deckList');
+	showPage('deckList');
 });
 
 deckCancelButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
 	if (!confirm('Are you sure you want to stop editing this deck without saving?')) return;
 	stopEditingDeck();
-	showSection('deckList');
+	showPage('deckList');
 });
 
 function deckEditUpdateSize() {

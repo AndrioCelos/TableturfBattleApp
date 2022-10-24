@@ -43,7 +43,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Home page */
 
-#preGameSection {
+#preGamePage {
 	text-align: center;
 }
 
@@ -62,7 +62,7 @@ footer {
 
 /* Lobby page */
 
-#lobbySection:not([hidden]) {
+#lobbyPage:not([hidden]) {
 	display: grid;
 	grid-template-columns: 27em 1fr;
 }
@@ -379,7 +379,7 @@ dialog::backdrop {
 
 /* Game page */
 
-#gameSection:not([hidden]) {
+#gamePage:not([hidden]) {
 	display: grid;
 	grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1] 10em [play-column-2] 10em;
 	grid-template-rows: [player-row-1] auto [player-row-3] auto [hand-row] 1fr [player-row-2] auto [player-row-0] auto;
@@ -413,7 +413,7 @@ dialog::backdrop {
 	border-left: 8px solid var(--colour);
 	padding-left: 10px;
 }
-#gameSection:not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) {
+#gamePage:not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) {
 	text-align: right;
 	border-right: 8px solid var(--colour);
 	padding-right: 10px;
@@ -556,7 +556,7 @@ dialog::backdrop {
 	justify-content: space-around;
 	text-align: center;
 }
-#gameSection:not(.gameEnded) .playerStats {
+#gamePage:not(.gameEnded) .playerStats {
 	display: none;
 }
 
@@ -767,7 +767,7 @@ dialog::backdrop {
 
 /* Deck editor */
 
-:is(#deckListSection, #deckEditSection):not([hidden]) {
+:is(#deckListPage, #deckEditPage):not([hidden]) {
 	height: 100vh;
 	display: grid;
 	grid-template-columns: auto auto;
@@ -819,7 +819,7 @@ dialog::backdrop {
 	overflow-y: scroll;
 }
 
-#deckEditorDeckViewSection:not([hidden]), #deckEditorDeckEditSection {
+#deckEditorDeckViewSection:not([hidden]), #deckEditordeckEditPage {
 	display: grid;
 	grid-template-columns: minmax(min-content, auto) min-content;
 	grid-template-rows: auto auto auto 1fr;
@@ -835,7 +835,7 @@ dialog::backdrop {
 	grid-row: 1;
 }
 
-:is(#deckEditorDeckViewSection, #deckEditorDeckEditSection) > h3 + div {
+:is(#deckEditorDeckViewSection, #deckEditordeckEditPage) > h3 + div {
 	grid-row: 2;
 	grid-column: 1;
 }
@@ -871,7 +871,7 @@ dialog::backdrop {
 
 /* Small display layout */
 @media (max-width: 89rem) or (max-height: 42rem) {
-	#gameSection, #deckCardListView, #deckCardListEdit {
+	#gamePage, #deckCardListView, #deckCardListEdit {
 		font-size: small;
 	}
 	#cardList {
@@ -880,18 +880,18 @@ dialog::backdrop {
 		grid-column: 1 / -1;
 	}
 
-	#gameSection:not([hidden]) {
+	#gamePage:not([hidden]) {
 		grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 10em;
 	}
 
 	.playContainer { position: relative; }
-	#gameSection:not([data-players="2"]) .playContainer[data-index="0"] {
+	#gamePage:not([data-players="2"]) .playContainer[data-index="0"] {
 		left: -3em;
 	}
-	#gameSection:not([data-players="2"]) .playContainer[data-index="2"] {
+	#gamePage:not([data-players="2"]) .playContainer[data-index="2"] {
 		top: -3em;
 	}
-	#gameSection:not([data-players="2"]) .playContainer[data-index="3"] {
+	#gamePage:not([data-players="2"]) .playContainer[data-index="3"] {
 		left: -3em;
 		top: 3em;
 	}
@@ -917,7 +917,7 @@ dialog::backdrop {
 
 	/* Lobby - Mobile layout */
 
-	#lobbySection:not([hidden]) {
+	#lobbyPage:not([hidden]) {
 		grid-template-rows: auto 1fr;
 		grid-template-columns: initial;
 		height: 100vh;
@@ -939,7 +939,7 @@ dialog::backdrop {
 
 	/* Game - Mobile layout */
 
-	#gameSection:not([hidden]) {
+	#gamePage:not([hidden]) {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		grid-template-rows: auto 1fr auto auto auto;
@@ -1007,7 +1007,7 @@ dialog::backdrop {
 	}
 	.playContainer[data-index="0"] { grid-row: 2 / span 2; justify-content: start; margin: 0 0 2em 1em; }
 	.playContainer[data-index="1"] { grid-row: 1 / span 2; justify-content: end; margin: 2em 1em 0 0; }
-	#gameSection[data-players="2"] .playContainer[data-index="0"],
+	#gamePage[data-players="2"] .playContainer[data-index="0"],
 	.playContainer[data-index="2"] { grid-row: 2 / span 2; justify-content: end; margin: 0 1em 2em 0; }
 	.playContainer[data-index="3"] { grid-row: 1 / span 2; justify-content: start; margin: 2em 0 0 1em; }
 
@@ -1022,11 +1022,11 @@ dialog::backdrop {
 
 	/* Deck editor - Mobile layout */
 
-	:is(#deckListSection, #deckEditSection):not([hidden]) {
+	:is(#deckListPage, #deckEditPage):not([hidden]) {
 		display: block;
 	}
 
-	:is(#deckListSection, #deckEditSection) section {
+	:is(#deckListPage, #deckEditPage) section {
 		position: absolute;
 		background: black;
 		left: 0;
@@ -1056,7 +1056,7 @@ dialog::backdrop {
 		grid-column: 2;
 	}
 
-	:is(#deckEditorDeckViewSection, #deckEditorDeckEditSection) > h3 + div {
+	:is(#deckEditorDeckViewSection, #deckEditordeckEditPage) > h3 + div {
 		grid-row: 1;
 		grid-column: -2;
 	}
@@ -1083,7 +1083,7 @@ dialog::backdrop {
 		display: block;
 	}
 
-	#deckEditSection #deckEditorCardListSection {
+	#deckEditPage #deckEditorCardListSection {
 		z-index: 1;
 		top: 4em;
 		height: calc(100vh - 4em);

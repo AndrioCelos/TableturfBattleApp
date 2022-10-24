@@ -5,16 +5,16 @@ let selectedDeck: Deck | null = null;
 
 function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
 
-// Sections
-const sections = new Map<string, HTMLDivElement>();
+// Pages
+const pages = new Map<string, HTMLDivElement>();
 for (var id of [ 'noJS', 'preGame', 'lobby', 'game', 'deckList', 'deckEdit' ]) {
-	let el = document.getElementById(`${id}Section`) as HTMLDivElement;
-	if (!el) throw new EvalError(`Element not found: ${id}Section`);
-	sections.set(id, el);
+	let el = document.getElementById(`${id}Page`) as HTMLDivElement;
+	if (!el) throw new EvalError(`Element not found: ${id}Page`);
+	pages.set(id, el);
 }
 
-function showSection(key: string) {
-	for (const [key2, el] of sections) {
+function showPage(key: string) {
+	for (const [key2, el] of pages) {
 		el.hidden = key2 != key;
 	}
 }
@@ -37,12 +37,12 @@ function onGameStateChange(game: any, playerData: any) {
 	gamePage.classList.remove('gameEnded');
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
-			showSection('lobby');
+			showPage('lobby');
 			lobbySelectedStageSection.hidden = true;
 			lobbyStageSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.Preparing:
-			showSection('lobby');
+			showPage('lobby');
 			if (selectedStageButton)
 				lobbySelectedStageSection.removeChild(selectedStageButton.element);
 			selectedStageButton = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
@@ -62,7 +62,7 @@ function onGameStateChange(game: any, playerData: any) {
 				updateHand(playerData.hand);
 			board.autoHighlight = false;
 			redrawModal.hidden = true;
-			showSection('game');
+			showPage('game');
 
 			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
 
@@ -87,6 +87,10 @@ function onGameStateChange(game: any, playerData: any) {
 			}
 			break;
 	}
+}
+
+function showError() {
+	document.getElementById('errorModal')!.hidden = false;
 }
 
 function communicationError() {
@@ -188,7 +192,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 			} else if (payload.event == 'turn' || payload.event == 'gameEnd') {
 				clearReady();
 				board.autoHighlight = false;
-				showSection('game');
+				showPage('game');
 
 				(async () => {
 					let anySpecialAttacks = false;
@@ -257,7 +261,7 @@ function processUrl() {
 			presetGameID(location.hash);
 		} else {
 			clearPreGameForm(false);
-			showSection('preGame');
+			showPage('preGame');
 		}
 	}
 	return true;

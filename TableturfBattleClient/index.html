@@ -22,8 +22,8 @@
 		<meta name="theme-color" content="#e7b427" data-react-helmet="true"/>
 	</head>
 	<body>
-		<div id="noJSSection">This application requires JavaScript.</div>
-		<div id="preGameSection" hidden>
+		<div id="noJSPage">This application requires JavaScript.</div>
+		<div id="preGamePage" hidden>
 			<p><img title="Tableturf Battle" alt="Tableturf Battle logo" id="logo" src="assets/logo.png"></p>
 			<h1>Tableturf Battle</h1>
 			<form id="preGameForm">
@@ -57,7 +57,7 @@
 				<p><a href="https://github.com/AndrioCelos/TableturfBattleApp">GitHub</a></p>
 			</footer>
 		</div>
-		<div id="lobbySection" hidden>
+		<div id="lobbyPage" hidden>
 			<section id="lobbyPlayerListSection">
 				<p>Other players can join using a link to this page.<br/>
 					<button type="button" id="shareLinkButton">Share link</button><button type="button" id="showQrCodeButton">Show QR code</button></p>
@@ -91,7 +91,7 @@
 				</form>
 			</dialog>
 		</div>
-		<div id="gameSection" hidden>
+		<div id="gamePage" hidden>
 			<div class="playerBar" data-index="1">
 				<div class="result"></div>
 				<div class="name">Player 2</div>
@@ -201,11 +201,8 @@
 			<div class="playContainer" data-index="0"></div>
 			<div class="playContainer" data-index="2"></div>
 		</div>
-		<div id="errorModal" hidden>
-			<div id="errorModalBox">A communication error has occurred.</div>
-		</div>
-		<div id="deckListSection" hidden>
-			<section id="deckEditorDeckListSection">
+		<div id="deckListPage" hidden>
+			<section id="deckEditordeckListPage">
 				<a id="deckListBackButton" href=".">Back</a>
 				<h3>Deck list</h3>
 				<div id="deckList" class="deckList">
@@ -249,8 +246,8 @@
 				</form>
 			</dialog>
 		</div>
-		<div id="deckEditSection" hidden>
-			<section id="deckEditorDeckEditSection">
+		<div id="deckEditPage" hidden>
+			<section id="deckEditordeckEditPage">
 				<h3 id="deckName2">Deck</h3>
 				<div>
 					<button type="button" id="deckTestButton">Test</button>
@@ -275,6 +272,9 @@
 				<div id="cardList"></div>
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
+		</div>
+		<div id="errorModal" hidden>
+			<div id="errorModalBox">A communication error has occurred.</div>
 		</div>
 		<script src="build/tsbuild.js"></script>
 	</body>

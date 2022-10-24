@@ -1,4 +1,4 @@
-const gamePage = document.getElementById('gameSection')!;
+const gamePage = document.getElementById('gamePage')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
 const handButtons: CardButton[] = [ ];
@@ -392,7 +392,7 @@ rotateRightButton.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', e => {
-	if (!sections.get('game')!.hidden) {
+	if (!pages.get('game')!.hidden) {
 		switch (e.key) {
 			case 'p':
 				if (!passButton.disabled) {
@@ -417,6 +417,6 @@ document.addEventListener('keydown', e => {
 document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
 	e.preventDefault();
 	clearPreGameForm(true);
-	showSection('preGame');
+	showPage('preGame');
 	newGameButton.focus();
 });

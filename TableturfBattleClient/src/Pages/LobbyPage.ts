@@ -138,7 +138,7 @@ submitDeckButton.addEventListener('click', () => {
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseDeck`);
 	req.addEventListener('load', e => {
 		if (req.status == 204) {
-			showSection('lobby');
+			showPage('lobby');
 		}
 	});
 	let data = new URLSearchParams();
