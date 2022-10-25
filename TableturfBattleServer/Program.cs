@@ -8,6 +8,8 @@ using System.Web;
 
 using Newtonsoft.Json;
 
+using TableturfBattleServer.DTO;
+
 using WebSocketSharp.Server;
 
 using HttpListenerRequest = WebSocketSharp.Net.HttpListenerRequest;
@@ -154,7 +156,7 @@ internal class Program {
 								SetResponse(e.Response, (int) HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new {
 									game,
 									playerData = game.GetPlayer(clientToken, out var playerIndex, out var player)
-										? new { playerIndex, hand = player.Hand, deck = player.Deck, cardsUsed = player.CardsUsed, move = player.Move }
+										? new PlayerData(playerIndex, player)
 										: null
 								}));
 								break;

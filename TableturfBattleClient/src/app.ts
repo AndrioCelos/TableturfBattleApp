@@ -24,6 +24,35 @@ function setClientToken(token: string) {
 	clientToken = token;
 }
 
+function setUrl(path: string) {
+	settingUrl = true;
+	try {
+		if (canPushState) {
+			try {
+				history.pushState(null, '', path);
+			} catch {
+				canPushState = false;
+				location.hash = `#${path}`;
+			}
+		} else
+			location.hash = `#${path}`;
+	} finally {
+		settingUrl = false;
+	}
+}
+function setGameUrl(gameID: string) { setUrl(`game/${gameID}`); }
+function clearUrlFromGame() {
+	if (canPushState) {
+		try {
+			history.pushState(null, '', '../..');
+		} catch {
+			canPushState = false;
+		}
+	}
+	if (location.hash)
+		location.hash = '';
+}
+
 function onGameStateChange(game: any, playerData: any) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
@@ -97,142 +126,166 @@ function communicationError() {
 	document.getElementById('errorModal')!.hidden = false;
 }
 
+function playerDataReviver(key: string, value: any) {
+	return !value ? value
+		: key == 'hand' || key == 'deck'
+		? (value as (Card | number)[]).map(v => typeof v == 'number' ? cardDatabase.get(v) : Card.fromJson(v))
+		: key == 'card'
+		? typeof value == 'number' ? cardDatabase.get(value) : Card.fromJson(value)
+		: value;
+}
+
 function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
 	webSocket.addEventListener('open', e => {
-		const request2 = new XMLHttpRequest();
-		request2.open('GET', `${config.apiBaseUrl}/games/${gameID}/playerData?clientToken=${clientToken}`);
-		request2.addEventListener('load', e => {
-			if (request2.status == 200) {
-				const response = JSON.parse(request2.responseText);
-				const playerData = response.playerData as PlayerData | null;
-
-				currentGame = {
-					id: gameID,
-					me: playerData != null ? { playerIndex: playerData.playerIndex, hand: playerData.hand?.map(Card.fromJson) || null, deck: playerData.deck?.map(Card.fromJson) || null, cardsUsed: playerData.cardsUsed, move: playerData.move } : null,
-					players: response.game.players,
-					maxPlayers: response.game.maxPlayers,
-					webSocket: webSocket
-				};
-
-				for (const li of playerListItems)
-					playerList.removeChild(li);
-				playerListItems.splice(0);
-				for (let i = 0; i < currentGame.maxPlayers; i++) {
-					var el = document.createElement('li');
-					playerListItems.push(el);
-					playerList.appendChild(el);
-					updatePlayerListItem(i);
-				}
-
-				for (let i = 0; i < playerBars.length; i++) {
-					playerBars[i].visible = i < currentGame.maxPlayers;
-				}
-
-				for (const button of stageButtons)
-					button.setStartSpaces(currentGame.maxPlayers);
-
-				onGameStateChange(response.game, playerData);
-
-				for (let i = 0; i < response.game.players.length; i++) {
-					if (response.game.players[i].isReady)
-						showReady(i);
-				}
-
-				if (playerData) {
-					myPlayerIndex = playerData.playerIndex;
-					if (playerData.move) {
-						canPlay = false;
-						board.autoHighlight = false;
-						if (!playerData.move.isPass) {
-							const move = playerData.move as PlayMove;
-							board.cardPlaying = Card.fromJson(move.card);
-							board.highlightX = move.x;
-							board.highlightY = move.y;
-							board.cardRotation = move.rotation;
-							board.specialAttack = move.isSpecialAttack;
-							board.refreshHighlight();
-						}
-					}
-				}
-			}
-		});
-		request2.send();
+		enterGameTimeout = setTimeout(() => {
+			webSocket.close(1002, 'Timeout waiting for a sync message');
+			enterGameTimeout = null;
+			communicationError();
+		}, 30000);
 	});
 	webSocket.addEventListener('message', e => {
-		if (currentGame == null)
-			return;
 		let s = e.data as string;
 		console.log(`>> ${s}`);
 		if (s) {
-			let payload = JSON.parse(s);
-			if (payload.event == 'join') {
-				if (payload.data.playerIndex == currentGame.players.length) {
-					currentGame.players.push(payload.data.player);
-					playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
-					updatePlayerListItem(payload.data.playerIndex);
+			let payload = JSON.parse(s, playerDataReviver);
+			if (payload.event == 'sync') {
+				if (enterGameTimeout != null) {
+					clearTimeout(enterGameTimeout);
+					enterGameTimeout = null;
 				}
-				else
-					communicationError();
-			} else if (payload.event == 'playerReady') {
-				currentGame.players[payload.data.playerIndex].isReady = true;
-				updatePlayerListItem(payload.data.playerIndex);
+				setLoadingMessage(null);
+				if (!e.data) {
+					webSocket.close();
+					alert('The game was not found.');
+				} else {
+					currentGame = {
+						id: gameID,
+						me: payload.playerData,
+						players: payload.data.players,
+						maxPlayers: payload.data.maxPlayers,
+						webSocket: webSocket
+					};
 
-				if (payload.data.playerIndex == currentGame.me?.playerIndex) {
-					lobbyStageSection.hidden = true;
-					lobbyDeckSection.hidden = true;
-				}
+					for (const li of playerListItems)
+						playerList.removeChild(li);
+					playerListItems.splice(0);
+					for (let i = 0; i < currentGame.maxPlayers; i++) {
+						var el = document.createElement('li');
+						playerListItems.push(el);
+						playerList.appendChild(el);
+						updatePlayerListItem(i);
+					}
 
-				if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
-					showReady(payload.data.playerIndex);
-				}
-			} else if (payload.event == 'stateChange') {
-				clearReady();
-				onGameStateChange(payload.data, payload.playerData);
-			} else if (payload.event == 'turn' || payload.event == 'gameEnd') {
-				clearReady();
-				board.autoHighlight = false;
-				showPage('game');
+					for (let i = 0; i < playerBars.length; i++) {
+						playerBars[i].visible = i < currentGame.maxPlayers;
+					}
 
-				(async () => {
-					let anySpecialAttacks = false;
-					// Show the cards that were played.
-					clearPlayContainers();
+					for (const button of stageButtons)
+						button.setStartSpaces(currentGame.maxPlayers);
+
+					onGameStateChange(payload.data, payload.playerData);
+
 					for (let i = 0; i < currentGame.players.length; i++) {
-						const player = currentGame.players[i];
-						player.specialPoints = payload.data.game.players[i].specialPoints;
-						player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
-						player.passes = payload.data.game.players[i].passes;
+						if (currentGame.players[i].isReady)
+							showReady(i);
+					}
 
-						const move = payload.data.moves[i];
-						const button = new CardButton('checkbox', move.card);
-						if (move.isSpecialAttack) {
-							anySpecialAttacks = true;
-							button.element.classList.add('specialAttack');
-						} else if (move.isPass) {
-							const el = document.createElement('div');
-							el.className = 'passLabel';
-							el.innerText = 'Pass';
-							button.element.appendChild(el);
+					if (currentGame.me) {
+						if (currentGame.me.move) {
+							canPlay = false;
+							board.autoHighlight = false;
+							if (!currentGame.me.move.isPass) {
+								const move = currentGame.me.move as PlayMove;
+								board.cardPlaying = move.card;
+								board.highlightX = move.x;
+								board.highlightY = move.y;
+								board.cardRotation = move.rotation;
+								board.specialAttack = move.isSpecialAttack;
+								board.refreshHighlight();
+							}
 						}
-						button.inputElement.hidden = true;
-						playContainers[i].append(button.element);
 					}
+				}
+			} else {
+				if (currentGame == null) {
+					communicationError();
+					return;
+				}
+				switch (payload.event) {
+					case 'join':
+						if (payload.data.playerIndex == currentGame.players.length) {
+							currentGame.players.push(payload.data.player);
+							playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
+							updatePlayerListItem(payload.data.playerIndex);
+						}
+						else
+							communicationError();
+						break;
+					case 'playerReady':
+						currentGame.players[payload.data.playerIndex].isReady = true;
+						updatePlayerListItem(payload.data.playerIndex);
+	
+						if (payload.data.playerIndex == currentGame.me?.playerIndex) {
+							lobbyStageSection.hidden = true;
+							lobbyDeckSection.hidden = true;
+						}
+	
+						if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
+							showReady(payload.data.playerIndex);
+						}
+						break;
+					case 'stateChange':
+						clearReady();
+						onGameStateChange(payload.data, payload.playerData);
+						break;
+					case 'turn':
+					case 'gameEnd':
+						clearReady();
+						board.autoHighlight = false;
+						showPage('game');
+	
+						let anySpecialAttacks = false;
+						// Show the cards that were played.
+						clearPlayContainers();
+						for (let i = 0; i < currentGame.players.length; i++) {
+							const player = currentGame.players[i];
+							player.specialPoints = payload.data.game.players[i].specialPoints;
+							player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
+							player.passes = payload.data.game.players[i].passes;
 
-					await playInkAnimations(payload.data, anySpecialAttacks);
-					updateHand(payload.playerData.hand);
-					turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
-					clearPlayContainers();
-					if (payload.event == 'gameEnd') {
-						gameButtonsContainer.hidden = true;
-						gamePage.classList.add('gameEnded');
-						showResult();
-					} else {
-						canPlay = myPlayerIndex != null;
-						board.autoHighlight = canPlay;
-						setupControlsForPlay();
-					}
-				})();
+							const move = payload.data.moves[i];
+							const button = new CardButton('checkbox', move.card);
+							if (move.isSpecialAttack) {
+								anySpecialAttacks = true;
+								button.element.classList.add('specialAttack');
+							} else if (move.isPass) {
+								const el = document.createElement('div');
+								el.className = 'passLabel';
+								el.innerText = 'Pass';
+								button.element.appendChild(el);
+							}
+							button.inputElement.hidden = true;
+							playContainers[i].append(button.element);
+						}
+
+						(async () => {
+							await playInkAnimations(payload.data, anySpecialAttacks);
+							updateHand(payload.playerData.hand);
+							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
+							clearPlayContainers();
+							if (payload.event == 'gameEnd') {
+								gameButtonsContainer.hidden = true;
+								gamePage.classList.add('gameEnded');
+								showResult();
+							} else {
+								canPlay = myPlayerIndex != null;
+								board.autoHighlight = canPlay;
+								setupControlsForPlay();
+							}
+						})();
+						break;
+				}
 			}
 		}
 	});
@@ -253,6 +306,7 @@ function processUrl() {
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
 		showDeckList();
 	else {
+		showPage('preGame');
 		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
 		if (m)
 			presetGameID(m[2]);
@@ -261,7 +315,6 @@ function processUrl() {
 			presetGameID(location.hash);
 		} else {
 			clearPreGameForm(false);
-			showPage('preGame');
 		}
 	}
 	return true;

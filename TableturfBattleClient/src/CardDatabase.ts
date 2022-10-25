@@ -1,5 +1,10 @@
 const cardDatabase = {
 	cards: null as Card[] | null,
+	get(number: number) {
+		if (cardDatabase.cards == null) throw new Error('Card database not loaded');
+		if (number <= 0 || number > cardDatabase.cards.length) throw new RangeError(`No card with number ${number}`);
+		return cardDatabase.cards[number - 1];
+	},
 	loadAsync() {
 		return new Promise<Card[]>((resolve, reject) => {
 			if (cardDatabase.cards != null) {

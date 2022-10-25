@@ -1,6 +1,8 @@
 ﻿using System.Web;
-
+using Newtonsoft.Json;
 using WebSocketSharp.Server;
+
+namespace TableturfBattleServer;
 
 internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 	public Guid GameID { get; set; }
@@ -13,6 +15,20 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 			this.GameID = gameID;
 		if (args.TryGetValue("clientToken", out var clientTokenString) && Guid.TryParse(clientTokenString, out var clientToken))
 			this.ClientToken = clientToken;
+
+		// Send an initial state payload.
+		if (Program.games.TryGetValue(this.GameID, out var game)) {
+			DTO.PlayerData? playerData = null;
+			for (int i = 0; i < game.Players.Count; i++) {
+				var player = game.Players[i];
+				if (player.Token == this.ClientToken) {
+					playerData = new(i, player);
+					break;
+				}
+			}
+			this.Send(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData)));
+		} else
+			this.Send(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
 	}
 
 	internal void SendInternal(string data) => this.Send(data);

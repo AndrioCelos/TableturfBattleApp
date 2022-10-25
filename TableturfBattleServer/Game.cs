@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 
 using Newtonsoft.Json;
 
@@ -177,6 +176,8 @@ public class Game {
 			var placements = new List<Placement>();
 			var specialSpacesActivated = new List<Point>();
 
+			if (this.Board == null) throw new InvalidOperationException("No board?!");
+
 			// Place the ink.
 			(Placement placement, int cardSize)? placementData = null;
 			foreach (var i in Enumerable.Range(0, this.Players.Count).Where(i => this.Players[i] != null).OrderByDescending(i => this.Players[i]!.Move!.Card.Size)) {
@@ -284,21 +285,21 @@ public class Game {
 
 	internal void SendPlayerReadyEvent(int playerIndex) => this.SendEvent("playerReady", new { playerIndex }, false);
 
-	internal void SendEvent(string eventType, object? data, bool includePlayerData) {
-		foreach (var session in Program.httpServer.WebSocketServices.Hosts.First().Sessions.Sessions) {
+	internal void SendEvent<T>(string eventType, T data, bool includePlayerData) {
+		foreach (var session in Program.httpServer!.WebSocketServices.Hosts.First().Sessions.Sessions) {
 			if (session is TableturfWebSocketBehaviour behaviour && behaviour.GameID == this.ID) {
 				if (includePlayerData) {
-					object? playerData = null;
+					DTO.PlayerData? playerData = null;
 					for (int i = 0; i < this.Players.Count; i++) {
 						var player = this.Players[i];
 						if (player.Token == behaviour.ClientToken) {
-							playerData = new { playerIndex = i, hand = player.Hand, deck = player.Deck, move = player.Move, cardsUsed = player.CardsUsed };
+							playerData = new(i, player);
 							break;
 						}
 					}
-					behaviour.SendInternal(JsonConvert.SerializeObject(new { @event = eventType, data, playerData }));
+					behaviour.SendInternal(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<T>(eventType, data, playerData)));
 				} else {
-					behaviour.SendInternal(JsonConvert.SerializeObject(new { @event = eventType, data }));
+					behaviour.SendInternal(JsonConvert.SerializeObject(new DTO.WebSocketPayload<T>(eventType, data)));
 				}
 			}
 		}

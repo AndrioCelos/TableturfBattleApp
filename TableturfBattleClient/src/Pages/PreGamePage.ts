@@ -1,11 +1,22 @@
+const preGameForm = document.getElementById('preGameForm') as HTMLFormElement;
 const newGameButton = document.getElementById('newGameButton')!;
 const joinGameButton = document.getElementById('joinGameButton')!;
 const nameBox = document.getElementById('nameBox') as HTMLInputElement;
 const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton') as HTMLLinkElement;
+const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
+const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
 
 let shownMaxPlayersWarning = false;
+
+function setLoadingMessage(message: string | null) {
+	if (message)
+		preGameLoadingLabel.innerText = message;
+	preGameLoadingSection.hidden = message == null;
+	for (const button of preGameForm.getElementsByTagName('button'))
+		button.disabled = message != null;
+}
 
 maxPlayersBox.addEventListener('change', () => {
 	if (!shownMaxPlayersWarning && maxPlayersBox.value != '2') {
@@ -16,7 +27,7 @@ maxPlayersBox.addEventListener('change', () => {
 	}
 });
 
-(document.getElementById('preGameForm') as HTMLFormElement).addEventListener('submit', e => {
+preGameForm.addEventListener('submit', e => {
 	e.preventDefault();
 	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
 		const name = nameBox.value;
@@ -41,30 +52,13 @@ maxPlayersBox.addEventListener('change', () => {
 		data.append('clientToken', clientToken);
 		data.append('maxPlayers', maxPlayersBox.value);
 		request.send(data.toString());
+		setLoadingMessage('Creating a room...');
 	} else {
 		const name = nameBox.value;
 		window.localStorage.setItem('name', name);
 		tryJoinGame(name, gameIDBox.value, false);
 	}
 });
-
-function setUrl(path: string) {
-	settingUrl = true;
-	try {
-		if (canPushState) {
-			try {
-				history.pushState(null, '', path);
-			} catch {
-				canPushState = false;
-				location.hash = `#${path}`;
-			}
-		} else
-			location.hash = `#${path}`;
-	} finally {
-		settingUrl = false;
-	}
-}
-function setGameUrl(gameID: string) { setUrl(`game/${gameID}`); }
 
 function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 	const m = /(?:^|[#/])([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(idOrUrl);
@@ -98,6 +92,8 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 				alert('The game has already started.');
 			else
 				alert('Unable to join the room.');
+			clearUrlFromGame();
+			setLoadingMessage(null);
 			if (fromInitialLoad)
 				clearPreGameForm(true);
 			else {
@@ -106,10 +102,14 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 			}
 		}
 	});
+	request.addEventListener('error', () => {
+		communicationError();
+	});
 	let data = new URLSearchParams();
 	data.append('name', name);
 	data.append('clientToken', clientToken);
 	request.send(data.toString());
+	setLoadingMessage('Joining the game...');
 }
 
 function getGameInfo(gameID: string, myPlayerIndex: number | null) {
@@ -124,15 +124,7 @@ function backPreGameForm(updateUrl: boolean) {
 	document.getElementById('preGameJoinSection')!.hidden = true;
 
 	if (updateUrl) {
-		if (canPushState) {
-			try {
-				history.pushState(null, '', '../..');
-			} catch {
-				canPushState = false;
-			}
-		}
-		if (location.hash)
-			location.hash = '';
+		clearUrlFromGame();
 	}
 }
 function clearPreGameForm(updateUrl: boolean) {

@@ -13,6 +13,8 @@ let currentGame: {
 	webSocket: WebSocket
 } | null;
 
+let enterGameTimeout: number | null = null;
+
 const playerList = document.getElementById('playerList')!;
 const playerListItems: HTMLElement[] = [ ];
 

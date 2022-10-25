@@ -1099,3 +1099,59 @@ dialog::backdrop {
 		height: 13em;
 	}
 }
+
+/* Loading spinner - based on loading.io */
+
+.loadingContainer:not([hidden]) {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5em;
+}
+.lds-ripple {
+	--border-width: 0.15em;
+	position: relative;
+	width: 1.5em;
+	height: 1.5em;
+	display: inline-block;
+}
+.lds-ripple div {
+	position: absolute;
+	border: var(--border-width) solid #fff;
+	opacity: 1;
+	border-radius: 50%;
+	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+	animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+	0% {
+		top: calc(50% - var(--border-width));
+		left: calc(50% - var(--border-width));
+		right: calc(50% - var(--border-width));
+		bottom: calc(50% - var(--border-width));
+		opacity: 0;
+	}
+	4.9% {
+		top: calc(50% - var(--border-width));
+		left: calc(50% - var(--border-width));
+		right: calc(50% - var(--border-width));
+		bottom: calc(50% - var(--border-width));
+		opacity: 0;
+	}
+	5% {
+		top: calc(50% - var(--border-width));
+		left: calc(50% - var(--border-width));
+		right: calc(50% - var(--border-width));
+		bottom: calc(50% - var(--border-width));
+		opacity: 1;
+	}
+	100% {
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		opacity: 0;
+	}
+}
