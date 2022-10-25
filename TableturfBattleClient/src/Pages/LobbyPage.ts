@@ -13,6 +13,7 @@ const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSec
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
+const lobbyDeckButtons: CheckButton[] = [ ];
 
 const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElement;
 let qrCode: QRCode | null;
@@ -96,33 +97,40 @@ function initDeckSelection() {
 	selectedDeck = null;
 	if (currentGame?.me) {
 		clearChildren(lobbyDeckList);
+		lobbyDeckButtons.splice(0);
 
 		for (let i = 0; i < decks.length; i++) {
 			const deck = decks[i];
 
 			const label = document.createElement('label');
 
-			const button = document.createElement('input');
-			button.name = 'gameSelectedDeck';
-			button.type = 'radio';
-			button.dataset.index = i.toString();
-			button.addEventListener('click', () => {
-				selectedDeck = deck;
-				submitDeckButton.disabled = false;
+			const input = document.createElement('input');
+			input.name = 'gameSelectedDeck';
+			input.type = 'radio';
+			input.dataset.index = i.toString();
+			input.addEventListener('input', () => {
+				if (input.checked) {
+					for (const button of lobbyDeckButtons) {
+						if (button.input != input) button.checked = false;
+					}
+					selectedDeck = deck;
+					submitDeckButton.disabled = false;
+				}
 			});
-			label.appendChild(button);
+			label.appendChild(input);
 
 			label.appendChild(document.createTextNode(deck.name));
 
 			if (!deck.isValid) {
 				label.classList.add('disabled');
-				button.disabled = true;
+				input.disabled = true;
 			} else if (deck.name == lastDeckName) {
 				selectedDeck = deck;
-				button.checked = true;
+				input.checked = true;
 			}
 
 			lobbyDeckList.appendChild(label);
+			lobbyDeckButtons.push(new CheckButton(input));
 		}
 		submitDeckButton.disabled = selectedDeck == null;
 		lobbyDeckSection.hidden = false;

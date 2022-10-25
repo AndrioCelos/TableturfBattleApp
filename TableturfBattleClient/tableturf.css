@@ -452,19 +452,18 @@ dialog::backdrop {
 	margin: 0.5em;
 	padding: 0 0.5em;
 	text-align: center;
-	background: var(--special-colour-1);
+	background: var(--primary-colour-1);
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
 #playControls > label input {
-	display: none;
+	position: absolute;
+	left: -333px;
 }
-#playControls > label.checked {
-	background: var(--special-accent-colour-1);
-}
-#playControls > label:disabled {
-	background: grey;
-}
+#playControls > label:hover { background: var(--special-colour-1); }
+#playControls > label:focus-within { outline: 2px solid var(--special-accent-colour-2); }
+#playControls > label:is(:active, .checked) { background: var(--special-accent-colour-1); }
+#playControls > label.disabled { background: grey; }
 
 .playContainer { text-align: center; }
 
@@ -498,7 +497,7 @@ dialog::backdrop {
 	width: 1.5em;
 	height: 1.5em;
 }
-#gameButtonsContainer button:hover {
+#gameButtonsContainer button:is(:hover, :focus) {
 	opacity: 1;
 }
 #gameButtonsContainer button:active {
@@ -783,7 +782,6 @@ dialog::backdrop {
 }
 
 .deckList > label, #addDeckControls > button {
-	background: dimgrey;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -791,12 +789,18 @@ dialog::backdrop {
 	color: inherit;
 	font-size: inherit;
 	border: inherit;
+	text-shadow: 0 0 4px black;
 }
 .deckList > * {
 	width: 20rem;
 	height: 3rem;
 	margin: 0.5em;
 }
+.deckList > label { background: var(--primary-colour-2); }
+.deckList > label:hover { background: var(--special-colour-2); }
+.deckList > label:focus-within { outline: 2px solid var(--special-accent-colour-2); }
+.deckList > label:is(:active, .checked) { background: var(--special-accent-colour-2); }
+.deckList > label.disabled { background: grey; }
 #addDeckControls {
 	display: flex;
 	align-items: stretch;
@@ -804,7 +808,12 @@ dialog::backdrop {
 }
 #addDeckControls > button {
 	flex-grow: 1;
+	background: black;
+	border: 0.25em solid var(--primary-colour-2);
 }
+#addDeckControls > button:hover { border-color: var(--special-colour-2); }
+#addDeckControls > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
+#addDeckControls > button:is(:active, .checked) { border-color: var(--special-accent-colour-2); }
 
 .deckList {
 	display: flex;
@@ -812,7 +821,8 @@ dialog::backdrop {
 }
 
 .deckList input {
-	display: none;
+	position: absolute;
+	left: -333px;
 }
 
 .card.emptySlot {

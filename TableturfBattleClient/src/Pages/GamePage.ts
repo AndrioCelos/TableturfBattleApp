@@ -1,10 +1,12 @@
+/// <reference path="../CheckButton.ts"/>
+
 const gamePage = document.getElementById('gamePage')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
 const handButtons: CardButton[] = [ ];
 
-const passButton = document.getElementById('passButton') as HTMLInputElement;
-const specialButton = document.getElementById('specialButton') as HTMLInputElement;
+const passButton = CheckButton.fromId('passButton');
+const specialButton = CheckButton.fromId('specialButton');
 const gameButtonsContainer = document.getElementById('gameButtonsContainer')!;
 const rotateLeftButton = document.getElementById('rotateLeftButton') as HTMLButtonElement;
 const rotateRightButton = document.getElementById('rotateRightButton') as HTMLButtonElement;
@@ -83,7 +85,7 @@ function setupControlsForPlay() {
 	board.specialAttack = false;
 	board.cardPlaying = null;
 	if (canPlay && currentGame?.me?.hand != null) {
-		passButton.disabled = false;
+		passButton.enabled = true;
 
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
@@ -92,14 +94,14 @@ function setupControlsForPlay() {
 			handButtons[i].enabled = canPlayCard[i];
 		}
 
-		specialButton.disabled = !canPlayCardAsSpecialAttack.includes(true);
+		specialButton.enabled = canPlayCardAsSpecialAttack.includes(true);
 		board.autoHighlight = true;
 	} else {
 		for (const button of handButtons) {
 			button.enabled = false;
-			passButton.disabled = true;
-			specialButton.disabled = true;
 		}
+		passButton.enabled = false;
+		specialButton.enabled = false;
 	}
 }
 
@@ -291,7 +293,7 @@ function passButton_input() {
 		}
 	}
 }
-passButton.addEventListener('input', passButton_input);
+passButton.input.addEventListener('input', passButton_input);
 
 function specialButton_input() {
 	board.specialAttack = specialButton.checked;
@@ -311,7 +313,7 @@ function specialButton_input() {
 		}
 	}
 }
-specialButton.addEventListener('input', specialButton_input);
+specialButton.input.addEventListener('input', specialButton_input);
 
 board.onclick = (x, y) => {
 	if (board.cardPlaying == null || !currentGame?.me)
@@ -395,7 +397,7 @@ document.addEventListener('keydown', e => {
 	if (!pages.get('game')!.hidden) {
 		switch (e.key) {
 			case 'p':
-				if (!passButton.disabled) {
+				if (passButton.enabled) {
 					passButton.checked = !passButton.checked;
 					passButton_input();
 					focusFirstEnabledHandCard();
@@ -403,7 +405,7 @@ document.addEventListener('keydown', e => {
 				e.preventDefault();
 				break;
 			case 's':
-				if (!specialButton.disabled) {
+				if (specialButton.enabled) {
 					specialButton.checked = !specialButton.checked;
 					specialButton_input();
 					focusFirstEnabledHandCard();

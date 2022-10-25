@@ -24,12 +24,12 @@ const deckImportTextBox = document.getElementById('deckImportTextBox') as HTMLTe
 const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
+const deckButtons: CheckButton[] = [ ];
+
 function showDeckList() {
 	showPage('deckList');
 	deselectDeck();
-	for (const el of deckList.getElementsByTagName('input')) {
-		(el as HTMLInputElement).checked = false;
-	}
+	for (const button of deckButtons) button.checked = false;
 }
 
 deckListBackButton.addEventListener('click', e => {
@@ -82,20 +82,24 @@ function saveDecks() {
 
 function createDeckButton(index: number, deck: Deck) {
 	const label = document.createElement('label');
+	const input = document.createElement('input');
 
-	const button = document.createElement('input');
-	button.name = 'selectedDeck';
-	button.type = 'radio';
-	button.dataset.index = index.toString();
-	button.addEventListener('click', e => {
+	input.name = 'selectedDeck';
+	input.type = 'radio';
+	input.dataset.index = index.toString();
+	input.addEventListener('click', e => {
+		for(const button2 of deckButtons) {
+			if (button2.input != input) button2.checked = false;
+		}
 		selectedDeck = decks[parseInt((e.target as HTMLInputElement).dataset.index!)];
 		selectDeck();
 	});
-	label.appendChild(button);
+	label.appendChild(input);
 
 	label.appendChild(document.createTextNode(deck.name));
 
 	deckList.insertBefore(label, addDeckControls);
+	deckButtons.push(new CheckButton(input));
 	return label;
 }
 

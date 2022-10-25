@@ -4,6 +4,7 @@ class CardButton {
 	readonly element: HTMLLabelElement;
 	readonly inputElement: HTMLInputElement;
 	readonly card: Card;
+	readonly button: CheckButton;
 
 	constructor(type: 'checkbox' | 'radio', card: Card) {
 		this.card = card;
@@ -84,24 +85,14 @@ class CardButton {
 			el2.appendChild(el3);
 		}
 
+		this.button = new CheckButton(checkBox);
+
 		CardButton.idNumber++;
 	}
 
-	get enabled() { return !this.inputElement.disabled; }
-	set enabled(value: boolean) {
-		this.inputElement.disabled = !value;
-		if (value)
-			this.element.classList.remove('disabled');
-		else
-			this.element.classList.add('disabled');
-	}
+	get enabled() { return this.button.enabled; }
+	set enabled(value: boolean) { this.button.enabled = value; }
 
-	get checked() { return this.inputElement.checked; }
-	set checked(value: boolean) {
-		this.inputElement.checked = value;
-		if (this.inputElement.checked)
-			this.element.classList.add('checked');
-		else
-			this.element.classList.remove('checked');
-	}
+	get checked() { return this.button.checked; }
+	set checked(value: boolean) { this.button.checked = value; }
 }
