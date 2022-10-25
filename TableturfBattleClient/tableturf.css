@@ -385,6 +385,9 @@ dialog::backdrop {
 	grid-template-rows: [player-row-1] auto [player-row-3] auto [hand-row] 1fr [player-row-2] auto [player-row-0] auto;
 	height: 100vh;
 }
+#gamePage:where([data-players="2"]):not([hidden]) {
+	grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 20em;
+}
 
 .playerBar[data-index="0"] {
 	--colour: var(--primary-colour-1);
@@ -463,10 +466,16 @@ dialog::backdrop {
 	background: grey;
 }
 
+.playContainer { text-align: center; }
+
 .playContainer[data-index="0"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
 .playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="3"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
+
+.playContainer .card {
+	margin: 0;
+}
 
 #gameButtonsContainer {
 	grid-column: score-column;
@@ -716,13 +725,13 @@ dialog::backdrop {
 	content: 'Special Attack!';
 	position: absolute;
 	left: -2em;
-	top: 5em;
+	top: 4em;
 	right: -2em;
 	height: 2em;
 	background: var(--player-colour);
 	color: black;
 	text-align: center;
-	font-size: large;
+	font-size: larger;
 	border-radius: 0.5em;
 	animation: 3s forwards specialAttackAnimation;
 }
