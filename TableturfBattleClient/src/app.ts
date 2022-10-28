@@ -1,9 +1,25 @@
+/// <reference path="Pages/PreGamePage.ts"/>
+
+const errorDialog = document.getElementById('errorDialog') as HTMLDialogElement;
+const errorMessage = document.getElementById('errorMessage')!;
+const errorDialogForm = document.getElementById('errorDialogForm') as HTMLFormElement;
+
+let initialised = false;
+let initialiseCallback: (() => void) | null = null;
 let canPushState = isSecureContext && location.protocol != 'file:';
 
 const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], true) ];
 let selectedDeck: Deck | null = null;
+let deckModified = false;
 
 function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
+
+function onInitialise(callback: () => void) {
+	if (initialised)
+		callback();
+	else
+		initialiseCallback = callback;
+}
 
 // Pages
 const pages = new Map<string, HTMLDivElement>();
@@ -118,13 +134,20 @@ function onGameStateChange(game: any, playerData: any) {
 	}
 }
 
-function showError() {
-	document.getElementById('errorModal')!.hidden = false;
+let errorDialogCallback: ((e: Event) => void) | null = null;
+function communicationError(message?: string, showButton?: boolean, callback?: (e: Event) => void) {
+	preGameLoadingSection.hidden = true;
+	errorMessage.innerText = message ?? 'A communication error has occurred.';
+	errorDialogCallback = callback ?? null;
+	errorDialogForm.hidden = showButton != true;
+	errorDialog.showModal();
 }
-
-function communicationError() {
-	document.getElementById('errorModal')!.hidden = false;
-}
+errorDialog.addEventListener('close', e => {
+	if (errorDialogCallback) {
+		errorDialogCallback(e);
+		errorDialogCallback = null;
+	}
+});
 
 function playerDataReviver(key: string, value: any) {
 	return !value ? value
@@ -225,12 +248,12 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					case 'playerReady':
 						currentGame.players[payload.data.playerIndex].isReady = true;
 						updatePlayerListItem(payload.data.playerIndex);
-	
+
 						if (payload.data.playerIndex == currentGame.me?.playerIndex) {
 							lobbyStageSection.hidden = true;
 							lobbyDeckSection.hidden = true;
 						}
-	
+
 						if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
 							showReady(payload.data.playerIndex);
 						}
@@ -244,7 +267,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 						clearReady();
 						board.autoHighlight = false;
 						showPage('game');
-	
+
 						let anySpecialAttacks = false;
 						// Show the cards that were played.
 						clearPlayContainers();
@@ -303,8 +326,9 @@ function processUrl() {
 		}
 	}
 	stopEditingDeck();
+	errorDialog.close();
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
-		showDeckList();
+		onInitialise(showDeckList);
 	else {
 		showPage('preGame');
 		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
@@ -318,6 +342,16 @@ function processUrl() {
 		}
 	}
 	return true;
+}
+
+function presetGameID(url: string) {
+	document.getElementById('preGameDefaultSection')!.hidden = true;
+	document.getElementById('preGameJoinSection')!.hidden = false;
+	(document.getElementById('gameIDBox') as HTMLInputElement).value = url;
+	onInitialise(() => {
+		if (playerName)
+			tryJoinGame(playerName, url, true);
+	});
 }
 
 function isInternetExplorer() {
@@ -334,4 +368,18 @@ function clearChildren(el: Element) {
 		el.removeChild(el2);
 }
 
-cardDatabase.loadAsync().then(initCardDatabase).catch(() => communicationError);
+Promise.all([ cardDatabase.loadAsync().then(initCardDatabase), stageDatabase.loadAsync().then(initStageDatabase) ])
+	.then(() => {
+		initialised = true;
+		setLoadingMessage(null);
+		if (initialiseCallback)
+			initialiseCallback();
+	}, () => {
+		preGameLoadingSection.hidden = true;
+		communicationError('Unable to load game data from the server.', false);
+	});
+
+if (!canPushState)
+	preGameDeckEditorButton.href = '#deckeditor';
+showPage('preGame');
+processUrl();

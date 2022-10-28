@@ -6,9 +6,13 @@ const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButton
 const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
 const submitDeckButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
+const stageSelectionFormLoadingSection = stageSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
+const stageSelectionFormSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
 const stageRandomLabel = document.getElementById('stageRandomLabel')!;
 const stageRandomButton = document.getElementById('stageRandomButton') as HTMLInputElement;
 
+const deckSelectionForm = document.getElementById('deckSelectionForm') as HTMLFormElement;
+const deckSelectionFormLoadingSection = deckSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
 const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSection')!;
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
@@ -22,12 +26,38 @@ let lobbyShareData: ShareData | null;
 let selectedStageButton = null as StageButton | null;
 
 function initLobbyPage(url: string) {
+	stageSelectionFormSubmitButton.disabled = false;
+	stageSelectionFormLoadingSection.hidden = true;
 	lobbyShareData = { url: url, title: 'Tableturf Battle' };
 	if (navigator.canShare && navigator.canShare(lobbyShareData)) {
 		shareLinkButton.innerText = 'Share link';
 	} else {
 		lobbyShareData = null;
 		shareLinkButton.innerText = 'Copy link';
+	}
+}
+
+function showStageSelectionForm() {
+	lobbyStageSection.hidden = false;
+	stageSelectionFormLoadingSection.hidden = true;
+	for (const input of stageSelectionForm.elements) {
+		if (input instanceof HTMLButtonElement)
+			input.disabled = false;
+		else if (input instanceof HTMLInputElement)
+			input.checked = false;
+	}
+	stageRandomButton.checked = true;
+	stageRandomLabel.classList.add('checked');
+	for (const button of stageButtons)
+		button.element.classList.remove('checked');
+}
+
+function showDeckSelectionForm() {
+	lobbyStageSection.hidden = false;
+	stageSelectionFormLoadingSection.hidden = true;
+	for (const input of stageSelectionForm.elements) {
+		if (input instanceof HTMLButtonElement)
+			input.disabled = false;
 	}
 }
 
@@ -133,31 +163,35 @@ function initDeckSelection() {
 			lobbyDeckButtons.push(new CheckButton(input));
 		}
 		submitDeckButton.disabled = selectedDeck == null;
+		deckSelectionFormLoadingSection.hidden = true;
 		lobbyDeckSection.hidden = false;
 	} else {
 		lobbyDeckSection.hidden = true;
 	}
 }
 
-submitDeckButton.addEventListener('click', () => {
+deckSelectionForm.addEventListener('submit', e => {
+	e.preventDefault();
 	if (selectedDeck == null) return;
 
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseDeck`);
-	req.addEventListener('load', e => {
-		if (req.status == 204) {
-			showPage('lobby');
-		}
-	});
+	req.addEventListener('error', () => communicationError());
 	let data = new URLSearchParams();
 	data.append('clientToken', clientToken);
 	data.append('deckName', selectedDeck.name);
 	data.append('deckCards', selectedDeck.cards.join('+'));
 	req.send(data.toString());
+
 	localStorage.setItem('lastDeckName', selectedDeck.name);
+	deckSelectionFormLoadingSection.hidden = false;
+	for (const input of deckSelectionForm.elements) {
+		if (input instanceof HTMLButtonElement)
+			input.disabled = true;
+	}
 });
 
-stageDatabase.loadAsync().then(stages => {
+function initStageDatabase(stages: Stage[]) {
 	const stageList = document.getElementById('stageList')!;
 	for (const stage of stages) {
 		const button = new StageButton(stage);
@@ -176,7 +210,7 @@ stageDatabase.loadAsync().then(stages => {
 		stageList.appendChild(button.element);
 	}
 	document.getElementById('stageListLoadingSection')!.hidden = true;
-}).catch(() => communicationError);
+}
 
 stageRandomButton.addEventListener('input', () => {
 	if (stageRandomButton.checked) {
@@ -190,10 +224,17 @@ stageSelectionForm.addEventListener('submit', e => {
 	e.preventDefault();
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseStage`);
+	req.addEventListener('error', () => communicationError());
 	let data = new URLSearchParams();
 	const stageName = stageRandomButton.checked ? 'random' : stageButtons.find(b => b.checked)!.stage.name;
 	data.append('clientToken', clientToken);
 	data.append('stage', stageName);
 	req.send(data.toString());
+
 	localStorage.setItem('lastStage', stageName);
+	stageSelectionFormLoadingSection.hidden = false;
+	for (const input of stageSelectionForm.elements) {
+		if (input instanceof HTMLButtonElement)
+			input.disabled = true;
+	}
 });

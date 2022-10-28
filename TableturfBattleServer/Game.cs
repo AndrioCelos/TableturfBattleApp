@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 using Newtonsoft.Json;
 
@@ -26,17 +27,17 @@ public class Game {
 		lock (this.Players) {
 			if (this.State != GameState.WaitingForPlayers) {
 				playerIndex = -1;
-				error = new("GameAlreadyStarted", "The game has already started.");
+				error = new(HttpStatusCode.Gone, "GameAlreadyStarted", "The game has already started.");
 				return false;
 			}
 			if (this.Players.Any(p => p.Token == player.Token)) {
 				playerIndex = -1;
-				error = new("PlayerAlreadyJoined", "You're already in the game.");
+				error = new(HttpStatusCode.Conflict, "PlayerAlreadyJoined", "You're already in the game.");
 				return false;
 			}
 			if (this.Players.Count >= this.MaxPlayers) {
 				playerIndex = -1;
-				error = new("GameFull", "The game is full.");
+				error = new(HttpStatusCode.Conflict, "GameFull", "The game is full.");
 				return false;
 			}
 			playerIndex = this.Players.Count;

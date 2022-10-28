@@ -67,6 +67,12 @@ footer {
 	grid-template-columns: 27em 1fr;
 }
 
+.submitButtonContainer {
+	display: flex;
+	gap: 0.5em;
+	align-items: center;
+}
+
 #lobbyPlayerListSection {
 	overflow-y: auto;
 	box-sizing: border-box;
@@ -689,30 +695,13 @@ dialog::backdrop {
 
 /* Error UI */
 
-#errorModal {
-	background: #00000080;
-	position: fixed;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 2;
-}
-
-#errorModal:not([hidden]) {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-#errorModalBox {
+#errorDialog[open] {
 	width: 20em;
-	background: black;
 	height: 12em;
 	display: flex;
+	flex-flow: column;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid gray;
 }
 
 

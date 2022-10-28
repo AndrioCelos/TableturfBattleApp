@@ -215,6 +215,7 @@ function updateHand(cards: any[]) {
 							// Send the play to the server.
 							let req = new XMLHttpRequest();
 							req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
+							req.addEventListener('error', () => communicationError());
 							let data = new URLSearchParams();
 							data.append('clientToken', clientToken);
 							data.append('cardNumber', card.number.toString());
@@ -269,6 +270,7 @@ function updateHand(cards: any[]) {
 function redrawButton_click(e: MouseEvent) {
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);
+	req.addEventListener('error', () => communicationError());
 	let data = new URLSearchParams();
 	data.append('clientToken', clientToken);
 	data.append('redraw', (e.target as HTMLButtonElement).dataset.redraw!);
@@ -345,6 +347,7 @@ board.onclick = (x, y) => {
 				board.autoHighlight = true;
 			}
 		});
+		req.addEventListener('error', () => communicationError());
 		let data = new URLSearchParams();
 		data.append('clientToken', clientToken);
 		data.append('cardNumber', board.cardPlaying.number.toString());

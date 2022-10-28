@@ -48,12 +48,12 @@
 					<p><button type="submit" id="joinGameButton2">Join game</button></p>
 					<a id="preGameBackButton" href="../..">Create or join a different room</a>
 				</div>
-				<div id="preGameLoadingSection" class="loadingContainer" hidden>
-					<div class="lds-ripple"><div></div><div></div></div> <span id="preGameLoadingLabel"></span>
-				</div>
 				<p>
 					<a id="preGameDeckEditorButton" href="deckeditor">Edit decks</a>
 				</p>
+				<div id="preGameLoadingSection" class="loadingContainer" hidden>
+					<div class="lds-ripple"><div></div><div></div></div> <span id="preGameLoadingLabel"></span>
+				</div>
 			</form>
 			<footer>
 				<p>This website is not affiliated with Nintendo. All product names, logos, and brands are property of their respective owners.</p>
@@ -72,19 +72,31 @@
 			<section id="lobbyStageSection" hidden>
 				<h3>Vote for the stage.</h3>
 				<form id="stageSelectionForm">
-					<button type="submit">Submit</button>
+					<div class="submitButtonContainer">
+						<button type="submit" id="submitStageButton">Submit</button>
+						<div class="loadingContainer">
+							<div class="lds-ripple"><div></div><div></div></div>
+						</div>
+					</div>
 					<div id="stageList">
 						<label id="stageRandomLabel" for="stageRandomButton" class="stageRandom checked">
 							<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
 						</label>
 					</div>
-					<p id="stageListLoadingSection">Loading stages...</p>
+					<p id="stageListLoadingSection"><div class="lds-ripple"><div></div><div></div></div> Loading stages...</p>
 				</form>
 			</section>
 			<div id="lobbyDeckSection" hidden>
 				<h3>Choose your deck.</h3>
-				<p><button type="button" id="submitDeckButton" disabled>Submit</button></p>
-				<div id="lobbyDeckList" class="deckList"></div>
+				<form id="deckSelectionForm">
+					<div class="submitButtonContainer">
+						<button type="submit" id="submitDeckButton" disabled>Submit</button>
+						<div class="loadingContainer">
+							<div class="lds-ripple"><div></div><div></div></div>
+						</div>
+					</div>
+					<div id="lobbyDeckList" class="deckList"></div>
+				</form>
 			</div>
 			<dialog id="qrCodeDialog">
 				<form method="dialog">
@@ -276,9 +288,12 @@
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
 		</div>
-		<div id="errorModal" hidden>
-			<div id="errorModalBox">A communication error has occurred.</div>
-		</div>
+		<dialog id="errorDialog">
+			<div id="errorMessage"></div>
+			<form id="errorDialogForm" method="dialog">
+				<button type="submit">OK</button>
+			</form>
+		</dialog>
 		<script src="build/tsbuild.js"></script>
 	</body>
 </html>

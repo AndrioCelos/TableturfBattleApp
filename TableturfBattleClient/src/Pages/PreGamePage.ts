@@ -14,8 +14,10 @@ function setLoadingMessage(message: string | null) {
 	if (message)
 		preGameLoadingLabel.innerText = message;
 	preGameLoadingSection.hidden = message == null;
-	for (const button of preGameForm.getElementsByTagName('button'))
-		button.disabled = message != null;
+	for (const input of preGameForm.elements) {
+		if (input instanceof HTMLButtonElement || input instanceof HTMLInputElement || input instanceof HTMLSelectElement)
+			input.disabled = message != null;
+	}
 }
 
 maxPlayersBox.addEventListener('change', () => {
@@ -35,7 +37,7 @@ preGameForm.addEventListener('submit', e => {
 
 		let request = new XMLHttpRequest();
 		request.open('POST', `${config.apiBaseUrl}/games/new`);
-		request.addEventListener('load', e => {
+		request.addEventListener('load', () => {
 			if (request.status == 200) {
 				let response = JSON.parse(request.responseText);
 				if (!clientToken)
@@ -44,7 +46,11 @@ preGameForm.addEventListener('submit', e => {
 				setGameUrl(response.gameID);
 
 				getGameInfo(response.gameID, 0);
-			}
+			} else
+				communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
+		});
+		request.addEventListener('error', () => {
+			communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
 		});
 
 		let data = new URLSearchParams();
@@ -87,29 +93,36 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 			getGameInfo(gameID, response.playerIndex);
 		} else {
 			if (request.status == 404)
-				alert('The game was not found.');
+				joinGameError('The room was not found.', fromInitialLoad);
+			else if (request.status == 409)
+				joinGameError('The game is full.', fromInitialLoad);
 			else if (request.status == 410)
-				alert('The game has already started.');
+				joinGameError('The game has already started.', fromInitialLoad);
 			else
-				alert('Unable to join the room.');
-			clearUrlFromGame();
-			setLoadingMessage(null);
-			if (fromInitialLoad)
-				clearPreGameForm(true);
-			else {
-				gameIDBox.focus();
-				gameIDBox.setSelectionRange(0, gameIDBox.value.length);
-			}
+				joinGameError('Unable to join the room.', fromInitialLoad);
 		}
 	});
 	request.addEventListener('error', () => {
-		communicationError();
+		joinGameError('Unable to join the room.', fromInitialLoad);
 	});
 	let data = new URLSearchParams();
 	data.append('name', name);
 	data.append('clientToken', clientToken);
 	request.send(data.toString());
 	setLoadingMessage('Joining the game...');
+}
+
+function joinGameError(message: string, fromInitialLoad: boolean) {
+	communicationError(message, true, () => {
+		clearUrlFromGame();
+		setLoadingMessage(null);
+		if (fromInitialLoad)
+			clearPreGameForm(true);
+		else {
+			gameIDBox.focus();
+			gameIDBox.setSelectionRange(0, gameIDBox.value.length);
+		}
+	});
 }
 
 function getGameInfo(gameID: string, myPlayerIndex: number | null) {
@@ -138,23 +151,13 @@ document.getElementById('preGameBackButton')!.addEventListener('click', e => {
 	backPreGameForm(true);
 })
 
-function presetGameID(url: string) {
-	document.getElementById('preGameDefaultSection')!.hidden = true;
-	document.getElementById('preGameJoinSection')!.hidden = false;
-	(document.getElementById('gameIDBox') as HTMLInputElement).value = url;
-	if (playerName)
-		tryJoinGame(playerName, url, true);
-	else
-		showPage('preGame');
-}
-
 preGameDeckEditorButton.addEventListener('click', e => {
 	e.preventDefault();
 	showDeckList();
 	setUrl('deckeditor');
 });
 
-const playerName = localStorage.getItem('name');
+let playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
 
 let settingUrl = false;
@@ -162,7 +165,5 @@ window.addEventListener('popstate', e => {
 	if (!settingUrl)
 		processUrl();
 });
-processUrl();
 
-if (!canPushState)
-	preGameDeckEditorButton.href = '#deckeditor';
+setLoadingMessage('Loading game data...');

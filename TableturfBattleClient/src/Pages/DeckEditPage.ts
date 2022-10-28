@@ -11,7 +11,6 @@ const cardListSortBox = document.getElementById('cardListSortBox') as HTMLSelect
 const cardButtons: CardButton[] = [ ];
 const deckEditCardButtons: (CardButton | HTMLLabelElement)[] = [ ];
 
-let deckModified = false;
 let selectedDeckCardIndex: number | null = null;
 
 function editDeck() {
