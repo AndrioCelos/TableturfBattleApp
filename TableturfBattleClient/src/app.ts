@@ -104,7 +104,7 @@ function onGameStateChange(game: any, playerData: any) {
 		case GameState.Ongoing:
 		case GameState.Ended:
 			if (playerData)
-				updateHand(playerData.hand);
+				updateHand(playerData);
 			board.autoHighlight = false;
 			redrawModal.hidden = true;
 			showPage('game');
@@ -294,11 +294,13 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 
 						(async () => {
 							await playInkAnimations(payload.data, anySpecialAttacks);
-							updateHand(payload.playerData.hand);
+							updateHand(payload.playerData);
 							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
 								gameButtonsContainer.hidden = true;
+								passButton.enabled = false;
+								specialButton.enabled = false;
 								gamePage.classList.add('gameEnded');
 								showResult();
 							} else {

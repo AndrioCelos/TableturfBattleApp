@@ -129,6 +129,8 @@ function getGameInfo(gameID: string, myPlayerIndex: number | null) {
 	board.playerIndex = myPlayerIndex;
 	initLobbyPage(window.location.toString());
 
+	showDeckButtons.splice(0);
+	clearShowDeck();
 	myPlayerIndex = setupWebSocket(gameID, myPlayerIndex);
 }
 

@@ -471,6 +471,56 @@ dialog::backdrop {
 #playControls > label:is(:active, .checked) { background: var(--special-accent-colour-1); }
 #playControls > label.disabled { background: grey; }
 
+#showDeckContainer {
+	grid-column: 1 / span 3;
+	grid-row: 2 / -2;
+	background: black;
+	z-index: 2;
+}
+#showDeck {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+	text-align: center;
+}
+#showDeckList {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	list-style-type: none;
+	font-size: smaller;
+	overflow-y: auto;
+	padding: 0;
+	margin: 0;
+	justify-items: center;
+}
+#showDeckList > li {
+	margin: 0.25em;
+	border-radius: 0.5em;
+	text-align: center;
+}
+#showDeckList > li.inHand {
+	outline: 0.25em solid;
+}
+#showDeckList > li.used {
+	opacity: 0.35;
+}
+#showDeckCloseButton {
+	border: none;
+	font-family: inherit;
+	color: inherit;
+	width: 40%;
+	grid-row: button-row;
+	margin: 1em;
+	padding: 0 0.5em;
+	text-align: center;
+	background: var(--primary-colour-1);
+	text-shadow: 0 0 4px black;
+	border-radius: 0.5em;
+}
+#showDeckCloseButton:hover { background: var(--special-colour-1); }
+#showDeckCloseButton:focus-within { outline: 2px solid var(--special-accent-colour-2); }
+#showDeckCloseButton:active { background: var(--special-accent-colour-1); }
+
 .playContainer { text-align: center; }
 
 .playContainer[data-index="0"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
@@ -509,9 +559,6 @@ dialog::backdrop {
 #gameButtonsContainer button:active {
 	opacity: 1;
 	color: var(--primary-colour-1);
-}
-#gameDeckButton {
-	display: none;
 }
 
 #boardSection {
@@ -1005,6 +1052,14 @@ dialog::backdrop {
 		grid-template-rows: auto;
 		width: 100vw;
 		overflow: scroll visible;
+	}
+
+	#showDeckContainer {
+		grid-column: 1 / -1;
+		grid-row: 2 / -1;
+	}
+	#showDeckList .card {
+		width: 30vw;
 	}
 
 	.playContainer:is([data-index="0"], [data-index="1"], [data-index="2"], [data-index="3"]) {

@@ -22,6 +22,11 @@ const resultElement = document.getElementById('result')!;
 const playerBars = Array.from(document.getElementsByClassName('playerBar'), el => new PlayerBar(el as HTMLDivElement));
 playerBars.sort((a, b) => a.playerIndex - b.playerIndex);
 
+const showDeckContainer = document.getElementById('showDeckContainer')!;
+const showDeckListElement = document.getElementById('showDeckList')!;
+const showDeckButtons: CardButton[] = [ ];
+const showDeckCloseButton = document.getElementById('showDeckCloseButton') as HTMLButtonElement;
+
 const playContainers = Array.from(document.getElementsByClassName('playContainer')) as HTMLDivElement[];
 playContainers.sort((a, b) => parseInt(a.dataset.index || '0') - parseInt(b.dataset.index || '0'));
 
@@ -189,79 +194,105 @@ function showResult() {
 	}
 }
 
-function updateHand(cards: any[]) {
+function clearShowDeck() {
+	showDeckContainer.hidden = true;
+	clearChildren(showDeckListElement);
+	showDeckButtons.splice(0);
+}
+
+function updateHand(playerData: PlayerData) {
 	for (const button of handButtons) {
 		handContainer.removeChild(button.element);
 	}
 	handButtons.splice(0);
 
-	if (!currentGame?.me) return;
-	currentGame.me.hand = cards.map(Card.fromJson);
-	if (cards) {
-		for (let i = 0; i < currentGame.me.hand.length; i++) {
-			const card = currentGame.me.hand[i];
-			const button = new CardButton('radio', card);
-			button.inputElement.name = 'handCard';
-			handButtons.push(button);
-			button.inputElement.addEventListener('input', e => {
-				if (button.checked) {
-					for (const button2 of handButtons) {
-						if (button2 != button)
-							button2.element.classList.remove('checked');
-					}
-					if (passButton.checked) {
-						if (canPlay) {
-							canPlay = false;
-							// Send the play to the server.
-							let req = new XMLHttpRequest();
-							req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
-							req.addEventListener('error', () => communicationError());
-							let data = new URLSearchParams();
-							data.append('clientToken', clientToken);
-							data.append('cardNumber', card.number.toString());
-							data.append('isPass', 'true');
-							req.send(data.toString());
+	if (showDeckButtons.length == 0) {
+		for (const card of playerData.deck!) {
+			const button = new CardButton('checkbox', card);
+			button.inputElement.hidden = true;
+			showDeckButtons.push(button);
 
-							board.autoHighlight = false;
-						}
-					} else {
-						board.cardPlaying = card;
-						if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
-							board.highlightX = board.startSpaces[board.playerIndex!].x - 3;
-							board.highlightY = board.startSpaces[board.playerIndex!].y - 3;
-						}
-						board.cardRotation = 0;
-						board.refreshHighlight();
-						board.table.focus();
-					}
-				}
-			});
-			button.inputElement.addEventListener('keydown', e => {
-				switch (e.key) {
-					case 'ArrowUp':
-						if (i >= 2)
-							handButtons[i - 2].inputElement.focus();
-						e.preventDefault();
-						break;
-					case 'ArrowDown':
-						if (i < 2)
-							handButtons[i + 2].inputElement.focus();
-						e.preventDefault();
-						break;
-					case 'ArrowLeft':
-						if (i % 2 != 0)
-							handButtons[i - 1].inputElement.focus();
-						e.preventDefault();
-						break;
-					case 'ArrowRight':
-						if (i % 2 == 0)
-							handButtons[i + 1].inputElement.focus();
-						e.preventDefault();
-						break;
-				}
-			});
-			handContainer.appendChild(button.element);
+			const li = document.createElement('li');
+			li.appendChild(button.element);
+			showDeckListElement.appendChild(li);
 		}
+	}
+
+	for (const button of showDeckButtons) {
+		const li = button.element.parentElement!;
+		if (playerData.hand!.find(c => c.number == button.card.number))
+			li.className = 'inHand';
+		else if (playerData.cardsUsed.includes(button.card.number))
+			li.className = 'used';
+		else
+			li.className = 'unused';
+	}
+
+	if (!currentGame?.me) return;
+	currentGame.me.hand = playerData.hand!.map(Card.fromJson);
+	for (let i = 0; i < currentGame.me.hand.length; i++) {
+		const card = currentGame.me.hand[i];
+		const button = new CardButton('radio', card);
+		button.inputElement.name = 'handCard';
+		handButtons.push(button);
+		button.inputElement.addEventListener('input', e => {
+			if (button.checked) {
+				for (const button2 of handButtons) {
+					if (button2 != button)
+						button2.element.classList.remove('checked');
+				}
+				if (passButton.checked) {
+					if (canPlay) {
+						canPlay = false;
+						// Send the play to the server.
+						let req = new XMLHttpRequest();
+						req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
+						req.addEventListener('error', () => communicationError());
+						let data = new URLSearchParams();
+						data.append('clientToken', clientToken);
+						data.append('cardNumber', card.number.toString());
+						data.append('isPass', 'true');
+						req.send(data.toString());
+
+						board.autoHighlight = false;
+					}
+				} else {
+					board.cardPlaying = card;
+					if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+						board.highlightX = board.startSpaces[board.playerIndex!].x - 3;
+						board.highlightY = board.startSpaces[board.playerIndex!].y - 3;
+					}
+					board.cardRotation = 0;
+					board.refreshHighlight();
+					board.table.focus();
+				}
+			}
+		});
+		button.inputElement.addEventListener('keydown', e => {
+			switch (e.key) {
+				case 'ArrowUp':
+					if (i >= 2)
+						handButtons[i - 2].inputElement.focus();
+					e.preventDefault();
+					break;
+				case 'ArrowDown':
+					if (i < 2)
+						handButtons[i + 2].inputElement.focus();
+					e.preventDefault();
+					break;
+				case 'ArrowLeft':
+					if (i % 2 != 0)
+						handButtons[i - 1].inputElement.focus();
+					e.preventDefault();
+					break;
+				case 'ArrowRight':
+					if (i % 2 == 0)
+						handButtons[i + 1].inputElement.focus();
+					e.preventDefault();
+					break;
+			}
+		});
+		handContainer.appendChild(button.element);
 	}
 }
 
@@ -385,6 +416,18 @@ function focusFirstEnabledHandCard() {
 	const firstEnabledButton = handButtons.find(b => b.enabled);
 	if (firstEnabledButton)
 		firstEnabledButton.inputElement.focus();
+	else
+		passButton.input.focus();
+}
+
+function toggleShowDeck() {
+	if (showDeckContainer.hidden) {
+		showDeckContainer.hidden = false;
+		showDeckCloseButton.focus();
+	} else {
+		showDeckContainer.hidden = true;
+		focusFirstEnabledHandCard();
+	}
 }
 
 rotateLeftButton.addEventListener('click', () => {
@@ -395,6 +438,8 @@ rotateRightButton.addEventListener('click', () => {
 	board.cardRotation++;
 	board.refreshHighlight();
 });
+gameDeckButton.addEventListener('click', toggleShowDeck);
+showDeckCloseButton.addEventListener('click', () => showDeckContainer.hidden = true);
 
 document.addEventListener('keydown', e => {
 	if (!pages.get('game')!.hidden) {
@@ -413,6 +458,10 @@ document.addEventListener('keydown', e => {
 					specialButton_input();
 					focusFirstEnabledHandCard();
 				}
+				e.preventDefault();
+				break;
+			case 'd':
+				if (!gameButtonsContainer.hidden) toggleShowDeck();
 				e.preventDefault();
 				break;
 		}
