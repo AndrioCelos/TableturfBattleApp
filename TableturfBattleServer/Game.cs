@@ -135,6 +135,7 @@ public class Game {
 					2 => new(235, 180, 253),
 					_ => new(180, 253, 199),
 				};
+				this.Players[i].UIBaseColourIsSpecialColour = i != 1;
 			}
 
 			// Choose the stage.

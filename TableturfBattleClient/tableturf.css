@@ -28,6 +28,32 @@ body {
 	--primary-colour-4       : hsl(155, 95%, 50%);
 	--special-colour-4       : hsl(120, 95%, 50%);
 	--special-accent-colour-4: hsl(135, 95%, 85%);
+	--player-primary-colour: var(--primary-colour-1);
+	--player-special-colour: var(--special-colour-1);
+	--player-special-accent-colour: var(--special-accent-colour-1);
+	--player-ui-base-colour: var(--player-primary-colour);
+	--player-ui-highlight-colour: var(--player-special-colour);
+	--player-ui-highlight2-colour: var(--player-special-accent-colour);
+}
+
+#gamePage[data-ui-base-colour-is-special-colour="true"] {
+	--player-ui-base-colour: var(--player-special-colour);
+	--player-ui-highlight-colour: var(--player-primary-colour);
+}
+#gamePage[data-my-player-index="1"] {
+	--player-primary-colour: var(--primary-colour-2);
+	--player-special-colour: var(--special-colour-2);
+	--player-special-accent-colour: var(--special-accent-colour-2);
+}
+#gamePage[data-my-player-index="2"] {
+	--player-primary-colour: var(--primary-colour-3);
+	--player-special-colour: var(--special-colour-3);
+	--player-special-accent-colour: var(--special-accent-colour-3);
+}
+#gamePage[data-my-player-index="3"] {
+	--player-primary-colour: var(--primary-colour-4);
+	--player-special-colour: var(--special-colour-4);
+	--player-special-accent-colour: var(--special-accent-colour-4);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -268,8 +294,8 @@ dialog::backdrop {
 	height: 0.5em;
 	border: 1px solid grey;
 }
-.cardGrid td.ink { background: hsl(63, 99%, 49%); border: 1px solid hsl(63, 99%, 49%);}
-.cardGrid td.special { background: hsl(38, 100%, 49%); border: 1px solid hsl(38, 100%, 49%);}
+.cardGrid td.ink { background: var(--player-primary-colour); border: 1px solid var(--player-primary-colour);}
+.cardGrid td.special { background: var(--player-special-colour); border: 1px solid var(--player-special-colour);}
 
 .cardFooter {
 	display: flex;
@@ -293,7 +319,7 @@ dialog::backdrop {
 .cardSpecialPoint {
 	display: inline-block;
 	color: transparent;
-	background: var(--special-colour-1);
+	background: var(--player-special-colour);
 	width: 1ch;
 	height: 1ch;
 	margin-right: 0.3em;
@@ -458,7 +484,7 @@ dialog::backdrop {
 	margin: 0.5em;
 	padding: 0 0.5em;
 	text-align: center;
-	background: var(--primary-colour-1);
+	background: var(--player-ui-base-colour);
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
@@ -466,9 +492,9 @@ dialog::backdrop {
 	position: absolute;
 	left: -333px;
 }
-#playControls > label:hover { background: var(--special-colour-1); }
-#playControls > label:focus-within { outline: 2px solid var(--special-accent-colour-2); }
-#playControls > label:is(:active, .checked) { background: var(--special-accent-colour-1); }
+#playControls > label:hover { background: var(--player-ui-highlight-colour); }
+#playControls > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+#playControls > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
 #playControls > label.disabled { background: grey; }
 
 #showDeckContainer {
@@ -499,7 +525,7 @@ dialog::backdrop {
 	text-align: center;
 }
 #showDeckList > li.inHand {
-	outline: 0.25em solid;
+	outline: 0.25em solid var(--player-ui-highlight-colour);
 }
 #showDeckList > li.used {
 	opacity: 0.35;
@@ -513,13 +539,13 @@ dialog::backdrop {
 	margin: 1em;
 	padding: 0 0.5em;
 	text-align: center;
-	background: var(--primary-colour-1);
+	background: var(--player-ui-base-colour);
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
-#showDeckCloseButton:hover { background: var(--special-colour-1); }
-#showDeckCloseButton:focus-within { outline: 2px solid var(--special-accent-colour-2); }
-#showDeckCloseButton:active { background: var(--special-accent-colour-1); }
+#showDeckCloseButton:hover { background: var(--player-ui-highlight-colour); }
+#showDeckCloseButton:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+#showDeckCloseButton:active { background: var(--player-ui-highlight2-colour); }
 
 .playContainer { text-align: center; }
 
@@ -547,7 +573,7 @@ dialog::backdrop {
 #gameButtonsContainer button {
 	background: none;
 	border: none;
-	color: var(--special-colour-1);
+	color: var(--player-ui-base-colour);
 	opacity: 0.5;
 	font-size: 400%;
 	width: 1.5em;
@@ -558,7 +584,7 @@ dialog::backdrop {
 }
 #gameButtonsContainer button:active {
 	opacity: 1;
-	color: var(--primary-colour-1);
+	color: var(--player-ui-highlight-colour);
 }
 
 #boardSection {

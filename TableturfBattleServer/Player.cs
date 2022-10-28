@@ -14,6 +14,8 @@ public class Player {
 	public Colour SpecialColour { get; set; }
 	[JsonProperty("specialAccentColour")]
 	public Colour SpecialAccentColour { get; set; }
+	[JsonProperty("uiBaseColourIsSpecialColour")]
+	public bool UIBaseColourIsSpecialColour { get; set; }
 	[JsonProperty("specialPoints")]
 	public int SpecialPoints { get; set; }
 

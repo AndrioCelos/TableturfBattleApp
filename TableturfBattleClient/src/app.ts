@@ -69,7 +69,7 @@ function clearUrlFromGame() {
 		location.hash = '';
 }
 
-function onGameStateChange(game: any, playerData: any) {
+function onGameStateChange(game: any, playerData: PlayerData | null) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
 	clearPlayContainers();
@@ -78,6 +78,9 @@ function onGameStateChange(game: any, playerData: any) {
 		board.refresh();
 	}
 	loadPlayers(game.players);
+	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
+	gamePage.dataset.uiBaseColourIsSpecialColour = playerData && game.players[playerData.playerIndex].uiBaseColourIsSpecialColour ? 'true' : 'false';
+
 	redrawModal.hidden = true;
 	gamePage.classList.remove('gameEnded');
 	switch (game.state) {
