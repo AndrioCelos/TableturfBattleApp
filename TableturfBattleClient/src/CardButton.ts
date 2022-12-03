@@ -15,6 +15,7 @@ class CardButton {
 		el.setAttribute('type', 'checkbox')
 		el.classList.add('card');
 		el.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
+		el.dataset.cardNumber = card.number.toString();
 
 		let size = 0;
 		let table = document.createElement('table');

@@ -267,6 +267,12 @@ dialog::backdrop {
 	line-height: 1.25em;
 	flex-grow: 1;
 }
+.card[data-card-number="166"] .cardName {
+	position: absolute;
+	left: -1em;
+	right: -1em;
+	transform: scaleX(0.8);
+}
 
 .card.common .cardName {
 	color: var(--colour);
