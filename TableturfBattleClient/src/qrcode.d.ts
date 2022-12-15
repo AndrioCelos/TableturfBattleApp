@@ -10,7 +10,6 @@ declare class QRCode {
 
 	makeCode(sText: string) : void;
 	clear() : void;
-
 }
 
 declare namespace QRCode {
