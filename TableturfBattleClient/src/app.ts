@@ -373,6 +373,13 @@ function clearChildren(el: Element) {
 		el.removeChild(el2);
 }
 
+if (config.discordUrl) {
+	(document.getElementById('discordLink') as HTMLLinkElement).href = config.discordUrl;
+	if (config.discordTitle)
+		(document.getElementById('discordLink') as HTMLLinkElement).innerText = `Discord – ${config.discordTitle}`;
+} else
+	document.getElementById('discordSection')!.hidden = true;
+
 Promise.all([ cardDatabase.loadAsync().then(initCardDatabase), stageDatabase.loadAsync().then(initStageDatabase) ])
 	.then(() => {
 		initialised = true;
