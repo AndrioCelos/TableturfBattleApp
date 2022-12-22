@@ -290,7 +290,7 @@ class Board {
 	 * Returns a value indicating whether a specified player can play the specified card anywhere.
 	 */
 	canPlayCard(playerIndex: number, card: Card, isSpecialAttack: boolean) {
-		for (let rotation = 0; rotation < 3; rotation++) {
+		for (let rotation = 0; rotation < 4; rotation++) {
 			for (let x = -4; x < this.grid.length - 3; x++) {
 				for (let y = -4; y < this.grid[0].length - 3; y++) {
 					if (this.checkMoveLegality(playerIndex, card, x, y, rotation, isSpecialAttack) == null)
