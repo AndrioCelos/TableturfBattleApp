@@ -7,6 +7,7 @@ const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElem
 const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton') as HTMLLinkElement;
 const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
 const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
+const preGameReplayButton = document.getElementById('preGameReplayButton') as HTMLLinkElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -157,6 +158,103 @@ preGameDeckEditorButton.addEventListener('click', e => {
 	e.preventDefault();
 	showDeckList();
 	setUrl('deckeditor');
+});
+
+preGameReplayButton.addEventListener('click', e => {
+	e.preventDefault();
+
+	if (stageDatabase.stages == null)
+		throw new Error('Game data not loaded');
+
+	const s = prompt('Enter a replay link or code.');
+	if (!s) return;
+	const m = /(?:^|replay\/)([A-Za-z0-9+/=\-_]+)$/i.exec(s);
+	if (!m) {
+		alert('Not a valid replay code');
+		return;
+	}
+
+	let base64 = m[1];
+	base64 = base64.replaceAll('-', '+');
+	base64 = base64.replaceAll('_', '/');
+	const bytes = Base64.base64DecToArr(base64);
+	const dataView = new DataView(bytes.buffer);
+	if (dataView.getUint8(0) != 1) {
+		alert('Unknown replay data version');
+		return;
+	}
+	const n = dataView.getUint8(1);
+	const stage = stageDatabase.stages[n & 0x1F];
+	const numPlayers = n >> 5;
+
+	let pos = 2;
+	const players = [ ];
+	currentReplay = { turns: [ ], drawOrder: [ ], initialDrawOrder: [ ] };
+	for (let i = 0; i < numPlayers; i++) {
+		const len = dataView.getUint8(pos + 34);
+		const player: Player = {
+			name: new TextDecoder().decode(new DataView(bytes.buffer, pos + 35, len)),
+			specialPoints: 0,
+			isReady: false,
+			colour: { r: dataView.getUint8(pos + 0), g: dataView.getUint8(pos + 1), b: dataView.getUint8(pos + 2) },
+			specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
+			specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
+			totalSpecialPoints: 0,
+			passes: 0
+		};
+		players.push(player);
+
+		const initialDrawOrder = [ ];
+		const drawOrder = [ ];
+		for (let j = 0; j < 2; j++) {
+			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
+			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) >> 4 & 0xF);
+		}
+		for (let j = 0; j < 8; j++) {
+			drawOrder.push(dataView.getUint8(pos + 26 + j) & 0xF);
+			drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
+		}
+		currentReplay.initialDrawOrder.push(initialDrawOrder);
+		currentReplay.drawOrder.push(drawOrder);
+
+		pos += 35 + len;
+	}
+
+	for (let i = 0; i < 12; i++) {
+		const turn = [ ]
+		for (let j = 0; j < numPlayers; j++) {
+			const cardNumber = dataView.getUint8(pos);
+			const b = dataView.getUint8(pos + 1);
+			const x = dataView.getInt8(pos + 2);
+			const y = dataView.getInt8(pos + 3);
+			if (b & 0x80)
+				turn.push({ card: cardDatabase.get(cardNumber), isPass: true });
+			else {
+				const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+				turn.push(move);
+			}
+			pos += 4;
+		}
+		currentReplay.turns.push(turn);
+	}
+
+	currentGame = {
+		id: 'replay',
+		me: null,
+		players: players,
+		maxPlayers: numPlayers,
+		turnNumber: 1,
+		webSocket: null
+	};
+
+	board.resize(stage.grid);
+	const startSpaces = stage.getStartSpaces(numPlayers);
+	for (let i = 0; i < numPlayers; i++)
+		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
+	board.refresh();
+
+	loadPlayers(players);
+	initReplay();
 });
 
 let playerName = localStorage.getItem('name');

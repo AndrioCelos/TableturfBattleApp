@@ -1,5 +1,7 @@
 /// <reference path="Pages/PreGamePage.ts"/>
 
+declare var baseUrl: string;
+
 const errorDialog = document.getElementById('errorDialog') as HTMLDialogElement;
 const errorMessage = document.getElementById('errorMessage')!;
 const errorDialogForm = document.getElementById('errorDialogForm') as HTMLFormElement;
@@ -190,6 +192,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 						me: payload.playerData,
 						players: payload.data.players,
 						maxPlayers: payload.data.maxPlayers,
+						turnNumber: payload.data.turnNumber,
 						webSocket: webSocket
 					};
 

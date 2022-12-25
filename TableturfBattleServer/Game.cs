@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Text;
 
 using Newtonsoft.Json;
 
@@ -180,6 +181,11 @@ public class Game {
 
 			if (this.Board == null) throw new InvalidOperationException("No board?!");
 
+			foreach (var player in this.Players) {
+				var move = player.Move!;
+				player.turns.Add(new() { CardNumber = move.Card.Number, X = move.X, Y = move.Y, Rotation = move.Rotation, IsPass = move.IsPass, IsSpecialAttack = move.IsSpecialAttack });
+			}
+
 			// Place the ink.
 			(Placement placement, int cardSize)? placementData = null;
 			foreach (var i in Enumerable.Range(0, this.Players.Count).Where(i => this.Players[i] != null).OrderByDescending(i => this.Players[i]!.Move!.Card.Size)) {
@@ -303,6 +309,46 @@ public class Game {
 				} else {
 					behaviour.SendInternal(JsonConvert.SerializeObject(new DTO.WebSocketPayload<T>(eventType, data)));
 				}
+			}
+		}
+	}
+
+	public void WriteReplayData(Stream stream) {
+		const int VERSION = 1;
+
+		if (this.State < GameState.Ended)
+			throw new InvalidOperationException("Can't save a replay until the game has ended.");
+
+		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+		writer.Write((byte) VERSION);
+
+		var stageNumber = Enumerable.Range(0, StageDatabase.Stages.Count).First(i => this.StageName == StageDatabase.Stages[i].Name);
+		writer.Write((byte) (stageNumber | (this.Players.Count << 5)));
+		foreach (var player in this.Players) {
+			writer.Write((byte) player.Colour.R);
+			writer.Write((byte) player.Colour.G);
+			writer.Write((byte) player.Colour.B);
+			writer.Write((byte) player.SpecialColour.R);
+			writer.Write((byte) player.SpecialColour.G);
+			writer.Write((byte) player.SpecialColour.B);
+			writer.Write((byte) player.SpecialAccentColour.R);
+			writer.Write((byte) player.SpecialAccentColour.G);
+			writer.Write((byte) player.SpecialAccentColour.B);
+			foreach (var card in player.Deck!)
+				writer.Write((byte) card.Number);
+			for (int i = 0; i < 4; i += 2)
+				writer.Write((byte) (player.initialDrawOrder![i] | player.initialDrawOrder[i + 1]));
+			for (int i = 0; i < 15; i += 2)
+				writer.Write((byte) (player.drawOrder![i] | (i < 14 ? player.drawOrder[i + 1] << 4 : 0)));
+			writer.Write(player.Name);
+		}
+		for (int i = 0; i < 12; i++) {
+			foreach (var player in this.Players) {
+				var move = player.turns[i];
+				writer.Write((byte) move.CardNumber);
+				writer.Write((byte) (move.Rotation | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0)));
+				writer.Write((sbyte) move.X);
+				writer.Write((sbyte) move.Y);
 			}
 		}
 	}

@@ -274,6 +274,10 @@ class Board {
 		}
 	}
 
+	setDisplayedSpace(x: number, y: number, newState: Space) {
+		this.cells[x][y].setAttribute('class', Space[newState]);
+	}
+
 	getScore(playerIndex: number) {
 		let count = 0;
 		for (let x = 0; x < this.grid.length; x++) {
@@ -299,5 +303,95 @@ class Board {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Calculates and makes moves resulting from players playing the specified cards, for replays and test placements.
+	 */
+	makePlacements(moves: Move[]) {
+		var playerIndices = Array.from({ length: moves.length }, (_, i) => i);
+		playerIndices.sort((a, b) => moves[b].card.size - moves[a].card.size);
+
+		const placements = [ ];
+		let placementData: { placement: Placement, cardSize: number } | null = null;
+		for (const i of playerIndices) {
+			if (!moves[i] || moves[i].isPass) continue;
+
+			const move = moves[i] as PlayMove;
+			if (placementData == null) {
+				placementData = { placement: { players: [ ], spacesAffected: [ ] }, cardSize: move.card.size };
+			} else if (move.card.size != placementData.cardSize) {
+				placements.push(placementData.placement);
+				placementData = { placement: { players: [ ], spacesAffected: [ ] }, cardSize: move.card.size };
+			}
+
+			const placement = placementData.placement;
+			placement.players.push(i);
+			for (let dy = 0; dy < 8; dy++) {
+				const y = move.y + dy;
+				for (let dx = 0; dx < 8; dx++) {
+					const x = move.x + dx;
+					const point = { x, y }
+					switch (move.card.getSpace(dx, dy, move.rotation)) {
+						case Space.Ink1: {
+							const e = placement.spacesAffected.find(s => s.space.x == point.x && s.space.y == point.y)
+							if (e) {
+								if (e.newState < Space.SpecialInactive1) {
+									// Two ink spaces overlapped; create a wall there.
+									e.newState = this.grid[x][y] = Space.Wall;
+								}
+							} else {
+								if (this.grid[x][y] < Space.SpecialInactive1)  // Ink spaces can't overlap special spaces from larger cards.
+									placement.spacesAffected.push({ space: point, newState: this.grid[x][y] = (Space.Ink1 | i) });
+							}
+							break;
+						}
+						case Space.SpecialInactive1: {
+							const e = placement.spacesAffected.find(s => s.space.x == point.x && s.space.y == point.y)
+							if (e) {
+								if (e.newState >= Space.SpecialInactive1)
+									// Two special spaces overlapped; create a wall there.
+									e.newState = this.grid[x][y] = Space.Wall;
+								else
+									// If a special space overlaps an ink space, overwrite it.
+									e.newState = this.grid[x][y] = (Space.SpecialInactive1 | i);
+							} else
+								placement.spacesAffected.push({ space: point, newState: this.grid[x][y] = (Space.SpecialInactive1 | i) });
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (placementData != null)
+			placements.push(placementData.placement);
+
+		// Activate special spaces.
+		const specialSpacesActivated: Point[] = [ ];
+		for (let x = 0; x < this.grid.length; x++) {
+			for (let y = 0; y < this.grid[x].length; y++) {
+				const space = this.grid[x][y];
+				if ((space & Space.SpecialActive1) == Space.SpecialInactive1) {
+					let anyEmptySpace = false;
+					for (let dy = -1; !anyEmptySpace && dy <= 1; dy++) {
+						for (let dx = -1; dx <= 1; dx++) {
+							const x2 = x + dx;
+							const y2 = y + dy;
+							if (x2 >= 0 && x2 < this.grid.length && y2 >= 0 && y2 < this.grid[x2].length
+								&& this.grid[x2][y2] == Space.Empty) {
+								anyEmptySpace = true;
+								break;
+							}
+						}
+					}
+					if (!anyEmptySpace) {
+						this.grid[x][y] |= Space.SpecialActive1;
+						specialSpacesActivated.push({ x, y });
+					}
+				}
+			}
+		}
+
+		return { placements, specialSpacesActivated };
 	}
 }

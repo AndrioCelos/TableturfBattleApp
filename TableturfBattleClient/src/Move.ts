@@ -4,7 +4,7 @@ interface Move {
 }
 
 interface PlayMove extends Move {
-	isPass: true;
+	isPass: false;
 	x: number;
 	y: number;
 	rotation: number;

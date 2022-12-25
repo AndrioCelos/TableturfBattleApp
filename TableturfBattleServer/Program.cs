@@ -426,6 +426,21 @@ internal class Program {
 								}
 								break;
 							}
+							case "replay": {
+								if (e.Request.HttpMethod != "GET") {
+									e.Response.AddHeader("Allow", "GET");
+									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
+								} else {
+									if (game.State != GameState.Ended) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "GameInProgress", "You can't see the replay until the game has ended."));
+										return;
+									}
+									var ms = new MemoryStream();
+									game.WriteReplayData(ms);
+									SetResponse(e.Response, HttpStatusCode.OK, "application/octet-stream", ms.ToArray());
+								}
+								break;
+							}
 							default:
 								SetErrorResponse(e.Response, new(HttpStatusCode.NotFound, "NotFound", "Endpoint not found."));
 								break;

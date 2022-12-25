@@ -18,6 +18,11 @@ const redrawModal = document.getElementById('redrawModal')!;
 const playControls = document.getElementById('playControls')!;
 const resultContainer = document.getElementById('resultContainer')!;
 const resultElement = document.getElementById('result')!;
+const replayControls = document.getElementById('replayControls')!;
+const replayNextButton = document.getElementById('replayNextButton')!;
+
+const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
+let canShareReplay = false;
 
 const playerBars = Array.from(document.getElementsByClassName('playerBar'), el => new PlayerBar(el as HTMLDivElement));
 playerBars.sort((a, b) => a.playerIndex - b.playerIndex);
@@ -46,6 +51,68 @@ cols[4][21] = Space.SpecialInactive1;
 cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
+function initReplay() {
+	playControls.hidden = true;
+	resultContainer.hidden = true;
+	replayControls.hidden = false;
+	gameButtonsContainer.hidden = true;
+	canPlay = false;
+	showPage('game');
+	turnNumberLabel.setTurnNumber(1);
+}
+
+replayNextButton.addEventListener('click', _ => {
+	if (currentGame == null || currentReplay == null) return;
+
+	const moves = currentReplay.turns[currentGame.turnNumber - 1];
+	const result = board.makePlacements(moves);
+
+	let anySpecialAttacks = false;
+	// Show the cards that were played.
+	clearPlayContainers();
+	for (let i = 0; i < currentGame.players.length; i++) {
+		const player = currentGame.players[i];
+
+		const move = moves[i];
+		const button = new CardButton('checkbox', move.card);
+		if ((move as PlayMove).isSpecialAttack) {
+			anySpecialAttacks = true;
+			button.element.classList.add('specialAttack');
+		} else if (move.isPass) {
+			player.passes++;
+			player.specialPoints++;
+			player.totalSpecialPoints++;
+			const el = document.createElement('div');
+			el.className = 'passLabel';
+			el.innerText = 'Pass';
+			button.element.appendChild(el);
+		}
+		button.inputElement.hidden = true;
+		playContainers[i].append(button.element);
+	}
+
+	for (const p of result.specialSpacesActivated) {
+		const space = board.grid[p.x][p.y];
+		const player2 = currentGame.players[space & 3];
+		player2.specialPoints++;
+		player2.totalSpecialPoints++;
+	}
+	currentGame.turnNumber++;
+
+	(async () => {
+		await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks);
+		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		clearPlayContainers();
+		if (currentGame.turnNumber > 12) {
+			gameButtonsContainer.hidden = true;
+			passButton.enabled = false;
+			specialButton.enabled = false;
+			gamePage.classList.add('gameEnded');
+			showResult();
+		}
+	})();
+});
+
 function loadPlayers(players: Player[]) {
 	gamePage.dataset.players = players.length.toString();
 	for (let i = 0; i < players.length; i++) {
@@ -58,6 +125,9 @@ function loadPlayers(players: Player[]) {
 			document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
 			document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
 		}
+	}
+	for (let i = 0; i < playerBars.length; i++) {
+		playerBars[i].visible = i < players.length;
 	}
 }
 
@@ -112,11 +182,9 @@ function setupControlsForPlay() {
 
 async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
-	placements: { cards: { playerIndex: number, card: Card }[], spacesAffected: { space: { x: number, y: number }, newState: Space }[] }[],
-	specialSpacesActivated: { x: number, y: number }[]
+	placements: Placement[],
+	specialSpacesActivated: Point[]
 }, anySpecialAttacks: boolean) {
-	if (!data.game.board) throw new Error("Board is null during game");
-
 	const inkPlaced = new Set<number>();
 	const placements = data.placements;
 	board.clearHighlight();
@@ -133,14 +201,14 @@ async function playInkAnimations(data: {
 
 		for (const p of placement.spacesAffected) {
 			inkPlaced.add(p.space.y * 37 + p.space.x);
-			board.grid[p.space.x][p.space.y] = p.newState;
+			board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
 		}
-		board.refresh();
 	}
 	await delay(1000);
 
 	// Show special spaces.
-	board.grid = data.game.board;
+	if (data.game.board)
+		board.grid = data.game.board;
 	board.refresh();
 	if (data.specialSpacesActivated.length > 0)
 		await delay(1000);  // Delay if we expect that this changed the board.
@@ -157,8 +225,6 @@ async function playInkAnimations(data: {
 
 function showResult() {
 	if (currentGame == null) return;
-	playControls.hidden = true;
-	resultContainer.hidden = false;
 	turnNumberLabel.setTurnNumber(null);
 
 	let winners = [ 0 ]; let maxPoints = playerBars[0].points;
@@ -191,6 +257,13 @@ function showResult() {
 			el.classList.remove('draw');
 			el.innerText = 'Defeat';
 		}
+	}
+
+	if (!currentReplay) {
+		playControls.hidden = true;
+		resultContainer.hidden = false;
+		canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
+		shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
 	}
 }
 
@@ -357,14 +430,8 @@ board.onclick = (x, y) => {
 		return;
 	}
 	if (testMode) {
-		for (let dy = 0; dy < 8; dy++) {
-			for (let dx = 0; dx < 8; dx++) {
-				let space = board.cardPlaying.getSpace(dx, dy, board.cardRotation);
-				if (space != Space.Empty) {
-					board.grid[x + dx][y + dy] = space;
-				}
-			}
-		}
+		const move: PlayMove = { card: board.cardPlaying, isPass: false, x, y, rotation: board.cardRotation, isSpecialAttack: false };
+		const r = board.makePlacements([ move ]);
 		board.refresh();
 	} else if (canPlay) {
 		canPlay = false;
@@ -468,9 +535,41 @@ document.addEventListener('keydown', e => {
 	}
 });
 
+shareReplayLinkButton.addEventListener('click', _ => {
+	shareReplayLinkButton.disabled = true;
+
+	let req = new XMLHttpRequest();
+	req.responseType = "arraybuffer";
+	req.open('GET', `${config.apiBaseUrl}/games/${currentGame!.id}/replay`);
+	req.addEventListener('load', _ => {
+		if (req.status == 200) {
+			const array = new Uint8Array(req.response as ArrayBuffer);
+			let base64 = Base64.base64EncArr(array);
+			base64 = base64.replaceAll('+', '-');
+			base64 = base64.replaceAll('/', '_');
+			const url = new URL(`${canPushState ? '' : '#'}replay/${base64}`, baseUrl);
+			shareReplayLinkButton.disabled = false;
+			if (canShareReplay) {
+				navigator.share({ url: url.href, title: 'Tableturf Battle Replay' });
+			} else {
+				navigator.clipboard.writeText(window.location.toString()).then(() => shareLinkButton.innerText = 'Copied');
+			}
+		}
+	});
+	req.send();
+});
+
 document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
 	e.preventDefault();
 	clearPreGameForm(true);
 	showPage('preGame');
 	newGameButton.focus();
+});
+
+document.getElementById('replayLeaveButton')!.addEventListener('click', e => {
+	e.preventDefault();
+	clearPreGameForm(true);
+	showPage('preGame');
+	newGameButton.focus();
+	currentReplay = null;
 });

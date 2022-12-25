@@ -468,7 +468,7 @@ dialog::backdrop {
 	align-items: center;
 }
 
-#playControls, #resultContainer {
+#playControls, #resultContainer, #replayControls {
 	grid-column: 1 / span 2;
 	grid-row: hand-row;
 	align-self: center;
@@ -1054,7 +1054,7 @@ dialog::backdrop {
 		grid-template-rows: [button-row] auto [hand-row] auto;
 	}
 
-	#playControls, #resultContainer {
+	#playControls, #resultContainer, #replayControls {
 		grid-column: 1 / -1;
 		grid-row: 5;
 		width: initial;

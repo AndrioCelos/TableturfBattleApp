@@ -32,6 +32,9 @@ public class Player {
 	};
 
 	[JsonIgnore]
+	internal List<ReplayTurn> turns = new(12);
+
+	[JsonIgnore]
 	private readonly Game game;
 	[JsonIgnore]
 	internal Card[]? Deck;
@@ -41,6 +44,8 @@ public class Player {
 	internal Card[]? Hand;
 	[JsonIgnore]
 	internal Move? Move;
+	[JsonIgnore]
+	internal int[]? initialDrawOrder;
 	[JsonIgnore]
 	internal int[]? drawOrder;
 	[JsonIgnore]
@@ -55,6 +60,7 @@ public class Player {
 	[MemberNotNull(nameof(drawOrder))]
 	internal void Shuffle(Random random) {
 		this.drawOrder = new int[15];
+		this.initialDrawOrder ??= this.drawOrder;
 		for (int i = 0; i < 15; i++) this.drawOrder[i] = i;
 		for (int i = 14; i > 0; i--) {
 			var j = random.Next(i);
