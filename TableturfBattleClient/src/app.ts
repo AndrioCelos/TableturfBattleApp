@@ -88,6 +88,9 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		throw new Error('currentGame is null');
 	clearPlayContainers();
 	if (game.board) {
+		board.flip = playerData != null && playerData.playerIndex % 2 != 0;
+		if (board.flip) gamePage.classList.add('boardFlipped');
+		else gamePage.classList.remove('boardFlipped');
 		board.resize(game.board);
 		board.startSpaces = game.startSpaces;
 		board.refresh();

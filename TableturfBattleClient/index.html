@@ -85,7 +85,7 @@
 							<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
 						</label>
 					</div>
-					<p id="stageListLoadingSection"><div class="lds-ripple"><div></div><div></div></div> Loading stages...</p>
+					<div id="stageListLoadingSection"><div class="lds-ripple"><div></div><div></div></div> Loading stages...</div>
 				</form>
 			</section>
 			<div id="lobbyDeckSection" hidden>
@@ -155,14 +155,16 @@
 				<a id="resultLeaveButton" href="#">Leave game</a>
 			</div>
 			<div id="replayControls" hidden>
+				<input type="checkbox" id="replayFlipBox" autocomplete="off"/>
+				<label for="replayFlipBox">Flip board</label>
 				<button id="replayPreviousButton">Previous turn</button>
 				<button id="replayNextButton">Next turn</button>
 				<a id="replayLeaveButton" href="#">Exit replay</a>
 			</div>
 
-			<div class="playerBar" data-index="0">
+			<div class="playerBar" data-index="2">
 				<div class="result"></div>
-				<div class="name">Player 1</div>
+				<div class="name">Player 3</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
 					<div class="statSpecialPoints">
@@ -175,9 +177,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="playerBar" data-index="2">
+			<div class="playerBar" data-index="0">
 				<div class="result"></div>
-				<div class="name">Player 3</div>
+				<div class="name">Player 1</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
 					<div class="statSpecialPoints">
@@ -205,12 +207,10 @@
 				<div id="turnNumberLabel">12</div>
 			</div>
 			<div id="scoreSection">
-				<div id="pointsContainers">
-					<div class="pointsContainer" data-index="2"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
-					<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
-					<div class="pointsContainer" data-index="0"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
-					<div class="pointsContainer" data-index="3"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
-				</div>
+				<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+				<div class="pointsContainer" data-index="3"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+				<div class="pointsContainer" data-index="2"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
+				<div class="pointsContainer" data-index="0"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
 			</div>
 			<div id="boardSection">
 				<table id="gameBoard" tabindex="0"></table>
@@ -231,8 +231,8 @@
 
 			<div class="playContainer" data-index="1"></div>
 			<div class="playContainer" data-index="3"></div>
-			<div class="playContainer" data-index="0"></div>
 			<div class="playContainer" data-index="2"></div>
+			<div class="playContainer" data-index="0"></div>
 		</div>
 		<div id="deckListPage" hidden>
 			<section id="deckEditordeckListPage">

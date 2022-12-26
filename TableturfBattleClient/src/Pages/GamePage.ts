@@ -21,6 +21,7 @@ const resultElement = document.getElementById('result')!;
 const replayControls = document.getElementById('replayControls')!;
 const replayNextButton = document.getElementById('replayNextButton')!;
 const replayPreviousButton = document.getElementById('replayPreviousButton')!;
+const replayFlipBox = document.getElementById('replayFlipBox') as HTMLInputElement;
 let replayAnimationAbortController: AbortController | null = null;
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
@@ -183,6 +184,23 @@ replayPreviousButton.addEventListener('click', _ => {
 			currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
 		updateStats(i);
 	}
+});
+
+replayFlipBox.addEventListener('input', _ => {
+	if (currentGame == null || currentReplay == null) return;
+	if (replayAnimationAbortController) {
+		replayAnimationAbortController.abort();
+		replayAnimationAbortController = null;
+		clearPlayContainers();
+		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		for (let i = 0; i < currentGame.players.length; i++) {
+			updateStats(i);
+		}
+	}
+	board.flip = replayFlipBox.checked;
+	if (board.flip) gamePage.classList.add('boardFlipped');
+	else gamePage.classList.remove('boardFlipped');
+	board.resize();
 });
 
 function loadPlayers(players: Player[]) {
@@ -404,10 +422,10 @@ function updateHand(playerData: PlayerData) {
 				} else {
 					board.cardPlaying = card;
 					if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
-						board.highlightX = board.startSpaces[board.playerIndex!].x - 3;
-						board.highlightY = board.startSpaces[board.playerIndex!].y - 3;
+						board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
+						board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
 					}
-					board.cardRotation = 0;
+					board.cardRotation = board.flip ? 2 : 0;
 					board.refreshHighlight();
 					board.table.focus();
 				}

@@ -450,14 +450,21 @@ dialog::backdrop {
 	grid-row: player-row-3;
 }
 
+#gamePage.boardFlipped .playerBar[data-index="0"] { grid-row: player-row-1; }
+#gamePage.boardFlipped .playerBar[data-index="1"] { grid-row: player-row-0; }
+#gamePage.boardFlipped .playerBar[data-index="2"] { grid-row: player-row-3; }
+#gamePage.boardFlipped .playerBar[data-index="3"] { grid-row: player-row-2; }
+
 .playerBar {
 	grid-column: 1 / span 2;
 	margin: 0 10px;
 	border-left: 8px solid var(--colour);
 	padding-left: 10px;
 }
-#gamePage:not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) {
+#gamePage:not(.boardFlipped):not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]),
+#gamePage.boardFlipped:not([data-players="2"]) .playerBar:is([data-index="0"], [data-index="3"]) {
 	text-align: right;
+	border-left: none;
 	border-right: 8px solid var(--colour);
 	padding-right: 10px;
 }
@@ -466,9 +473,16 @@ dialog::backdrop {
 	grid-column: score-column;
 	grid-row: 2 / -2;
 	display: flex;
+	flex-flow: column;
 	justify-content: center;
 	align-items: center;
+	gap: 2em;
 }
+
+#gamePage.boardFlipped .pointsContainer[data-index="2"] { order: 0; }
+#gamePage.boardFlipped .pointsContainer[data-index="0"] { order: 1; }
+#gamePage.boardFlipped .pointsContainer[data-index="3"] { order: 2; }
+#gamePage.boardFlipped .pointsContainer[data-index="1"] { order: 3; }
 
 #playControls, #resultContainer, #replayControls {
 	grid-column: 1 / span 2;
@@ -557,10 +571,15 @@ dialog::backdrop {
 
 .playContainer { text-align: center; }
 
-.playContainer[data-index="0"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
-.playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
 .playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
+.playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
+.playContainer[data-index="0"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="3"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
+
+#gamePage.boardFlipped .playContainer[data-index="3"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
+#gamePage.boardFlipped .playContainer[data-index="0"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
+#gamePage.boardFlipped .playContainer[data-index="1"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
+#gamePage.boardFlipped .playContainer[data-index="2"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
 
 .playContainer .card {
 	margin: 0;
@@ -734,7 +753,6 @@ dialog::backdrop {
 
 .pointsContainer {
 	color: var(--colour);
-	margin: 2em 0;
 }
 
 .pointsDelta {
@@ -1040,6 +1058,11 @@ dialog::backdrop {
 	.playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 3; }
 	.playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 1; }
 
+	#gamePage.boardFlipped .playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 3; }
+	#gamePage.boardFlipped .playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 1; }
+	#gamePage.boardFlipped .playerBar[data-index="1"] { grid-column: 1 / span 4; grid-row: 3; }
+	#gamePage.boardFlipped .playerBar[data-index="0"] { grid-column: 1 / span 4; grid-row: 1; }
+
 	#boardSection {
 		grid-column: 2 / -1;
 		grid-row: 2;
@@ -1096,17 +1119,27 @@ dialog::backdrop {
 		width: 30vw;
 	}
 
-	.playContainer:is([data-index="0"], [data-index="1"], [data-index="2"], [data-index="3"]) {
+	#gamePage:is(.boardFlipped, *) .playContainer:is([data-index="0"], [data-index="1"], [data-index="2"], [data-index="3"]) {
 		font-size: x-small;
 		grid-column: 1 / -1;
+		left: auto;
+		top: auto;
 		z-index: -1;
 		display: flex;
 	}
 	.playContainer[data-index="0"] { grid-row: 2 / span 2; justify-content: start; margin: 0 0 2em 1em; }
-	.playContainer[data-index="1"] { grid-row: 1 / span 2; justify-content: end; margin: 2em 1em 0 0; }
-	#gamePage[data-players="2"] .playContainer[data-index="0"],
+	.playContainer[data-index="1"] { grid-row: 1 / span 2; justify-content: end; margin: 4em 1em 0 0; }
 	.playContainer[data-index="2"] { grid-row: 2 / span 2; justify-content: end; margin: 0 1em 2em 0; }
-	.playContainer[data-index="3"] { grid-row: 1 / span 2; justify-content: start; margin: 2em 0 0 1em; }
+	.playContainer[data-index="3"] { grid-row: 1 / span 2; justify-content: start; margin: 4em 0 0 1em; }
+	#gamePage[data-players="2"] .playContainer[data-index="0"] { justify-content: end; margin: 0 1em 0 0; }
+	#gamePage[data-players="2"] .playContainer[data-index="1"] { justify-content: end; margin: 0 1em 0 0; }
+
+	#gamePage.boardFlipped .playContainer[data-index="1"] { grid-row: 2 / span 2; justify-content: start; margin: 0 0 2em 1em; }
+	#gamePage.boardFlipped .playContainer[data-index="0"] { grid-row: 1 / span 2; justify-content: end; margin: 2em 1em 0 0; }
+	#gamePage.boardFlipped .playContainer[data-index="3"] { grid-row: 2 / span 2; justify-content: end; margin: 0 1em 2em 0; }
+	#gamePage.boardFlipped .playContainer[data-index="2"] { grid-row: 1 / span 2; justify-content: start; margin: 2em 0 0 1em; }
+	#gamePage.boardFlipped[data-players="2"] .playContainer[data-index="0"] { justify-content: end; margin: 0 1em 0 0; }
+	#gamePage.boardFlipped[data-players="2"] .playContainer[data-index="1"] { justify-content: end; margin: 0 1em 0 0; }
 
 	#gameButtonsContainer {
 		grid-column: 1;

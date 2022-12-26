@@ -10,6 +10,7 @@ class Board {
 
 	autoHighlight = true;
 	touchscreenMode = false;
+	flip = false;
 
 	highlightX = NaN;
 	highlightY = NaN;
@@ -38,16 +39,16 @@ class Board {
 						this.moveHighlight((x, y, r) => [x, y, r - 1], false);
 						break;
 					case 'ArrowUp':
-						this.moveHighlight((x, y, r) => [x, y - 1, r], true);
+						this.moveHighlight((x, y, r) => [x, y + (this.flip ? 1 : -1), r], true);
 						break;
 					case 'ArrowDown':
-						this.moveHighlight((x, y, r) => [x, y + 1, r], true);
+						this.moveHighlight((x, y, r) => [x, y + (this.flip ? -1 : 1), r], true);
 						break;
 					case 'ArrowLeft':
-						this.moveHighlight((x, y, r) => [x - 1, y, r], true);
+						this.moveHighlight((x, y, r) => [x + (this.flip ? 1 : -1), y, r], true);
 						break;
 					case 'ArrowRight':
-						this.moveHighlight((x, y, r) => [x + 1, y, r], true);
+						this.moveHighlight((x, y, r) => [x + (this.flip ? -1 : 1), y, r], true);
 						break;
 					case 'Enter': case ' ':
 						if (this.onclick)
@@ -67,9 +68,9 @@ class Board {
 				const touch = e.changedTouches[0];
 				if (isNaN(this.highlightX) || isNaN(this.highlightY) || isNaN(this.cardRotation)) {
 					const startSpace = this.startSpaces[this.playerIndex];
-					this.highlightX = startSpace.x - 3;
-					this.highlightY = startSpace.y - 3;
-					this.cardRotation = 0;
+					this.highlightX = startSpace.x - (this.flip ? 4 : 3);
+					this.highlightY = startSpace.y - (this.flip ? 4 : 3);
+					this.cardRotation = this.flip ? 2 : 0;
 					this.refreshHighlight();
 				}
 				this.touch = [touch.identifier, touch.pageX, touch.pageY, this.highlightX, this.highlightY];
@@ -105,7 +106,7 @@ class Board {
 		if (this.playerIndex == null) return;
 		if (this.highlightedCells.length == 0 || isNaN(this.highlightX) || isNaN(this.highlightY) || isNaN(this.cardRotation)) {
 			const startSpace = this.startSpaces[this.playerIndex];
-			[this.highlightX, this.highlightY, this.cardRotation] = [startSpace.x - 3, startSpace.y - 3, 0];
+			[this.highlightX, this.highlightY, this.cardRotation] = [startSpace.x - (this.flip ? 4 : 3), startSpace.y - (this.flip ? 4 : 3), 0];
 		} else {
 			let [x, y, r] = move(this.highlightX, this.highlightY, this.cardRotation);
 			let clampedPosition = clamp
@@ -193,44 +194,33 @@ class Board {
 		this.highlightedCells.splice(0);
 	}
 
-	resize(grid: Space[][]) {
-		if (grid.length == 0)
-			throw new Error('Grid must not be empty.');
-
-		this.grid = grid || this.grid;
+	resize(grid?: Space[][]) {
+		if (grid) this.grid = grid;
 
 		clearChildren(this.table);
 		this.cells.splice(0);
 		this.highlightedCells.splice(0);
 
-		const boardWidth = grid.length;
-		const boardHeight = grid[0].length;
+		const boardWidth = this.grid.length;
+		const boardHeight = this.grid[0].length;
 
 		this.table.style.setProperty('--board-width', boardWidth.toString());
 		this.table.style.setProperty('--board-height', boardHeight.toString());
 
-		const trs: HTMLTableRowElement[] = [ ];
-		for (let y = 0; y < boardHeight; y++) {
-			const tr = document.createElement('tr');
-			trs.push(tr);
-			this.table.appendChild(tr);
-		}
-
 		for (let x = 0; x < boardWidth; x++) {
 			const col: HTMLTableCellElement[] = [ ];
-			for (let y = 0; y < grid[x].length; y++) {
+			for (let y = 0; y < this.grid[x].length; y++) {
 				const td = document.createElement('td');
 				td.dataset.x = x.toString();
 				td.dataset.y = y.toString();
-				trs[y].appendChild(td);
 				col.push(td);
 				td.addEventListener('mousemove', e => {
 					if (e.buttons == 0)
 						this.touchscreenMode = false;
 					if (!this.touchscreenMode) {
 						if (this.autoHighlight && this.cardPlaying != null) {
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
 							if (x != this.highlightX || y != this.highlightY) {
 								this.highlightX = x;
 								this.highlightY = y;
@@ -244,8 +234,8 @@ class Board {
 						if (this.touchscreenMode) {
 							this.onclick(this.highlightX, this.highlightY);
 						} else {
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - 3;
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - 3;
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
 							this.onclick(x, y);
 						}
 					}
@@ -260,6 +250,26 @@ class Board {
 				});
 			}
 			this.cells.push(col);
+		}
+
+		const trs: HTMLTableRowElement[] = [ ];
+		for (let y = 0; y < boardHeight; y++) {
+			const tr = document.createElement('tr');
+			trs.push(tr);
+			this.table.appendChild(tr);
+		}
+		if (this.flip) trs.reverse();
+
+		for (let y = 0; y < boardHeight; y++) {
+			if (this.flip) {
+				for (let x = boardWidth - 1; x >= 0; x--) {
+					trs[y].appendChild(this.cells[x][y]);
+				}
+			} else {
+				for (let x = 0; x < boardWidth; x++) {
+					trs[y].appendChild(this.cells[x][y]);
+				}
+			}
 		}
 
 		this.refresh();
