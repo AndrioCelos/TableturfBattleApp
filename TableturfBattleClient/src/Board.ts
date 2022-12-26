@@ -342,7 +342,7 @@ class Board {
 								}
 							} else {
 								if (this.grid[x][y] < Space.SpecialInactive1)  // Ink spaces can't overlap special spaces from larger cards.
-									placement.spacesAffected.push({ space: point, newState: this.grid[x][y] = (Space.Ink1 | i) });
+									placement.spacesAffected.push({ space: point, oldState: this.grid[x][y], newState: this.grid[x][y] = (Space.Ink1 | i) });
 							}
 							break;
 						}
@@ -356,7 +356,7 @@ class Board {
 									// If a special space overlaps an ink space, overwrite it.
 									e.newState = this.grid[x][y] = (Space.SpecialInactive1 | i);
 							} else
-								placement.spacesAffected.push({ space: point, newState: this.grid[x][y] = (Space.SpecialInactive1 | i) });
+								placement.spacesAffected.push({ space: point, oldState: this.grid[x][y], newState: this.grid[x][y] = (Space.SpecialInactive1 | i) });
 							break;
 						}
 					}

@@ -20,6 +20,8 @@ const resultContainer = document.getElementById('resultContainer')!;
 const resultElement = document.getElementById('result')!;
 const replayControls = document.getElementById('replayControls')!;
 const replayNextButton = document.getElementById('replayNextButton')!;
+const replayPreviousButton = document.getElementById('replayPreviousButton')!;
+let replayAnimationAbortController: AbortController | null = null;
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
 let canShareReplay = false;
@@ -62,10 +64,21 @@ function initReplay() {
 }
 
 replayNextButton.addEventListener('click', _ => {
-	if (currentGame == null || currentReplay == null) return;
+	if (currentGame == null || currentReplay == null || currentGame.turnNumber > 12) return;
+
+	if (replayAnimationAbortController) {
+		replayAnimationAbortController.abort();
+		replayAnimationAbortController = null;
+		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		board.refresh();
+		for (let i = 0; i < currentGame.players.length; i++) {
+			updateStats(i);
+		}
+	}
 
 	const moves = currentReplay.turns[currentGame.turnNumber - 1];
 	const result = board.makePlacements(moves);
+	currentReplay.placements.push(result);
 
 	let anySpecialAttacks = false;
 	// Show the cards that were played.
@@ -77,6 +90,7 @@ replayNextButton.addEventListener('click', _ => {
 		const button = new CardButton('checkbox', move.card);
 		if ((move as PlayMove).isSpecialAttack) {
 			anySpecialAttacks = true;
+			player.specialPoints -= (move as PlayMove).card.specialCost;
 			button.element.classList.add('specialAttack');
 		} else if (move.isPass) {
 			player.passes++;
@@ -99,8 +113,9 @@ replayNextButton.addEventListener('click', _ => {
 	}
 	currentGame.turnNumber++;
 
+	replayAnimationAbortController = new AbortController();
 	(async () => {
-		await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks);
+		await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 		clearPlayContainers();
 		if (currentGame.turnNumber > 12) {
@@ -111,6 +126,55 @@ replayNextButton.addEventListener('click', _ => {
 			showResult();
 		}
 	})();
+});
+
+replayPreviousButton.addEventListener('click', _ => {
+	if (currentGame == null || currentReplay == null) return;
+
+	replayAnimationAbortController?.abort();
+	replayAnimationAbortController = null;
+
+	const result = currentReplay.placements.pop();
+	if (!result) return;
+
+	clearPlayContainers();
+	for (let i = 0; i < currentGame.players.length; i++) {
+		const el = playerBars[i].resultElement;
+		el.innerText = '';
+	}
+
+	// Unwind the turn.
+	for (const p of result.specialSpacesActivated) {
+		const space = board.grid[p.x][p.y];
+		const player2 = currentGame.players[space & 3];
+		player2.specialPoints--;
+		player2.totalSpecialPoints--;
+		board.grid[p.x][p.y] &= ~4;
+	}
+	currentGame.turnNumber--;
+
+	for (let i = result.placements.length - 1; i >= 0; i--) {
+		const placement = result.placements[i];
+		for (const p of placement.spacesAffected) {
+			if (p.oldState == undefined) throw new TypeError('oldState missing');
+			board.grid[p.space.x][p.space.y] = p.oldState;
+		}
+	}
+
+	gamePage.classList.remove('gameEnded');
+	turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+	board.refresh();
+
+	for (let i = 0; i < currentGame.players.length; i++) {
+		const move = currentReplay.turns[currentGame.turnNumber - 1][i];
+		if (move.isPass) {
+			currentGame.players[i].passes--;
+			currentGame.players[i].specialPoints--;
+			currentGame.players[i].totalSpecialPoints--;
+		} else if ((move as PlayMove).isSpecialAttack)
+			currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
+		updateStats(i);
+	}
 });
 
 function loadPlayers(players: Player[]) {
@@ -184,19 +248,19 @@ async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
 	placements: Placement[],
 	specialSpacesActivated: Point[]
-}, anySpecialAttacks: boolean) {
+}, anySpecialAttacks: boolean, abortSignal?: AbortSignal) {
 	const inkPlaced = new Set<number>();
 	const placements = data.placements;
 	board.clearHighlight();
 	board.cardPlaying = null;
 	board.autoHighlight = false;
 	canPlay = false;
-	await delay(anySpecialAttacks ? 3000 : 1000);
+	await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
 	for (const placement of placements) {
 		// Skip the delay when cards don't overlap.
 		if (placement.spacesAffected.find(p => inkPlaced.has(p.space.y * 37 + p.space.x))) {
 			inkPlaced.clear();
-			await delay(1000);
+			await delay(1000, abortSignal);
 		}
 
 		for (const p of placement.spacesAffected) {
@@ -204,23 +268,23 @@ async function playInkAnimations(data: {
 			board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
 		}
 	}
-	await delay(1000);
+	await delay(1000, abortSignal);
 
 	// Show special spaces.
 	if (data.game.board)
 		board.grid = data.game.board;
 	board.refresh();
 	if (data.specialSpacesActivated.length > 0)
-		await delay(1000);  // Delay if we expect that this changed the board.
+		await delay(1000, abortSignal);  // Delay if we expect that this changed the board.
 	for (let i = 0; i < data.game.players.length; i++) {
 		playerBars[i].specialPoints = data.game.players[i].specialPoints;
 		playerBars[i].pointsDelta = board.getScore(i) - playerBars[i].points;
 	}
-	await delay(1000);
+	await delay(1000, abortSignal);
 	for (let i = 0; i < data.game.players.length; i++) {
 		updateStats(i);
 	}
-	await delay(1000);
+	await delay(1000, abortSignal);
 }
 
 function showResult() {

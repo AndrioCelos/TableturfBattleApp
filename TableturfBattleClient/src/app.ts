@@ -14,7 +14,19 @@ const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 
 let selectedDeck: Deck | null = null;
 let deckModified = false;
 
-function delay(ms: number) { return new Promise(resolve => setTimeout(() => resolve(null), ms)); }
+function delay(ms: number, abortSignal?: AbortSignal) {
+	return new Promise((resolve, reject) => {
+		if (abortSignal?.aborted) {
+			reject(new DOMException('Operation cancelled', 'AbortError'));
+			return;
+		}
+		const timeout = setTimeout(() => resolve(null), ms);
+		abortSignal?.addEventListener('abort', _ => {
+			clearTimeout(timeout);
+			reject(new DOMException('Operation cancelled', 'AbortError'));
+		});
+	});
+}
 
 function onInitialise(callback: () => void) {
 	if (initialised)

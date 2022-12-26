@@ -17,6 +17,7 @@ let currentGame: {
 let enterGameTimeout: number | null = null;
 let currentReplay: {
 	turns: Move[][],
+	placements: { placements: Placement[], specialSpacesActivated: Point[] }[],
 	initialDrawOrder: number[][],
 	drawOrder: number[][]
 } | null = null;
