@@ -215,7 +215,10 @@ function loadReplay(base64: string) {
 		}
 		for (let j = 0; j < 8; j++) {
 			drawOrder.push(dataView.getUint8(pos + 26 + j) & 0xF);
-			drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
+			if (j == 7)
+				player.uiBaseColourIsSpecialColour = (dataView.getUint8(pos + 26 + j) & 0x80) != 0;
+			else
+				drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
 		}
 		currentReplay.initialDrawOrder.push(initialDrawOrder);
 		currentReplay.drawOrder.push(drawOrder);
