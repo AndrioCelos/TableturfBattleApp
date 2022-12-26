@@ -89,6 +89,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	clearPlayContainers();
 	if (game.board) {
 		board.resize(game.board);
+		board.startSpaces = game.startSpaces;
 		board.refresh();
 	}
 	loadPlayers(game.players);

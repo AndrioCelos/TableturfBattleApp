@@ -21,6 +21,8 @@ public class Game {
 	public string? StageName { get; private set; }
 	[JsonProperty("board")]
 	public Space[,]? Board { get; private set; }
+	[JsonProperty("startSpaces")]
+	public Point[]? StartSpaces;
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
@@ -149,6 +151,7 @@ public class Game {
 
 			// Place starting positions.
 			var list = stage.startSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
+			this.StartSpaces = list;
 			for (int i = 0; i < this.Players.Count; i++)
 				this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;
 
@@ -339,7 +342,7 @@ public class Game {
 			for (int i = 0; i < 4; i += 2)
 				writer.Write((byte) (player.initialDrawOrder![i] | player.initialDrawOrder[i + 1]));
 			for (int i = 0; i < 15; i += 2)
-				writer.Write((byte) (player.drawOrder![i] | (i < 14 ? player.drawOrder[i + 1] << 4 : 0)));
+				writer.Write((byte) (player.drawOrder![i] | (i < 14 ? player.drawOrder[i + 1] << 4 : player.UIBaseColourIsSpecialColour ? 0x80 : 0)));
 			writer.Write(player.Name);
 		}
 		for (int i = 0; i < 12; i++) {
