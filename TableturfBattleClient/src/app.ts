@@ -124,7 +124,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 				updateHand(playerData);
 			board.autoHighlight = false;
 			redrawModal.hidden = true;
-			showPage('game');
+			initGame();
 
 			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
 

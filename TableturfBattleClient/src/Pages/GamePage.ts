@@ -53,6 +53,14 @@ cols[4][21] = Space.SpecialInactive1;
 cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
+function initGame() {
+	playControls.hidden = false;
+	resultContainer.hidden = true;
+	replayControls.hidden = true;
+	gameButtonsContainer.hidden = false;
+	showPage('game');
+}
+
 function initReplay() {
 	playControls.hidden = true;
 	resultContainer.hidden = true;
