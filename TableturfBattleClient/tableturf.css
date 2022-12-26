@@ -28,6 +28,9 @@ body {
 	--primary-colour-4       : hsl(155, 95%, 50%);
 	--special-colour-4       : hsl(120, 95%, 50%);
 	--special-accent-colour-4: hsl(135, 95%, 85%);
+}
+
+#gamePage {
 	--player-primary-colour: var(--primary-colour-1);
 	--player-special-colour: var(--special-colour-1);
 	--player-special-accent-colour: var(--special-accent-colour-1);
@@ -35,7 +38,6 @@ body {
 	--player-ui-highlight-colour: var(--player-special-colour);
 	--player-ui-highlight2-colour: var(--player-special-accent-colour);
 }
-
 #gamePage[data-ui-base-colour-is-special-colour="true"] {
 	--player-ui-base-colour: var(--player-special-colour);
 	--player-ui-highlight-colour: var(--player-primary-colour);
