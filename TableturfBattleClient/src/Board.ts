@@ -168,7 +168,7 @@ class Board {
 					continue;
 				for (let dy = 0; dy < 8; dy++) {
 					const y2 = this.highlightY + dy;
-					if (y2 < 0 || y2 >= this.grid[x2].length || this.grid[x2][y2] == Space.OutOfBounds)
+					if (y2 < 0 || y2 >= this.grid[x2].length)
 						continue;
 					const space = this.cardPlaying.getSpace(dx, dy, this.cardRotation);
 					if (space != Space.Empty) {
