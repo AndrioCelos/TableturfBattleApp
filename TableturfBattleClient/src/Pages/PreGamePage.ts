@@ -163,9 +163,6 @@ preGameDeckEditorButton.addEventListener('click', e => {
 preGameReplayButton.addEventListener('click', e => {
 	e.preventDefault();
 
-	if (stageDatabase.stages == null)
-		throw new Error('Game data not loaded');
-
 	const s = prompt('Enter a replay link or code.');
 	if (!s) return;
 	const m = /(?:^|replay\/)([A-Za-z0-9+/=\-_]+)$/i.exec(s);
@@ -174,7 +171,13 @@ preGameReplayButton.addEventListener('click', e => {
 		return;
 	}
 
-	let base64 = m[1];
+	loadReplay(m[1]);
+});
+
+function loadReplay(base64: string) {
+	if (stageDatabase.stages == null)
+		throw new Error('Game data not loaded');
+
 	base64 = base64.replaceAll('-', '+');
 	base64 = base64.replaceAll('_', '/');
 	const bytes = Base64.base64DecToArr(base64);
@@ -189,7 +192,7 @@ preGameReplayButton.addEventListener('click', e => {
 
 	let pos = 2;
 	const players = [ ];
-	currentReplay = { turns: [ ], drawOrder: [ ], initialDrawOrder: [ ] };
+	currentReplay = { turns: [ ], placements: [ ], drawOrder: [ ], initialDrawOrder: [ ] };
 	for (let i = 0; i < numPlayers; i++) {
 		const len = dataView.getUint8(pos + 34);
 		const player: Player = {
@@ -254,8 +257,9 @@ preGameReplayButton.addEventListener('click', e => {
 	board.refresh();
 
 	loadPlayers(players);
+	setUrl(`replay/${encodeToUrlSafeBase64(bytes)}`)
 	initReplay();
-});
+}
 
 let playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';

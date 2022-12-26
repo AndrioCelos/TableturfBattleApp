@@ -65,7 +65,9 @@ internal class Program {
 	private static void HttpServer_OnRequest(object? sender, HttpRequestEventArgs e) {
 		e.Response.AppendHeader("Access-Control-Allow-Origin", "*");
 		if (!e.Request.RawUrl.StartsWith("/api/")) {
-			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/game/") ? "index.html" : e.Request.RawUrl[1..];
+			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/game/") || e.Request.RawUrl.StartsWith("/replay/")
+				? "index.html"
+				: e.Request.RawUrl[1..];
 			if (e.TryReadFile(path, out var bytes))
 				SetResponse(e.Response, HttpStatusCode.OK,
 					Path.GetExtension(path) switch {

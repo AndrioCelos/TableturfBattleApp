@@ -608,9 +608,7 @@ shareReplayLinkButton.addEventListener('click', _ => {
 	req.addEventListener('load', _ => {
 		if (req.status == 200) {
 			const array = new Uint8Array(req.response as ArrayBuffer);
-			let base64 = Base64.base64EncArr(array);
-			base64 = base64.replaceAll('+', '-');
-			base64 = base64.replaceAll('/', '_');
+			const base64 = encodeToUrlSafeBase64(array);
 			const url = new URL(`${canPushState ? '' : '#'}replay/${base64}`, baseUrl);
 			shareReplayLinkButton.disabled = false;
 			if (canShareReplay) {

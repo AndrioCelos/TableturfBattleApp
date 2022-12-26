@@ -351,10 +351,13 @@ function processUrl() {
 		onInitialise(showDeckList);
 	else {
 		showPage('preGame');
-		const m = /^(.*)\/game\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.exec(location.toString());
-		if (m)
-			presetGameID(m[2]);
-		else if (location.hash) {
+		const m = /[/#](?:(game)|replay)\/([A-Za-z0-9+/=\-_]+)$/.exec(location.toString());
+		if (m) {
+			if (m[1])
+				presetGameID(m[2]);
+			else
+				onInitialise(() => loadReplay(m[2]));
+		} else if (location.hash) {
 			canPushState = false;
 			presetGameID(location.hash);
 		} else {
@@ -372,6 +375,13 @@ function presetGameID(url: string) {
 		if (playerName)
 			tryJoinGame(playerName, url, true);
 	});
+}
+
+function encodeToUrlSafeBase64(array: Uint8Array) {
+	let base64 = Base64.base64EncArr(array);
+	base64 = base64.replaceAll('+', '-');
+	base64 = base64.replaceAll('/', '_');
+	return base64;
 }
 
 function isInternetExplorer() {
