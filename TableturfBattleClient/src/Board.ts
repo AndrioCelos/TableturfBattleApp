@@ -83,8 +83,8 @@ class Board {
 				if (touch) {
 					const dx = Math.round((touch.pageX - this.touch[1]) / 20);
 					const dy = Math.round((touch.pageY - this.touch[2]) / 20);
-					const x2 = this.touch[3] + dx;
-					const y2 = this.touch[4] + dy;
+					const x2 = this.touch[3] + (this.flip ? -dx : dx);
+					const y2 = this.touch[4] + (this.flip ? -dy : dy);
 					if (this.highlightX != x2 || this.highlightY != y2) {
 						this.moveHighlight((x, y, r) => [x2, y2, r], true);
 					}
