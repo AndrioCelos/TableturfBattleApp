@@ -24,6 +24,9 @@ public class Game {
 	[JsonProperty("startSpaces")]
 	public Point[]? StartSpaces;
 
+	[JsonIgnore]
+	internal DateTime AbandonedSince = DateTime.UtcNow;
+
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
 	public bool TryAddPlayer(Player player, out int playerIndex, out Error error) {

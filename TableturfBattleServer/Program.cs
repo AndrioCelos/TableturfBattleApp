@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -22,7 +23,12 @@ internal class Program {
 	internal static HttpServer? httpServer;
 
 	internal static Dictionary<Guid, Game> games = new();
+	internal static Dictionary<Guid, Game> inactiveGames = new();
 	internal static readonly Timer timer = new(500);
+	private static bool lockdown;
+
+	private const int InactiveGameLimit = 1000;
+	private static readonly TimeSpan InactiveGameTimeout = TimeSpan.FromMinutes(5);
 
 	private static string? GetClientRootPath() {
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -49,7 +55,21 @@ internal class Program {
 		else
 			Console.WriteLine($"Client files were not found.");
 
-		Thread.Sleep(Timeout.Infinite);
+		while (true) {
+			var s = Console.ReadLine();
+			if (s == null)
+				Thread.Sleep(Timeout.Infinite);
+			else {
+				s = s.Trim().ToLower();
+				if (s == "update") {
+					if (games.Count == 0)
+						Environment.Exit(2);
+					lockdown = true;
+					Console.WriteLine("Locking server for update.");
+				}
+			}
+				
+		}
 	}
 
 	private static void Timer_Elapsed(object? sender, ElapsedEventArgs e) {
@@ -57,7 +77,19 @@ internal class Program {
 			foreach (var (id, game) in games) {
 				lock (game.Players) {
 					game.Tick();
+					if (DateTime.UtcNow - game.AbandonedSince >= InactiveGameTimeout) {
+						games.Remove(id);
+						inactiveGames.Add(id, game);
+						Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
+						if (lockdown && games.Count == 0)
+							Environment.Exit(2);
+					}
 				}
+			}
+			if (inactiveGames.Count >= InactiveGameLimit) {
+				foreach (var (k, _) in inactiveGames.Select(e => (e.Key, e.Value.AbandonedSince)).OrderBy(e => e.AbandonedSince).Take(InactiveGameLimit / 2))
+					inactiveGames.Remove(k);
+				Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
 			}
 		}
 	}
@@ -85,6 +117,8 @@ internal class Program {
 			if (e.Request.HttpMethod != "POST") {
 				e.Response.AddHeader("Allow", "POST");
 				SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
+			} else if (lockdown) {
+				SetErrorResponse(e.Response, new(HttpStatusCode.ServiceUnavailable, "ServerLocked", "The server is temporarily locked for an update. Please try again soon."));
 			} else if (e.Request.ContentLength64 >= 65536) {
 				e.Response.StatusCode = (int) HttpStatusCode.RequestEntityTooLarge;
 			} else {
@@ -112,8 +146,10 @@ internal class Program {
 					var game = new Game(maxPlayers);
 					game.Players.Add(new(game, name, clientToken));
 					games.Add(game.ID, game);
+					timer.Start();
 
 					SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { gameID = game.ID, clientToken, maxPlayers }));
+					Console.WriteLine($"New game started: {game.ID}; {games.Count} games active; {inactiveGames.Count} inactive");
 				} catch (ArgumentException) {
 					SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidRequestData", "Invalid form data"));
 				}
@@ -130,7 +166,7 @@ internal class Program {
 					return;
 				}
 				lock (games) {
-					if (!games.TryGetValue(gameID, out var game)) {
+					if (!games.TryGetValue(gameID, out var game) && !inactiveGames.TryGetValue(gameID, out game)) {
 						SetErrorResponse(e.Response, new(HttpStatusCode.NotFound, "GameNotFound", "Game not found."));
 						return;
 					}
@@ -501,5 +537,18 @@ internal class Program {
 			else
 				SetResponse(response, HttpStatusCode.OK, "application/json", jsonContent);
 		}
+	}
+
+	internal static bool TryGetGame(Guid gameID, [MaybeNullWhen(false)] out Game game) {
+		if (games.TryGetValue(gameID, out game)) {
+			game.AbandonedSince = DateTime.UtcNow;
+			return true;
+		} else if (inactiveGames.TryGetValue(gameID, out game)) {
+			inactiveGames.Remove(gameID);
+			games[gameID] = game;
+			game.AbandonedSince = DateTime.UtcNow;
+			return true;
+		}
+		return false;
 	}
 }

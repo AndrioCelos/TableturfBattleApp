@@ -47,7 +47,9 @@ preGameForm.addEventListener('submit', e => {
 				setGameUrl(response.gameID);
 
 				getGameInfo(response.gameID, 0);
-			} else
+			} else if (request.status == 503)
+				communicationError('The server is temporarily locked for an update. Please try again soon.', true, () => setLoadingMessage(null));
+			else
 				communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
 		});
 		request.addEventListener('error', () => {
