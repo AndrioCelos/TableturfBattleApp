@@ -68,7 +68,6 @@ internal class Program {
 					Console.WriteLine("Locking server for update.");
 				}
 			}
-				
 		}
 	}
 
@@ -166,7 +165,7 @@ internal class Program {
 					return;
 				}
 				lock (games) {
-					if (!games.TryGetValue(gameID, out var game) && !inactiveGames.TryGetValue(gameID, out game)) {
+					if (!TryGetGame(gameID, out var game)) {
 						SetErrorResponse(e.Response, new(HttpStatusCode.NotFound, "GameNotFound", "Game not found."));
 						return;
 					}
@@ -547,6 +546,7 @@ internal class Program {
 			inactiveGames.Remove(gameID);
 			games[gameID] = game;
 			game.AbandonedSince = DateTime.UtcNow;
+			Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
 			return true;
 		}
 		return false;
