@@ -97,6 +97,7 @@ function initTest(stage: Stage) {
 	currentGame = { id: 'test', maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
+	board.startSpaces = startSpaces;
 	for (let i = 0; i < 2; i++)
 		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
 	board.refresh();
