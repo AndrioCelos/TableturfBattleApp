@@ -156,7 +156,6 @@ replayNextButton.addEventListener('click', _ => {
 		} else if (move.isPass) {
 			player.passes++;
 			player.specialPoints++;
-			player.totalSpecialPoints++;
 			const el = document.createElement('div');
 			el.className = 'passLabel';
 			el.innerText = 'Pass';
@@ -214,7 +213,6 @@ replayPreviousButton.addEventListener('click', _ => {
 		if (move.isPass) {
 			currentGame.players[i].passes--;
 			currentGame.players[i].specialPoints--;
-			currentGame.players[i].totalSpecialPoints--;
 		} else if ((move as PlayMove).isSpecialAttack)
 			currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
 		updateStats(i);

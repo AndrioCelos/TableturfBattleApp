@@ -203,7 +203,6 @@ public class Game {
 				if (move.IsPass) {
 					player.Passes++;
 					player.SpecialPoints++;
-					player.TotalSpecialPoints++;
 				} else {
 					if (move.IsSpecialAttack)
 						player.SpecialPoints -= move.Card.SpecialCost;
