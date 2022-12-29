@@ -202,6 +202,33 @@
 				</div>
 			</div>
 
+			<div id="testControls">
+				<div id="testControlsHeader" class="testControls">
+					<label for="testDeckButton">
+						<input type="radio" id="testDeckButton" name="testPage"/>Deck
+					</label>
+					<label for="testAllCardsButton">
+						<input type="radio" id="testAllCardsButton" name="testPage"/>All cards
+					</label>
+				</div>
+				<div id="testDeckContainer" class="testControls">
+					<button id="testAllCardsMobileButton">All cards</button>
+					<div id="testDeckList"></div>
+				</div>
+				<div id="testAllCardsContainer" class="testControls" hidden>
+					<label for="testAllCardsListSortBox">
+						Sort by
+						<select id="testAllCardsListSortBox" autocomplete="off"></select>
+					</label>
+					<div id="testAllCardsList" class="cardListGrid"></div>
+				</div>
+				<div id="testControlsFooter" class="testControls">
+					<button type="button" id="testUndoButton" disabled>Undo</button>
+					<button type="button" id="testBackButton">End test</button>
+				</div>
+			</div>
+			<div id="testCardListBackdrop" hidden></div>
+
 			<div id="turnNumberContainer" hidden>
 				<p>Turns left</p>
 				<div id="turnNumberLabel">12</div>
@@ -233,6 +260,8 @@
 			<div class="playContainer" data-index="3"></div>
 			<div class="playContainer" data-index="2"></div>
 			<div class="playContainer" data-index="0"></div>
+
+			<div id="testPlacementList"></div>
 		</div>
 		<div id="deckListPage" hidden>
 			<section id="deckEditordeckListPage">
@@ -295,16 +324,18 @@
 				<a id="deckCardListBackButton" href="#">Back</a>
 				<label for="cardListSortBox">
 					Sort by
-					<select id="cardListSortBox" autocomplete="off">
-						<option value="number">number</option>
-						<option value="name">name</option>
-						<option value="size">size</option>
-						<option value="rarity">rarity</option>
-					</select>
+					<select id="cardListSortBox" autocomplete="off"></select>
 				</label>
-				<div id="cardList"></div>
+				<div id="cardList" class="cardListGrid"></div>
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
+			<dialog id="testStageSelectionDialog">
+				<h3>Select a stage.</h3>
+				<form id="testStageSelectionForm" method="dialog">
+					<div id="testStageSelectionList"></div>
+					<button type="submit">Cancel</button>
+				</form>
+			</dialog>
 		</div>
 		<dialog id="errorDialog">
 			<div id="errorMessage"></div>

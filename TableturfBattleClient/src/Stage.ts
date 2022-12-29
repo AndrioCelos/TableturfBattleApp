@@ -1,6 +1,6 @@
 class Stage {
 	name: string;
-	grid: Space[][];
+	grid: readonly (readonly Space[])[];
 	startSpaces: Point[][];
 
 	constructor(name: string, grid: Space[][], startSpaces: Point[][]) {
@@ -20,5 +20,9 @@ class Stage {
 				list = list2;
 		}
 		return list!;
+	}
+
+	copyGrid() {
+		return Array.from(this.grid, a => a.slice(0));
 	}
 }

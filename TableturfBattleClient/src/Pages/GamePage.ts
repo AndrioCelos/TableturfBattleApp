@@ -38,6 +38,20 @@ const showDeckCloseButton = document.getElementById('showDeckCloseButton') as HT
 const playContainers = Array.from(document.getElementsByClassName('playContainer')) as HTMLDivElement[];
 playContainers.sort((a, b) => parseInt(a.dataset.index || '0') - parseInt(b.dataset.index || '0'));
 
+const testControls = document.getElementById('testControls')!;
+const testDeckList = document.getElementById('testDeckList')!;
+const testAllCardsList = CardList.fromId('testAllCardsList', 'testAllCardsListSortBox');
+const testPlacementList = document.getElementById('testPlacementList')!;
+const testDeckButton = CheckButton.fromId('testDeckButton');
+const testDeckContainer = document.getElementById('testDeckContainer')!;
+const testAllCardsButton = CheckButton.fromId('testAllCardsButton');
+const testAllCardsContainer = document.getElementById('testAllCardsContainer')!;
+const testUndoButton = document.getElementById('testUndoButton') as HTMLButtonElement;
+const testBackButton = document.getElementById('testBackButton') as HTMLButtonElement;
+const testDeckCardButtons: CardButton[] = [ ];
+const testPlacements: { card: Card, placementResults: PlacementResults }[] = [ ];
+const testCardListBackdrop = document.getElementById('testCardListBackdrop')!;
+
 let testMode = false;
 let canPlay = false;
 
@@ -55,21 +69,58 @@ cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
 function initGame() {
+	testMode = false;
+	gamePage.classList.remove('deckTest');
 	playControls.hidden = false;
 	resultContainer.hidden = true;
 	replayControls.hidden = true;
 	gameButtonsContainer.hidden = false;
+	testControls.hidden = true;
 	showPage('game');
 }
 
 function initReplay() {
+	testMode = false;
+	gamePage.classList.remove('deckTest');
 	playControls.hidden = true;
 	resultContainer.hidden = true;
 	replayControls.hidden = false;
 	gameButtonsContainer.hidden = true;
+	testControls.hidden = true;
 	canPlay = false;
 	showPage('game');
+	clearPlayContainers();
 	turnNumberLabel.setTurnNumber(1);
+}
+
+function initTest(stage: Stage) {
+	currentGame = { id: 'test', maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
+	board.resize(stage.copyGrid());
+	const startSpaces = stage.getStartSpaces(2);
+	for (let i = 0; i < 2; i++)
+		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
+	board.refresh();
+
+	for (var o of playerBars)
+		o.element.hidden = true;
+	testMode = true;
+	testPlacements.splice(0);
+	clearChildren(testPlacementList);
+	gamePage.classList.add('deckTest');
+	gamePage.dataset.myPlayerIndex = '0';
+	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
+	playControls.hidden = true;
+	resultContainer.hidden = true;
+	replayControls.hidden = true;
+	gameButtonsContainer.hidden = false;
+	testControls.hidden = false;
+	clearPlayContainers();
+	turnNumberLabel.setTurnNumber(null);
+	showPage('game');
+
+	testDeckButton.checked = true;
+	testAllCardsButton.checked = false;
+	setTestListPage(false);
 }
 
 replayNextButton.addEventListener('click', _ => {
@@ -152,27 +203,10 @@ replayPreviousButton.addEventListener('click', _ => {
 		el.innerText = '';
 	}
 
-	// Unwind the turn.
-	for (const p of result.specialSpacesActivated) {
-		const space = board.grid[p.x][p.y];
-		const player2 = currentGame.players[space & 3];
-		player2.specialPoints--;
-		player2.totalSpecialPoints--;
-		board.grid[p.x][p.y] &= ~4;
-	}
-	currentGame.turnNumber--;
-
-	for (let i = result.placements.length - 1; i >= 0; i--) {
-		const placement = result.placements[i];
-		for (const p of placement.spacesAffected) {
-			if (p.oldState == undefined) throw new TypeError('oldState missing');
-			board.grid[p.space.x][p.space.y] = p.oldState;
-		}
-	}
-
+	undoTurn(result);
+	currentGame!.turnNumber--;
 	gamePage.classList.remove('gameEnded');
-	turnNumberLabel.setTurnNumber(currentGame.turnNumber);
-	board.refresh();
+	turnNumberLabel.setTurnNumber(currentGame!.turnNumber);
 
 	for (let i = 0; i < currentGame.players.length; i++) {
 		const move = currentReplay.turns[currentGame.turnNumber - 1][i];
@@ -185,6 +219,28 @@ replayPreviousButton.addEventListener('click', _ => {
 		updateStats(i);
 	}
 });
+
+function undoTurn(turn: PlacementResults) {
+	for (const p of turn.specialSpacesActivated) {
+		const space = board.grid[p.x][p.y];
+		const player2 = currentGame!.players[space & 3];
+		if (player2) {
+			player2.specialPoints--;
+			player2.totalSpecialPoints--;
+		}
+		board.grid[p.x][p.y] &= ~4;
+	}
+
+	for (let i = turn.placements.length - 1; i >= 0; i--) {
+		const placement = turn.placements[i];
+		for (const p of placement.spacesAffected) {
+			if (p.oldState == undefined) throw new TypeError('oldState missing');
+			board.grid[p.space.x][p.space.y] = p.oldState;
+		}
+	}
+
+	board.refresh();
+}
 
 replayFlipBox.addEventListener('input', _ => {
 	if (currentGame == null || currentReplay == null) return;
@@ -201,6 +257,96 @@ replayFlipBox.addEventListener('input', _ => {
 	if (board.flip) gamePage.classList.add('boardFlipped');
 	else gamePage.classList.remove('boardFlipped');
 	board.resize();
+});
+
+function addTestDeckCard(card: Card) {
+	const button = new CardButton('radio', cardDatabase.get(card.number));
+	button.inputElement.name = 'deckEditorTestSelectedCard'
+	testDeckList.appendChild(button.element);
+	testDeckCardButtons.push(button);
+	button.inputElement.addEventListener('input', () => {
+		if (button.checked) {
+			for (const button2 of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
+				if (button2 != button)
+					button2.element.classList.remove('checked');
+			}
+			board.cardPlaying = card;
+			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
+				board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
+			}
+			board.cardRotation = board.flip ? 2 : 0;
+			board.refreshHighlight();
+			board.table.focus();
+		}
+	});
+}
+
+function addTestCard(card: Card) {
+	const button = new CardButton('radio', cardDatabase.get(card.number));
+	button.inputElement.name = 'deckEditorTestSelectedCard'
+	testAllCardsList.add(button);
+	button.inputElement.addEventListener('input', () => {
+		if (button.checked) {
+			for (const button2 of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
+				if (button2 != button)
+					button2.element.classList.remove('checked');
+			}
+			board.cardPlaying = card;
+			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
+				board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
+			}
+			board.cardRotation = board.flip ? 2 : 0;
+			board.refreshHighlight();
+			board.table.focus();
+			if (!testCardListBackdrop.hidden) {
+				testCardListBackdrop.hidden = true;
+				gamePage.removeChild(testAllCardsContainer);
+				testControls.appendChild(testAllCardsContainer);
+				setTestListPage(false);
+			}
+		}
+	});
+}
+
+testUndoButton.addEventListener('click', _ => {
+	const turn = testPlacements.pop();
+	if (turn) {
+		undoTurn(turn.placementResults);
+		testPlacementList.removeChild(testPlacementList.firstChild!);
+
+		for (const button of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
+			if (button.card.number == turn.card.number)
+				button.enabled = true;
+		}
+
+		testUndoButton.disabled = testPlacements.length == 0;
+	}
+});
+
+testBackButton.addEventListener('click', _ => {
+	showPage('deckEdit');
+});
+
+testDeckButton.input.addEventListener('input', _ => {
+	if (testDeckButton.checked) setTestListPage(false);
+});
+testAllCardsButton.input.addEventListener('input', _ => {
+	if (testAllCardsButton.checked) setTestListPage(true);
+});
+function setTestListPage(showAllCards: boolean) {
+	testDeckButton.checked = !showAllCards;
+	testAllCardsButton.checked = showAllCards;
+	testDeckContainer.hidden = showAllCards
+	testAllCardsContainer.hidden = !showAllCards;
+}
+
+document.getElementById('testAllCardsMobileButton')!.addEventListener('click', _ => {
+	setTestListPage(true);
+	testControls.removeChild(testAllCardsContainer);
+	gamePage.appendChild(testAllCardsContainer);
+	testCardListBackdrop.hidden = false;
 });
 
 function loadPlayers(players: Player[]) {
@@ -359,6 +505,7 @@ function showResult() {
 
 function clearShowDeck() {
 	showDeckContainer.hidden = true;
+	testCardListBackdrop.hidden = true;
 	clearChildren(showDeckListElement);
 	showDeckButtons.splice(0);
 }
@@ -522,7 +669,26 @@ board.onclick = (x, y) => {
 	if (testMode) {
 		const move: PlayMove = { card: board.cardPlaying, isPass: false, x, y, rotation: board.cardRotation, isSpecialAttack: false };
 		const r = board.makePlacements([ move ]);
+		testPlacements.push({ card: board.cardPlaying, placementResults: r });
 		board.refresh();
+
+		var li = document.createElement('div');
+		li.innerText = board.cardPlaying.name;
+		if (testDeckCardButtons.find(b => b.card.number == board.cardPlaying!.number))
+			li.classList.add('deckCard');
+		else
+			li.classList.add('externalCard');
+		testPlacementList.insertBefore(li, testPlacementList.firstChild);
+
+		for (const button of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
+			if (button.card.number == board.cardPlaying.number) {
+				button.checked = false;
+				button.enabled = false;
+			}
+		}
+
+		board.cardPlaying = null;
+		testUndoButton.disabled = false;
 	} else if (canPlay) {
 		canPlay = false;
 		// Send the play to the server.
@@ -580,9 +746,11 @@ function focusFirstEnabledHandCard() {
 function toggleShowDeck() {
 	if (showDeckContainer.hidden) {
 		showDeckContainer.hidden = false;
+		testCardListBackdrop.hidden = false;
 		showDeckCloseButton.focus();
 	} else {
 		showDeckContainer.hidden = true;
+		testCardListBackdrop.hidden = true;
 		focusFirstEnabledHandCard();
 	}
 }
@@ -596,7 +764,7 @@ rotateRightButton.addEventListener('click', () => {
 	board.refreshHighlight();
 });
 gameDeckButton.addEventListener('click', toggleShowDeck);
-showDeckCloseButton.addEventListener('click', () => showDeckContainer.hidden = true);
+showDeckCloseButton.addEventListener('click', toggleShowDeck);
 
 document.addEventListener('keydown', e => {
 	if (!pages.get('game')!.hidden) {

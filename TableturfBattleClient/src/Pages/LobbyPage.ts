@@ -213,6 +213,7 @@ function initStageDatabase(stages: Stage[]) {
 		});
 		button.setStartSpaces(2);
 		stageList.appendChild(button.element);
+		addTestStage(stage);
 	}
 	document.getElementById('stageListLoadingSection')!.hidden = true;
 }

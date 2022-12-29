@@ -28,6 +28,9 @@ body {
 	--primary-colour-4       : hsl(155, 95%, 50%);
 	--special-colour-4       : hsl(120, 95%, 50%);
 	--special-accent-colour-4: hsl(135, 95%, 85%);
+	--player-primary-colour: var(--primary-colour-1);
+	--player-special-colour: var(--special-colour-1);
+	--player-special-accent-colour: var(--special-accent-colour-1);
 }
 
 #gamePage {
@@ -410,23 +413,34 @@ dialog::backdrop {
 /* Card list */
 
 #cardList {
-	display: flex;
-	flex-wrap: wrap;
-	overflow-y: scroll;
 	grid-row: 2;
 	grid-column: 1 / -1;
+}
+.cardListControl {
+	display: grid;
+	grid-template-rows: auto 1fr;
+}
+.cardListGrid:not([hidden]) {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(11em, 1fr));
+	overflow-y: auto;
+	justify-items: center;
 }
 
 /* Game page */
 
 #gamePage:not([hidden]) {
+	--controls-width: 11em;
 	display: grid;
-	grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1] 10em [play-column-2] 10em;
+	grid-template-columns: var(--controls-width) var(--controls-width) [score-column] 1fr [board-column] auto 1fr [play-column-1] 10em [play-column-2] 10em;
 	grid-template-rows: [player-row-1] auto [player-row-3] auto [hand-row] 1fr [player-row-2] auto [player-row-0] auto;
 	height: 100vh;
 }
+#gamePage.deckTest {
+	--controls-width: 14em;
+}
 #gamePage:where([data-players="2"]):not([hidden]) {
-	grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 20em;
+	grid-template-columns: var(--controls-width) var(--controls-width) [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 20em;
 }
 
 .playerBar[data-index="0"] {
@@ -469,7 +483,8 @@ dialog::backdrop {
 	padding-right: 10px;
 }
 
-#scoreSection {
+#gamePage.deckTest #scoreSection { display: none; }
+#scoreSection:not([hidden]) {
 	grid-column: score-column;
 	grid-row: 2 / -2;
 	display: flex;
@@ -501,7 +516,7 @@ dialog::backdrop {
 	text-align: center;
 }
 
-#playControls > label {
+:is(#playControls, #testControlsHeader) > label {
 	grid-row: button-row;
 	margin: 0.5em;
 	padding: 0 0.5em;
@@ -510,14 +525,14 @@ dialog::backdrop {
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
-#playControls > label input {
+:is(#playControls, #testControlsHeader) > label input {
 	position: absolute;
 	left: -333px;
 }
-#playControls > label:hover { background: var(--player-ui-highlight-colour); }
-#playControls > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-#playControls > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
-#playControls > label.disabled { background: grey; }
+:is(#playControls, #testControlsHeader) > label:hover { background: var(--player-ui-highlight-colour); }
+:is(#playControls, #testControlsHeader) > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+:is(#playControls, #testControlsHeader) > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
+:is(#playControls, #testControlsHeader) > label.disabled { background: grey; }
 
 #showDeckContainer {
 	grid-column: 1 / span 3;
@@ -531,7 +546,7 @@ dialog::backdrop {
 	height: 100%;
 	text-align: center;
 }
-#showDeckList {
+#showDeckList, #testDeckList {
 	display: grid;
 	grid-template-columns: auto auto auto;
 	list-style-type: none;
@@ -540,6 +555,7 @@ dialog::backdrop {
 	padding: 0;
 	margin: 0;
 	justify-items: center;
+	align-items: center;
 }
 #showDeckList > li {
 	margin: 0.25em;
@@ -552,22 +568,76 @@ dialog::backdrop {
 #showDeckList > li.used {
 	opacity: 0.35;
 }
-#showDeckCloseButton {
+#showDeckCloseButton, #testControlsFooter button {
 	border: none;
 	font-family: inherit;
 	color: inherit;
-	width: 40%;
-	grid-row: button-row;
-	margin: 1em;
+	margin: 0.5em;
 	padding: 0 0.5em;
 	text-align: center;
 	background: var(--player-ui-base-colour);
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
+	font-size: inherit;
 }
-#showDeckCloseButton:hover { background: var(--player-ui-highlight-colour); }
-#showDeckCloseButton:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-#showDeckCloseButton:active { background: var(--player-ui-highlight2-colour); }
+#showDeckCloseButton {
+  width: 40%;
+	grid-row: button-row;
+}
+:is(#showDeckCloseButton, #testControlsFooter button):hover { background: var(--player-ui-highlight-colour); }
+:is(#showDeckCloseButton, #testControlsFooter button):focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+:is(#showDeckCloseButton, #testControlsFooter button):active { background: var(--player-ui-highlight2-colour); }
+
+#testControls:not([hidden]) {
+	grid-column: 1 / span 2;
+	grid-row: 1 / -1;
+  display: grid;
+	grid-template-rows: [header] auto [list] 1fr [buttons] auto;
+}
+#testControlsHeader, #testControlsFooter {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+#testDeckContainer {
+	grid-row: list;
+	overflow: hidden;
+}
+#testDeckList {
+	height: 100%;
+}
+#testAllCardsContainer:not([hidden]) {
+	overflow: hidden;
+	display: grid;
+	grid-template-rows: auto 1fr;
+	grid-row: 2;
+}
+#testAllCardsMobileButton {
+	display: none;
+	font: inherit;
+	color: inherit;
+	background: transparent;
+	border: 0.25em solid var(--player-ui-base-colour);
+}
+#testAllCardsMobileButton:hover { border-color: var(--player-ui-highlight-colour); }
+#testAllCardsMobileButton:focus-within { outline: 2px solid var(--player-special-accent-colour); }
+#testAllCardsMobileButton:active { border-color: var(--player-special-accent-colour); }
+
+#testDeckList, #testAllCardsList {
+	flex-grow: 1;
+}
+
+#testAllCardsList:not([hidden]) {
+	font-size: 70%;
+}
+#testCardListBackdrop {
+	background: #00000080;
+	z-index: 1;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
 
 .playContainer { text-align: center; }
 
@@ -583,6 +653,25 @@ dialog::backdrop {
 
 .playContainer .card {
 	margin: 0;
+}
+
+#testPlacementList {
+	display: none;
+}
+#gamePage.deckTest #testPlacementList {
+	grid-column: -3 / -1;
+	grid-row: 1 / -1;
+	display: flex;
+	flex-flow: column;
+	margin: 1em;
+	gap: 1em;
+}
+#testPlacementList div {
+	background: #222;
+	padding: 0.5em;
+}
+#testPlacementList div.deckCard {
+	background: #246;
 }
 
 #gameButtonsContainer {
@@ -612,6 +701,9 @@ dialog::backdrop {
 #gameButtonsContainer button:active {
 	opacity: 1;
 	color: var(--player-ui-highlight-colour);
+}
+#gamePage.deckTest #gameDeckButton {
+	display: none;
 }
 
 #boardSection {
@@ -866,7 +958,7 @@ dialog::backdrop {
 :is(#deckListPage, #deckEditPage):not([hidden]) {
 	height: 100vh;
 	display: grid;
-	grid-template-columns: auto auto;
+	grid-template-columns: auto 1fr;
 }
 
 .deckList > label, #addDeckControls > button {
@@ -920,7 +1012,7 @@ dialog::backdrop {
 #deckCardListView, #deckCardListEdit {
 	display: grid;
 	grid-template-columns: auto auto auto;
-	justify-content: center;
+	justify-items: center;
 	grid-column: 2;
 	grid-row: 1 / 5;
 	overflow-y: scroll;
@@ -976,6 +1068,13 @@ dialog::backdrop {
 	opacity: 0.5;
 }
 
+#testStageSelectionList {
+	max-width: 52em;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+}
+
 /* Small display layout */
 @media (max-width: 89rem) or (max-height: 42rem) {
 	#gamePage, #deckCardListView, #deckCardListEdit {
@@ -988,7 +1087,7 @@ dialog::backdrop {
 	}
 
 	#gamePage:not([hidden]) {
-		grid-template-columns: 11em 11em [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 10em;
+		grid-template-columns: var(--controls-width) var(--controls-width) [score-column] 1fr [board-column] auto 1fr [play-column-1 play-column-2] 10em;
 	}
 
 	.playContainer { position: relative; }
@@ -1019,9 +1118,15 @@ dialog::backdrop {
 @media (max-width: 40rem) {
 	.card {
 		margin: 0;
-		width: auto;
 	}
-
+	.cardListGrid:not([hidden]) {
+		justify-items: stretch;
+	}
+.cardListGrid .card {
+    width: auto;
+    justify-self: stretch;
+  }
+	
 	/* Lobby - Mobile layout */
 
 	#lobbyPage:not([hidden]) {
@@ -1034,14 +1139,13 @@ dialog::backdrop {
 		height: initial;
 	}
 
-	#stageList {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		font-size: x-small;
+	#stageList, #testStageSelectionList {
+		font-size: 75%;
 	}
 
 	.stage, .stageRandom {
-		width: auto;
+		flex-basis: 10em;
+		flex-grow: 1;
 	}
 
 	/* Game - Mobile layout */
@@ -1085,7 +1189,7 @@ dialog::backdrop {
 		width: initial;
 	}
 
-	#scoreSection {
+	#scoreSection:not([hidden]) {
 		grid-column: 1;
 		grid-row: 2;
 		grid-template-rows: 1fr;
@@ -1108,7 +1212,7 @@ dialog::backdrop {
 		grid-template-columns: 1fr 1fr 1fr 1fr;
 		grid-template-rows: auto;
 		width: 100vw;
-		overflow: scroll visible;
+		overflow: scroll hidden;
 	}
 
 	#showDeckContainer {
@@ -1149,6 +1253,14 @@ dialog::backdrop {
 	#gameButtonsContainer button {
 		font-size: 250%;
 	}
+	
+	#gamePage > #testAllCardsContainer:not([hidden]) {
+		grid-row: 1 / -1;
+		grid-column: 1 / -1;
+		background: black;
+		z-index: 2;
+		margin-top: 5em;
+  }
 
 	/* Deck editor - Mobile layout */
 
@@ -1220,13 +1332,50 @@ dialog::backdrop {
 	}
 
 	#cardList {
-		font-size: 50%;
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr;
+		font-size: 55%;
 	}
 
 	#cardList .card {
 		height: 13em;
+	}
+
+	#testControls:not([hidden]) {
+		grid-column: 1 / -1;
+		grid-row: -2;
+	}
+	#testControlsHeader {
+		display: none;
+	}
+	#testAllCardsMobileButton {
+		display: inline-block;
+		width: 7em;
+	}
+	#testDeckContainer:not([hidden]) {
+		display: grid;
+		grid-template-columns: auto auto;
+		overflow-x: scroll;
+	}
+	#testDeckList {
+		width: max-content;
+		display: inline-block;
+		padding: 0;
+		margin: 0;
+		justify-items: center;
+		align-items: center;
+		overflow: initial;
+	}
+
+	#gamePage.deckTest #testPlacementList {
+		grid-column: 1 / -1;
+		grid-row: 1;
+		height: 7em;
+		flex-flow: row wrap;
+		align-content: flex-start;
+		margin: 0.5em;
+		gap: 0.5em;
+	}
+	#testPlacementList div {
+		padding: 0 0.5em;
 	}
 }
 

@@ -3,7 +3,7 @@ class Card {
 	name: string;
 	rarity: Rarity;
 	specialCost: number;
-	grid: Space[][];
+	grid: readonly (readonly Space[])[];
 	size: number;
 
 	private minX: number;

@@ -255,7 +255,7 @@ function loadReplay(base64: string) {
 		webSocket: null
 	};
 
-	board.resize(stage.grid);
+	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(numPlayers);
 	for (let i = 0; i < numPlayers; i++)
 		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
