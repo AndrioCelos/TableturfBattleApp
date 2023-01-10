@@ -86,7 +86,7 @@ class CardButton {
 			el2.appendChild(el3);
 		}
 
-		this.button = new CheckButton(checkBox);
+		this.button = new CheckButton(checkBox, el);
 
 		CardButton.idNumber++;
 	}

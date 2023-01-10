@@ -2,9 +2,9 @@ class CheckButton {
 	readonly input: HTMLInputElement;
 	readonly label: HTMLLabelElement;
 
-	constructor(input: HTMLInputElement) {
+	constructor(input: HTMLInputElement, label?: HTMLLabelElement) {
 		this.input = input;
-		this.label = input.labels![0];
+		this.label = label ?? input.labels![0];
 		this.input.addEventListener('input', () => {
 			this.checked = this.input.checked;
 		});

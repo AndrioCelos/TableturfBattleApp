@@ -144,7 +144,7 @@ function initDeckSelection() {
 			label.appendChild(document.createTextNode(deck.name));
 
 			lobbyDeckList.appendChild(label);
-			const button = new CheckButton(input);
+			const button = new CheckButton(input, label);
 			lobbyDeckButtons.push(button);
 
 			if (!deck.isValid) {

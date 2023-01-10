@@ -99,7 +99,7 @@ function createDeckButton(index: number, deck: Deck) {
 	label.appendChild(document.createTextNode(deck.name));
 
 	deckList.insertBefore(label, addDeckControls);
-	deckButtons.push(new CheckButton(input));
+	deckButtons.push(new CheckButton(input, label));
 	return label;
 }
 
