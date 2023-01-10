@@ -286,12 +286,14 @@ dialog::backdrop {
 	background: var(--colour);
 	background: linear-gradient(90deg, rgb(255, 242, 129) 0%, rgb(255, 255, 224) 15%, rgb(231, 180, 39) 50%, rgb(255, 255, 224) 85%, rgb(255, 242, 129) 100%);
 	background-clip: text;
+	-webkit-background-clip: text;
 	color: transparent;
 }
 .card.fresh .cardName {
 	background: var(--colour);
 	background: linear-gradient(120deg, rgba(253, 217, 169, 1) 0%, rgba(200, 58, 141, 1) 50%, rgba(55, 233, 207, 1) 100%);
 	background-clip: text;
+	-webkit-background-clip: text;
 	color: transparent;
 	flex-grow: 0;
 }
@@ -1126,7 +1128,7 @@ dialog::backdrop {
     width: auto;
     justify-self: stretch;
   }
-	
+
 	/* Lobby - Mobile layout */
 
 	#lobbyPage:not([hidden]) {
@@ -1253,7 +1255,7 @@ dialog::backdrop {
 	#gameButtonsContainer button {
 		font-size: 250%;
 	}
-	
+
 	#gamePage > #testAllCardsContainer:not([hidden]) {
 		grid-row: 1 / -1;
 		grid-column: 1 / -1;
