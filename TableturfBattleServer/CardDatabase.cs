@@ -950,10 +950,10 @@ public static class CardDatabase {
 		}),
 		new( 95, "Captain", Rarity.Fresh, 6, new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
-			{ 0, I, I, I, I, 0, 0, 0 },
-			{ 0, I, I, S, 0, I, 0, 0 },
-			{ 0, I, I, I, 0, 0, I, 0 },
-			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, I, I, I, 0, 0, 0, 0 },
+			{ 0, I, I, S, I, 0, 0, 0 },
+			{ 0, I, I, I, 0, I, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
@@ -1760,8 +1760,8 @@ public static class CardDatabase {
 		})
 	};
 
-	public static Version Version { get; } = new(2, 0, 0, 0);
-	public static DateTime LastModified { get; } = new(2022, 12, 1, 0, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(2, 0, 1, 0);
+	public static DateTime LastModified { get; } = new(2023, 1, 12, 22, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
