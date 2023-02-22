@@ -239,8 +239,10 @@ dialog::backdrop {
 	position: relative;
 	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
 	font-weight: 599;
-	display: inline-block;
 	margin: 0.5em;
+}
+.card:not([hidden]) {
+	display: inline-block;
 }
 
 .card.common { --colour: rgb(89, 49, 255); }
@@ -427,6 +429,7 @@ dialog::backdrop {
 	grid-template-columns: repeat(auto-fill, minmax(11em, 1fr));
 	overflow-y: auto;
 	justify-items: center;
+	grid-auto-rows: max-content;
 }
 
 /* Game page */
@@ -626,6 +629,13 @@ dialog::backdrop {
 
 #testDeckList, #testAllCardsList {
 	flex-grow: 1;
+}
+
+#testAllCardsHeader {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+	justify-content: end;
 }
 
 #testAllCardsList:not([hidden]) {
@@ -1050,13 +1060,23 @@ dialog::backdrop {
 	height: 100vh;
 	display: grid;
 	grid-template-rows: auto 1fr;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: 1fr;
 	gap: 1em;
 }
 
 #deckEditorCardListSection > label {
 	grid-column: 2;
 	grid-row: 1;
+}
+
+#cardListHeader {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5em;
+	margin: 0 0.5em;
+}
+#cardListHeader h3 {
+	flex-grow: 1;
 }
 
 #deckEditorCardListBackdrop {

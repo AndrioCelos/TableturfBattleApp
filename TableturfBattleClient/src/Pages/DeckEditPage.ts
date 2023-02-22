@@ -3,12 +3,12 @@
 const deckNameLabel2 = document.getElementById('deckName2')!;
 const deckEditSize = document.getElementById('deckEditSize')!;
 const deckCardListEdit = document.getElementById('deckCardListEdit')!;
-const cardList = CardList.fromId('cardList', 'cardListSortBox');
+const cardList = CardList.fromId('cardList', 'cardListSortBox', 'cardListFilterBox');
 const deckTestButton = document.getElementById('deckTestButton') as HTMLButtonElement;
 const deckSaveButton = document.getElementById('deckSaveButton') as HTMLButtonElement;
 const deckCancelButton = document.getElementById('deckCancelButton') as HTMLButtonElement;
 const deckCardListBackButton = document.getElementById('deckCardListBackButton') as HTMLLinkElement;
-const cardListSortBox = document.getElementById('cardListSortBox') as HTMLSelectElement;
+const cardListFilterBox = document.getElementById('cardListFilterBox') as HTMLSelectElement;
 const testStageSelectionList = document.getElementById('testStageSelectionList')!;
 const testStageButtons: StageButton[] = [ ];
 const testStageSelectionDialog = document.getElementById('testStageSelectionDialog') as HTMLDialogElement;

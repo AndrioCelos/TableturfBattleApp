@@ -216,10 +216,13 @@
 					<div id="testDeckList"></div>
 				</div>
 				<div id="testAllCardsContainer" class="testControls" hidden>
-					<label for="testAllCardsListSortBox">
-						Sort by
-						<select id="testAllCardsListSortBox" autocomplete="off"></select>
-					</label>
+					<div id="testAllCardsHeader">
+						<label for="testAllCardsListSortBox">
+							Sort by
+							<select id="testAllCardsListSortBox" autocomplete="off"></select>
+						</label>
+						<input type="text" id="testAllCardsListFilterBox" placeholder="Filter"/>
+					</div>
 					<div id="testAllCardsList" class="cardListGrid"></div>
 				</div>
 				<div id="testControlsFooter" class="testControls">
@@ -321,11 +324,15 @@
 				</div>
 			</section>
 			<section id="deckEditorCardListSection">
-				<a id="deckCardListBackButton" href="#">Back</a>
-				<label for="cardListSortBox">
-					Sort by
-					<select id="cardListSortBox" autocomplete="off"></select>
-				</label>
+				<div id="cardListHeader">
+					<a id="deckCardListBackButton" href="#">Back</a>
+					<h3>All cards</h3>
+					<label for="cardListSortBox">
+						Sort by
+						<select id="cardListSortBox" autocomplete="off"></select>
+					</label>
+					<input type="text" id="cardListFilterBox" placeholder="Filter"/>
+				</div>
 				<div id="cardList" class="cardListGrid"></div>
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
