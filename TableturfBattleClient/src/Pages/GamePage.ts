@@ -122,6 +122,7 @@ function initTest(stage: Stage) {
 	testDeckButton.checked = true;
 	testAllCardsButton.checked = false;
 	setTestListPage(false);
+	testAllCardsList.clearFilter();
 }
 
 replayNextButton.addEventListener('click', _ => {
@@ -766,7 +767,7 @@ gameDeckButton.addEventListener('click', toggleShowDeck);
 showDeckCloseButton.addEventListener('click', toggleShowDeck);
 
 document.addEventListener('keydown', e => {
-	if (!pages.get('game')!.hidden) {
+	if (!pages.get('game')!.hidden && !playControls.hidden) {
 		switch (e.key) {
 			case 'p':
 				if (passButton.enabled) {

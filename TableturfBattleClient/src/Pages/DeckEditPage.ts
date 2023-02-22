@@ -39,6 +39,7 @@ function editDeck() {
 	}
 
 	deckEditUpdateSize();
+	cardList.clearFilter();
 	showPage('deckEdit');
 }
 
