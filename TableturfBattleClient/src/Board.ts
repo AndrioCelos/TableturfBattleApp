@@ -214,6 +214,18 @@ class Board {
 				td.dataset.x = x.toString();
 				td.dataset.y = y.toString();
 				col.push(td);
+				td.addEventListener('click', e => {
+					if (this.autoHighlight && this.cardPlaying != null && this.onclick) {
+						if (this.touchscreenMode) {
+							this.onclick(this.highlightX, this.highlightY);
+						} else {
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
+							this.onclick(x, y);
+						}
+					}
+				});
+				td.addEventListener('contextmenu', e => e.preventDefault());
 				td.addEventListener('mousemove', e => {
 					if (e.buttons == 0)
 						this.touchscreenMode = false;
@@ -229,14 +241,11 @@ class Board {
 						}
 					}
 				});
-				td.addEventListener('click', e => {
-					if (this.autoHighlight && this.cardPlaying != null && this.onclick) {
-						if (this.touchscreenMode) {
-							this.onclick(this.highlightX, this.highlightY);
-						} else {
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
-							this.onclick(x, y);
+				td.addEventListener('mouseup', e => {
+					if (this.autoHighlight && this.cardPlaying != null) {
+						if (e.button == 2) {
+							this.cardRotation++;
+							this.refreshHighlight();
 						}
 					}
 				});
