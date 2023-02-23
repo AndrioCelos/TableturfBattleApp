@@ -32,6 +32,7 @@ body {
 	--player-primary-colour: var(--primary-colour-1);
 	--player-special-colour: var(--special-colour-1);
 	--player-special-accent-colour: var(--special-accent-colour-1);
+	--theme-colour: #0c92f2;
 }
 
 #gamePage {
@@ -131,7 +132,7 @@ footer {
 }
 
 #playerList .filled {
-	background: var(--special-colour-1);
+	background: var(--theme-colour);
 	position: relative;
 	animation: 0.33s linear playerListFlyIn;
 }
