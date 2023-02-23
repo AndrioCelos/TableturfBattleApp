@@ -170,6 +170,18 @@ preGameHelpButton.addEventListener('click', e => {
 	setUrl('help');
 });
 
+helpDialog.addEventListener('close', () => {
+	if (canPushState) {
+		try {
+			history.pushState(null, '', '.');
+		} catch {
+			canPushState = false;
+		}
+	}
+	if (location.hash)
+		location.hash = '';
+});
+
 preGameReplayButton.addEventListener('click', e => {
 	e.preventDefault();
 
