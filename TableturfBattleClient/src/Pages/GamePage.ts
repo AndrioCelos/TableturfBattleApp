@@ -326,7 +326,7 @@ testUndoButton.addEventListener('click', _ => {
 });
 
 testBackButton.addEventListener('click', _ => {
-	showPage('deckEdit');
+	showPage(editingDeck ? 'deckEdit' : 'deckList');
 });
 
 testDeckButton.input.addEventListener('input', _ => {

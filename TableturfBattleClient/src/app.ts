@@ -12,6 +12,7 @@ let canPushState = isSecureContext && location.protocol != 'file:';
 
 const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], true) ];
 let selectedDeck: Deck | null = null;
+let editingDeck = false;
 let deckModified = false;
 
 function delay(ms: number, abortSignal?: AbortSignal) {

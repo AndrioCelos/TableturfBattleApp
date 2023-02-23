@@ -283,6 +283,7 @@
 				<h3 id="deckName">Deck</h3>
 				<div>
 					<button type="button" id="deckEditButton">Edit</button>
+					<button type="button" id="deckListTestButton">Test</button>
 					<button type="button" id="deckExportButton">Export</button>
 					<button type="button" id="deckRenameButton">Rename</button>
 					<button type="button" id="deckCopyButton">Copy</button>
@@ -337,14 +338,14 @@
 				<div id="cardList" class="cardListGrid"></div>
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
-			<dialog id="testStageSelectionDialog">
-				<h3>Select a stage.</h3>
-				<form id="testStageSelectionForm" method="dialog">
-					<div id="testStageSelectionList"></div>
-					<button type="submit">Cancel</button>
-				</form>
-			</dialog>
 		</div>
+		<dialog id="testStageSelectionDialog">
+			<h3>Select a stage.</h3>
+			<form id="testStageSelectionForm" method="dialog">
+				<div id="testStageSelectionList"></div>
+				<button type="submit">Cancel</button>
+			</form>
+		</dialog>
 		<dialog id="errorDialog">
 			<div id="errorMessage"></div>
 			<form id="errorDialogForm" method="dialog">

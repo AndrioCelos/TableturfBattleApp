@@ -9,6 +9,7 @@ const addDeckControls = document.getElementById('addDeckControls')!;
 const newDeckButton = document.getElementById('newDeckButton') as HTMLButtonElement;
 const importDeckButton = document.getElementById('importDeckButton') as HTMLButtonElement;
 const deckEditButton = document.getElementById('deckEditButton') as HTMLButtonElement;
+const deckListTestButton = document.getElementById('deckListTestButton') as HTMLButtonElement;
 const deckExportButton = document.getElementById('deckExportButton') as HTMLButtonElement;
 const deckRenameButton = document.getElementById('deckRenameButton') as HTMLButtonElement;
 const deckCopyButton = document.getElementById('deckCopyButton') as HTMLButtonElement;
@@ -132,6 +133,12 @@ deckImportForm.addEventListener('submit', e => {
 });
 
 deckEditButton.addEventListener('click', editDeck);
+
+deckListTestButton.addEventListener('click', _ => {
+	for (const button of testStageButtons)
+		button.checked = false;
+	testStageSelectionDialog.showModal();
+});
 
 function selectDeck() {
 	clearChildren(deckCardListView);

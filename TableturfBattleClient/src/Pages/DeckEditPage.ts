@@ -40,6 +40,7 @@ function editDeck() {
 
 	deckEditUpdateSize();
 	cardList.clearFilter();
+	editingDeck = true;
 	showPage('deckEdit');
 }
 
@@ -177,6 +178,7 @@ function stopEditingDeck() {
 		deckModified = false;
 		window.removeEventListener('beforeunload', onBeforeUnload_deckEditor);
 	}
+	editingDeck = false;
 }
 
 function onBeforeUnload_deckEditor(e: BeforeUnloadEvent) {
@@ -199,10 +201,18 @@ function addTestStage(stage: Stage) {
 			clearChildren(testDeckList);
 			testDeckCardButtons.splice(0);
 
-			for (const el of deckEditCardButtons) {
-				const card = (el as CardButton).card;
-				if (card) {
-					addTestDeckCard(card);
+			if (editingDeck) {
+				for (const el of deckEditCardButtons) {
+					const card = (el as CardButton).card;
+					if (card) {
+						addTestDeckCard(card);
+					}
+				}
+			} else if (selectedDeck) {
+				for (const cardNumber of selectedDeck.cards) {
+					if (cardNumber > 0 && cardNumber <= cardDatabase.cards!.length) {
+						addTestDeckCard(cardDatabase.get(cardNumber));
+					}
 				}
 			}
 
