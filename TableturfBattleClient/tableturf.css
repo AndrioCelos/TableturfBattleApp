@@ -11,6 +11,7 @@
 body, dialog {
 	color: white;
 	background: black;
+	color-scheme: dark;
 }
 body {
 	margin: 0;
