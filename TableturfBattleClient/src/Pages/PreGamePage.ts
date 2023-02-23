@@ -8,6 +8,8 @@ const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton
 const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
 const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
 const preGameReplayButton = document.getElementById('preGameReplayButton') as HTMLLinkElement;
+const preGameHelpButton = document.getElementById('preGameHelpButton') as HTMLLinkElement;
+const helpDialog = document.getElementById('helpDialog') as HTMLDialogElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -160,6 +162,12 @@ preGameDeckEditorButton.addEventListener('click', e => {
 	e.preventDefault();
 	showDeckList();
 	setUrl('deckeditor');
+});
+
+preGameHelpButton.addEventListener('click', e => {
+	e.preventDefault();
+	helpDialog.showModal();
+	setUrl('help');
 });
 
 preGameReplayButton.addEventListener('click', e => {

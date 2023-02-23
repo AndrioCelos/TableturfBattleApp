@@ -355,17 +355,21 @@ function processUrl() {
 		onInitialise(showDeckList);
 	else {
 		showPage('preGame');
-		const m = /[/#](?:(game)|replay)\/([A-Za-z0-9+/=\-_]+)$/.exec(location.toString());
-		if (m) {
-			if (m[1])
-				presetGameID(m[2]);
-			else
-				onInitialise(() => loadReplay(m[2]));
-		} else if (location.hash) {
-			canPushState = false;
-			presetGameID(location.hash);
-		} else {
-			clearPreGameForm(false);
+		if (location.pathname.endsWith('/help') || location.hash == '#help')
+			helpDialog.showModal();
+		else {
+			const m = /[/#](?:(game)|replay)\/([A-Za-z0-9+/=\-_]+)$/.exec(location.toString());
+			if (m) {
+				if (m[1])
+					presetGameID(m[2]);
+				else
+					onInitialise(() => loadReplay(m[2]));
+			} else if (location.hash) {
+				canPushState = false;
+				presetGameID(location.hash);
+			} else {
+				clearPreGameForm(false);
+			}
 		}
 	}
 	return true;

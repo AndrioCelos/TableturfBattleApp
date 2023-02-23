@@ -51,7 +51,8 @@
 				</div>
 				<p>
 					<a id="preGameDeckEditorButton" href="deckeditor">Edit decks</a> |
-					<a id="preGameReplayButton" href="replay">Replay</a>
+					<a id="preGameReplayButton" href="replay">Replay</a> |
+					<a id="preGameHelpButton" href="help">Help</a>
 				</p>
 				<div id="preGameLoadingSection" class="loadingContainer" hidden>
 					<div class="lds-ripple"><div></div><div></div></div> <span id="preGameLoadingLabel"></span>
@@ -349,6 +350,47 @@
 			<form id="errorDialogForm" method="dialog">
 				<button type="submit">OK</button>
 			</form>
+		</dialog>
+		<dialog id="helpDialog">
+			<h2>Controls</h2>
+			<section id="helpControls">
+				<article>
+					<h3>Keyboard</h3>
+					<table>
+						<tr><th>Move card:</th><td>Arrow keys</td></tr>
+						<tr><th>Rotate clockwise:</th><td>R</td></tr>
+						<tr><th>Rotate anticlockwise:</th><td>Shift+R</td></tr>
+						<tr><th>Confirm:</th><td>Enter</td></tr>
+						<tr><th>Deselect card:</th><td>Backspace</td></tr>
+						<tr><th>Pass:</th><td>P</td></tr>
+						<tr><th>Special attack:</th><td>S</td></tr>
+						<tr><th>Show deck:</th><td>D</td></tr>
+					</table>
+				</article>
+				<article>
+					<h3>Mouse</h3>
+					<table>
+						<tr><th>Move card:</th><td>Pointer</td></tr>
+						<tr><th>Rotate clockwise:</th><td>Right click or wheel down</td></tr>
+						<tr><th>Rotate anticlockwise:</th><td>Wheel up</td></tr>
+						<tr><th>Confirm:</th><td>Left click</td></tr>
+					</table>
+				</article>
+				<article>
+					<h3>Touch</h3>
+					<table>
+						<tr><th>Move card:</th><td>Drag anywhere on the board</td></tr>
+						<tr><th>Rotate clockwise:</th><td>Tap &curarr;</td></tr>
+						<tr><th>Rotate anticlockwise:</th><td>Tap &cularr;</td></tr>
+						<tr><th>Confirm:</th><td>Tap anywhere on the board</td></tr>
+					</table>
+				</article>
+			</section>
+			<footer>
+				<form method="dialog">
+					<button type="submit">OK</button>
+				</form>
+			</footer>
 		</dialog>
 		<script src="build/tsbuild.js"></script>
 	</body>

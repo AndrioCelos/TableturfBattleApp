@@ -1097,6 +1097,17 @@ dialog::backdrop {
 	justify-content: center;
 }
 
+/* Help */
+
+#helpControls {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+}
+#helpControls table { border-spacing: 1ch 0; }
+#helpControls th { text-align: right; }
+#helpControls td { text-align: left; }
+
 /* Small display layout */
 @media (max-width: 89rem) or (max-height: 42rem) {
 	#gamePage, #deckCardListView, #deckCardListEdit {
