@@ -1,11 +1,11 @@
 @font-face {
 	font-family: 'Splatoon 1';
-	src: url('assets/splatoon1.woff2') format('woff2');
+	src: url('assets/external/splatoon1.woff2') format('woff2');
 }
 
 @font-face {
 	font-family: 'Splatoon 2';
-	src: url('assets/splatoon2.woff2') format('woff2');
+	src: url('assets/external/splatoon2.woff2') format('woff2');
 }
 
 body, dialog {
@@ -375,23 +375,24 @@ dialog::backdrop {
 	margin: auto;
 }
 
-#gameBoard td { border: 1px solid grey; }
-#gameBoard td.OutOfBounds { border-color: transparent; }
-#gameBoard td.Wall { background: grey; }
-#gameBoard td.Ink1 { background: var(--primary-colour-1); }
-#gameBoard td.Ink2 { background: var(--primary-colour-2); }
-#gameBoard td.Ink3 { background: var(--primary-colour-3); }
-#gameBoard td.Ink4 { background: var(--primary-colour-4); }
-#gameBoard td.SpecialInactive1 { background: var(--special-colour-1); }
-#gameBoard td.SpecialInactive2 { background: var(--special-colour-2); }
-#gameBoard td.SpecialInactive3 { background: var(--special-colour-3); }
-#gameBoard td.SpecialInactive4 { background: var(--special-colour-4); }
-#gameBoard td.SpecialActive1 { background: radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
-#gameBoard td.SpecialActive2 { background: radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
-#gameBoard td.SpecialActive3 { background: radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
-#gameBoard td.SpecialActive4 { background: radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
+/* #gameBoard td { border: 1px solid rgba(0, 0, 0, 25%); } */
+#gameBoard td { border: 1px solid transparent; }
+#gameBoard td.Empty { border-color: #80808080; }
+#gameBoard td.Wall { background: url('assets/Wall.png') center/cover, grey; }
+#gameBoard td.Ink1 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-1); }
+#gameBoard td.Ink2 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-2); }
+#gameBoard td.Ink3 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-3); }
+#gameBoard td.Ink4 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-4); }
+#gameBoard td.SpecialInactive1 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1); }
+#gameBoard td.SpecialInactive2 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
+#gameBoard td.SpecialInactive3 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
+#gameBoard td.SpecialInactive4 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
+#gameBoard td.SpecialActive1 { background: url('assets/SpecialOverlay.png') center/contain, radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
+#gameBoard td.SpecialActive2 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
+#gameBoard td.SpecialActive3 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
+#gameBoard td.SpecialActive4 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
 
-#gameBoard td.hover {
+#gameBoard td {
 	position: relative;
 }
 
@@ -588,7 +589,7 @@ dialog::backdrop {
 	font-size: inherit;
 }
 #showDeckCloseButton {
-  width: 40%;
+	width: 40%;
 	grid-row: button-row;
 }
 :is(#showDeckCloseButton, #testControlsFooter button):hover { background: var(--player-ui-highlight-colour); }
@@ -598,7 +599,7 @@ dialog::backdrop {
 #testControls:not([hidden]) {
 	grid-column: 1 / span 2;
 	grid-row: 1 / -1;
-  display: grid;
+	display: grid;
 	grid-template-rows: [header] auto [list] 1fr [buttons] auto;
 }
 #testControlsHeader, #testControlsFooter {
@@ -1158,9 +1159,9 @@ dialog::backdrop {
 		justify-items: stretch;
 	}
 .cardListGrid .card {
-    width: auto;
-    justify-self: stretch;
-  }
+	width: auto;
+	justify-self: stretch;
+	}
 
 	/* Lobby - Mobile layout */
 
@@ -1295,7 +1296,7 @@ dialog::backdrop {
 		background: black;
 		z-index: 2;
 		margin-top: 5em;
-  }
+	}
 
 	/* Deck editor - Mobile layout */
 

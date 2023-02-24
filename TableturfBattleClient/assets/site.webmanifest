@@ -1,0 +1,17 @@
+{
+	"name": "Tableturf Battle",
+	"icons": [
+		{
+			"src": "external/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "external/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#0c92f2",
+	"background_color": "black"
+}
