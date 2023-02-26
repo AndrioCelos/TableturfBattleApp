@@ -658,7 +658,7 @@ function specialButton_input() {
 }
 specialButton.input.addEventListener('input', specialButton_input);
 
-board.onclick = (x, y) => {
+board.onsubmit = (x, y) => {
 	if (board.cardPlaying == null || !currentGame?.me)
 		return;
 	const message = board.checkMoveLegality(currentGame.me.playerIndex, board.cardPlaying, x, y, board.cardRotation, board.specialAttack);

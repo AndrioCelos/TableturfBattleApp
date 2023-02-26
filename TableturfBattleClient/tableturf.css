@@ -8,6 +8,10 @@
 	src: url('assets/external/splatoon2.woff2') format('woff2');
 }
 
+html, body {
+	overflow-x: hidden;  /* TODO: This stops the page from scrolling into whitespace on mobile Chrome. A better solution is probably possible. */
+}
+
 body, dialog {
 	color: white;
 	background: black;

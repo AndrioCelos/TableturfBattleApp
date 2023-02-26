@@ -9,7 +9,6 @@ class Board {
 	specialAttack = false;
 
 	autoHighlight = true;
-	touchscreenMode = false;
 	flip = false;
 
 	highlightX = NaN;
@@ -19,12 +18,10 @@ class Board {
 
 	startSpaces: { x: number, y: number }[] = [ ];
 
-	onclick: ((x: number, y: number) => void) | null = null;
+	onsubmit: ((x: number, y: number) => void) | null = null;
 	oncancel: (() => void) | null = null;
 
 	constructor(table: HTMLTableElement) {
-		const boardSection = table.parentElement;
-
 		this.table = table;
 		table.addEventListener('mouseleave', _ => {
 			if (this.autoHighlight) this.clearHighlight()
@@ -51,8 +48,8 @@ class Board {
 						this.moveHighlight((x, y, r) => [x + (this.flip ? -1 : 1), y, r], true);
 						break;
 					case 'Enter': case ' ':
-						if (this.onclick)
-							this.onclick(this.highlightX, this.highlightY);
+						if (this.onsubmit)
+							this.onsubmit(this.highlightX, this.highlightY);
 						break;
 					case 'Escape': case 'Backspace':
 						if (this.oncancel)
@@ -62,7 +59,6 @@ class Board {
 			}
 		});
 		table.addEventListener('touchstart', e => {
-			this.touchscreenMode = true;
 			if (this.playerIndex == null) return;
 			if (this.touch == null) {
 				const touch = e.changedTouches[0];
@@ -89,6 +85,7 @@ class Board {
 						this.moveHighlight((x, y, r) => [x2, y2, r], true);
 					}
 					this.refreshHighlight();
+					e.preventDefault();
 				}
 			}
 		});
@@ -214,22 +211,14 @@ class Board {
 				td.dataset.x = x.toString();
 				td.dataset.y = y.toString();
 				col.push(td);
-				td.addEventListener('click', e => {
-					if (this.autoHighlight && this.cardPlaying != null && this.onclick) {
-						if (this.touchscreenMode) {
-							this.onclick(this.highlightX, this.highlightY);
-						} else {
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
-							this.onclick(x, y);
-						}
+				td.addEventListener('click', () => {
+					if (this.autoHighlight && this.cardPlaying != null && this.onsubmit && !isNaN(this.highlightX) && !isNaN(this.highlightY)) {
+						this.onsubmit(this.highlightX, this.highlightY);
 					}
 				});
 				td.addEventListener('contextmenu', e => e.preventDefault());
-				td.addEventListener('mousemove', e => {
-					if (e.buttons == 0)
-						this.touchscreenMode = false;
-					if (!this.touchscreenMode) {
+				td.addEventListener('pointermove', e => {
+					if (e.pointerType != 'touch') {
 						if (this.autoHighlight && this.cardPlaying != null) {
 							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
 							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
