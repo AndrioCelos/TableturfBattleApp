@@ -159,7 +159,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 let errorDialogCallback: ((e: Event) => void) | null = null;
 function communicationError(message?: string, showButton?: boolean, callback?: (e: Event) => void) {
 	preGameLoadingSection.hidden = true;
-	errorMessage.innerText = message ?? 'A communication error has occurred.';
+	errorMessage.innerText = message ?? 'A communication error has occurred.\nPlease reload the page to rejoin.';
 	errorDialogCallback = callback ?? null;
 	errorDialogForm.hidden = showButton != true;
 	errorDialog.showModal();
