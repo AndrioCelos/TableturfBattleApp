@@ -511,15 +511,15 @@ dialog::backdrop {
 #gamePage.boardFlipped .pointsContainer[data-index="3"] { order: 2; }
 #gamePage.boardFlipped .pointsContainer[data-index="1"] { order: 3; }
 
-#playControls, #resultContainer, #replayControls {
+#gameControls {
 	grid-column: 1 / span 2;
 	grid-row: hand-row;
 	align-self: center;
 }
-#playControls:not([hidden]) {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: [hand-row] auto [button-row] auto;
+#gameControls:not([hidden]) {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
 }
 
 #handContainer {
@@ -528,7 +528,12 @@ dialog::backdrop {
 	text-align: center;
 }
 
-:is(#playControls, #testControlsHeader) > label {
+#playRow:not([hidden]) {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+:is(#playRow, #testControlsHeader) > label {
 	grid-row: button-row;
 	margin: 0.5em;
 	padding: 0 0.5em;
@@ -537,14 +542,23 @@ dialog::backdrop {
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
-:is(#playControls, #testControlsHeader) > label input {
+:is(#playRow, #testControlsHeader) > label input {
 	position: absolute;
 	left: -333px;
 }
-:is(#playControls, #testControlsHeader) > label:hover { background: var(--player-ui-highlight-colour); }
-:is(#playControls, #testControlsHeader) > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-:is(#playControls, #testControlsHeader) > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
-:is(#playControls, #testControlsHeader) > label.disabled { background: grey; }
+:is(#playRow, #testControlsHeader) > label:hover { background: var(--player-ui-highlight-colour); }
+:is(#playRow, #testControlsHeader) > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+:is(#playRow, #testControlsHeader) > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
+:is(#playRow, #testControlsHeader) > label.disabled { background: grey; }
+
+#spectatorRow:not([hidden]) {
+	display: grid;
+	grid-template-columns: auto 1fr 1fr auto;
+	gap: 0.5em;
+}
+label[for="flipBox"] {
+	grid-column: 4;
+}
 
 #showDeckContainer {
 	grid-column: 1 / span 3;
@@ -1219,14 +1233,15 @@ dialog::backdrop {
 		margin: auto;
 	}
 
-	#playControls:not([hidden]) {
+	#gameControls:not([hidden]) {
 		grid-template-rows: [button-row] auto [hand-row] auto;
 	}
 
-	#playControls, #resultContainer, #replayControls {
+	#gameControls {
 		grid-column: 1 / -1;
 		grid-row: 5;
 		width: initial;
+		min-height: 12em;
 	}
 
 	#scoreSection:not([hidden]) {
@@ -1246,7 +1261,7 @@ dialog::backdrop {
 		margin: 0.5em 0;
 	}
 
-	#handContainer {
+	#handContainer:not([hidden]) {
 		font-size: x-small;
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;

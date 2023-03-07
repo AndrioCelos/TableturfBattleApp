@@ -41,12 +41,18 @@
 							</select>
 						</label>
 					</p>
-					<p><label for="gameIDBox">Enter a game link or ID to join a game:<br/>
+					<p>
+						<label for="gameIDBox">Enter a game link or ID to join a game:<br/>
 						<input type="text" id="gameIDBox" placeholder="Game link or ID"/></label>
-						<button type="submit" id="joinGameButton">Join game</button></p>
+						<button type="submit" id="joinGameButton">Join game</button>
+						<button type="submit" id="spectateGameButton">Spectate</button>
+					</p>
 				</div>
 				<div id="preGameJoinSection" hidden>
-					<p><button type="submit" id="joinGameButton2">Join game</button></p>
+					<p>
+						<button type="submit" id="joinGameButton2">Join game</button>
+						<button type="submit" id="spectateGameButton2">Spectate</button>
+					</p>
 					<a id="preGameBackButton" href="../..">Create or join a different room</a>
 				</div>
 				<p>
@@ -141,26 +147,24 @@
 				</div>
 			</div>
 
-			<div id="playControls">
+			<div id="gameControls">
 				<div id="handContainer"></div>
-				<label for="passButton">
-					<input type="checkbox" id="passButton"/> Pass
-				</label>
-				<label for="specialButton">
-					<input type="checkbox" id="specialButton"/> Special Attack
-				</label>
-			</div>
-			<div id="resultContainer" hidden>
-				<button id="shareReplayLinkButton">Copy replay link</button>
-				<br/>
-				<a id="resultLeaveButton" href="#">Leave game</a>
-			</div>
-			<div id="replayControls" hidden>
-				<input type="checkbox" id="replayFlipBox" autocomplete="off"/>
-				<label for="replayFlipBox">Flip board</label>
-				<button id="replayPreviousButton">Previous turn</button>
-				<button id="replayNextButton">Next turn</button>
-				<a id="replayLeaveButton" href="#">Exit replay</a>
+
+				<div id="playRow">
+					<label for="passButton">
+						<input type="checkbox" id="passButton"/> Pass
+					</label>
+					<label for="specialButton">
+						<input type="checkbox" id="specialButton"/> Special Attack
+					</label>
+				</div>
+				<div id="spectatorRow">
+					<a id="leaveButton" href="#">Exit</a>
+					<button id="replayPreviousButton">Previous turn</button>
+					<button id="replayNextButton">Next turn</button>
+					<button id="shareReplayLinkButton">Copy replay link</button>
+					<label for="flipBox" id="flipLabel"><input type="checkbox" id="flipBox" autocomplete="off"/> Flip board</label>
+				</div>
 			</div>
 
 			<div class="playerBar" data-index="2">

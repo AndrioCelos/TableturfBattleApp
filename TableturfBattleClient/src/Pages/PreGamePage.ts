@@ -34,10 +34,11 @@ maxPlayersBox.addEventListener('change', () => {
 
 preGameForm.addEventListener('submit', e => {
 	e.preventDefault();
-	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
-		const name = nameBox.value;
-		window.localStorage.setItem('name', name);
 
+	const name = nameBox.value;
+	window.localStorage.setItem('name', name);
+
+	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
 		let request = new XMLHttpRequest();
 		request.open('POST', `${config.apiBaseUrl}/games/new`);
 		request.addEventListener('load', () => {
@@ -64,16 +65,16 @@ preGameForm.addEventListener('submit', e => {
 		data.append('maxPlayers', maxPlayersBox.value);
 		request.send(data.toString());
 		setLoadingMessage('Creating a room...');
+	} else if (e.submitter?.id?.startsWith('spectate')) {
+		spectate(false);
 	} else {
-		const name = nameBox.value;
-		window.localStorage.setItem('name', name);
 		tryJoinGame(name, gameIDBox.value, false);
 	}
 });
 
-function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
-	const m = /(?:^|[#/])([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(idOrUrl);
-	if (!m) {
+function spectate(fromInitialLoad: boolean) {
+	const gameID = parseGameID(gameIDBox.value);
+	if (!gameID) {
 		alert("Invalid game ID or link");
 		if (fromInitialLoad)
 			clearPreGameForm(true);
@@ -83,7 +84,22 @@ function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
 		}
 		return;
 	}
-	const gameID = m[1];
+	setGameUrl(gameID);
+	getGameInfo(gameID, null);
+}
+
+function tryJoinGame(name: string, idOrUrl: string, fromInitialLoad: boolean) {
+	const gameID = parseGameID(idOrUrl);
+	if (!gameID) {
+		alert("Invalid game ID or link");
+		if (fromInitialLoad)
+			clearPreGameForm(true);
+		else {
+			gameIDBox.focus();
+			gameIDBox.setSelectionRange(0, gameIDBox.value.length);
+		}
+		return;
+	}
 
 	if (!fromInitialLoad)
 		setGameUrl(gameID);

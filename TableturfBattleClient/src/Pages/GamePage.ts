@@ -15,13 +15,13 @@ const gameDeckButton = document.getElementById('gameDeckButton') as HTMLButtonEl
 const handContainer = document.getElementById('handContainer')!;
 const redrawModal = document.getElementById('redrawModal')!;
 
-const playControls = document.getElementById('playControls')!;
-const resultContainer = document.getElementById('resultContainer')!;
-const resultElement = document.getElementById('result')!;
-const replayControls = document.getElementById('replayControls')!;
+const gameControls = document.getElementById('gameControls')!;
+const playRow = document.getElementById('playRow')!;
+const spectatorRow = document.getElementById('spectatorRow')!;
 const replayNextButton = document.getElementById('replayNextButton')!;
 const replayPreviousButton = document.getElementById('replayPreviousButton')!;
-const replayFlipBox = document.getElementById('replayFlipBox') as HTMLInputElement;
+const flipLabel = document.getElementById('flipLabel') as HTMLLabelElement;
+const flipBox = document.getElementById('flipBox') as HTMLInputElement;
 let replayAnimationAbortController: AbortController | null = null;
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
@@ -68,25 +68,56 @@ cols[4][21] = Space.SpecialInactive1;
 cols[4][4] = Space.SpecialInactive2;
 board.resize(cols);
 
-function initGame() {
+function clear() {
 	testMode = false;
 	gamePage.classList.remove('deckTest');
-	playControls.hidden = false;
-	resultContainer.hidden = true;
-	replayControls.hidden = true;
-	gameButtonsContainer.hidden = false;
+	gamePage.classList.remove('gameEnded');
+	gameControls.hidden = true;
+	handContainer.hidden = true;
+	playRow.hidden = true;
+	spectatorRow.hidden = true;
+	replayPreviousButton.hidden = true;
+	replayNextButton.hidden = true;
+	shareReplayLinkButton.hidden = true;
+	flipLabel.hidden = false;
+	flipBox.checked = false;
+	gameButtonsContainer.hidden = true;
 	testControls.hidden = true;
+	for (const playerBar of playerBars) {
+		playerBar.resultElement.classList.remove('win');
+		playerBar.resultElement.classList.remove('lose');
+		playerBar.resultElement.classList.remove('draw');
+		playerBar.resultElement.innerText = '';
+	}
+}
+
+function initGame() {
+	clear();
+	gameControls.hidden = false;
+	handContainer.hidden = false;
+	playRow.hidden = false;
+	gameButtonsContainer.hidden = false;
+	showPage('game');
+}
+
+function initSpectator() {
+	clear();
+	gameControls.hidden = false;
+	spectatorRow.hidden = false;
+	flipLabel.hidden = false;
+	flipBox.checked = false;
+	gameButtonsContainer.hidden = false;
 	showPage('game');
 }
 
 function initReplay() {
-	testMode = false;
-	gamePage.classList.remove('deckTest');
-	playControls.hidden = true;
-	resultContainer.hidden = true;
-	replayControls.hidden = false;
-	gameButtonsContainer.hidden = true;
-	testControls.hidden = true;
+	clear();
+	gameControls.hidden = false;
+	spectatorRow.hidden = false;
+	replayPreviousButton.hidden = false;
+	replayNextButton.hidden = false;
+	flipLabel.hidden = false;
+	flipBox.checked = false;
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
@@ -108,11 +139,10 @@ function initTest(stage: Stage) {
 	testPlacements.splice(0);
 	clearChildren(testPlacementList);
 	gamePage.classList.add('deckTest');
+	gamePage.classList.remove('gameEnded');
 	gamePage.dataset.myPlayerIndex = '0';
 	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
-	playControls.hidden = true;
-	resultContainer.hidden = true;
-	replayControls.hidden = true;
+	gameControls.hidden = true;
 	gameButtonsContainer.hidden = false;
 	testControls.hidden = false;
 	clearPlayContainers();
@@ -242,8 +272,10 @@ function undoTurn(turn: PlacementResults) {
 	board.refresh();
 }
 
-replayFlipBox.addEventListener('input', _ => {
-	if (currentGame == null || currentReplay == null) return;
+flipBox.addEventListener('input', flipBox_input);
+
+function flipBox_input(e: Event) {
+	if (currentGame == null) return;
 	if (replayAnimationAbortController) {
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
@@ -253,11 +285,11 @@ replayFlipBox.addEventListener('input', _ => {
 			updateStats(i);
 		}
 	}
-	board.flip = replayFlipBox.checked;
+	board.flip = (e.target as HTMLInputElement).checked;
 	if (board.flip) gamePage.classList.add('boardFlipped');
 	else gamePage.classList.remove('boardFlipped');
 	board.resize();
-});
+}
 
 function addTestDeckCard(card: Card) {
 	const button = new CardButton('radio', cardDatabase.get(card.number));
@@ -496,8 +528,13 @@ function showResult() {
 	}
 
 	if (!currentReplay) {
-		playControls.hidden = true;
-		resultContainer.hidden = false;
+		handContainer.hidden = true;
+		playRow.hidden = true;
+		spectatorRow.hidden = false;
+		replayPreviousButton.hidden = true;
+		replayNextButton.hidden = true;
+		shareReplayLinkButton.hidden = false;
+		flipLabel.hidden = true;
 		canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
 		shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
 	}
@@ -767,7 +804,7 @@ gameDeckButton.addEventListener('click', toggleShowDeck);
 showDeckCloseButton.addEventListener('click', toggleShowDeck);
 
 document.addEventListener('keydown', e => {
-	if (!pages.get('game')!.hidden && !playControls.hidden) {
+	if (!pages.get('game')!.hidden && !playRow.hidden) {
 		switch (e.key) {
 			case 'p':
 				if (passButton.enabled) {
@@ -808,24 +845,19 @@ shareReplayLinkButton.addEventListener('click', _ => {
 			if (canShareReplay) {
 				navigator.share({ url: url.href, title: 'Tableturf Battle Replay' });
 			} else {
-				navigator.clipboard.writeText(window.location.toString()).then(() => shareLinkButton.innerText = 'Copied');
+				navigator.clipboard.writeText(url.href).then(() => shareReplayLinkButton.innerText = 'Copied');
 			}
 		}
 	});
 	req.send();
 });
 
-document.getElementById('resultLeaveButton')!.addEventListener('click', e => {
-	e.preventDefault();
-	clearPreGameForm(true);
-	showPage('preGame');
-	newGameButton.focus();
-});
-
-document.getElementById('replayLeaveButton')!.addEventListener('click', e => {
+function leaveButton_click(e: MouseEvent) {
 	e.preventDefault();
 	clearPreGameForm(true);
 	showPage('preGame');
 	newGameButton.focus();
 	currentReplay = null;
-});
+}
+
+document.getElementById('leaveButton')!.addEventListener('click', leaveButton_click);

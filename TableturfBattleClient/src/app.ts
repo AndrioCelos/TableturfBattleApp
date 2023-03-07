@@ -29,6 +29,10 @@ function delay(ms: number, abortSignal?: AbortSignal) {
 	});
 }
 
+/**
+ * Schedules the specified callback to run when game data is initialised, or runs it synchronously if already initialised.
+ * Only one method may be scheduled this way.
+ */
 function onInitialise(callback: () => void) {
 	if (initialised)
 		callback();
@@ -125,17 +129,19 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		case GameState.Redraw:
 		case GameState.Ongoing:
 		case GameState.Ended:
-			if (playerData)
-				updateHand(playerData);
 			board.autoHighlight = false;
 			redrawModal.hidden = true;
-			initGame();
+			if (playerData) {
+				updateHand(playerData);
+				initGame();
+			} else
+				initSpectator();
 
 			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
 
 			switch (game.state) {
 				case GameState.Redraw:
-					redrawModal.hidden = false;
+					redrawModal.hidden = currentGame.me == null || currentGame.players[currentGame.me.playerIndex].isReady;
 					turnNumberLabel.setTurnNumber(null);
 					canPlay = false;
 					break;
@@ -317,7 +323,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 
 						(async () => {
 							await playInkAnimations(payload.data, anySpecialAttacks);
-							updateHand(payload.playerData);
+							if (payload.playerData) updateHand(payload.playerData);
 							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
@@ -352,6 +358,8 @@ function processUrl() {
 	}
 	stopEditingDeck();
 	errorDialog.close();
+	currentGame = null;
+	currentReplay = null;
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
 		onInitialise(showDeckList);
 	else {
@@ -376,13 +384,48 @@ function processUrl() {
 	return true;
 }
 
+function parseGameID(s: string) {
+	const m = /(?:^|[#/])([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i.exec(s);
+	return m ? m[1] : null;
+}
+
 function presetGameID(url: string) {
-	document.getElementById('preGameDefaultSection')!.hidden = true;
-	document.getElementById('preGameJoinSection')!.hidden = false;
-	(document.getElementById('gameIDBox') as HTMLInputElement).value = url;
+	showPage('preGame');
+
+	const gameID = parseGameID(url);
+	if (!gameID) {
+		joinGameError('Invalid game ID or link.', true);
+		return;
+	}
+
 	onInitialise(() => {
-		if (playerName)
-			tryJoinGame(playerName, url, true);
+		let request = new XMLHttpRequest();
+		request.open('GET', `${config.apiBaseUrl}/games/${gameID}/playerData` + (clientToken ? `?clientToken=${clientToken}` : ''));
+		request.addEventListener('load', () => {
+			switch (request.status) {
+				case 200:
+					let response = JSON.parse(request.responseText);
+
+					if (response.playerData) {
+						// We are already in the game; go to the game page immediately.
+						onInitialise(() => getGameInfo(gameID, response.playerData.playerIndex));
+					} else {
+						// We're not already in the game; offer the option to join or spectate.
+						document.getElementById('preGameDefaultSection')!.hidden = true;
+						document.getElementById('preGameJoinSection')!.hidden = false;
+						(document.getElementById('gameIDBox') as HTMLInputElement).value = gameID;
+						setLoadingMessage(null);
+					}
+					break;
+				case 404: joinGameError('The room was not found.', true); break;
+				default: joinGameError('Unable to join the room.', true); break;
+			}
+		});
+		request.addEventListener('error', () => {
+			joinGameError('Unable to join the room.', true);
+		});
+		request.send();
+		setLoadingMessage('Checking room info...');
 	});
 }
 
