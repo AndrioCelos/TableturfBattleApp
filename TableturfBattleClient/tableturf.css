@@ -398,6 +398,7 @@ dialog::backdrop {
 
 #gameBoard td {
 	position: relative;
+	overflow: hidden;
 }
 
 #gameBoard td.hover::after {
@@ -408,18 +409,28 @@ dialog::backdrop {
 	right: 0;
 	bottom: 0;
 	opacity: 0.5;
+	background: repeating-linear-gradient(135deg, var(--hover-colour) 0, var(--hover-colour) 0.6ex, transparent 0.6ex, transparent 1.2ex);
+	background-attachment: fixed;
+}
+#gameBoard td.hoverspecial::after {
+	left: -50%;
+	top: -50%;
+	right: -50%;
+	bottom: -50%;
+	background: radial-gradient(circle, var(--hover-colour) 0, var(--hover-colour) 0.25ex, transparent 0.35ex, transparent 0.6ex);
+	background-size: 1ex 1ex;
+	transform: rotate(-20deg);
 }
 
-#gameBoard td.hover1:not(.hoverillegal)::after { background: var(--primary-colour-1); }
-#gameBoard td.hover2:not(.hoverillegal)::after { background: var(--primary-colour-2); }
-#gameBoard td.hover3:not(.hoverillegal)::after { background: var(--primary-colour-3); }
-#gameBoard td.hover4:not(.hoverillegal)::after { background: var(--primary-colour-4); }
-#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { background: var(--special-colour-1); }
-#gameBoard td.hoverspecial.hover2:not(.hoverillegal)::after { background: var(--special-colour-2); }
-#gameBoard td.hoverspecial.hover3:not(.hoverillegal)::after { background: var(--special-colour-3); }
-#gameBoard td.hoverspecial.hover4:not(.hoverillegal)::after { background: var(--special-colour-4); }
-
-#gameBoard td.hoverillegal::after { background: grey; }
+#gameBoard td.hover1:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-1); }
+#gameBoard td.hover2:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-2); }
+#gameBoard td.hover3:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-3); }
+#gameBoard td.hover4:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-4); }
+#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { --hover-colour: var(--special-colour-1); }
+#gameBoard td.hoverspecial.hover2:not(.hoverillegal)::after { --hover-colour: var(--special-colour-2); }
+#gameBoard td.hoverspecial.hover3:not(.hoverillegal)::after { --hover-colour: var(--special-colour-3); }
+#gameBoard td.hoverspecial.hover4:not(.hoverillegal)::after { --hover-colour: var(--special-colour-4); }
+#gameBoard td.hoverillegal::after { --hover-colour: grey; }
 
 /* Card list */
 
