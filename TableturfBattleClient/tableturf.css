@@ -211,11 +211,11 @@ dialog::backdrop {
 	box-sizing: border-box;
 }
 
-.stageGrid td.Empty { border: 1px solid grey; }
-.stageGrid td.Start1 { background: var(--special-colour-1); }
-.stageGrid td.Start2 { background: var(--special-colour-2); }
-.stageGrid td.Start3 { background: var(--special-colour-3); }
-.stageGrid td.Start4 { background: var(--special-colour-4); }
+.stageGrid td.Empty { outline: 1px solid grey; outline-offset: -1px; }
+.stageGrid td.Start1 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1); }
+.stageGrid td.Start2 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
+.stageGrid td.Start3 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
+.stageGrid td.Start4 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
 
 :is(.stage, .stageRandom):is(:hover, :focus-within):not(.checked, .disabled) {
 	background: #80808040;
@@ -311,12 +311,13 @@ dialog::backdrop {
 	border-spacing: 0;
 }
 .cardGrid td {
-	width: 0.5em;
-	height: 0.5em;
-	border: 1px solid grey;
+	width: 1.2ex;
+	height: 1.2ex;
+	outline: 1px solid #80808080;
+	outline-offset: -1px;
 }
-.cardGrid td.ink { background: var(--player-primary-colour); border: 1px solid var(--player-primary-colour);}
-.cardGrid td.special { background: var(--player-special-colour); border: 1px solid var(--player-special-colour);}
+.cardGrid td.ink { background: url('assets/InkOverlay.png') center/cover, var(--player-primary-colour); outline: none; }
+.cardGrid td.special { background: url('assets/SpecialOverlay.png') center/cover, var(--player-special-colour); outline: none; }
 
 .cardFooter {
 	display: flex;
@@ -379,9 +380,7 @@ dialog::backdrop {
 	margin: auto;
 }
 
-/* #gameBoard td { border: 1px solid rgba(0, 0, 0, 25%); } */
-#gameBoard td { border: 1px solid transparent; }
-#gameBoard td.Empty { border-color: #80808080; }
+#gameBoard td.Empty { outline: 1px solid #80808080; outline-offset: -1px; }
 #gameBoard td.Wall { background: url('assets/Wall.png') center/cover, grey; }
 #gameBoard td.Ink1 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-1); }
 #gameBoard td.Ink2 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-2); }
