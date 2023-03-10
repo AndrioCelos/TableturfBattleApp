@@ -230,7 +230,7 @@ function loadReplay(base64: string) {
 
 	let pos = 2;
 	const players = [ ];
-	currentReplay = { turns: [ ], placements: [ ], drawOrder: [ ], initialDrawOrder: [ ] };
+	currentReplay = { turns: [ ], placements: [ ], replayPlayerData: [ ], watchingPlayer: 0 };
 	for (let i = 0; i < numPlayers; i++) {
 		const len = dataView.getUint8(pos + 34);
 		const player: Player = {
@@ -245,8 +245,12 @@ function loadReplay(base64: string) {
 		};
 		players.push(player);
 
+		const deck = [ ];
 		const initialDrawOrder = [ ];
 		const drawOrder = [ ];
+		for (let j = 0; j < 15; j++) {
+			deck.push(cardDatabase.get(dataView.getUint8(pos + 9 + j)));
+		}
 		for (let j = 0; j < 2; j++) {
 			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
 			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) >> 4 & 0xF);
@@ -258,9 +262,7 @@ function loadReplay(base64: string) {
 			else
 				drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
 		}
-		currentReplay.initialDrawOrder.push(initialDrawOrder);
-		currentReplay.drawOrder.push(drawOrder);
-
+		currentReplay.replayPlayerData.push({ deck, initialDrawOrder, drawOrder });
 		pos += 35 + len;
 	}
 
@@ -287,7 +289,7 @@ function loadReplay(base64: string) {
 		me: null,
 		players: players,
 		maxPlayers: numPlayers,
-		turnNumber: 1,
+		turnNumber: 0,
 		webSocket: null
 	};
 

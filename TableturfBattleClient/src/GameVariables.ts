@@ -18,8 +18,8 @@ let enterGameTimeout: number | null = null;
 let currentReplay: {
 	turns: Move[][],
 	placements: PlacementResults[],
-	initialDrawOrder: number[][],
-	drawOrder: number[][]
+	replayPlayerData: ReplayPlayerData[],
+	watchingPlayer: number
 } | null = null;
 
 const playerList = document.getElementById('playerList')!;

@@ -20,8 +20,7 @@ const playRow = document.getElementById('playRow')!;
 const spectatorRow = document.getElementById('spectatorRow')!;
 const replayNextButton = document.getElementById('replayNextButton')!;
 const replayPreviousButton = document.getElementById('replayPreviousButton')!;
-const flipLabel = document.getElementById('flipLabel') as HTMLLabelElement;
-const flipBox = document.getElementById('flipBox') as HTMLInputElement;
+const flipButton = document.getElementById('flipButton') as HTMLButtonElement;
 let replayAnimationAbortController: AbortController | null = null;
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
@@ -70,6 +69,7 @@ board.resize(cols);
 
 function clear() {
 	testMode = false;
+	gamePage.classList.remove('replay');
 	gamePage.classList.remove('deckTest');
 	gamePage.classList.remove('gameEnded');
 	gameControls.hidden = true;
@@ -79,8 +79,7 @@ function clear() {
 	replayPreviousButton.hidden = true;
 	replayNextButton.hidden = true;
 	shareReplayLinkButton.hidden = true;
-	flipLabel.hidden = false;
-	flipBox.checked = false;
+	flipButton.hidden = false;
 	gameButtonsContainer.hidden = true;
 	testControls.hidden = true;
 	for (const playerBar of playerBars) {
@@ -104,27 +103,32 @@ function initSpectator() {
 	clear();
 	gameControls.hidden = false;
 	spectatorRow.hidden = false;
-	flipLabel.hidden = false;
-	flipBox.checked = false;
+	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
 	showPage('game');
 }
 
 function initReplay() {
 	clear();
+	gamePage.classList.add('replay');
 	gameControls.hidden = false;
+	handContainer.hidden = false;
 	spectatorRow.hidden = false;
 	replayPreviousButton.hidden = false;
 	replayNextButton.hidden = false;
-	flipLabel.hidden = false;
-	flipBox.checked = false;
+	flipButton.hidden = false;
+	gameButtonsContainer.hidden = false;
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
-	turnNumberLabel.setTurnNumber(1);
+	turnNumberLabel.setTurnNumber(null);
+	replayUpdateHand();
 }
 
 function initTest(stage: Stage) {
+	clear();
+	testMode = true;
+	gamePage.classList.add('deckTest');
 	currentGame = { id: 'test', maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
@@ -135,14 +139,10 @@ function initTest(stage: Stage) {
 
 	for (var o of playerBars)
 		o.element.hidden = true;
-	testMode = true;
 	testPlacements.splice(0);
 	clearChildren(testPlacementList);
-	gamePage.classList.add('deckTest');
-	gamePage.classList.remove('gameEnded');
 	gamePage.dataset.myPlayerIndex = '0';
 	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
-	gameControls.hidden = true;
 	gameButtonsContainer.hidden = false;
 	testControls.hidden = false;
 	clearPlayContainers();
@@ -159,6 +159,7 @@ replayNextButton.addEventListener('click', _ => {
 	if (currentGame == null || currentReplay == null || currentGame.turnNumber > 12) return;
 
 	if (replayAnimationAbortController) {
+		replayUpdateHand();
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
@@ -168,86 +169,105 @@ replayNextButton.addEventListener('click', _ => {
 		}
 	}
 
-	const moves = currentReplay.turns[currentGame.turnNumber - 1];
-	const result = board.makePlacements(moves);
-	currentReplay.placements.push(result);
-
-	let anySpecialAttacks = false;
-	// Show the cards that were played.
 	clearPlayContainers();
-	for (let i = 0; i < currentGame.players.length; i++) {
-		const player = currentGame.players[i];
-
-		const move = moves[i];
-		const button = new CardButton('checkbox', move.card);
-		if ((move as PlayMove).isSpecialAttack) {
-			anySpecialAttacks = true;
-			player.specialPoints -= (move as PlayMove).card.specialCost;
-			button.element.classList.add('specialAttack');
-		} else if (move.isPass) {
-			player.passes++;
-			player.specialPoints++;
-			const el = document.createElement('div');
-			el.className = 'passLabel';
-			el.innerText = 'Pass';
-			button.element.appendChild(el);
-		}
-		button.inputElement.hidden = true;
-		playContainers[i].append(button.element);
-	}
-
-	for (const p of result.specialSpacesActivated) {
-		const space = board.grid[p.x][p.y];
-		const player2 = currentGame.players[space & 3];
-		player2.specialPoints++;
-		player2.totalSpecialPoints++;
-	}
-	currentGame.turnNumber++;
-
-	replayAnimationAbortController = new AbortController();
-	(async () => {
-		await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
+	if (currentGame.turnNumber == 0) {
+		// Show redraw decisions.
+		currentGame.turnNumber++;
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
-		clearPlayContainers();
-		if (currentGame.turnNumber > 12) {
-			gameButtonsContainer.hidden = true;
-			passButton.enabled = false;
-			specialButton.enabled = false;
-			gamePage.classList.add('gameEnded');
-			showResult();
+		replayUpdateHand();
+	} else {
+		const moves = currentReplay.turns[currentGame.turnNumber - 1];
+		const result = board.makePlacements(moves);
+		currentReplay.placements.push(result);
+
+		let anySpecialAttacks = false;
+		// Show the cards that were played.
+		const handButton = handButtons.find(b => b.card.number == moves[currentReplay!.watchingPlayer].card.number);
+		if (handButton) handButton.checked = true;
+		for (let i = 0; i < currentGame.players.length; i++) {
+			const player = currentGame.players[i];
+
+			const move = moves[i];
+			const button = new CardButton('checkbox', move.card);
+			if ((move as PlayMove).isSpecialAttack) {
+				anySpecialAttacks = true;
+				player.specialPoints -= (move as PlayMove).card.specialCost;
+				button.element.classList.add('specialAttack');
+			} else if (move.isPass) {
+				player.passes++;
+				player.specialPoints++;
+				const el = document.createElement('div');
+				el.className = 'passLabel';
+				el.innerText = 'Pass';
+				button.element.appendChild(el);
+			}
+			button.inputElement.hidden = true;
+			playContainers[i].append(button.element);
 		}
-	})();
+
+		for (const p of result.specialSpacesActivated) {
+			const space = board.grid[p.x][p.y];
+			const player2 = currentGame.players[space & 3];
+			player2.specialPoints++;
+			player2.totalSpecialPoints++;
+		}
+		currentGame.turnNumber++;
+
+		replayAnimationAbortController = new AbortController();
+		(async () => {
+			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
+			turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+			clearPlayContainers();
+			if (currentGame.turnNumber > 12) {
+				gameButtonsContainer.hidden = true;
+				passButton.enabled = false;
+				specialButton.enabled = false;
+				gamePage.classList.add('gameEnded');
+				showResult();
+			} else
+				replayUpdateHand();
+		})();
+	}
 });
 
 replayPreviousButton.addEventListener('click', _ => {
-	if (currentGame == null || currentReplay == null) return;
+	if (currentGame == null || currentReplay == null || currentGame.turnNumber == 0) return;
 
 	replayAnimationAbortController?.abort();
 	replayAnimationAbortController = null;
 
-	const result = currentReplay.placements.pop();
-	if (!result) return;
+	if (currentGame.turnNumber > 1) {
+		const result = currentReplay.placements.pop();
+		if (!result) return;
 
-	clearPlayContainers();
-	for (let i = 0; i < currentGame.players.length; i++) {
-		const el = playerBars[i].resultElement;
-		el.innerText = '';
+		clearPlayContainers();
+		for (let i = 0; i < currentGame.players.length; i++) {
+			const el = playerBars[i].resultElement;
+			el.innerText = '';
+		}
+
+		undoTurn(result);
 	}
-
-	undoTurn(result);
-	currentGame!.turnNumber--;
+	currentGame.turnNumber--;
 	gamePage.classList.remove('gameEnded');
-	turnNumberLabel.setTurnNumber(currentGame!.turnNumber);
+	handContainer.hidden = false;
+	gameButtonsContainer.hidden = false;
 
-	for (let i = 0; i < currentGame.players.length; i++) {
-		const move = currentReplay.turns[currentGame.turnNumber - 1][i];
-		if (move.isPass) {
-			currentGame.players[i].passes--;
-			currentGame.players[i].specialPoints--;
-		} else if ((move as PlayMove).isSpecialAttack)
-			currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
-		updateStats(i);
-	}
+	if (currentGame.turnNumber > 0) {
+		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		for (let i = 0; i < currentGame.players.length; i++) {
+			const move = currentReplay.turns[currentGame.turnNumber - 1][i];
+			if (move.isPass) {
+				currentGame.players[i].passes--;
+				currentGame.players[i].specialPoints--;
+			} else if ((move as PlayMove).isSpecialAttack)
+				currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
+			updateStats(i);
+		}
+	} else
+		turnNumberLabel.setTurnNumber(null);
+
+	replayUpdateHand();
 });
 
 function undoTurn(turn: PlacementResults) {
@@ -272,9 +292,7 @@ function undoTurn(turn: PlacementResults) {
 	board.refresh();
 }
 
-flipBox.addEventListener('input', flipBox_input);
-
-function flipBox_input(e: Event) {
+flipButton.addEventListener('click', () => {
 	if (currentGame == null) return;
 	if (replayAnimationAbortController) {
 		replayAnimationAbortController.abort();
@@ -285,11 +303,20 @@ function flipBox_input(e: Event) {
 			updateStats(i);
 		}
 	}
-	board.flip = (e.target as HTMLInputElement).checked;
+	if (currentReplay) {
+		currentReplay.watchingPlayer++;
+		if (currentReplay.watchingPlayer >= currentGame.players.length)
+		currentReplay.watchingPlayer = 0;
+		gamePage.dataset.myPlayerIndex = currentReplay.watchingPlayer.toString();
+		board.flip = currentReplay.watchingPlayer % 2 != 0;
+		clearShowDeck();
+		replayUpdateHand();
+	} else
+		board.flip = !board.flip;
 	if (board.flip) gamePage.classList.add('boardFlipped');
 	else gamePage.classList.remove('boardFlipped');
 	board.resize();
-}
+});
 
 function addTestDeckCard(card: Card) {
 	const button = new CardButton('radio', cardDatabase.get(card.number));
@@ -527,14 +554,14 @@ function showResult() {
 		}
 	}
 
+	handContainer.hidden = true;
 	if (!currentReplay) {
-		handContainer.hidden = true;
 		playRow.hidden = true;
 		spectatorRow.hidden = false;
 		replayPreviousButton.hidden = true;
 		replayNextButton.hidden = true;
 		shareReplayLinkButton.hidden = false;
-		flipLabel.hidden = true;
+		flipButton.hidden = true;
 		canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
 		shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
 	}
@@ -547,14 +574,9 @@ function clearShowDeck() {
 	showDeckButtons.splice(0);
 }
 
-function updateHand(playerData: PlayerData) {
-	for (const button of handButtons) {
-		handContainer.removeChild(button.element);
-	}
-	handButtons.splice(0);
-
+function populateShowDeck(deck: Card[]) {
 	if (showDeckButtons.length == 0) {
-		for (const card of playerData.deck!) {
+		for (const card of deck) {
 			const button = new CardButton('checkbox', card);
 			button.inputElement.hidden = true;
 			showDeckButtons.push(button);
@@ -564,6 +586,15 @@ function updateHand(playerData: PlayerData) {
 			showDeckListElement.appendChild(li);
 		}
 	}
+}
+
+function updateHand(playerData: PlayerData) {
+	for (const button of handButtons) {
+		handContainer.removeChild(button.element);
+	}
+	handButtons.splice(0);
+
+	populateShowDeck(playerData.deck!);
 
 	for (const button of showDeckButtons) {
 		const li = button.element.parentElement!;
@@ -639,6 +670,52 @@ function updateHand(playerData: PlayerData) {
 					break;
 			}
 		});
+		handContainer.appendChild(button.element);
+	}
+}
+
+function replayUpdateHand() {
+	if (currentGame == null || currentReplay == null) return;
+
+	for (const button of handButtons) {
+		handContainer.removeChild(button.element);
+	}
+	handButtons.splice(0);
+
+	const playerData = currentReplay.replayPlayerData[currentReplay.watchingPlayer];
+	populateShowDeck(playerData.deck);
+	for (const b of showDeckButtons)
+		b.element.parentElement!.className = '';
+
+	let indices;
+	if (currentGame.turnNumber == 0) {
+		indices = playerData.initialDrawOrder;
+	} else {
+		indices = playerData.drawOrder.slice(0, 4);
+		for (let i = 0; i < currentGame.turnNumber - 1; i++) {
+			const move = currentReplay.turns[i][currentReplay.watchingPlayer];
+			let j = indices.findIndex(k => playerData.deck[k].number == move.card.number);
+			if (j < 0) j = indices.findIndex(k => k < 0 || k >= 15);
+			if (j >= 0) {
+				showDeckButtons[indices[j]].element.parentElement!.className = 'used';
+				if (i < 11)
+					indices[j] = playerData.drawOrder[4 + i];
+			}
+		}
+	}
+
+	for (let i = 0; i < showDeckButtons.length; i++) {
+		const li = showDeckButtons[i].element.parentElement!;
+		if (!li.className)
+			li.className = indices.includes(i) ? 'inHand' : 'unused';
+	}
+
+	for (let i = 0; i < 4; i++) {
+		if (indices[i] >= 15) continue;  // Accounts for an old bug in the server that corrupted the initialDrawOrder replay fields.
+		const card = playerData.deck[indices[i]];
+		const button = new CardButton('radio', card);
+		button.inputElement.hidden = true;
+		handButtons.push(button);
 		handContainer.appendChild(button.element);
 	}
 }
@@ -804,9 +881,10 @@ gameDeckButton.addEventListener('click', toggleShowDeck);
 showDeckCloseButton.addEventListener('click', toggleShowDeck);
 
 document.addEventListener('keydown', e => {
-	if (!pages.get('game')!.hidden && !playRow.hidden) {
+	if (!pages.get('game')!.hidden) {
 		switch (e.key) {
 			case 'p':
+				if (playRow.hidden) return;
 				if (passButton.enabled) {
 					passButton.checked = !passButton.checked;
 					passButton_input();
@@ -815,6 +893,7 @@ document.addEventListener('keydown', e => {
 				e.preventDefault();
 				break;
 			case 's':
+				if (playRow.hidden) return;
 				if (specialButton.enabled) {
 					specialButton.checked = !specialButton.checked;
 					specialButton_input();
@@ -823,7 +902,8 @@ document.addEventListener('keydown', e => {
 				e.preventDefault();
 				break;
 			case 'd':
-				if (!gameButtonsContainer.hidden) toggleShowDeck();
+				if (testMode || gameButtonsContainer.hidden) return;
+				toggleShowDeck();
 				e.preventDefault();
 				break;
 		}

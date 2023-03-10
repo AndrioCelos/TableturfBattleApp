@@ -47,6 +47,11 @@ body {
 	--player-ui-highlight-colour: var(--player-special-colour);
 	--player-ui-highlight2-colour: var(--player-special-accent-colour);
 }
+#gamePage[data-my-player-index="0"], .playContainer[data-index="0"] {
+	--player-primary-colour: var(--primary-colour-1);
+	--player-special-colour: var(--special-colour-1);
+	--player-special-accent-colour: var(--special-accent-colour-1);
+}
 #gamePage[data-my-player-index="1"], .playContainer[data-index="1"] {
 	--player-primary-colour: var(--primary-colour-2);
 	--player-special-colour: var(--special-colour-2);
@@ -746,6 +751,9 @@ label[for="flipBox"] {
 	color: var(--player-ui-highlight-colour);
 }
 #gamePage.deckTest #gameDeckButton {
+	display: none;
+}
+#gamePage.replay :is(#rotateLeftButton, #rotateRightButton) {
 	display: none;
 }
 
