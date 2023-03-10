@@ -342,7 +342,7 @@ public class Game {
 			foreach (var card in player.Deck!)
 				writer.Write((byte) card.Number);
 			for (int i = 0; i < 4; i += 2)
-				writer.Write((byte) (player.initialDrawOrder![i] | player.initialDrawOrder[i + 1]));
+				writer.Write((byte) (player.initialDrawOrder![i] | player.initialDrawOrder[i + 1] << 4));
 			for (int i = 0; i < 15; i += 2)
 				writer.Write((byte) (player.drawOrder![i] | (i < 14 ? player.drawOrder[i + 1] << 4 : player.UIBaseColourIsSpecialColour ? 0x80 : 0)));
 			writer.Write(player.Name);
