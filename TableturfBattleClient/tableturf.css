@@ -47,24 +47,24 @@ body {
 	--player-ui-highlight-colour: var(--player-special-colour);
 	--player-ui-highlight2-colour: var(--player-special-accent-colour);
 }
-#gamePage[data-ui-base-colour-is-special-colour="true"] {
-	--player-ui-base-colour: var(--player-special-colour);
-	--player-ui-highlight-colour: var(--player-primary-colour);
-}
-#gamePage[data-my-player-index="1"] {
+#gamePage[data-my-player-index="1"], .playContainer[data-index="1"] {
 	--player-primary-colour: var(--primary-colour-2);
 	--player-special-colour: var(--special-colour-2);
 	--player-special-accent-colour: var(--special-accent-colour-2);
 }
-#gamePage[data-my-player-index="2"] {
+#gamePage[data-my-player-index="2"], .playContainer[data-index="2"] {
 	--player-primary-colour: var(--primary-colour-3);
 	--player-special-colour: var(--special-colour-3);
 	--player-special-accent-colour: var(--special-accent-colour-3);
 }
-#gamePage[data-my-player-index="3"] {
+#gamePage[data-my-player-index="3"], .playContainer[data-index="3"] {
 	--player-primary-colour: var(--primary-colour-4);
 	--player-special-colour: var(--special-colour-4);
 	--player-special-accent-colour: var(--special-accent-colour-4);
+}
+#gamePage[data-ui-base-colour-is-special-colour="true"] {
+	--player-ui-base-colour: var(--player-special-colour);
+	--player-ui-highlight-colour: var(--player-primary-colour);
 }
 
 h1, h2, h3, h4, h5, h6 {
