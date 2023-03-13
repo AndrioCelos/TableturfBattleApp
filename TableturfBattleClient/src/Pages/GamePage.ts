@@ -164,8 +164,9 @@ replayNextButton.addEventListener('click', _ => {
 		replayAnimationAbortController = null;
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 		board.refresh();
+		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
-			updateStats(i);
+			updateStats(i, scores);
 		}
 	}
 
@@ -255,6 +256,7 @@ replayPreviousButton.addEventListener('click', _ => {
 
 	if (currentGame.turnNumber > 0) {
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
 			const move = currentReplay.turns[currentGame.turnNumber - 1][i];
 			if (move.isPass) {
@@ -262,7 +264,7 @@ replayPreviousButton.addEventListener('click', _ => {
 				currentGame.players[i].specialPoints--;
 			} else if ((move as PlayMove).isSpecialAttack)
 				currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
-			updateStats(i);
+			updateStats(i, scores);
 		}
 	} else
 		turnNumberLabel.setTurnNumber(null);
@@ -299,8 +301,9 @@ flipButton.addEventListener('click', () => {
 		replayAnimationAbortController = null;
 		clearPlayContainers();
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
-			updateStats(i);
+			updateStats(i, scores);
 		}
 	}
 	if (currentReplay) {
@@ -410,11 +413,12 @@ document.getElementById('testAllCardsMobileButton')!.addEventListener('click', _
 
 function loadPlayers(players: Player[]) {
 	gamePage.dataset.players = players.length.toString();
+	const scores = board.getScores();
 	for (let i = 0; i < players.length; i++) {
 		const player = players[i];
 		currentGame!.players[i] = players[i];
 		playerBars[i].name = player.name;
-		updateStats(i);
+		updateStats(i, scores);
 		if (player.colour.r || player.colour.g || player.colour.b) {
 			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
 			document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
@@ -426,9 +430,9 @@ function loadPlayers(players: Player[]) {
 	}
 }
 
-function updateStats(playerIndex: number) {
+function updateStats(playerIndex: number, scores: number[]) {
 	if (currentGame == null) return;
-	playerBars[playerIndex].points = board.getScore(playerIndex);
+	playerBars[playerIndex].points = scores[playerIndex];
 	playerBars[playerIndex].pointsDelta = 0;
 	playerBars[playerIndex].pointsTo = 0;
 	playerBars[playerIndex].specialPoints = currentGame.players[playerIndex].specialPoints;
@@ -507,13 +511,14 @@ async function playInkAnimations(data: {
 	board.refresh();
 	if (data.specialSpacesActivated.length > 0)
 		await delay(1000, abortSignal);  // Delay if we expect that this changed the board.
+	const scores = board.getScores();
 	for (let i = 0; i < data.game.players.length; i++) {
 		playerBars[i].specialPoints = data.game.players[i].specialPoints;
-		playerBars[i].pointsDelta = board.getScore(i) - playerBars[i].points;
+		playerBars[i].pointsDelta = scores[i] - playerBars[i].points;
 	}
 	await delay(1000, abortSignal);
 	for (let i = 0; i < data.game.players.length; i++) {
-		updateStats(i);
+		updateStats(i, scores);
 	}
 	await delay(1000, abortSignal);
 }
@@ -837,6 +842,14 @@ board.oncancel = () => {
 			button.checked = false;
 			button.inputElement.focus();
 		}
+	}
+};
+
+board.onhighlightchange = dScores => {
+	if (currentGame == null) return;
+	const scores = board.getScores();
+	for (let i = 0; i < playerBars.length; i++) {
+		playerBars[i].pointsTo = dScores && dScores[i] != 0 ? scores[i] + dScores[i] : null;
 	}
 };
 

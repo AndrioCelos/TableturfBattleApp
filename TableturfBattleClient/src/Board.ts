@@ -20,6 +20,7 @@ class Board {
 
 	onsubmit: ((x: number, y: number) => void) | null = null;
 	oncancel: (() => void) | null = null;
+	onhighlightchange: ((dScores: number[] | null) => void) | null = null;
 
 	constructor(table: HTMLTableElement) {
 		this.table = table;
@@ -158,7 +159,8 @@ class Board {
 		let legal = this.playerIndex == null || this.cardPlaying == null ? false
 			: this.checkMoveLegality(this.playerIndex, this.cardPlaying, this.highlightX, this.highlightY, this.cardRotation, this.specialAttack) == null;
 
-		this.clearHighlight();
+		this.internalClearHighlight();
+		const dScores = legal ? [ 0, 0, 0, 0 ] : null;
 		if (this.cardPlaying != null && this.playerIndex != null) {
 			for (let dx = 0; dx < 8; dx++) {
 				const x2 = this.highlightX + dx;
@@ -170,6 +172,12 @@ class Board {
 						continue;
 					const space = this.cardPlaying.getSpace(dx, dy, this.cardRotation);
 					if (space != Space.Empty) {
+						if (dScores) {
+							const existingSpace = this.grid[x2][y2];
+							if (existingSpace >= Space.Ink1)
+								dScores[existingSpace & 3]--;
+							dScores[this.playerIndex]++;
+						}
 						const cell = this.cells[x2][y2];
 						cell.classList.add('hover');
 						cell.classList.add(`hover${this.playerIndex + 1}`);
@@ -181,10 +189,18 @@ class Board {
 					}
 				}
 			}
+			if (this.onhighlightchange)
+				this.onhighlightchange(dScores);
 		}
 	}
 
 	clearHighlight() {
+		this.internalClearHighlight();
+		if (this.onhighlightchange)
+			this.onhighlightchange(null);
+	}
+
+	private internalClearHighlight() {
 		for (const [x, y] of this.highlightedCells) {
 			this.cells[x][y].setAttribute('class', Space[this.grid[x][y]] );
 		}
@@ -286,16 +302,16 @@ class Board {
 		this.cells[x][y].setAttribute('class', Space[newState]);
 	}
 
-	getScore(playerIndex: number) {
-		let count = 0;
+	getScores() {
+		const scores = [ 0, 0, 0, 0 ];
 		for (let x = 0; x < this.grid.length; x++) {
 			for (let y = 0; y < this.grid[x].length; y++) {
 				const space = this.grid[x][y];
-				if (space >= Space.Ink1 && (space & 3) == playerIndex)
-					count++;
+				if (space >= Space.Ink1)
+					scores[space & 3]++;
 			}
 		}
-		return count;
+		return scores;
 	}
 
 	/**
