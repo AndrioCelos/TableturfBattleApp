@@ -9,8 +9,8 @@ internal class StageDatabase {
 
 	private static readonly Stage[] stages = new Stage[] {
 		new("Main Street", new Space[9, 26], new[] {
-			new Point[] { new(4, 21), new(4, 4), new(4, 13) },
-			new Point[] { new(2, 21), new(6, 4), new(6, 21), new(2, 4) }
+			new Point[] { new(4, 22), new(4, 3), new(4, 13) },
+			new Point[] { new(2, 22), new(6, 3), new(6, 22), new(2, 3) }
 		}),
 		new("Thunder Point", new Space[,] {
 			{ o, o, o, o, o, o, o, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -120,8 +120,8 @@ internal class StageDatabase {
 		new("Box Seats", new Space[10, 10], new[] { new Point[] { new(2, 7), new(7, 2), new(7, 7), new(2, 2) }}),
 	};
 
-	public static Version Version { get; } = new(1, 2, 0, 0);
-	public static DateTime LastModified { get; } = new(2022, 12, 26, 7, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(1, 2, 0, 1);
+	public static DateTime LastModified { get; } = new(2023, 4, 12, 23, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Stage> Stages { get; }
 
