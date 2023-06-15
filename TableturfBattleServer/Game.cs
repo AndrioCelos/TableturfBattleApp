@@ -189,6 +189,7 @@ public class Game {
 		} else if (this.State == GameState.Ongoing && this.Players.All(p => p.Move != null)) {
 			var moves = new Move?[this.Players.Count];
 			var placements = new List<Placement>();
+			var anySpecialAttacks = false;
 			var specialSpacesActivated = new List<Point>();
 
 			if (this.Board == null) throw new InvalidOperationException("No board?!");
@@ -212,8 +213,10 @@ public class Game {
 					player.Passes++;
 					player.SpecialPoints++;
 				} else {
-					if (move.IsSpecialAttack)
+					if (move.IsSpecialAttack) {
+						anySpecialAttacks = true;
 						player.SpecialPoints -= move.Card.SpecialCost;
+					}
 					if (placementData == null || move.Card.Size != placementData.Value.cardSize) {
 						if (placementData != null)
 							placements.Add(placementData.Value.placement);
@@ -292,7 +295,7 @@ public class Game {
 				foreach (var player in this.Players) player.ClearMoves();
 			} else {
 				this.TurnNumber++;
-				this.TurnTimeLeft = this.TurnTimeLimit + 4 + coveringMoves + (specialSpacesActivated.Count > 0 ? 1 : 0);  // Extra seconds for the animations.
+				this.TurnTimeLeft = this.TurnTimeLimit + (anySpecialAttacks ? 6 : 4) + coveringMoves + (specialSpacesActivated.Count > 0 ? 1 : 0);  // Extra seconds for the animations.
 
 				// Draw cards.
 				foreach (var player in this.Players) {
