@@ -136,7 +136,7 @@ internal class Program {
 						}
 					}
 					int? turnTimeLimit = null;
-					if (d.TryGetValue("turnTimeLimit", out var turnTimeLimitString)) {
+					if (d.TryGetValue("turnTimeLimit", out var turnTimeLimitString) && turnTimeLimitString != "") {
 						if (!int.TryParse(turnTimeLimitString, out var turnTimeLimit2) || turnTimeLimit2 < 10) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
 							return;
