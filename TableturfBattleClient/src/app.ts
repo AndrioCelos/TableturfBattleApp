@@ -529,6 +529,8 @@ function clearChildren(el: Element) {
 		el.removeChild(el2);
 }
 
+document.getElementById('noJSPage')!.innerText = 'Loading client...';
+
 if (config.discordUrl) {
 	(document.getElementById('discordLink') as HTMLLinkElement).href = config.discordUrl;
 	if (config.discordTitle)
