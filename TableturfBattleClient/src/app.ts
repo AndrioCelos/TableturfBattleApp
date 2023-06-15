@@ -203,7 +203,7 @@ function playerDataReviver(key: string, value: any) {
 
 function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
-	webSocket.addEventListener('open', e => {
+	webSocket.addEventListener('open', _ => {
 		enterGameTimeout = setTimeout(() => {
 			webSocket.close(1002, 'Timeout waiting for a sync message');
 			enterGameTimeout = null;
@@ -388,10 +388,11 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 			}
 		}
 	});
-	webSocket.addEventListener('close', e => {
-		communicationError();
-	});
+	webSocket.addEventListener('close', webSocket_close);
 	return myPlayerIndex;
+}
+function webSocket_close() {
+	communicationError();
 }
 
 function setConfirmLeavingGame() {
@@ -408,6 +409,16 @@ function clearConfirmLeavingGame() {
 	}
 }
 
+function clearGame() {
+	if (currentGame?.webSocket) {
+		currentGame.webSocket.removeEventListener('close', webSocket_close);
+		currentGame.webSocket.close();
+	}
+	currentGame = null;
+	currentReplay = null;
+	clearConfirmLeavingGame();
+}
+
 function processUrl() {
 	if (deckModified) {
 		if (!confirm('You have unsaved changes to your deck. Are you sure you want to leave?')) {
@@ -422,9 +433,7 @@ function processUrl() {
 	}
 	stopEditingDeck();
 	errorDialog.close();
-	currentGame = null;
-	currentReplay = null;
-	clearConfirmLeavingGame();
+	clearGame();
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
 		onInitialise(showDeckList);
 	else {

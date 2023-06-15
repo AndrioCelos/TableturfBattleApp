@@ -991,10 +991,10 @@ shareReplayLinkButton.addEventListener('click', _ => {
 
 function leaveButton_click(e: MouseEvent) {
 	e.preventDefault();
+	clearGame();
 	clearPreGameForm(true);
 	showPage('preGame');
 	newGameButton.focus();
-	currentReplay = null;
 }
 
 document.getElementById('leaveButton')!.addEventListener('click', leaveButton_click);
