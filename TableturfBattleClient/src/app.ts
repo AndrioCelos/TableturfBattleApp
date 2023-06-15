@@ -14,6 +14,7 @@ const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 
 let selectedDeck: Deck | null = null;
 let editingDeck = false;
 let deckModified = false;
+let shouldConfirmLeavingGame = false;
 
 function delay(ms: number, abortSignal?: AbortSignal) {
 	return new Promise((resolve, reject) => {
@@ -92,6 +93,8 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
 	clearPlayContainers();
+	currentGame.state = game.state;
+
 	if (game.board) {
 		board.flip = playerData != null && playerData.playerIndex % 2 != 0;
 		if (board.flip) gamePage.classList.add('boardFlipped');
@@ -109,11 +112,13 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
 			showPage('lobby');
+			clearConfirmLeavingGame();
 			lobbySelectedStageSection.hidden = true;
 			lobbyStageSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.Preparing:
 			showPage('lobby');
+			if (currentGame.me) setConfirmLeavingGame();
 			if (selectedStageButton)
 				lobbySelectedStageSection.removeChild(selectedStageButton.element);
 			selectedStageButton = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
@@ -142,6 +147,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 
 			switch (game.state) {
 				case GameState.Redraw:
+					if (currentGame.me) setConfirmLeavingGame();
 					redrawModal.hidden = currentGame.me == null || currentGame.players[currentGame.me.playerIndex].isReady;
 					turnNumberLabel.setTurnNumber(null);
 					canPlay = false;
@@ -149,6 +155,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					timeLabel.paused = false;
 					break;
 				case GameState.Ongoing:
+					if (currentGame.me) setConfirmLeavingGame();
 					turnNumberLabel.setTurnNumber(game.turnNumber);
 					board.autoHighlight = true;
 					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
@@ -157,6 +164,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					setupControlsForPlay();
 					break;
 				case GameState.Ended:
+					clearConfirmLeavingGame();
 					gamePage.classList.add('gameEnded');
 					turnNumberLabel.setTurnNumber(null);
 					timeLabel.hide();
@@ -170,6 +178,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 
 let errorDialogCallback: ((e: Event) => void) | null = null;
 function communicationError(message?: string, showButton?: boolean, callback?: (e: Event) => void) {
+	clearConfirmLeavingGame();
 	preGameLoadingSection.hidden = true;
 	errorMessage.innerText = message ?? 'A communication error has occurred.\nPlease reload the page to rejoin.';
 	errorDialogCallback = callback ?? null;
@@ -218,6 +227,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 				} else {
 					currentGame = {
 						id: gameID,
+						state: payload.data.state,
 						me: payload.playerData,
 						players: payload.data.players,
 						maxPlayers: payload.data.maxPlayers,
@@ -355,6 +365,8 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
+								currentGame.state = GameState.Ended;
+								clearConfirmLeavingGame();
 								gameButtonsContainer.hidden = true;
 								passButton.enabled = false;
 								specialButton.enabled = false;
@@ -382,10 +394,29 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 	return myPlayerIndex;
 }
 
+function setConfirmLeavingGame() {
+	if (!shouldConfirmLeavingGame) {
+		shouldConfirmLeavingGame = true;
+		window.addEventListener('beforeunload', onBeforeUnload_game);
+	}
+}
+
+function clearConfirmLeavingGame() {
+	if (shouldConfirmLeavingGame) {
+		shouldConfirmLeavingGame = false;
+		window.removeEventListener('beforeunload', onBeforeUnload_game);
+	}
+}
+
 function processUrl() {
 	if (deckModified) {
 		if (!confirm('You have unsaved changes to your deck. Are you sure you want to leave?')) {
 			setUrl('deckeditor');
+			return false;
+		}
+	} else if (shouldConfirmLeavingGame) {
+		if (!confirm('This will disconnect you from a game in progress. Are you sure you want to leave?')) {
+			setUrl(`game/${currentGame!.id}`);
 			return false;
 		}
 	}
@@ -393,6 +424,7 @@ function processUrl() {
 	errorDialog.close();
 	currentGame = null;
 	currentReplay = null;
+	clearConfirmLeavingGame();
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
 		onInitialise(showDeckList);
 	else {
@@ -415,6 +447,11 @@ function processUrl() {
 		}
 	}
 	return true;
+}
+
+function onBeforeUnload_game(e: BeforeUnloadEvent) {
+	e.preventDefault();
+	return 'This will disconnect you from a game in progress.';
 }
 
 function parseGameID(s: string) {

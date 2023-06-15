@@ -3,6 +3,7 @@ let clientToken = window.localStorage.getItem('clientToken') || '';
 /** The data of the current game, or null if not in a game. */
 let currentGame: {
 	id: string,
+	state: GameState,
 	/** The list of players in the current game. */
 	players: Player[],
 	/** The maximum number of players in the game. */

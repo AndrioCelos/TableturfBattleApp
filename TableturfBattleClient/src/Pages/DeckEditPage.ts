@@ -183,7 +183,7 @@ function stopEditingDeck() {
 
 function onBeforeUnload_deckEditor(e: BeforeUnloadEvent) {
 	e.preventDefault();
-	return 'You have unsaved changes to your deck that will be lost. Are you sure you want to continue?';
+	return 'You have unsaved changes to your deck that will be lost.';
 }
 
 function addTestStage(stage: Stage) {

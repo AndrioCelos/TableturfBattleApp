@@ -312,6 +312,7 @@ function loadReplay(base64: string) {
 
 	currentGame = {
 		id: 'replay',
+		state: GameState.Redraw,
 		me: null,
 		players: players,
 		maxPlayers: numPlayers,
