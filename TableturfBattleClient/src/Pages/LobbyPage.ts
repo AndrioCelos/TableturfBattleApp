@@ -18,6 +18,9 @@ const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
 const lobbyDeckButtons: CheckButton[] = [ ];
 
+const lobbyTimeLimitBox = document.getElementById('lobbyTimeLimitBox') as HTMLInputElement;
+const lobbyTimeLimitUnit = document.getElementById('lobbyTimeLimitUnit')!;
+
 const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElement;
 let qrCode: QRCode | null;
 let lobbyShareData: ShareData | null;

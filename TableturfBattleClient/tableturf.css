@@ -102,6 +102,11 @@ footer {
 	left: -9999px;
 }
 
+#turnTimeLimitBox {
+	width: 8ch;
+	text-align: right;
+}
+
 /* Lobby page */
 
 #lobbyPage:not([hidden]) {
@@ -158,6 +163,11 @@ footer {
 @keyframes playerListFlyIn {
 	from { left: -100%; }
 	to { left: 0; }
+}
+
+#lobbyTimeLimitBox {
+	width: 8ch;
+	text-align: right;
 }
 
 dialog {
@@ -829,17 +839,20 @@ label[for="flipBox"] {
 
 /* Score bar */
 
-#turnNumberContainer {
+#timeSection {
 	grid-column: score-column;
 	grid-row: 1 / 4;
 	width: 5em;
 	height: 5em;
-	background: radial-gradient(circle, rgb(128, 128, 128) 0%, rgb(128, 128, 128) 70%, rgba(0, 0, 0, 0) 70%);
 	font-family: 'Splatoon 1', sans-serif;
 	justify-self: center;
 	margin-top: 2em;
+	z-index: 1;
 }
 
+#turnNumberContainer {
+	background: radial-gradient(circle, rgb(128, 128, 128) 0%, rgb(128, 128, 128) 70%, rgba(0, 0, 0, 0) 70%);
+}
 #turnNumberContainer p {
 	text-align: center;
 	margin: 0;
@@ -852,6 +865,50 @@ label[for="flipBox"] {
 }
 #turnNumberLabel.nowOrNever {
 	color: red;
+}
+
+#timeContainer:not([hidden]) {
+	margin-top: 1em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 125%;
+	font-family: 'Splatoon 2', sans-serif;
+	background:
+		radial-gradient(circle 1em at 25% 50%, grey 100%, transparent),
+		radial-gradient(circle 1em at 75% 50%, grey 100%, transparent),
+		linear-gradient(90deg, transparent 25%, grey 25%, grey 75%, transparent 75%)
+}
+#timeContainerContent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25em;
+}
+#timeContainerContent.warning {
+	color: yellow;
+	animation: 0.2s timeWarning;
+}
+#timeContainerContent.faded {
+	opacity: 0.5;
+}
+#timeContainer svg {
+	height: 1.5ch;
+	fill: currentColor;
+	vertical-align: middle;
+}
+#timeContainer p {
+	margin: 0;
+}
+#timeLabel {
+	width: 2ch;
+	text-align: center;
+}
+
+@keyframes timeWarning {
+	from { transform: scale(1); }
+	 50% { transform: scale(1.5); }
+	  to { transform: scale(1); }
 }
 
 .pointsContainer {
@@ -963,7 +1020,7 @@ label[for="flipBox"] {
 	text-align: center;
 	font-size: larger;
 	border-radius: 0.5em;
-	animation: 3s forwards specialAttackAnimation;
+	animation: 3s specialAttackAnimation;
 }
 
 @keyframes specialAttackAnimation {
@@ -1002,6 +1059,9 @@ label[for="flipBox"] {
 	justify-content: center;
 	align-items: center;
 	font-size: larger;
+}
+.passLabel.timeout {
+	color: red;
 }
 
 /* Deck editor */
@@ -1472,7 +1532,7 @@ label[for="flipBox"] {
 	border: var(--border-width) solid #fff;
 	opacity: 1;
 	border-radius: 50%;
-	animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+	animation: 1s cubic-bezier(0, 0.2, 0.8, 1) infinite lds-ripple;
 }
 .lds-ripple div:nth-child(2) {
 	animation-delay: -0.5s;

@@ -24,7 +24,7 @@ internal class Program {
 
 	internal static Dictionary<Guid, Game> games = new();
 	internal static Dictionary<Guid, Game> inactiveGames = new();
-	internal static readonly Timer timer = new(500);
+	internal static readonly Timer timer = new(1000);
 	private static bool lockdown;
 
 	private const int InactiveGameLimit = 1000;
@@ -76,7 +76,7 @@ internal class Program {
 			foreach (var (id, game) in games) {
 				lock (game.Players) {
 					game.Tick();
-					if (DateTime.UtcNow - game.AbandonedSince >= InactiveGameTimeout) {
+					if (DateTime.UtcNow - game.abandonedSince >= InactiveGameTimeout) {
 						games.Remove(id);
 						inactiveGames.Add(id, game);
 						Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
@@ -86,7 +86,7 @@ internal class Program {
 				}
 			}
 			if (inactiveGames.Count >= InactiveGameLimit) {
-				foreach (var (k, _) in inactiveGames.Select(e => (e.Key, e.Value.AbandonedSince)).OrderBy(e => e.AbandonedSince).Take(InactiveGameLimit / 2))
+				foreach (var (k, _) in inactiveGames.Select(e => (e.Key, e.Value.abandonedSince)).OrderBy(e => e.abandonedSince).Take(InactiveGameLimit / 2))
 					inactiveGames.Remove(k);
 				Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
 			}
@@ -96,7 +96,7 @@ internal class Program {
 	private static void HttpServer_OnRequest(object? sender, HttpRequestEventArgs e) {
 		e.Response.AppendHeader("Access-Control-Allow-Origin", "*");
 		if (!e.Request.RawUrl.StartsWith("/api/")) {
-			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/game/") || e.Request.RawUrl.StartsWith("/replay/")
+			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/deckeditor") || e.Request.RawUrl.StartsWith("/game/") || e.Request.RawUrl.StartsWith("/replay/")
 				? "index.html"
 				: e.Request.RawUrl[1..];
 			if (e.TryReadFile(path, out var bytes))
@@ -135,6 +135,14 @@ internal class Program {
 							return;
 						}
 					}
+					int? turnTimeLimit = null;
+					if (d.TryGetValue("turnTimeLimit", out var turnTimeLimitString)) {
+						if (!int.TryParse(turnTimeLimitString, out var turnTimeLimit2) || turnTimeLimit2 < 10) {
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
+							return;
+						}
+						turnTimeLimit = turnTimeLimit2;
+					}
 					if (d.TryGetValue("clientToken", out var tokenString) && tokenString != "") {
 						if (!Guid.TryParse(tokenString, out clientToken)) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidClientToken", "Invalid client token."));
@@ -142,7 +150,7 @@ internal class Program {
 						}
 					} else
 						clientToken = Guid.NewGuid();
-					var game = new Game(maxPlayers);
+					var game = new Game(maxPlayers) { TurnTimeLimit = turnTimeLimit };
 					game.Players.Add(new(game, name, clientToken));
 					games.Add(game.ID, game);
 					timer.Start();
@@ -273,7 +281,7 @@ internal class Program {
 									if (stageName == "random") {
 										player.selectedStageIndex = -1;
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-										game.SendPlayerReadyEvent(playerIndex);
+										game.SendPlayerReadyEvent(playerIndex, false);
 										timer.Start();
 										return;
 									} else {
@@ -282,7 +290,7 @@ internal class Program {
 											if (stageName == stage.Name) {
 												player.selectedStageIndex = i;
 												e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-												game.SendPlayerReadyEvent(playerIndex);
+												game.SendPlayerReadyEvent(playerIndex, false);
 												timer.Start();
 												return;
 											}
@@ -351,7 +359,7 @@ internal class Program {
 
 										player.Deck = cards.Select(CardDatabase.GetCard).ToArray();
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-										game.SendPlayerReadyEvent(playerIndex);
+										game.SendPlayerReadyEvent(playerIndex, false);
 										timer.Start();
 									} catch (ArgumentException) {
 										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidRequestData", "Invalid form data"));
@@ -397,9 +405,11 @@ internal class Program {
 											return;
 										}
 
+										var isTimeout = d.TryGetValue("isTimeout", out var isTimeoutStr) && isTimeoutStr.ToLower() is not ("false" or "0");
+
 										var card = player.Hand![handIndex];
 										if (d.TryGetValue("isPass", out var isPassStr) && isPassStr.ToLower() is not ("false" or "0")) {
-											player.Move = new(card, true, 0, 0, 0, false);
+											player.Move = new(card, true, 0, 0, 0, false, isTimeout);
 										} else {
 											var isSpecialAttack = d.TryGetValue("isSpecialAttack", out var isSpecialAttackStr) && isSpecialAttackStr.ToLower() is not ("false" or "0");
 											if (!d.TryGetValue("x", out var xs) || !int.TryParse(xs, out var x)
@@ -413,10 +423,10 @@ internal class Program {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "IllegalMove", "Illegal move"));
 												return;
 											}
-											player.Move = new(card, false, x, y, r, isSpecialAttack);
+											player.Move = new(card, false, x, y, r, isSpecialAttack, isTimeout);
 										}
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-										game.SendPlayerReadyEvent(playerIndex);
+										game.SendPlayerReadyEvent(playerIndex, isTimeout);
 										timer.Start();
 									} catch (ArgumentException) {
 										e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
@@ -453,9 +463,9 @@ internal class Program {
 										}
 
 										var redraw = d.TryGetValue("redraw", out var redrawStr) && redrawStr.ToLower() is not ("false" or "0");
-										player.Move = new(player.Hand![0], false, 0, 0, 0, redraw);
+										player.Move = new(player.Hand![0], false, 0, 0, 0, redraw, false);
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-										game.SendPlayerReadyEvent(playerIndex);
+										game.SendPlayerReadyEvent(playerIndex, false);
 										timer.Start();
 									} catch (ArgumentException) {
 										e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
@@ -540,12 +550,12 @@ internal class Program {
 
 	internal static bool TryGetGame(Guid gameID, [MaybeNullWhen(false)] out Game game) {
 		if (games.TryGetValue(gameID, out game)) {
-			game.AbandonedSince = DateTime.UtcNow;
+			game.abandonedSince = DateTime.UtcNow;
 			return true;
 		} else if (inactiveGames.TryGetValue(gameID, out game)) {
 			inactiveGames.Remove(gameID);
 			games[gameID] = game;
-			game.AbandonedSince = DateTime.UtcNow;
+			game.abandonedSince = DateTime.UtcNow;
 			Console.WriteLine($"{games.Count} games active; {inactiveGames.Count} inactive");
 			return true;
 		}

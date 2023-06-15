@@ -1,6 +1,7 @@
 interface Move {
 	card: Card;
 	isPass: boolean;
+	isTimeout: boolean;
 }
 
 interface PlayMove extends Move {

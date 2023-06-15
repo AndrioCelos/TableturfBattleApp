@@ -24,8 +24,12 @@ public class Game {
 	[JsonProperty("startSpaces")]
 	public Point[]? StartSpaces;
 
+	[JsonProperty("turnTimeLimit")]
+	public int? TurnTimeLimit { get; set; }
+	[JsonProperty("turnTimeLeft")]
+	public int? TurnTimeLeft { get; set; }
 	[JsonIgnore]
-	internal DateTime AbandonedSince = DateTime.UtcNow;
+	internal DateTime abandonedSince = DateTime.UtcNow;
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
@@ -167,6 +171,7 @@ public class Game {
 				player.Shuffle(random);
 
 			this.State = GameState.Redraw;
+			this.TurnTimeLeft = this.TurnTimeLimit;
 			this.SendEvent("stateChange", this, true);
 		} else if (this.State == GameState.Redraw && this.Players.All(p => p.Move != null)) {
 			var random = new Random();
@@ -174,11 +179,12 @@ public class Game {
 				if (player.Move!.IsSpecialAttack) {
 					player.Shuffle(random);
 				}
-				player.Move = null;
+				player.ClearMoves();
 			}
 
 			this.State = GameState.Ongoing;
 			this.TurnNumber = 1;
+			this.TurnTimeLeft = this.TurnTimeLimit;
 			this.SendEvent("stateChange", this, true);
 		} else if (this.State == GameState.Ongoing && this.Players.All(p => p.Move != null)) {
 			var moves = new Move?[this.Players.Count];
@@ -189,14 +195,16 @@ public class Game {
 
 			foreach (var player in this.Players) {
 				var move = player.Move!;
-				player.turns.Add(new() { CardNumber = move.Card.Number, X = move.X, Y = move.Y, Rotation = move.Rotation, IsPass = move.IsPass, IsSpecialAttack = move.IsSpecialAttack });
+				player.turns.Add(new() { CardNumber = move.Card.Number, X = move.X, Y = move.Y, Rotation = move.Rotation, IsPass = move.IsPass, IsTimeout = move.IsTimeout, IsSpecialAttack = move.IsSpecialAttack });
 			}
 
 			// Place the ink.
 			(Placement placement, int cardSize)? placementData = null;
+			var coveringMoves = 0;
 			foreach (var i in Enumerable.Range(0, this.Players.Count).Where(i => this.Players[i] != null).OrderByDescending(i => this.Players[i]!.Move!.Card.Size)) {
 				var player = this.Players[i];
 				var move = player.Move!;
+				var isCovering = false;
 				moves[i] = move;
 				player.CardsUsed.Add(move.Card.Number);
 
@@ -226,6 +234,7 @@ public class Game {
 											this.Board[x, y] = placement.SpacesAffected[point] = Space.Wall;
 										}
 									} else {
+										isCovering = this.Board[x, y] != Space.Empty;
 										if (this.Board[x, y] < Space.SpecialInactive1)  // Ink spaces can't overlap special spaces from larger cards.
 											this.Board[x, y] = placement.SpacesAffected[point] = Space.Ink1 | (Space) i;
 									}
@@ -236,6 +245,7 @@ public class Game {
 										this.Board[x, y] = placement.SpacesAffected[point] = Space.Wall;
 									} else {
 										// If a special space overlaps an ink space, overwrite it.
+										isCovering = this.Board[x, y] != Space.Empty;
 										this.Board[x, y] = placement.SpacesAffected[point] = Space.SpecialInactive1 | (Space) i;
 									}
 									break;
@@ -243,6 +253,7 @@ public class Game {
 						}
 					}
 				}
+				if (isCovering) coveringMoves++;
 			}
 			if (placementData != null)
 				placements.Add(placementData.Value.placement);
@@ -276,27 +287,50 @@ public class Game {
 
 			if (this.TurnNumber == 12) {
 				this.State = GameState.Ended;
+				this.TurnTimeLeft = null;
 				this.SendEvent("gameEnd", new { game = this, moves, placements, specialSpacesActivated }, true);
-
-				foreach (var player in this.Players) {
-					player.Move = null;
-				}
+				foreach (var player in this.Players) player.ClearMoves();
 			} else {
 				this.TurnNumber++;
+				this.TurnTimeLeft = this.TurnTimeLimit + 4 + coveringMoves + (specialSpacesActivated.Count > 0 ? 1 : 0);  // Extra seconds for the animations.
 
 				// Draw cards.
 				foreach (var player in this.Players) {
 					var index = player.GetHandIndex(player.Move!.Card.Number);
 					var draw = player.drawOrder![this.TurnNumber + 2];
 					player.Hand![index] = player.Deck![draw];
-					player.Move = null;
+					player.ClearMoves();
 				}
 				this.SendEvent("turn", new { game = this, moves, placements, specialSpacesActivated }, true);
+			}
+		} else if (this.TurnTimeLeft != null) {
+			--this.TurnTimeLeft;
+			if (this.TurnTimeLeft <= -3) {  // Add a small grace period to account for network lag.
+				for (var i = 0; i < this.Players.Count; i++) {
+					var player = this.Players[i];
+					if (player.Move == null) {
+						if (this.State == GameState.Redraw) {
+							// If someone times out during the redraw state, don't redraw.
+							player.Move = new(player.Hand![0], false, 0, 0, 0, false, true);
+							this.SendPlayerReadyEvent(i, true);
+						} else if (this.State == GameState.Ongoing) {
+							if (player.ProvisionalMove != null)
+								player.Move = player.ProvisionalMove;
+							else {
+								// If someone times out during a game and didn't have a valid move highlighted, they'll automatically discard their largest card.
+								player.Move = new(player.Hand!.MaxBy(c => c.Size)!, true, 0, 0, 0, false, true);
+							}
+							this.SendPlayerReadyEvent(i, true);
+						}
+					}
+				}
 			}
 		}
 	}
 
-	internal void SendPlayerReadyEvent(int playerIndex) => this.SendEvent("playerReady", new { playerIndex }, false);
+	internal void SendPlayerReadyEvent(int playerIndex, bool isTimeout) {
+		this.SendEvent("playerReady", new { playerIndex, isTimeout }, false);
+	}
 
 	internal void SendEvent<T>(string eventType, T data, bool includePlayerData) {
 		foreach (var session in Program.httpServer!.WebSocketServices.Hosts.First().Sessions.Sessions) {
@@ -351,7 +385,7 @@ public class Game {
 			foreach (var player in this.Players) {
 				var move = player.turns[i];
 				writer.Write((byte) move.CardNumber);
-				writer.Write((byte) (move.Rotation | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0)));
+				writer.Write((byte) ((move.Rotation & 3) | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0) | (move.IsTimeout ? 0x20 : 0)));
 				writer.Write((sbyte) move.X);
 				writer.Write((sbyte) move.Y);
 			}

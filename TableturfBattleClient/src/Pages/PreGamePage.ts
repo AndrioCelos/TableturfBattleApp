@@ -1,15 +1,20 @@
 const preGameForm = document.getElementById('preGameForm') as HTMLFormElement;
 const newGameButton = document.getElementById('newGameButton')!;
+const newGameSetupButton = document.getElementById('newGameSetupButton')!;
 const joinGameButton = document.getElementById('joinGameButton')!;
 const nameBox = document.getElementById('nameBox') as HTMLInputElement;
 const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
-const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton') as HTMLLinkElement;
 const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
 const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
 const preGameReplayButton = document.getElementById('preGameReplayButton') as HTMLLinkElement;
 const preGameHelpButton = document.getElementById('preGameHelpButton') as HTMLLinkElement;
 const helpDialog = document.getElementById('helpDialog') as HTMLDialogElement;
+
+const gameSetupDialog = document.getElementById('gameSetupDialog') as HTMLDialogElement;
+const gameSetupForm = document.getElementById('gameSetupForm') as HTMLFormElement;
+const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
+const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -32,6 +37,10 @@ maxPlayersBox.addEventListener('change', () => {
 	}
 });
 
+newGameSetupButton.addEventListener('click', _ => {
+	gameSetupDialog.showModal();
+});
+
 preGameForm.addEventListener('submit', e => {
 	e.preventDefault();
 
@@ -39,38 +48,55 @@ preGameForm.addEventListener('submit', e => {
 	window.localStorage.setItem('name', name);
 
 	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
-		let request = new XMLHttpRequest();
-		request.open('POST', `${config.apiBaseUrl}/games/new`);
-		request.addEventListener('load', () => {
-			if (request.status == 200) {
-				let response = JSON.parse(request.responseText);
-				if (!clientToken)
-					setClientToken(response.clientToken);
-
-				setGameUrl(response.gameID);
-
-				getGameInfo(response.gameID, 0);
-			} else if (request.status == 503)
-				communicationError('The server is temporarily locked for an update. Please try again soon.', true, () => setLoadingMessage(null));
-			else
-				communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
-		});
-		request.addEventListener('error', () => {
-			communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
-		});
-
-		let data = new URLSearchParams();
-		data.append('name', name);
-		data.append('clientToken', clientToken);
-		data.append('maxPlayers', maxPlayersBox.value);
-		request.send(data.toString());
-		setLoadingMessage('Creating a room...');
+		createRoom(false);
 	} else if (e.submitter?.id?.startsWith('spectate')) {
 		spectate(false);
 	} else {
 		tryJoinGame(name, gameIDBox.value, false);
 	}
 });
+
+gameSetupForm.addEventListener('submit', e => {
+	if (e.submitter?.id != 'gameSetupSubmitButton')
+		return;
+	const name = nameBox.value;
+	window.localStorage.setItem('name', name);
+	createRoom(true);
+});
+
+function createRoom(useOptionsForm: boolean) {
+	const name = nameBox.value;
+	let request = new XMLHttpRequest();
+	request.open('POST', `${config.apiBaseUrl}/games/new`);
+	request.addEventListener('load', () => {
+		if (request.status == 200) {
+			let response = JSON.parse(request.responseText);
+			if (!clientToken)
+				setClientToken(response.clientToken);
+
+			setGameUrl(response.gameID);
+
+			getGameInfo(response.gameID, 0);
+		} else if (request.status == 503)
+			communicationError('The server is temporarily locked for an update. Please try again soon.', true, () => setLoadingMessage(null));
+		else
+			communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
+	});
+	request.addEventListener('error', () => {
+		communicationError('Unable to create the room.', true, () => setLoadingMessage(null));
+	});
+
+	let data = new URLSearchParams();
+	data.append('name', name);
+	data.append('clientToken', clientToken);
+	if (useOptionsForm) {
+		data.append('maxPlayers', maxPlayersBox.value);
+		if (turnTimeLimitBox.value)
+			data.append('turnTimeLimit', turnTimeLimitBox.value);
+	}
+	request.send(data.toString());
+	setLoadingMessage('Creating a room...');
+}
 
 function spectate(fromInitialLoad: boolean) {
 	const gameID = parseGameID(gameIDBox.value);
@@ -274,9 +300,9 @@ function loadReplay(base64: string) {
 			const x = dataView.getInt8(pos + 2);
 			const y = dataView.getInt8(pos + 3);
 			if (b & 0x80)
-				turn.push({ card: cardDatabase.get(cardNumber), isPass: true });
+				turn.push({ card: cardDatabase.get(cardNumber), isPass: true, isTimeout: (b & 0x20) != 0 });
 			else {
-				const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+				const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
 				turn.push(move);
 			}
 			pos += 4;
@@ -290,6 +316,8 @@ function loadReplay(base64: string) {
 		players: players,
 		maxPlayers: numPlayers,
 		turnNumber: 0,
+		turnTimeLimit: null,
+		turnTimeLeft: null,
 		webSocket: null
 	};
 

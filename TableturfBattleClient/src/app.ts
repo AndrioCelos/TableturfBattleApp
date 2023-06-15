@@ -137,6 +137,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 			} else
 				initSpectator();
 
+			currentGame.turnNumber = game.turnNumber;
 			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
 
 			switch (game.state) {
@@ -144,16 +145,21 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					redrawModal.hidden = currentGame.me == null || currentGame.players[currentGame.me.playerIndex].isReady;
 					turnNumberLabel.setTurnNumber(null);
 					canPlay = false;
+					timeLabel.faded = redrawModal.hidden;
+					timeLabel.paused = false;
 					break;
 				case GameState.Ongoing:
 					turnNumberLabel.setTurnNumber(game.turnNumber);
 					board.autoHighlight = true;
 					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
+					timeLabel.faded = !canPlay;
+					timeLabel.paused = false;
 					setupControlsForPlay();
 					break;
 				case GameState.Ended:
 					gamePage.classList.add('gameEnded');
 					turnNumberLabel.setTurnNumber(null);
+					timeLabel.hide();
 					canPlay = false;
 					showResult();
 					break;
@@ -216,6 +222,8 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 						players: payload.data.players,
 						maxPlayers: payload.data.maxPlayers,
 						turnNumber: payload.data.turnNumber,
+						turnTimeLimit: payload.data.turnTimeLimit,
+						turnTimeLeft: payload.data.turnTimeLeft,
 						webSocket: webSocket
 					};
 
@@ -228,6 +236,9 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 						playerList.appendChild(el);
 						updatePlayerListItem(i);
 					}
+
+					lobbyTimeLimitBox.value = currentGame.turnTimeLimit?.toString() ?? '';
+					lobbyTimeLimitUnit.hidden = currentGame.turnTimeLimit == null;
 
 					for (let i = 0; i < playerBars.length; i++) {
 						playerBars[i].visible = i < currentGame.maxPlayers;
@@ -246,6 +257,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					if (currentGame.me) {
 						if (currentGame.me.move) {
 							canPlay = false;
+							timeLabel.faded = true;
 							board.autoHighlight = false;
 							if (!currentGame.me.move.isPass) {
 								const move = currentGame.me.move as PlayMove;
@@ -258,6 +270,13 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 							}
 						}
 					}
+
+					timeLabel.paused = false;
+					if (currentGame.turnTimeLeft) {
+						timeLabel.setTime(currentGame.turnTimeLeft);
+						timeLabel.show();
+					} else
+						timeLabel.hide();
 				}
 			} else {
 				if (currentGame == null) {
@@ -290,12 +309,18 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 					case 'stateChange':
 						clearReady();
 						onGameStateChange(payload.data, payload.playerData);
+						if (payload.data.turnTimeLeft) {
+							timeLabel.paused = false;
+							timeLabel.setTime(payload.data.turnTimeLeft);
+							timeLabel.show();
+						}
 						break;
 					case 'turn':
 					case 'gameEnd':
 						clearReady();
 						board.autoHighlight = false;
 						showPage('game');
+						currentGame.turnNumber = payload.data.game.turnNumber;
 
 						let anySpecialAttacks = false;
 						// Show the cards that were played.
@@ -313,7 +338,7 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 								button.element.classList.add('specialAttack');
 							} else if (move.isPass) {
 								const el = document.createElement('div');
-								el.className = 'passLabel';
+								el.className = move.isTimeout ? 'passLabel timeout' : 'passLabel';
 								el.innerText = 'Pass';
 								button.element.appendChild(el);
 							}
@@ -322,6 +347,9 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 						}
 
 						(async () => {
+							timeLabel.paused = true;
+							if (payload.data.game.turnTimeLeft)
+								timeLabel.setTime(payload.data.game.turnTimeLeft);
 							await playInkAnimations(payload.data, anySpecialAttacks);
 							if (payload.playerData) updateHand(payload.playerData);
 							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
@@ -331,11 +359,16 @@ function setupWebSocket(gameID: string, myPlayerIndex: number | null) {
 								passButton.enabled = false;
 								specialButton.enabled = false;
 								gamePage.classList.add('gameEnded');
+								timeLabel.hide();
 								showResult();
 							} else {
 								canPlay = myPlayerIndex != null;
 								board.autoHighlight = canPlay;
 								setupControlsForPlay();
+								timeLabel.faded = !canPlay;
+								timeLabel.paused = false;
+								if (payload.data.game.turnTimeLeft)
+									timeLabel.show();
 							}
 						})();
 						break;

@@ -6,4 +6,5 @@ public struct ReplayTurn {
 	public int Rotation;
 	public bool IsPass;
 	public bool IsSpecialAttack;
+	public bool IsTimeout;
 }

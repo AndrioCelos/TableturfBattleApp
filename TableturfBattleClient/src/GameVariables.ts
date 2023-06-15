@@ -10,6 +10,8 @@ let currentGame: {
 	/** The user's player data, or null if they are spectating. */
 	me: PlayerData | null,
 	turnNumber: number,
+	turnTimeLimit: number | null,
+	turnTimeLeft: number | null,
 	/** The WebSocket used for receiving game events, or null if not yet connected. */
 	webSocket: WebSocket | null
 } | null = null;

@@ -33,13 +33,7 @@
 					<button type="submit" id="preGameImplicitSubmitButton" tabindex="-1"></button>
 					<p>
 						<button type="submit" id="newGameButton">Create a room</button>
-						<label for="maxPlayersBox">
-							<select id="maxPlayersBox">
-								<option value="2">2 players</option>
-								<option value="3">3 players</option>
-								<option value="4">4 players</option>
-							</select>
-						</label>
+						<button type="button" id="newGameSetupButton">More options</button>
 					</p>
 					<p>
 						<label for="gameIDBox">Enter a game link or ID to join a game:<br/>
@@ -74,6 +68,7 @@
 				<p>Other players can join using a link to this page.<br/>
 					<button type="button" id="shareLinkButton">Share link</button><button type="button" id="showQrCodeButton">Show QR code</button></p>
 				<ul id="playerList"></ul>
+				<label for="lobbyTimeLimitBox">Turn time limit: <input type="text" id="lobbyTimeLimitBox" placeholder="None" readonly/><span id="lobbyTimeLimitUnit"> seconds</span></label>
 				<div id="lobbySelectedStageSection" hidden>
 					<h3>Stage</h3>
 				</div>
@@ -237,9 +232,19 @@
 			</div>
 			<div id="testCardListBackdrop" hidden></div>
 
+			<div id="timeSection">
 			<div id="turnNumberContainer" hidden>
 				<p>Turns left</p>
 				<div id="turnNumberLabel">12</div>
+				</div>
+				<div id="timeContainer">
+					<div id="timeContainerContent">
+						<svg viewBox="0 0 100 100">
+							<path fill-rule="evenodd" d="M 50,0 a 50 50 360 1 1 0,100 a 50 50 360 1 1 0,-100 z M 40,10 h 20 v 30 h 30 v 20 h -50 z"/>
+						</svg>
+						<div id="timeLabel">69</div>
+					</div>
+				</div>
 			</div>
 			<div id="scoreSection">
 				<div class="pointsContainer" data-index="1"><span class="points">69</span><span class="pointsToContainer">&rarrhk; <span class="pointsTo">60</span></span><span class="pointsDelta">+1</span></div>
@@ -348,6 +353,33 @@
 			<form id="testStageSelectionForm" method="dialog">
 				<div id="testStageSelectionList"></div>
 				<button type="submit">Cancel</button>
+			</form>
+		</dialog>
+		<dialog id="gameSetupDialog">
+			<form id="gameSetupForm" method="dialog">
+				<div id="preGameDefaultSection">
+					<p>
+						<label for="maxPlayersBox">
+							Player limit:
+							<select id="maxPlayersBox">
+								<option value="2">2 players</option>
+								<option value="3">3 players</option>
+								<option value="4">4 players</option>
+							</select>
+						</label>
+					</p>
+					<p>
+						<label for="turnTimeLimitBox">
+							Turn time limit:
+							<input type="number" id="turnTimeLimitBox" min="10" max="120" value="60" step="10" placeholder="None"/>
+							<span id="turnTimeLimitUnit">seconds</span>
+						</label>
+					</p>
+					<p>
+						<button type="submit" id="gameSetupSubmitButton">Create room</button>
+						<button type="submit">Back</button>
+					</p>
+				</div>
 			</form>
 		</dialog>
 		<dialog id="errorDialog">

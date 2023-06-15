@@ -16,14 +16,17 @@ public class Move {
 	public int Rotation { get; }
 	[JsonProperty("isSpecialAttack")]
 	public bool IsSpecialAttack { get; }
+	[JsonProperty("isTimeout")]
+	public bool IsTimeout { get; }
 
-	public Move(Card card, bool isPass, int x, int y, int rotation, bool isSpecialAttack) {
+	public Move(Card card, bool isPass, int x, int y, int rotation, bool isSpecialAttack, bool isTimeout) {
 		this.Card = card ?? throw new ArgumentNullException(nameof(card));
 		this.IsPass = isPass;
 		this.X = x;
 		this.Y = y;
 		this.Rotation = rotation;
 		this.IsSpecialAttack = isSpecialAttack;
+		this.IsTimeout = isTimeout;
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Never)]

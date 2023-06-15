@@ -45,6 +45,8 @@ public class Player {
 	[JsonIgnore]
 	internal Move? Move;
 	[JsonIgnore]
+	internal Move? ProvisionalMove;
+	[JsonIgnore]
 	internal int[]? initialDrawOrder;
 	[JsonIgnore]
 	internal int[]? drawOrder;
@@ -55,6 +57,11 @@ public class Player {
 		this.game = game ?? throw new ArgumentNullException(nameof(game));
 		this.Name = name ?? throw new ArgumentNullException(nameof(name));
 		this.Token = token;
+	}
+
+	public void ClearMoves() {
+		this.Move = null;
+		this.ProvisionalMove = null;
 	}
 
 	[MemberNotNull(nameof(drawOrder))]

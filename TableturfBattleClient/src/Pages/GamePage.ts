@@ -1,8 +1,9 @@
-/// <reference path="../CheckButton.ts"/>
+/// <reference path="../TimeLabel.ts"/>
 
 const gamePage = document.getElementById('gamePage')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
+const timeLabel = new TimeLabel(document.getElementById('timeLabel')!);
 const handButtons: CardButton[] = [ ];
 
 const passButton = CheckButton.fromId('passButton');
@@ -129,7 +130,7 @@ function initTest(stage: Stage) {
 	clear();
 	testMode = true;
 	gamePage.classList.add('deckTest');
-	currentGame = { id: 'test', maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
+	currentGame = { id: 'test', maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
 	board.startSpaces = startSpaces;
@@ -490,6 +491,7 @@ async function playInkAnimations(data: {
 	board.cardPlaying = null;
 	board.autoHighlight = false;
 	canPlay = false;
+	timeLabel.faded = true;
 	await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
 	for (const placement of placements) {
 		// Skip the delay when cards don't overlap.
@@ -618,7 +620,7 @@ function updateHand(playerData: PlayerData) {
 		const button = new CardButton('radio', card);
 		button.inputElement.name = 'handCard';
 		handButtons.push(button);
-		button.inputElement.addEventListener('input', e => {
+		button.inputElement.addEventListener('input', _ => {
 			if (button.checked) {
 				for (const button2 of handButtons) {
 					if (button2 != button)
@@ -627,6 +629,7 @@ function updateHand(playerData: PlayerData) {
 				if (passButton.checked) {
 					if (canPlay) {
 						canPlay = false;
+						timeLabel.faded = true;
 						// Send the play to the server.
 						let req = new XMLHttpRequest();
 						req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
@@ -786,7 +789,7 @@ board.onsubmit = (x, y) => {
 		return;
 	}
 	if (testMode) {
-		const move: PlayMove = { card: board.cardPlaying, isPass: false, x, y, rotation: board.cardRotation, isSpecialAttack: false };
+		const move: PlayMove = { card: board.cardPlaying, isPass: false, isTimeout: false, x, y, rotation: board.cardRotation, isSpecialAttack: false };
 		const r = board.makePlacements([ move ]);
 		testPlacements.push({ card: board.cardPlaying, placementResults: r });
 		board.refresh();
@@ -810,6 +813,7 @@ board.onsubmit = (x, y) => {
 		testUndoButton.disabled = false;
 	} else if (canPlay) {
 		canPlay = false;
+		timeLabel.faded = true;
 		// Send the play to the server.
 		let req = new XMLHttpRequest();
 		req.open('POST', `${config.apiBaseUrl}/games/${currentGame.id}/play`);
@@ -850,6 +854,46 @@ board.onhighlightchange = dScores => {
 	const scores = board.getScores();
 	for (let i = 0; i < playerBars.length; i++) {
 		playerBars[i].pointsTo = dScores && dScores[i] != 0 ? scores[i] + dScores[i] : null;
+	}
+};
+
+timeLabel.ontimeout = () => {
+	if (currentGame == null) return;
+	if (currentGame.turnNumber == 0) {
+		let req = new XMLHttpRequest();
+		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);
+		req.addEventListener('error', () => communicationError());
+		let data = new URLSearchParams();
+		data.append('clientToken', clientToken);
+		data.append('redraw', 'false');
+		data.append('isTimeout', 'true');
+		req.send(data.toString());
+		redrawModal.hidden = true;
+	} else {
+		// When time runs out, automatically discard the largest card in the player's hand.
+		let button = handButtons[0];
+		for (let i = 1; i < handButtons.length; i++) {
+			if (handButtons[i].card.size > button.card.size)
+				button = handButtons[i];
+		}
+		for (const el of handButtons) {
+			el.enabled = false;
+			el.checked = false;
+		}
+		button.checked = true;
+		canPlay = false;
+		// Send the play to the server.
+		let req = new XMLHttpRequest();
+		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
+		req.addEventListener('error', () => communicationError());
+		let data = new URLSearchParams();
+		data.append('clientToken', clientToken);
+		data.append('cardNumber', button.card.number.toString());
+		data.append('isPass', 'true');
+		data.append('isTimeout', 'true');
+		req.send(data.toString());
+
+		board.autoHighlight = false;
 	}
 };
 
