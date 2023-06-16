@@ -122,6 +122,7 @@ function initReplay() {
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
+	timeLabel.hide();
 	turnNumberLabel.setTurnNumber(null);
 	replayUpdateHand();
 }
