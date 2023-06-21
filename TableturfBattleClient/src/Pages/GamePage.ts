@@ -1,5 +1,3 @@
-/// <reference path="../TimeLabel.ts"/>
-
 const gamePage = document.getElementById('gamePage')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
@@ -91,6 +89,7 @@ function clear() {
 	}
 }
 
+/** Shows the game page for playing in a game. */
 function initGame() {
 	clear();
 	gameControls.hidden = false;
@@ -100,6 +99,7 @@ function initGame() {
 	showPage('game');
 }
 
+/** Shows the game page for spectating a game. */
 function initSpectator() {
 	clear();
 	gameControls.hidden = false;
@@ -109,6 +109,7 @@ function initSpectator() {
 	showPage('game');
 }
 
+/** Shows the game page for viewing a replay. */
 function initReplay() {
 	clear();
 	gamePage.classList.add('replay');
@@ -127,6 +128,7 @@ function initReplay() {
 	replayUpdateHand();
 }
 
+/** Shows the game page for deck editor testing. */
 function initTest(stage: Stage) {
 	clear();
 	testMode = true;
@@ -148,6 +150,7 @@ function initTest(stage: Stage) {
 	gameButtonsContainer.hidden = false;
 	testControls.hidden = false;
 	clearPlayContainers();
+	timeLabel.hide();
 	turnNumberLabel.setTurnNumber(null);
 	showPage('game');
 
@@ -274,6 +277,7 @@ replayPreviousButton.addEventListener('click', _ => {
 	replayUpdateHand();
 });
 
+/** Undoes the last turn of the current replay, returning the view to the game state before that turn. */
 function undoTurn(turn: PlacementResults) {
 	for (const p of turn.specialSpacesActivated) {
 		const space = board.grid[p.x][p.y];
@@ -334,6 +338,7 @@ function addTestDeckCard(card: Card) {
 				if (button2 != button)
 					button2.element.classList.remove('checked');
 			}
+			board.autoHighlight = true;
 			board.cardPlaying = card;
 			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
 				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
@@ -356,6 +361,7 @@ function addTestCard(card: Card) {
 				if (button2 != button)
 					button2.element.classList.remove('checked');
 			}
+			board.autoHighlight = true;
 			board.cardPlaying = card;
 			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
 				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
@@ -413,6 +419,7 @@ document.getElementById('testAllCardsMobileButton')!.addEventListener('click', _
 	testCardListBackdrop.hidden = false;
 });
 
+/** Updates the game view with received player data. */
 function loadPlayers(players: Player[]) {
 	gamePage.dataset.players = players.length.toString();
 	const scores = board.getScores();
@@ -442,6 +449,7 @@ function updateStats(playerIndex: number, scores: number[]) {
 	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
 }
 
+/** Shows the ready indication for the specified player. */
 function showReady(playerIndex: number) {
 	const el = document.createElement('div');
 	el.className = 'cardBack';
@@ -455,14 +463,13 @@ function clearPlayContainers() {
 	}
 }
 
-function setupControlsForPlay() {
+/** Clears the game page controls for a new turn. */
+function resetPlayControls() {
 	passButton.checked = false;
 	specialButton.checked = false;
 	board.specialAttack = false;
 	board.cardPlaying = null;
 	if (canPlay && currentGame?.me?.hand != null) {
-		passButton.enabled = true;
-
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
 			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
@@ -470,16 +477,29 @@ function setupControlsForPlay() {
 			handButtons[i].enabled = canPlayCard[i];
 		}
 
+		passButton.enabled = true;
 		specialButton.enabled = canPlayCardAsSpecialAttack.includes(true);
 		board.autoHighlight = true;
+		focusFirstEnabledHandCard();
 	} else {
-		for (const button of handButtons) {
-			button.enabled = false;
+		lockGamePage();
+		if (currentGame?.me?.move) {
+			for (const button of handButtons)
+				button.checked = button.card.number == currentGame.me.move.card.number;
+			passButton.checked = currentGame.me.move.isPass;
+			specialButton.checked = (currentGame.me.move as PlayMove).isSpecialAttack;
 		}
+	}
+}
+
+/** Disables controls on the game page after a play is submitted. */
+function lockGamePage() {
+	canPlay = false;
+	board.autoHighlight = false;
+	for (const el of handButtons) el.enabled = false;
 		passButton.enabled = false;
 		specialButton.enabled = false;
 	}
-}
 
 async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
@@ -596,7 +616,8 @@ function populateShowDeck(deck: Card[]) {
 	}
 }
 
-function updateHand(playerData: PlayerData) {
+/** Handles an update to the player's hand and/or deck during a game. */
+function updateHandAndDeck(playerData: PlayerData) {
 	for (const button of handButtons) {
 		handContainer.removeChild(button.element);
 	}
@@ -629,19 +650,9 @@ function updateHand(playerData: PlayerData) {
 				}
 				if (passButton.checked) {
 					if (canPlay) {
-						canPlay = false;
 						timeLabel.faded = true;
-						// Send the play to the server.
-						let req = new XMLHttpRequest();
-						req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
-						req.addEventListener('error', () => communicationError());
-						let data = new URLSearchParams();
-						data.append('clientToken', clientToken);
-						data.append('cardNumber', card.number.toString());
-						data.append('isPass', 'true');
-						req.send(data.toString());
-
-						board.autoHighlight = false;
+						lockGamePage();
+						sendPlay({ clientToken, cardNumber: card.number.toString(), isPass: 'true' });
 					}
 				} else {
 					board.cardPlaying = card;
@@ -683,6 +694,7 @@ function updateHand(playerData: PlayerData) {
 	}
 }
 
+/** Handles an update to the player's hand and/or deck during a replay. */
 function replayUpdateHand() {
 	if (currentGame == null || currentReplay == null) return;
 
@@ -781,6 +793,25 @@ function specialButton_input() {
 }
 specialButton.input.addEventListener('input', specialButton_input);
 
+function sendPlay(data: { clientToken: string, [k: string]: string }) {
+	if (!currentGame) throw new Error('No game in progress.');
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame.id}/play`);
+	req.addEventListener('load', _ => {
+		if (req.status != 204) {
+			alert(`The server rejected the play. This is probably a bug.\n${req.responseText}`);
+			canPlay = true;
+			board.autoHighlight = true;
+			for (let i = 0; i < handButtons.length; i++) handButtons[i].enabled = passButton.checked || (specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i];
+			passButton.enabled = true;
+			specialButton.enabled = canPlayCardAsSpecialAttack.includes(true);
+			board.clearHighlight();
+		}
+	});
+	req.addEventListener('error', () => communicationError());
+	req.send(new URLSearchParams(data).toString());
+}
+
 board.onsubmit = (x, y) => {
 	if (board.cardPlaying == null || !currentGame?.me)
 		return;
@@ -813,29 +844,25 @@ board.onsubmit = (x, y) => {
 		board.cardPlaying = null;
 		testUndoButton.disabled = false;
 	} else if (canPlay) {
-		canPlay = false;
 		timeLabel.faded = true;
-		// Send the play to the server.
+		lockGamePage();
 		let req = new XMLHttpRequest();
 		req.open('POST', `${config.apiBaseUrl}/games/${currentGame.id}/play`);
-		req.addEventListener('load', e => {
+		req.addEventListener('load', _ => {
 			if (req.status != 204) {
 				alert(req.responseText);
 				board.clearHighlight();
 				board.autoHighlight = true;
 			}
 		});
-		req.addEventListener('error', () => communicationError());
-		let data = new URLSearchParams();
-		data.append('clientToken', clientToken);
-		data.append('cardNumber', board.cardPlaying.number.toString());
-		data.append('isSpecialAttack', specialButton.checked.toString());
-		data.append('x', board.highlightX.toString());
-		data.append('y', board.highlightY.toString());
-		data.append('r', board.cardRotation.toString());
-		req.send(data.toString());
-
-		board.autoHighlight = false;
+		sendPlay({
+			clientToken,
+			cardNumber: board.cardPlaying.number.toString(),
+			isSpecialAttack: specialButton.checked.toString(),
+			x: board.highlightX.toString(),
+			y: board.highlightY.toString(),
+			r: board.cardRotation.toString()
+		});
 	}
 };
 
@@ -846,6 +873,7 @@ board.oncancel = () => {
 		if (button.checked) {
 			button.checked = false;
 			button.inputElement.focus();
+			break;
 		}
 	}
 };
@@ -864,11 +892,7 @@ timeLabel.ontimeout = () => {
 		let req = new XMLHttpRequest();
 		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);
 		req.addEventListener('error', () => communicationError());
-		let data = new URLSearchParams();
-		data.append('clientToken', clientToken);
-		data.append('redraw', 'false');
-		data.append('isTimeout', 'true');
-		req.send(data.toString());
+		req.send(new URLSearchParams({ clientToken, redraw: 'false', isTimeout: 'true' }).toString());
 		redrawModal.hidden = true;
 	} else {
 		// When time runs out, automatically discard the largest card in the player's hand.
@@ -877,24 +901,10 @@ timeLabel.ontimeout = () => {
 			if (handButtons[i].card.size > button.card.size)
 				button = handButtons[i];
 		}
-		for (const el of handButtons) {
-			el.enabled = false;
-			el.checked = false;
-		}
+		for (const el of handButtons) el.checked = false;
 		button.checked = true;
-		canPlay = false;
-		// Send the play to the server.
-		let req = new XMLHttpRequest();
-		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/play`);
-		req.addEventListener('error', () => communicationError());
-		let data = new URLSearchParams();
-		data.append('clientToken', clientToken);
-		data.append('cardNumber', button.card.number.toString());
-		data.append('isPass', 'true');
-		data.append('isTimeout', 'true');
-		req.send(data.toString());
-
-		board.autoHighlight = false;
+		lockGamePage();
+		sendPlay({ clientToken, cardNumber: button.card.number.toString(), isPass: 'true', isTimeout: 'true' });
 	}
 };
 

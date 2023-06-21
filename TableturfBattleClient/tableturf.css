@@ -574,7 +574,7 @@ dialog::backdrop {
 :is(#playRow, #testControlsHeader) > label:hover { background: var(--player-ui-highlight-colour); }
 :is(#playRow, #testControlsHeader) > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
 :is(#playRow, #testControlsHeader) > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
-:is(#playRow, #testControlsHeader) > label.disabled { background: grey; }
+:is(#playRow, #testControlsHeader) > label.disabled:not(.checked) { background: grey; }
 
 #spectatorRow:not([hidden]) {
 	display: grid;

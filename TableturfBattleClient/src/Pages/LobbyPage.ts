@@ -1,6 +1,3 @@
-/// <reference path="../CardDatabase.ts"/>
-/// <reference path="../StageDatabase.ts"/>
-
 const stageButtons: StageButton[] = [ ];
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
@@ -26,6 +23,27 @@ let qrCode: QRCode | null;
 let lobbyShareData: ShareData | null;
 
 let selectedStageButton = null as StageButton | null;
+
+function lobbyInitStageDatabase(stages: Stage[]) {
+	const stageList = document.getElementById('stageList')!;
+	for (const stage of stages) {
+		const button = new StageButton(stage);
+		stageButtons.push(button);
+		button.inputElement.name = 'stage';
+		button.inputElement.addEventListener('input', () => {
+			if (button.inputElement.checked) {
+				stageRandomLabel.classList.remove('checked');
+				for (const button2 of stageButtons) {
+					if (button2 != button)
+						button2.element.classList.remove('checked');
+				}
+			}
+		});
+		button.setStartSpaces(2);
+		stageList.appendChild(button.element);
+	}
+	document.getElementById('stageListLoadingSection')!.hidden = true;
+}
 
 function initLobbyPage(url: string) {
 	stageSelectionFormSubmitButton.disabled = false;
@@ -198,28 +216,6 @@ deckSelectionForm.addEventListener('submit', e => {
 			input.disabled = true;
 	}
 });
-
-function initStageDatabase(stages: Stage[]) {
-	const stageList = document.getElementById('stageList')!;
-	for (const stage of stages) {
-		const button = new StageButton(stage);
-		stageButtons.push(button);
-		button.inputElement.name = 'stage';
-		button.inputElement.addEventListener('input', () => {
-			if (button.inputElement.checked) {
-				stageRandomLabel.classList.remove('checked');
-				for (const button2 of stageButtons) {
-					if (button2 != button)
-						button2.element.classList.remove('checked');
-				}
-			}
-		});
-		button.setStartSpaces(2);
-		stageList.appendChild(button.element);
-		addTestStage(stage);
-	}
-	document.getElementById('stageListLoadingSection')!.hidden = true;
-}
 
 stageRandomButton.addEventListener('input', () => {
 	if (stageRandomButton.checked) {

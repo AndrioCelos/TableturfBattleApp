@@ -1,5 +1,3 @@
-/// <reference path="../CardList.ts"/>
-
 const deckNameLabel2 = document.getElementById('deckName2')!;
 const deckEditSize = document.getElementById('deckEditSize')!;
 const deckCardListEdit = document.getElementById('deckCardListEdit')!;
@@ -16,6 +14,82 @@ const testStageSelectionDialog = document.getElementById('testStageSelectionDial
 const deckEditCardButtons: (CardButton | HTMLLabelElement)[] = [ ];
 
 let selectedDeckCardIndex: number | null = null;
+
+function deckEditInitCardDatabase(cards: Card[]) {
+	for (const card of cards) {
+		const button = new CardButton('radio', card);
+		button.inputElement.name = 'deckEditorCardList';
+		cardList.add(button);
+		button.inputElement.addEventListener('input', () => {
+			if (button.inputElement.checked) {
+				for (const button2 of cardList.cardButtons) {
+					if (button2 != button)
+						button2.checked = false;
+				}
+
+				if (selectedDeckCardIndex == null) return;
+				const oldButton = deckEditCardButtons[selectedDeckCardIndex];
+
+				const button3 = createDeckEditCardButton(selectedDeckCardIndex, card.number);
+				button3.checked = true;
+
+				const oldElement = (oldButton as CardButton).element ?? (oldButton as Element);
+				deckCardListEdit.insertBefore(button3.element, oldElement);
+				deckCardListEdit.removeChild(oldElement);
+
+				deckEditCardButtons[selectedDeckCardIndex] = button3;
+				deckEditUpdateSize();
+
+				cardList.listElement.parentElement!.classList.remove('selecting');
+				if (!deckModified) {
+					deckModified = true;
+					window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
+				}
+			}
+		});
+		addTestCard(card);
+	}
+}
+
+function deckEditInitStageDatabase(stages: Stage[]) {
+	for (const stage of stages) {
+		const button = new StageButton(stage);
+		testStageButtons.push(button);
+		button.inputElement.name = 'stage';
+		button.inputElement.addEventListener('input', () => {
+			if (button.inputElement.checked) {
+				stageRandomLabel.classList.remove('checked');
+				for (const button2 of testStageButtons) {
+					if (button2 != button)
+						button2.element.classList.remove('checked');
+				}
+
+				clearChildren(testDeckList);
+				testDeckCardButtons.splice(0);
+
+				if (editingDeck) {
+					for (const el of deckEditCardButtons) {
+						const card = (el as CardButton).card;
+						if (card) {
+							addTestDeckCard(card);
+						}
+					}
+				} else if (selectedDeck) {
+					for (const cardNumber of selectedDeck.cards) {
+						if (cardNumber > 0 && cardNumber <= cardDatabase.cards!.length) {
+							addTestDeckCard(cardDatabase.get(cardNumber));
+						}
+					}
+				}
+
+				testStageSelectionDialog.close();
+				initTest(stage);
+			}
+		});
+		button.setStartSpaces(2);
+		testStageSelectionList.appendChild(button.element);
+	}
+}
 
 function editDeck() {
 	if (selectedDeck == null) return;
@@ -124,42 +198,6 @@ function deckEditUpdateSize() {
 	deckEditSize.innerText = size.toString();
 }
 
-function initCardDatabase(cards: Card[]) {
-	for (const card of cards) {
-		const button = new CardButton('radio', card);
-		button.inputElement.name = 'deckEditorCardList';
-		cardList.add(button);
-		button.inputElement.addEventListener('input', () => {
-			if (button.inputElement.checked) {
-				for (const button2 of cardList.cardButtons) {
-					if (button2 != button)
-						button2.checked = false;
-				}
-
-				if (selectedDeckCardIndex == null) return;
-				const oldButton = deckEditCardButtons[selectedDeckCardIndex];
-
-				const button3 = createDeckEditCardButton(selectedDeckCardIndex, card.number);
-				button3.checked = true;
-
-				const oldElement = (oldButton as CardButton).element ?? (oldButton as Element);
-				deckCardListEdit.insertBefore(button3.element, oldElement);
-				deckCardListEdit.removeChild(oldElement);
-
-				deckEditCardButtons[selectedDeckCardIndex] = button3;
-				deckEditUpdateSize();
-
-				cardList.listElement.parentElement!.classList.remove('selecting');
-				if (!deckModified) {
-					deckModified = true;
-					window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
-				}
-			}
-		});
-		addTestCard(card);
-	}
-}
-
 deckCardListBackButton.addEventListener('click', e => {
 	e.preventDefault();
 	for (const o of deckEditCardButtons) {
@@ -184,44 +222,6 @@ function stopEditingDeck() {
 function onBeforeUnload_deckEditor(e: BeforeUnloadEvent) {
 	e.preventDefault();
 	return 'You have unsaved changes to your deck that will be lost.';
-}
-
-function addTestStage(stage: Stage) {
-	const button = new StageButton(stage);
-	testStageButtons.push(button);
-	button.inputElement.name = 'stage';
-	button.inputElement.addEventListener('input', () => {
-		if (button.inputElement.checked) {
-			stageRandomLabel.classList.remove('checked');
-			for (const button2 of testStageButtons) {
-				if (button2 != button)
-					button2.element.classList.remove('checked');
-			}
-
-			clearChildren(testDeckList);
-			testDeckCardButtons.splice(0);
-
-			if (editingDeck) {
-				for (const el of deckEditCardButtons) {
-					const card = (el as CardButton).card;
-					if (card) {
-						addTestDeckCard(card);
-					}
-				}
-			} else if (selectedDeck) {
-				for (const cardNumber of selectedDeck.cards) {
-					if (cardNumber > 0 && cardNumber <= cardDatabase.cards!.length) {
-						addTestDeckCard(cardDatabase.get(cardNumber));
-					}
-				}
-			}
-
-			testStageSelectionDialog.close();
-			initTest(stage);
-		}
-	});
-	button.setStartSpaces(2);
-	testStageSelectionList.appendChild(button.element);
 }
 
 deckTestButton.addEventListener('click', _ => {
