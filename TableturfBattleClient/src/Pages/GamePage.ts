@@ -473,7 +473,7 @@ function resetPlayControls() {
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
 			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
-				&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
+			&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
 			handButtons[i].enabled = canPlayCard[i];
 		}
 
@@ -488,7 +488,7 @@ function resetPlayControls() {
 				button.checked = button.card.number == currentGame.me.move.card.number;
 			passButton.checked = currentGame.me.move.isPass;
 			specialButton.checked = (currentGame.me.move as PlayMove).isSpecialAttack;
-		}
+ 		}
 	}
 }
 
@@ -497,9 +497,9 @@ function lockGamePage() {
 	canPlay = false;
 	board.autoHighlight = false;
 	for (const el of handButtons) el.enabled = false;
-		passButton.enabled = false;
-		specialButton.enabled = false;
-	}
+	passButton.enabled = false;
+	specialButton.enabled = false;
+}
 
 async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
@@ -1009,3 +1009,101 @@ function leaveButton_click(e: MouseEvent) {
 }
 
 document.getElementById('leaveButton')!.addEventListener('click', leaveButton_click);
+
+const colBoxes = [
+	[
+		[ document.getElementById("colH0I") as HTMLInputElement, document.getElementById("colS0I") as HTMLInputElement, document.getElementById("colL0I") as HTMLInputElement, document.getElementById("colRGB0I") as HTMLInputElement ],
+		[ document.getElementById("colH0S") as HTMLInputElement, document.getElementById("colS0S") as HTMLInputElement, document.getElementById("colL0S") as HTMLInputElement, document.getElementById("colRGB0S") as HTMLInputElement ],
+		[ document.getElementById("colH0A") as HTMLInputElement, document.getElementById("colS0A") as HTMLInputElement, document.getElementById("colL0A") as HTMLInputElement, document.getElementById("colRGB0A") as HTMLInputElement ]
+	],
+	[
+		[ document.getElementById("colH1I") as HTMLInputElement, document.getElementById("colS1I") as HTMLInputElement, document.getElementById("colL1I") as HTMLInputElement, document.getElementById("colRGB1I") as HTMLInputElement ],
+		[ document.getElementById("colH1S") as HTMLInputElement, document.getElementById("colS1S") as HTMLInputElement, document.getElementById("colL1S") as HTMLInputElement, document.getElementById("colRGB1S") as HTMLInputElement ],
+		[ document.getElementById("colH1A") as HTMLInputElement, document.getElementById("colS1A") as HTMLInputElement, document.getElementById("colL1A") as HTMLInputElement, document.getElementById("colRGB1A") as HTMLInputElement ]
+	],
+	[
+		[ document.getElementById("colH2I") as HTMLInputElement, document.getElementById("colS2I") as HTMLInputElement, document.getElementById("colL2I") as HTMLInputElement, document.getElementById("colRGB2I") as HTMLInputElement ],
+		[ document.getElementById("colH2S") as HTMLInputElement, document.getElementById("colS2S") as HTMLInputElement, document.getElementById("colL2S") as HTMLInputElement, document.getElementById("colRGB2S") as HTMLInputElement ],
+		[ document.getElementById("colH2A") as HTMLInputElement, document.getElementById("colS2A") as HTMLInputElement, document.getElementById("colL2A") as HTMLInputElement, document.getElementById("colRGB2A") as HTMLInputElement ]
+	],
+	[
+		[ document.getElementById("colH3I") as HTMLInputElement, document.getElementById("colS3I") as HTMLInputElement, document.getElementById("colL3I") as HTMLInputElement, document.getElementById("colRGB3I") as HTMLInputElement ],
+		[ document.getElementById("colH3S") as HTMLInputElement, document.getElementById("colS3S") as HTMLInputElement, document.getElementById("colL3S") as HTMLInputElement, document.getElementById("colRGB3S") as HTMLInputElement ],
+		[ document.getElementById("colH3A") as HTMLInputElement, document.getElementById("colS3A") as HTMLInputElement, document.getElementById("colL3A") as HTMLInputElement, document.getElementById("colRGB3A") as HTMLInputElement ]
+	]
+];
+function colHSL_change(e: Event) {
+	var p = parseInt((e.target as HTMLInputElement).dataset.player!);
+	var c = parseInt((e.target as HTMLInputElement).dataset.index!);
+	updateRGB(p, c);
+}
+function colRGB_change(e: Event) {
+	var p = parseInt((e.target as HTMLInputElement).dataset.player!);
+	var c = parseInt((e.target as HTMLInputElement).dataset.index!);
+	updateHSL(p, c);
+}
+for (const a of colBoxes) {
+	for (const a2 of a) {
+		a2[0].addEventListener('change', colHSL_change);
+		a2[1].addEventListener('change', colHSL_change);
+		a2[2].addEventListener('change', colHSL_change);
+		a2[3].addEventListener('change', colRGB_change);
+	}
+}
+for (let p = 0; p < 4; p++) {
+	for (let i = 0; i < 3; i++) {
+		updateHSL(p, i);
+	}
+}
+function updateHSL(playerIndex: number, colourIndex: number) {
+	let colourStr = colBoxes[playerIndex][colourIndex][3].value;
+	if (colourStr.startsWith('#')) colourStr = colourStr.substring(1);
+	if (colourStr.length == 8) colourStr = colourStr.substring(2);
+	const colour = { r: parseInt(colourStr.substring(0, 2), 16), g: parseInt(colourStr.substring(2, 4), 16), b: parseInt(colourStr.substring(4, 6), 16) };
+	setColour(playerIndex, colourIndex, colour);
+	const max = Math.max(colour.r, colour.g, colour.b);  // × 1/255
+	const min = Math.min(colour.r, colour.g, colour.b);  // × 1/255
+	const c = max - min;  // × 1/255
+	const l = Math.round((max + min) * 50 / 255);  // %
+	const h = max == min ? 0
+		: max == colour.r ? (colour.b > colour.g ? 360 : 0) + 60 * (colour.g - colour.b) / c
+		: max == colour.g ? 120 + 60 * (colour.b - colour.r) / c
+		: 240 + 60 * (colour.r - colour.g) / c;
+	const s = max <= 0 || min >= 255
+		? 0
+		: Math.round(c / (255 - Math.abs(2 * max - c - 255)) * 100);
+	colBoxes[playerIndex][colourIndex][0].value = Math.round(h).toString();
+	colBoxes[playerIndex][colourIndex][1].value = s.toString();
+	colBoxes[playerIndex][colourIndex][2].value = l.toString();
+}
+function updateRGB(playerIndex: number, colourIndex: number) {
+	const h = (parseInt(colBoxes[playerIndex][colourIndex][0].value) % 360 + 360) % 360;  // degrees
+	const s = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][1].value)));  // %
+	const l = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][2].value)));  // %
+	const c = (100 - Math.abs(2 * l - 100)) * s;  // × 1/10000
+	const x = c * (60 - Math.abs(h % 120 - 60));  // × 1/600000
+	const min = (l * 100 - c / 2) * 60;  // × 1/600000
+	const rgb1 =
+		h <  60 ? { r: c * 60, g: x, b: 0 } :
+		h < 120 ? { r: x, g: c * 60, b: 0 } :
+		h < 180 ? { r: 0, g: c * 60, b: x } :
+		h < 240 ? { r: 0, g: x, b: c * 60 } :
+		h < 300 ? { r: x, g: 0, b: c * 60 } :
+		{ r: c * 60, g: 0, b: x };  // × 1/600000
+	const rgb = { r: Math.round((rgb1.r + min) * 255 / 600000), g: Math.round((rgb1.g + min) * 255 / 600000), b: Math.round((rgb1.b + min) * 255 / 600000) };
+	colBoxes[playerIndex][colourIndex][3].value = `#${rgb.r.toString(16).padStart(2, '0')}${rgb.g.toString(16).padStart(2, '0')}${rgb.b.toString(16).padStart(2, '0')}`;
+	setColour(playerIndex, colourIndex, rgb);
+}
+function setColour(playerIndex: number, colourIndex: number, colour: Colour) {
+	if (!currentGame || playerIndex >= currentGame.players.length) return;
+	if (colourIndex == 0) {
+		currentGame.players[playerIndex].colour = colour;
+		document.body.style.setProperty(`--primary-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+	} else if (colourIndex == 1) {
+		currentGame.players[playerIndex].specialColour = colour;
+		document.body.style.setProperty(`--special-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+	} else {
+		currentGame.players[playerIndex].specialAccentColour = colour;
+		document.body.style.setProperty(`--special-accent-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+	}
+}

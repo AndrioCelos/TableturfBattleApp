@@ -585,6 +585,15 @@ label[for="flipBox"] {
 	grid-column: 4;
 }
 
+#debugColour input {
+	width: 6ch;
+	text-align: right;
+	font-family: monospace;
+}
+#debugColour input[type="text"] {
+	width: 10ch;
+}
+
 #showDeckContainer {
 	grid-column: 1 / span 3;
 	grid-row: 2 / -2;

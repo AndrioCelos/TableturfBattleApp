@@ -143,6 +143,104 @@
 			</div>
 
 			<div id="gameControls">
+				<div id="debugColour" style="display: none">
+					<table>
+						<tr>
+							<th>Colour</th>
+							<th>H</th>
+							<th>S</th>
+							<th>L</th>
+							<th>RGB</th>
+						</tr>
+						<tr>
+							<td>1i</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="0" id="colH0I" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="0" id="colS0I" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="0" id="colL0I" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="0" data-index="0" id="colRGB0I" value="#ecf901"/></td>
+						</tr>
+						<tr>
+							<td>1s</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="1" id="colH0S" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="1" id="colS0S" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="1" id="colL0S" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="0" data-index="1" id="colRGB0S" value="#fa9e00"/></td>
+						</tr>
+						<tr>
+							<td>1a</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="2" id="colH0A" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="2" id="colS0A" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="0" data-index="2" id="colL0A" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="0" data-index="2" id="colRGB0A" value="#f9f91f"/></td>
+						</tr>
+
+						<tr>
+							<td>2i</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="0" id="colH1I" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="0" id="colS1I" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="0" id="colL1I" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="1" data-index="0" id="colRGB1I" value="#4a5cfc"/></td>
+						</tr>
+						<tr>
+							<td>2s</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="1" id="colH1S" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="1" id="colS1S" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="1" id="colL1S" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="1" data-index="1" id="colRGB1S" value="#01edfe"/></td>
+						</tr>
+						<tr>
+							<td>2a</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="2" id="colH1A" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="2" id="colS1A" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="1" data-index="2" id="colL1A" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="1" data-index="2" id="colRGB1A" value="#d5e1e1"/></td>
+						</tr>
+
+						<tr>
+							<td>3i</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="0" id="colH2I" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="0" id="colS2I" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="0" id="colL2I" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="2" data-index="0" id="colRGB2I" value="#f906e0"/></td>
+						</tr>
+						<tr>
+							<td>3s</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="1" id="colH2S" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="1" id="colS2S" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="1" id="colL2S" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="2" data-index="1" id="colRGB2S" value="#8006f9"/></td>
+						</tr>
+						<tr>
+							<td>3a</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="2" id="colH2A" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="2" id="colS2A" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="2" data-index="2" id="colL2A" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="2" data-index="2" id="colRGB2A" value="#ebb4fd"/></td>
+						</tr>
+
+						<tr>
+							<td>4i</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="0" id="colH3I" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="0" id="colS3I" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="0" id="colL3I" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="3" data-index="0" id="colRGB3I" value="#06f994"/></td>
+						</tr>
+						<tr>
+							<td>4s</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="1" id="colH3S" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="1" id="colS3S" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="1" id="colL3S" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="3" data-index="1" id="colRGB3S" value="#06f906"/></td>
+						</tr>
+						<tr>
+							<td>4a</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="2" id="colH3A" min="0" max="359"/></td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="2" id="colS3A" min="0" max="100"/>%</td>
+							<td><input type="number" autocomplete="off" data-player="3" data-index="2" id="colL3A" min="0" max="100"/>%</td>
+							<td><input type="text"   autocomplete="off" data-player="3" data-index="2" id="colRGB3A" value="#b4fdc7"/></td>
+						</tr>
+					</table>
+				</div>
 				<div id="handContainer"></div>
 
 				<div id="playRow">
