@@ -541,6 +541,7 @@ function processUrl() {
 		if (location.pathname.endsWith('/help') || location.hash == '#help')
 			helpDialog.showModal();
 		else {
+			helpDialog.close();
 			const m = /[/#](?:(game)|replay)\/([A-Za-z0-9+/=\-_]+)$/.exec(location.toString());
 			if (m) {
 				if (m[1])
@@ -650,10 +651,12 @@ Promise.all([ cardDatabase.loadAsync().then(initCardDatabase), stageDatabase.loa
 		setLoadingMessage(null);
 		if (initialiseCallback)
 			initialiseCallback();
-	}, () => {
-		preGameLoadingSection.hidden = true;
-		communicationError('Unable to load game data from the server.', false);
-	});
+	}, initError);
+
+function initError() {
+	preGameLoadingSection.hidden = true;
+	communicationError('Unable to load game data from the server.', false);
+}
 
 showPage('preGame');
-processUrl();
+window.addEventListener('load', processUrl);
