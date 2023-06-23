@@ -628,6 +628,12 @@ function clearChildren(el: Element) {
 	while (el2 = el.firstChild)
 		el.removeChild(el2);
 }
+function resetAnimation(el: HTMLElement) {
+	el.style.animation = 'none';
+	el.offsetHeight;  // Trigger a reflow.
+	el.style.animation = '';
+}
+
 
 document.getElementById('noJSPage')!.innerText = 'Loading client...';
 

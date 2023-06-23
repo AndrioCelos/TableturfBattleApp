@@ -6,6 +6,7 @@ const handButtons: CardButton[] = [ ];
 
 const passButton = CheckButton.fromId('passButton');
 const specialButton = CheckButton.fromId('specialButton');
+const passHint = document.getElementById('passHint')!;
 const gameButtonsContainer = document.getElementById('gameButtonsContainer')!;
 const rotateLeftButton = document.getElementById('rotateLeftButton') as HTMLButtonElement;
 const rotateRightButton = document.getElementById('rotateRightButton') as HTMLButtonElement;
@@ -21,6 +22,9 @@ const replayNextButton = document.getElementById('replayNextButton')!;
 const replayPreviousButton = document.getElementById('replayPreviousButton')!;
 const flipButton = document.getElementById('flipButton') as HTMLButtonElement;
 let replayAnimationAbortController: AbortController | null = null;
+
+const playHint = document.getElementById('playHint')!;
+let playHintTimeout: number | null = null;
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
 let canShareReplay = false;
@@ -449,6 +453,30 @@ function updateStats(playerIndex: number, scores: number[]) {
 	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
 }
 
+function clearPlayHint() {
+	playHint.hidden = true;
+	if (playHintTimeout) {
+		clearTimeout(playHintTimeout);
+		playHintTimeout = null;
+	}
+}
+function showPlayHint(html: string) {
+	clearPlayHint();
+	playHint.innerHTML = html;
+	playHint.className = '';
+	playHint.hidden = false;
+}
+function showPlayHintError(html: string) {
+	playHint.className = !playHint.hidden && html == playHint.innerHTML ? 'playError repeated' : 'playError';
+	if (playHintTimeout) {
+		clearTimeout(playHintTimeout!);
+		resetAnimation(playHint);
+	}
+	playHint.innerHTML = html;
+	playHint.hidden = false;
+	playHintTimeout = setTimeout(() => playHint.hidden = true, 5000);
+}
+
 /** Shows the ready indication for the specified player. */
 function showReady(playerIndex: number) {
 	const el = document.createElement('div');
@@ -499,6 +527,8 @@ function lockGamePage() {
 	for (const el of handButtons) el.enabled = false;
 	passButton.enabled = false;
 	specialButton.enabled = false;
+	passHint.hidden = true;
+	clearPlayHint();
 }
 
 async function playInkAnimations(data: {
@@ -756,7 +786,9 @@ function redrawButton_click(e: MouseEvent) {
 
 function passButton_input() {
 	board.autoHighlight = !passButton.checked;
+	passHint.hidden = !passButton.checked;
 	if (passButton.checked) {
+		clearPlayHint();
 		specialButton.checked = false;
 		board.cardPlaying = null;
 		board.specialAttack = false;
@@ -776,6 +808,8 @@ passButton.input.addEventListener('input', passButton_input);
 function specialButton_input() {
 	board.specialAttack = specialButton.checked;
 	if (specialButton.checked) {
+		passHint.hidden = true;
+		showPlayHint('Unleash it next to <div class="playHintSpecial">&nbsp;</div>!');
 		passButton.checked = false;
 		board.autoHighlight = true;
 		for (let i = 0; i < 4; i++) {
@@ -784,6 +818,7 @@ function specialButton_input() {
 				handButtons[i].checked = false;
 		}
 	} else {
+		clearPlayHint();
 		for (let i = 0; i < 4; i++) {
 			handButtons[i].enabled = canPlayCard[i];
 			if (!canPlayCard[i])
@@ -817,7 +852,7 @@ board.onsubmit = (x, y) => {
 		return;
 	const message = board.checkMoveLegality(currentGame.me.playerIndex, board.cardPlaying, x, y, board.cardRotation, board.specialAttack);
 	if (message != null) {
-		alert(message);
+		showPlayHintError(message);
 		return;
 	}
 	if (testMode) {

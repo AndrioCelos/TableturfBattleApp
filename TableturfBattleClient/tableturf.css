@@ -353,14 +353,25 @@ dialog::backdrop {
 	row-gap: 4px;
 }
 
-.cardSpecialPoint {
+.cardSpecialPoint, .playHintSpecial {
 	display: inline-block;
 	color: transparent;
 	background: var(--player-special-colour);
 	width: 1ch;
 	height: 1ch;
+	vertical-align: middle;
+}
+.cardSpecialPoint {
 	margin-right: 0.3em;
 }
+.playHintSpecial {
+	width: 1.5ch;
+	height: 1.5ch;
+}
+.playHintSpecial:nth-of-type(1):not(:last-of-type) { background: var(--special-colour-1); }
+.playHintSpecial:nth-of-type(2) { background: var(--special-colour-2); }
+.playHintSpecial:nth-of-type(3) { background: var(--special-colour-3); }
+.playHintSpecial:nth-of-type(4) { background: var(--special-colour-4); }
 
 .card::before {
 	/* If it exists */
@@ -553,6 +564,14 @@ dialog::backdrop {
 	text-align: center;
 }
 
+#passHint:not([hidden]) {
+	position: absolute;
+	margin: 0 0 35em 1em;
+	padding: 0.5em 1em;
+	background: #80808080;
+	border-radius: 0.5em;
+}
+
 #playRow:not([hidden]) {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -706,7 +725,7 @@ label[for="flipBox"] {
 	bottom: 0;
 }
 
-.playContainer { text-align: center; }
+.playContainer { text-align: center; margin: 8em 0; }
 
 .playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
@@ -720,6 +739,40 @@ label[for="flipBox"] {
 
 .playContainer .card {
 	margin: 0;
+}
+
+#playHint {
+	grid-column: -3 / -1; grid-row: -2 / -1; align-self: end;
+	justify-self: end;
+	margin: 0 3em 1.5em 0;
+	font-size: larger;
+	padding: 0 0.5em;
+	background: #00000080;
+	border-radius: 0.5em;
+}
+#playHint.playError {
+	animation: 1s infinite playHintError;
+}
+#playHint.playError.repeated {
+	animation: 1s infinite playHintError, 0.5s linear 1 playHintShake;
+}
+@keyframes playHintError {
+	from { background: #ff0000ff; }
+	50% { background: #ff000080; }
+	to { background: #ff0000ff; }
+}
+@keyframes playHintShake {
+	0% { transform: translate(1px, 1px); }
+	10% { transform: translate(-1px, -2px); }
+	20% { transform: translate(-3px, 0px); }
+	30% { transform: translate(3px, 2px); }
+	40% { transform: translate(1px, -1px); }
+	50% { transform: translate(-1px, 2px); }
+	60% { transform: translate(-3px, 1px); }
+	70% { transform: translate(3px, 1px); }
+	80% { transform: translate(-1px, -1px); }
+	90% { transform: translate(1px, 2px); }
+	100% { transform: translate(0px, 0px); }
 }
 
 #testPlacementList {
@@ -1331,6 +1384,10 @@ label[for="flipBox"] {
 		min-height: 12em;
 	}
 
+	#passHint:not([hidden]) {
+		margin: 0;
+	}
+
 	#scoreSection:not([hidden]) {
 		grid-column: 1;
 		grid-row: 2;
@@ -1338,7 +1395,7 @@ label[for="flipBox"] {
 		grid-template-columns: 1fr;
 	}
 
-	#turnNumberContainer {
+	#timeSection {
 		grid-column: 1;
 		grid-row: 2;
 		margin: 0;
@@ -1402,6 +1459,12 @@ label[for="flipBox"] {
 		background: black;
 		z-index: 2;
 		margin-top: 5em;
+	}
+
+	#playHint {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		margin: 0 1em 0 0;
 	}
 
 	/* Deck editor - Mobile layout */

@@ -76,14 +76,8 @@ class TimeLabel {
 	private updateWarningState() {
 		if (!this.faded && this.timeLeft != null && this.timeLeft <= 10) {
 			this.contentElement.classList.add('warning');
-			this.resetAnimation();
+			resetAnimation(this.contentElement);
 		} else
 			this.contentElement.classList.remove('warning');
-	}
-
-	private resetAnimation() {
-		this.contentElement.style.animation = 'none';
-		this.contentElement.offsetHeight;  // Trigger a reflow.
-		this.contentElement.style.animation = '';
 	}
 }

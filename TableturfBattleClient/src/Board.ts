@@ -124,14 +124,14 @@ class Board {
 				var x2 = x + dx;
 				var y2 = y + dy;
 				if (x2 < 0 || x2 >= this.grid.length || y2 < 0 || y2 >= this.grid[x2].length)
-					return "It cannot overlap a wall or out of bounds.";  // Out of bounds.
+					return 'It cannot be over a wall.';  // Out of bounds.
 				const space = this.grid[x2][y2];
 				if (space == Space.Wall || space == Space.OutOfBounds)
-					return "It cannot overlap a wall or out of bounds.";
+					return 'It cannot be over a wall.';
 				if (space >= Space.SpecialInactive1)
-					return "It cannot overlap a special space."
+					return `It cannot be over${' <div class="playHintSpecial" aria-label="Special space">&nbsp;</div>'.repeat(Math.max(currentGame?.players?.length ?? 0, 2))}.`;
 				if (space != Space.Empty && !isSpecialAttack)
-					return "It cannot overlap existing ink without a special attack.";
+					return 'It cannot be over inked spaces.';
 				if (!isAnchored) {
 					// A normal play must be adjacent to ink of the player's colour.
 					// A special attack must be adjacent to a special space of theirs.
@@ -152,7 +152,7 @@ class Board {
 				}
 			}
 		}
-		return isAnchored ? null : (isSpecialAttack ? "It must be next to one of your special spaces." : "It must be next to your turf.");
+		return isAnchored ? null : (isSpecialAttack ? 'It\'s not next to <div class="playHintSpecial">&nbsp;</div>.' : 'It\'s not touching your colour of ink.');
 	}
 
 	refreshHighlight() {
