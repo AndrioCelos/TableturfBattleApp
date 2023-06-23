@@ -356,7 +356,7 @@ dialog::backdrop {
 .cardSpecialPoint, .playHintSpecial {
 	display: inline-block;
 	color: transparent;
-	background: var(--player-special-colour);
+	background: url('assets/SpecialOverlay.png') center/cover, var(--player-special-colour);
 	width: 1ch;
 	height: 1ch;
 	vertical-align: middle;
@@ -368,10 +368,10 @@ dialog::backdrop {
 	width: 1.5ch;
 	height: 1.5ch;
 }
-.playHintSpecial:nth-of-type(1):not(:last-of-type) { background: var(--special-colour-1); }
-.playHintSpecial:nth-of-type(2) { background: var(--special-colour-2); }
-.playHintSpecial:nth-of-type(3) { background: var(--special-colour-3); }
-.playHintSpecial:nth-of-type(4) { background: var(--special-colour-4); }
+.playHintSpecial:nth-of-type(1):not(:last-of-type) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1); }
+.playHintSpecial:nth-of-type(2) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
+.playHintSpecial:nth-of-type(3) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
+.playHintSpecial:nth-of-type(4) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
 
 .card::before {
 	/* If it exists */
@@ -1009,7 +1009,6 @@ label[for="flipBox"] {
 	right: 0;
 	bottom: 0;
 	opacity: 0.5;
-	z-index: -1;
 	background: radial-gradient(circle, var(--colour) 0%, var(--colour) 70%, rgba(0, 0, 0, 0) 70%);
 }
 
