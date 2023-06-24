@@ -1,19 +1,20 @@
-const stageButtons: StageButton[] = [ ];
+const stageButtons = new CheckButtonGroup<Stage>(document.getElementById('stageList')!);
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
 const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
 const stageSelectionFormLoadingSection = stageSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
 const stageSelectionFormSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
-const stageRandomLabel = document.getElementById('stageRandomLabel')!;
-const stageRandomButton = document.getElementById('stageRandomButton') as HTMLInputElement;
+const stageRandomButton = CheckButton.fromId('stageRandomButton');
 
 const deckSelectionForm = document.getElementById('deckSelectionForm') as HTMLFormElement;
 const deckSelectionFormLoadingSection = deckSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
 const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSection')!;
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
+const lobbyStageSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
-const lobbyDeckButtons: CheckButton[] = [ ];
+const lobbyDeckButtons = new CheckButtonGroup<Deck>(lobbyDeckList);
+const lobbyDeckSubmitButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 
 const lobbyTimeLimitBox = document.getElementById('lobbyTimeLimitBox') as HTMLInputElement;
 const lobbyTimeLimitUnit = document.getElementById('lobbyTimeLimitUnit')!;
@@ -22,25 +23,16 @@ const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElemen
 let qrCode: QRCode | null;
 let lobbyShareData: ShareData | null;
 
-let selectedStageButton = null as StageButton | null;
+let selectedStageIndicator = null as StageButton | null;
 
 function lobbyInitStageDatabase(stages: Stage[]) {
-	const stageList = document.getElementById('stageList')!;
 	for (const stage of stages) {
 		const button = new StageButton(stage);
-		stageButtons.push(button);
-		button.inputElement.name = 'stage';
-		button.inputElement.addEventListener('input', () => {
-			if (button.inputElement.checked) {
-				stageRandomLabel.classList.remove('checked');
-				for (const button2 of stageButtons) {
-					if (button2 != button)
-						button2.element.classList.remove('checked');
-				}
-			}
+		stageButtons.add(button, stage);
+		button.buttonElement.addEventListener('click', () => {
+			stageRandomButton.checked = false;
 		});
 		button.setStartSpaces(2);
-		stageList.appendChild(button.element);
 	}
 	document.getElementById('stageListLoadingSection')!.hidden = true;
 }
@@ -60,25 +52,9 @@ function initLobbyPage(url: string) {
 function showStageSelectionForm() {
 	lobbyStageSection.hidden = false;
 	stageSelectionFormLoadingSection.hidden = true;
-	for (const input of stageSelectionForm.elements) {
-		if (input instanceof HTMLButtonElement)
-			input.disabled = false;
-		else if (input instanceof HTMLInputElement)
-			input.checked = false;
-	}
 	stageRandomButton.checked = true;
-	stageRandomLabel.classList.add('checked');
-	for (const button of stageButtons)
-		button.element.classList.remove('checked');
-}
-
-function showDeckSelectionForm() {
-	lobbyStageSection.hidden = false;
-	stageSelectionFormLoadingSection.hidden = true;
-	for (const input of stageSelectionForm.elements) {
-		if (input instanceof HTMLButtonElement)
-			input.disabled = false;
-	}
+	stageButtons.deselect();
+	lobbyStageSubmitButton.disabled = false;
 }
 
 shareLinkButton.addEventListener('click', () => {
@@ -136,37 +112,21 @@ function initDeckSelection() {
 
 	selectedDeck = null;
 	if (currentGame?.me) {
-		clearChildren(lobbyDeckList);
-		lobbyDeckButtons.splice(0);
+		lobbyDeckButtons.clear();
 
 		for (let i = 0; i < decks.length; i++) {
 			const deck = decks[i];
 
-			const label = document.createElement('label');
+			const buttonElement = document.createElement('button');
+			buttonElement.type = 'button';
+			buttonElement.innerText = deck.name;
+			const button = new CheckButton(buttonElement);
+			lobbyDeckButtons.add(button, deck);
 
-			const input = document.createElement('input');
-			input.name = 'gameSelectedDeck';
-			input.type = 'radio';
-			input.dataset.index = i.toString();
-			input.addEventListener('input', () => {
-				if (input.checked) {
-					for (const button of lobbyDeckButtons) {
-						if (button.input != input) button.checked = false;
-					}
-					selectedDeck = deck;
-					for (const input of deckSelectionForm.elements) {
-						if (input instanceof HTMLButtonElement)
-							input.disabled = false;
-					}
-				}
+			buttonElement.addEventListener('click', () => {
+				selectedDeck = deck;
+				lobbyDeckSubmitButton.disabled = false;
 			});
-			label.appendChild(input);
-
-			label.appendChild(document.createTextNode(deck.name));
-
-			lobbyDeckList.appendChild(label);
-			const button = new CheckButton(input, label);
-			lobbyDeckButtons.push(button);
 
 			if (!deck.isValid) {
 				button.enabled = false;
@@ -175,10 +135,7 @@ function initDeckSelection() {
 				button.checked = true;
 			}
 		}
-		for (const input of deckSelectionForm.elements) {
-			if (input instanceof HTMLButtonElement)
-				input.disabled = selectedDeck == null;
-		}
+		lobbyDeckSubmitButton.disabled = selectedDeck == null;
 		deckSelectionFormLoadingSection.hidden = true;
 		lobbyDeckSection.hidden = false;
 	} else {
@@ -196,10 +153,7 @@ deckSelectionForm.addEventListener('submit', e => {
 		if (req.status != 204) {
 			deckSelectionFormLoadingSection.hidden = true;
 			alert(req.responseText);
-			for (const input of deckSelectionForm.elements) {
-				if (input instanceof HTMLButtonElement)
-					input.disabled = false;
-			}
+			lobbyDeckSubmitButton.disabled = false;
 		}
 	});
 	req.addEventListener('error', () => communicationError());
@@ -211,18 +165,12 @@ deckSelectionForm.addEventListener('submit', e => {
 
 	localStorage.setItem('lastDeckName', selectedDeck.name);
 	deckSelectionFormLoadingSection.hidden = false;
-	for (const input of deckSelectionForm.elements) {
-		if (input instanceof HTMLButtonElement)
-			input.disabled = true;
-	}
+	lobbyDeckSubmitButton.disabled = true;
 });
 
-stageRandomButton.addEventListener('input', () => {
-	if (stageRandomButton.checked) {
-		stageRandomLabel.classList.add('checked');
-		for (const button of stageButtons)
-			button.element.classList.remove('checked');
-	}
+stageRandomButton.buttonElement.addEventListener('click', () => {
+	stageRandomButton.checked = true;
+	stageButtons.deselect();
 });
 
 stageSelectionForm.addEventListener('submit', e => {
@@ -233,23 +181,17 @@ stageSelectionForm.addEventListener('submit', e => {
 		if (req.status != 204) {
 			stageSelectionFormLoadingSection.hidden = true;
 			alert(req.responseText);
-			for (const input of stageSelectionForm.elements) {
-				if (input instanceof HTMLButtonElement)
-					input.disabled = false;
-			}
+			lobbyStageSubmitButton.disabled = false;
 		}
 	});
 	req.addEventListener('error', () => communicationError());
 	let data = new URLSearchParams();
-	const stageName = stageRandomButton.checked ? 'random' : stageButtons.find(b => b.checked)!.stage.name;
+	const stageName = stageRandomButton.checked ? 'random' : stageButtons.value!.name;
 	data.append('clientToken', clientToken);
 	data.append('stage', stageName);
 	req.send(data.toString());
 
 	localStorage.setItem('lastStage', stageName);
 	stageSelectionFormLoadingSection.hidden = false;
-	for (const input of stageSelectionForm.elements) {
-		if (input instanceof HTMLButtonElement)
-			input.disabled = true;
-	}
+	lobbyStageSubmitButton.disabled = true;
 });

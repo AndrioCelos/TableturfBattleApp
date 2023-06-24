@@ -125,14 +125,13 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		case GameState.Preparing:
 			showPage('lobby');
 			if (currentGame.me) setConfirmLeavingGame();
-			if (selectedStageButton)
-				lobbySelectedStageSection.removeChild(selectedStageButton.element);
-			selectedStageButton = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
-			selectedStageButton.element.id = 'selectedStageButton';
-			selectedStageButton.inputElement.disabled = true;
-			selectedStageButton.inputElement.hidden = true;
-			selectedStageButton.setStartSpaces(game.players.length);
-			lobbySelectedStageSection.appendChild(selectedStageButton.element);
+			if (selectedStageIndicator)
+				lobbySelectedStageSection.removeChild(selectedStageIndicator.buttonElement);
+			selectedStageIndicator = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
+			selectedStageIndicator.buttonElement.id = 'selectedStageButton';
+			selectedStageIndicator.buttonElement.disabled = true;
+			selectedStageIndicator.setStartSpaces(game.players.length);
+			lobbySelectedStageSection.appendChild(selectedStageIndicator.buttonElement);
 
 			lobbySelectedStageSection.hidden = false;
 			initDeckSelection();
@@ -260,8 +259,8 @@ function setupWebSocket(gameID: string) {
 						playerBars[i].visible = i < currentGame.maxPlayers;
 					}
 
-					for (const button of stageButtons)
-						button.setStartSpaces(currentGame.maxPlayers);
+					for (const button of stageButtons.buttons)
+						(button as StageButton).setStartSpaces(currentGame.maxPlayers);
 
 					onGameStateChange(payload.data, payload.playerData);
 
@@ -348,18 +347,18 @@ function setupWebSocket(gameID: string) {
 							player.passes = payload.data.game.players[i].passes;
 
 							const move = payload.data.moves[i];
-							const button = new CardButton('checkbox', move.card);
+							const button = new CardButton(move.card);
 							if (move.isSpecialAttack) {
 								anySpecialAttacks = true;
-								button.element.classList.add('specialAttack');
+								button.buttonElement.classList.add('specialAttack');
 							} else if (move.isPass) {
 								const el = document.createElement('div');
 								el.className = move.isTimeout ? 'passLabel timeout' : 'passLabel';
 								el.innerText = 'Pass';
-								button.element.appendChild(el);
+								button.buttonElement.appendChild(el);
 							}
-							button.inputElement.hidden = true;
-							playContainers[i].append(button.element);
+							button.buttonElement.disabled = false;
+							playContainers[i].append(button.buttonElement);
 						}
 						timeLabel.paused = true;
 						if (payload.data.game.turnTimeLeft)
@@ -621,7 +620,7 @@ function isInternetExplorer() {
 }
 
 if (isInternetExplorer()) {
-	alert("You seem to be using an unsupported browser. Some layout or features of this app may not work correctly.");
+	alert('You seem to be using an unsupported browser. Some layout or features of this app may not work correctly.');
 }
 
 function clearChildren(el: Element) {

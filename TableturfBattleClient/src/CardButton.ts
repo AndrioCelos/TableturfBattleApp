@@ -1,21 +1,19 @@
-class CardButton {
+/// <reference path="CheckButton.ts"/>
+
+class CardButton extends CheckButton {
 	private static idNumber = 0;
 
-	readonly element: HTMLLabelElement;
-	readonly inputElement: HTMLInputElement;
 	readonly card: Card;
-	readonly button: CheckButton;
 
-	constructor(type: 'checkbox' | 'radio', card: Card) {
+	constructor(card: Card) {
+		let button = document.createElement('button');
+		button.type = 'button';
+		button.classList.add('card');
+		button.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
+		button.dataset.cardNumber = card.number.toString();
+		super(button);
+
 		this.card = card;
-
-		let el = document.createElement('label');
-		this.element = el;
-		el.setAttribute('for', `card${CardButton.idNumber}`);
-		el.setAttribute('type', 'checkbox')
-		el.classList.add('card');
-		el.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
-		el.dataset.cardNumber = card.number.toString();
 
 		let size = 0;
 		let table = document.createElement('table');
@@ -38,20 +36,7 @@ class CardButton {
 
 		let row = document.createElement('div');
 		row.className = 'cardHeader';
-		el.appendChild(row);
-
-		let checkBox = document.createElement('input');
-		this.inputElement = checkBox;
-		checkBox.setAttribute('type', type)
-		checkBox.id = `card${CardButton.idNumber}`;
-		checkBox.dataset.number = card.number.toString();
-		checkBox.addEventListener('change', e => {
-			if (checkBox.checked)
-				el.classList.add('checked');
-			else
-				el.classList.remove('checked');
-		});
-		row.appendChild(checkBox);
+		button.appendChild(row);
 
 		let el2 = document.createElement('div');
 		el2.classList.add('cardNumber');
@@ -63,11 +48,11 @@ class CardButton {
 		el2.innerText = card.name;
 		row.appendChild(el2);
 
-		el.appendChild(table);
+		button.appendChild(table);
 
 		row = document.createElement('div');
 		row.className = 'cardFooter';
-		el.appendChild(row);
+		button.appendChild(row);
 
 
 		el2 = document.createElement('div');
@@ -86,14 +71,6 @@ class CardButton {
 			el2.appendChild(el3);
 		}
 
-		this.button = new CheckButton(checkBox, el);
-
 		CardButton.idNumber++;
 	}
-
-	get enabled() { return this.button.enabled; }
-	set enabled(value: boolean) { this.button.enabled = value; }
-
-	get checked() { return this.button.checked; }
-	set checked(value: boolean) { this.button.checked = value; }
 }

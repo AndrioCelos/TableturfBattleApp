@@ -1,32 +1,32 @@
 class CheckButton {
-	readonly input: HTMLInputElement;
-	readonly label: HTMLLabelElement;
+	readonly buttonElement: HTMLButtonElement;
 
-	constructor(input: HTMLInputElement, label?: HTMLLabelElement) {
-		this.input = input;
-		this.label = label ?? input.labels![0];
-		this.input.addEventListener('input', () => {
-			this.checked = this.input.checked;
-		});
+	private _enabled = true;
+	private _checked = false;
+
+	constructor(buttonElement: HTMLButtonElement) {
+		this.buttonElement = buttonElement;
 	}
 
-	static fromId(id: string) { return new CheckButton(document.getElementById(id) as HTMLInputElement); }
+	static fromId(id: string) { return new CheckButton(document.getElementById(id) as HTMLButtonElement); }
 
-	get enabled() { return !this.input.disabled; }
+	get enabled() { return this._enabled; }
 	set enabled(value: boolean) {
-		this.input.disabled = !value;
+		this._enabled = value;
+		this.buttonElement.ariaDisabled = (!value).toString();
 		if (value)
-			this.label.classList.remove('disabled');
+			this.buttonElement.classList.remove('disabled');
 		else
-			this.label.classList.add('disabled');
+			this.buttonElement.classList.add('disabled');
 	}
 
-	get checked() { return this.input.checked; }
+	get checked() { return this._checked; }
 	set checked(value: boolean) {
-		this.input.checked = value;
-		if (this.input.checked)
-			this.label.classList.add('checked');
+		this._checked = value;
+		this.buttonElement.ariaChecked = value.toString();
+		if (value)
+			this.buttonElement.classList.add('checked');
 		else
-			this.label.classList.remove('checked');
+			this.buttonElement.classList.remove('checked');
 	}
 }

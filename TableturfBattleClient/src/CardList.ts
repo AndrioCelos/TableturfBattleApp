@@ -22,14 +22,14 @@ class CardList {
 				clearChildren(listElement);
 				this.cardButtons.sort((a, b) => sortOrder(a.card, b.card));
 				for (const button of this.cardButtons)
-					listElement.appendChild(button.element);
+					listElement.appendChild(button.buttonElement);
 			}
 		});
 
 		filterBox.addEventListener('input', () => {
 			const s = filterBox.value.toLowerCase();
 			for (const button of this.cardButtons)
-				button.element.hidden = s != '' && !button.card.name.toLowerCase().includes(s);
+				button.buttonElement.hidden = s != '' && !button.card.name.toLowerCase().includes(s);
 		});
 
 		for (const label in CardList.cardSortOrders) {
@@ -46,12 +46,12 @@ class CardList {
 
 	add(button: CardButton) {
 		this.cardButtons.push(button);
-		this.listElement.appendChild(button.element);
+		this.listElement.appendChild(button.buttonElement);
 	}
 
 	clearFilter() {
 		this.filterBox.value = '';
 		for (const button of this.cardButtons)
-			button.element.hidden = false;
+			button.buttonElement.hidden = false;
 	}
 }

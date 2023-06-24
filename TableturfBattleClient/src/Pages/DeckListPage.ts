@@ -25,12 +25,12 @@ const deckImportTextBox = document.getElementById('deckImportTextBox') as HTMLTe
 const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
-const deckButtons: CheckButton[] = [ ];
+const deckButtons = new CheckButtonGroup<number>();
 
 function showDeckList() {
 	showPage('deckList');
 	deselectDeck();
-	for (const button of deckButtons) button.checked = false;
+	deckButtons.deselect();
 }
 
 deckListBackButton.addEventListener('click', e => {
@@ -82,26 +82,18 @@ function saveDecks() {
 }
 
 function createDeckButton(index: number, deck: Deck) {
-	const label = document.createElement('label');
-	const input = document.createElement('input');
-
-	input.name = 'selectedDeck';
-	input.type = 'radio';
-	input.dataset.index = index.toString();
-	input.addEventListener('click', e => {
-		for(const button2 of deckButtons) {
-			if (button2.input != input) button2.checked = false;
-		}
-		selectedDeck = decks[parseInt((e.target as HTMLInputElement).dataset.index!)];
+	const buttonElement = document.createElement('button');
+	buttonElement.type = 'button';
+	buttonElement.dataset.index = index.toString();
+	deckButtons.add(new CheckButton(buttonElement), index);
+	buttonElement.addEventListener('click', () => {
+		selectedDeck = decks[deckButtons.value!];
 		selectDeck();
 	});
-	label.appendChild(input);
+	buttonElement.innerText = deck.name;
 
-	label.appendChild(document.createTextNode(deck.name));
-
-	deckList.insertBefore(label, addDeckControls);
-	deckButtons.push(new CheckButton(input, label));
-	return label;
+	deckList.insertBefore(buttonElement, addDeckControls);
+	return buttonElement;
 }
 
 newDeckButton.addEventListener('click', () => {
@@ -135,8 +127,7 @@ deckImportForm.addEventListener('submit', e => {
 deckEditButton.addEventListener('click', editDeck);
 
 deckListTestButton.addEventListener('click', _ => {
-	for (const button of testStageButtons)
-		button.checked = false;
+	testStageButtons.deselect();
 	testStageSelectionDialog.showModal();
 });
 
@@ -152,10 +143,9 @@ function selectDeck() {
 			const card = cardDatabase.cards![cardNumber - 1];
 			size += card.size;
 
-			const button = new CardButton('radio', card);
-			button.inputElement.disabled = true;
-			button.inputElement.hidden = true;
-			deckCardListView.appendChild(button.element);
+			const button = new CardButton(card);
+			button.buttonElement.disabled = true;
+			deckCardListView.appendChild(button.buttonElement);
 		}
 	}
 
@@ -214,23 +204,23 @@ deckDeleteButton.addEventListener('click', () => {
 	if (index < 0) return;
 	if (!confirm(`Are you sure you want to delete ${selectedDeck.name}?`)) return;
 
-	decks.splice(index, 1);
-
 	let removed = false;
-	for (const el of Array.from(deckList.getElementsByTagName('label'))) {
-		const input = el.getElementsByTagName('input')[0];
+	for (const el of deckButtons.entries) {
 		if (removed) {
-			input.dataset.index = (parseInt(input.dataset.index!) - 1).toString();
-		} else if (parseInt(input.dataset.index!) == index) {
-			deckList.removeChild(el);
+			el.value--;
+		} else if (el.value == index) {
+			deckList.removeChild(el.button.buttonElement);
 			removed = true;
 		}
 	}
 
+	decks.splice(index, 1);
+	deckButtons.entries.splice(index, 1);
+	deckButtons.deselect();
 	selectedDeck = null;
 	deckEditorDeckViewSection.hidden = true;
 	saveDecks();
 });
 
 if (!canPushState)
-	deckListBackButton.href = '#'
+	deckListBackButton.href = '#';

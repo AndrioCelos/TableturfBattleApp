@@ -83,9 +83,7 @@
 						</div>
 					</div>
 					<div id="stageList">
-						<label id="stageRandomLabel" for="stageRandomButton" class="stageRandom checked">
-							<input type="radio" id="stageRandomButton" name="stage" value="random" checked/> Random
-						</label>
+						<button type="button" id="stageRandomButton" class="stageRandom">Random</button>
 					</div>
 					<div id="stageListLoadingSection"><div class="lds-ripple"><div></div><div></div></div> Loading stages...</div>
 				</form>
@@ -245,12 +243,8 @@
 				<div id="handContainer"></div>
 
 				<div id="playRow">
-					<label for="passButton">
-						<input type="checkbox" id="passButton"/> Pass
-					</label>
-					<label for="specialButton">
-						<input type="checkbox" id="specialButton"/> Special Attack
-					</label>
+					<button type="button" id="passButton">Pass</button>
+					<button type="button" id="specialButton">Special Attack</button>
 				</div>
 				<div id="spectatorRow">
 					<a id="leaveButton" href="#">Exit</a>
@@ -303,12 +297,8 @@
 
 			<div id="testControls">
 				<div id="testControlsHeader" class="testControls">
-					<label for="testDeckButton">
-						<input type="radio" id="testDeckButton" name="testPage"/>Deck
-					</label>
-					<label for="testAllCardsButton">
-						<input type="radio" id="testAllCardsButton" name="testPage"/>All cards
-					</label>
+					<button type="button" id="testDeckButton">Deck</button>
+					<button type="button" id="testAllCardsButton">All cards</button>
 				</div>
 				<div id="testDeckContainer" class="testControls">
 					<button id="testAllCardsMobileButton">All cards</button>
@@ -325,16 +315,16 @@
 					<div id="testAllCardsList" class="cardListGrid"></div>
 				</div>
 				<div id="testControlsFooter" class="testControls">
-					<button type="button" id="testUndoButton" disabled>Undo</button>
+					<button type="button" id="testUndoButton">Undo</button>
 					<button type="button" id="testBackButton">End test</button>
 				</div>
 			</div>
 			<div id="testCardListBackdrop" hidden></div>
 
 			<div id="timeSection">
-			<div id="turnNumberContainer" hidden>
-				<p>Turns left</p>
-				<div id="turnNumberLabel">12</div>
+				<div id="turnNumberContainer" hidden>
+					<p>Turns left</p>
+					<div id="turnNumberLabel">12</div>
 				</div>
 				<div id="timeContainer">
 					<div id="timeContainerContent">

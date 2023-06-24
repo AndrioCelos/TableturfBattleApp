@@ -191,21 +191,17 @@ dialog::backdrop {
 }
 
 .stage, .stageRandom {
+	font: inherit;
+	color: currentColor;  /* Override disabled colour */
+	background: black;
 	width: 12em;
 	height: 18em;
 	border: 1px solid grey;
 	position: relative;
-	text-align: center;
+	align-items: center;
 	display: flex;
 	flex-flow: column;
 	margin: 5px;
-}
-
-:is(.stage, .stageRandom) input {
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index: -1;
 }
 
 .stageBody {
@@ -232,11 +228,13 @@ dialog::backdrop {
 .stageGrid td.Start3 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
 .stageGrid td.Start4 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
 
-:is(.stage, .stageRandom):is(:hover, :focus-within):not(.checked, .disabled) {
-	background: #80808040;
+:is(.stage, .stageRandom):is(:hover, :focus-within):not(.checked, .disabled)::before {
+	content: '';
+	background: #808080;
 }
-:is(.stage, .stageRandom).checked {
-	background: #FFFFFF40;
+:is(.stage, .stageRandom).checked::before {
+	content: '';
+	background: #FFFFFF;
 }
 
 /* Cards */
@@ -258,7 +256,10 @@ dialog::backdrop {
 
 .card {
 	position: relative;
+	color: currentColor;  /* Override disabled colour */
+	background: black;
 	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
+	font-size: inherit;
 	font-weight: 599;
 	margin: 0.5em;
 }
@@ -277,13 +278,7 @@ dialog::backdrop {
 	align-items: center;
 	padding: 0 5px;
 	justify-content: center;
-}
-
-.card input {
-	position: absolute;
-	z-index: -1;
-	left: 0;
-	top: 0;
+	z-index: 1;
 }
 
 .cardNumber {
@@ -322,6 +317,7 @@ dialog::backdrop {
 }
 
 .cardGrid {
+	position: relative;
 	margin: 0 auto;
 	border-spacing: 0;
 }
@@ -335,6 +331,7 @@ dialog::backdrop {
 .cardGrid td.special { background: url('assets/SpecialOverlay.png') center/cover, var(--player-special-colour); outline: none; }
 
 .cardFooter {
+	position: relative;
 	display: flex;
 	align-items: center;
 	height: 2.5em;
@@ -373,15 +370,15 @@ dialog::backdrop {
 .playHintSpecial:nth-of-type(3) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
 .playHintSpecial:nth-of-type(4) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
 
-.card::before {
+:is(.card, .stage, .stageRandom)::before {
 	/* If it exists */
 	position: absolute;
 	left: 0;
 	top: 0;
 	right: 0;
 	bottom: 0;
-	z-index: -2;
 	opacity: 0.25;
+	z-index: 0;
 }
 .card:is(:hover, :focus-within):not(.checked, .disabled)::before {
 	content: '';
@@ -404,6 +401,7 @@ dialog::backdrop {
 	table-layout: fixed;
 	border-spacing: 0;
 	margin: auto;
+	z-index: 1;
 }
 
 #gameBoard td.Empty { outline: 1px solid #80808080; outline-offset: -1px; }
@@ -577,31 +575,26 @@ dialog::backdrop {
 	grid-template-columns: 1fr 1fr;
 }
 
-:is(#playRow, #testControlsHeader) > label {
+:is(#playRow, #testControlsHeader) > button {
 	grid-row: button-row;
+	border: none;
 	margin: 0.5em;
 	padding: 0 0.5em;
+	font: inherit;
 	text-align: center;
 	background: var(--player-ui-base-colour);
 	text-shadow: 0 0 4px black;
 	border-radius: 0.5em;
 }
-:is(#playRow, #testControlsHeader) > label input {
-	position: absolute;
-	left: -333px;
-}
-:is(#playRow, #testControlsHeader) > label:hover { background: var(--player-ui-highlight-colour); }
-:is(#playRow, #testControlsHeader) > label:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-:is(#playRow, #testControlsHeader) > label:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
-:is(#playRow, #testControlsHeader) > label.disabled:not(.checked) { background: grey; }
+:is(#playRow, #testControlsHeader, #testControlsFooter) > button:hover { background: var(--player-ui-highlight-colour); }
+:is(#playRow, #testControlsHeader, #testControlsFooter) > button:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+:is(#playRow, #testControlsHeader, #testControlsFooter) > button:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
+:is(#playRow, #testControlsHeader, #testControlsFooter) > button.disabled:not(.checked) { background: grey; }
 
 #spectatorRow:not([hidden]) {
 	display: grid;
 	grid-template-columns: auto 1fr 1fr auto;
 	gap: 0.5em;
-}
-label[for="flipBox"] {
-	grid-column: 4;
 }
 
 #debugColour input {
@@ -663,9 +656,6 @@ label[for="flipBox"] {
 	width: 40%;
 	grid-row: button-row;
 }
-:is(#showDeckCloseButton, #testControlsFooter button):hover { background: var(--player-ui-highlight-colour); }
-:is(#showDeckCloseButton, #testControlsFooter button):focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-:is(#showDeckCloseButton, #testControlsFooter button):active { background: var(--player-ui-highlight2-colour); }
 
 #testControls:not([hidden]) {
 	grid-column: 1 / span 2;
@@ -713,7 +703,7 @@ label[for="flipBox"] {
 }
 
 #testAllCardsList:not([hidden]) {
-	font-size: 70%;
+	font-size: 62%;
 }
 #testCardListBackdrop {
 	background: #00000080;
@@ -1031,6 +1021,7 @@ label[for="flipBox"] {
 	right: 0;
 	bottom: 0;
 	background: #000000C0;
+	z-index: 1;
 }
 
 #redrawModal:not([hidden]) {
@@ -1133,13 +1124,12 @@ label[for="flipBox"] {
 	grid-template-columns: auto 1fr;
 }
 
-.deckList > label, #addDeckControls > button {
+.deckList button {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-family: inherit;
+	font: inherit;
 	color: inherit;
-	font-size: inherit;
 	border: inherit;
 	text-shadow: 0 0 4px black;
 }
@@ -1148,11 +1138,11 @@ label[for="flipBox"] {
 	height: 3rem;
 	margin: 0.5em;
 }
-.deckList > label { background: var(--primary-colour-2); }
-.deckList > label:hover { background: var(--special-colour-2); }
-.deckList > label:focus-within { outline: 2px solid var(--special-accent-colour-2); }
-.deckList > label:is(:active, .checked) { background: var(--special-accent-colour-2); }
-.deckList > label.disabled { background: grey; }
+.deckList > button { background: var(--primary-colour-2); }
+.deckList > button:hover { background: var(--special-colour-2); }
+.deckList > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
+.deckList > button:is(:active, .checked) { background: var(--special-accent-colour-2); }
+.deckList > button.disabled { background: grey; }
 #addDeckControls {
 	display: flex;
 	align-items: stretch;
@@ -1170,11 +1160,6 @@ label[for="flipBox"] {
 .deckList {
 	display: flex;
 	flex-flow: column;
-}
-
-.deckList input {
-	position: absolute;
-	left: -333px;
 }
 
 .card.emptySlot {
@@ -1384,7 +1369,8 @@ label[for="flipBox"] {
 	}
 
 	#passHint:not([hidden]) {
-		margin: 0;
+		margin: 0 0 16em 0;
+		align-self: center;
 	}
 
 	#scoreSection:not([hidden]) {
@@ -1426,7 +1412,6 @@ label[for="flipBox"] {
 		grid-column: 1 / -1;
 		left: auto;
 		top: auto;
-		z-index: -1;
 		display: flex;
 	}
 	.playContainer[data-index="0"] { grid-row: 2 / span 2; justify-content: start; margin: 0 0 2em 1em; }

@@ -1,8 +1,9 @@
+/// <reference path="../CheckButtonGroup.ts"/>
+
 const gamePage = document.getElementById('gamePage')!;
 const board = new Board(document.getElementById('gameBoard') as HTMLTableElement);
 const turnNumberLabel = new TurnNumberLabel(document.getElementById('turnNumberContainer')!, document.getElementById('turnNumberLabel')!);
 const timeLabel = new TimeLabel(document.getElementById('timeLabel')!);
-const handButtons: CardButton[] = [ ];
 
 const passButton = CheckButton.fromId('passButton');
 const specialButton = CheckButton.fromId('specialButton');
@@ -13,6 +14,7 @@ const rotateRightButton = document.getElementById('rotateRightButton') as HTMLBu
 const gameDeckButton = document.getElementById('gameDeckButton') as HTMLButtonElement;
 
 const handContainer = document.getElementById('handContainer')!;
+const handButtons = new CheckButtonGroup<Card>(handContainer);
 const redrawModal = document.getElementById('redrawModal')!;
 
 const gameControls = document.getElementById('gameControls')!;
@@ -48,8 +50,9 @@ const testDeckButton = CheckButton.fromId('testDeckButton');
 const testDeckContainer = document.getElementById('testDeckContainer')!;
 const testAllCardsButton = CheckButton.fromId('testAllCardsButton');
 const testAllCardsContainer = document.getElementById('testAllCardsContainer')!;
-const testUndoButton = document.getElementById('testUndoButton') as HTMLButtonElement;
+const testUndoButton = CheckButton.fromId('testUndoButton');
 const testBackButton = document.getElementById('testBackButton') as HTMLButtonElement;
+const testCardButtonGroup = new CheckButtonGroup<Card>();
 const testDeckCardButtons: CardButton[] = [ ];
 const testPlacements: { card: Card, placementResults: PlacementResults }[] = [ ];
 const testCardListBackdrop = document.getElementById('testCardListBackdrop')!;
@@ -148,6 +151,7 @@ function initTest(stage: Stage) {
 	for (var o of playerBars)
 		o.element.hidden = true;
 	testPlacements.splice(0);
+	testUndoButton.enabled = false;
 	clearChildren(testPlacementList);
 	gamePage.dataset.myPlayerIndex = '0';
 	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
@@ -192,27 +196,27 @@ replayNextButton.addEventListener('click', _ => {
 
 		let anySpecialAttacks = false;
 		// Show the cards that were played.
-		const handButton = handButtons.find(b => b.card.number == moves[currentReplay!.watchingPlayer].card.number);
-		if (handButton) handButton.checked = true;
+		const entry = handButtons.entries.find(b => b.value.number == moves[currentReplay!.watchingPlayer].card.number);
+		if (entry) entry.button.checked = true;
 		for (let i = 0; i < currentGame.players.length; i++) {
 			const player = currentGame.players[i];
 
 			const move = moves[i];
-			const button = new CardButton('checkbox', move.card);
+			const button = new CardButton(move.card);
+			button.buttonElement.disabled = true;
 			if ((move as PlayMove).isSpecialAttack) {
 				anySpecialAttacks = true;
 				player.specialPoints -= (move as PlayMove).card.specialCost;
-				button.element.classList.add('specialAttack');
+				button.buttonElement.classList.add('specialAttack');
 			} else if (move.isPass) {
 				player.passes++;
 				player.specialPoints++;
 				const el = document.createElement('div');
 				el.className = 'passLabel';
 				el.innerText = 'Pass';
-				button.element.appendChild(el);
+				button.buttonElement.appendChild(el);
 			}
-			button.inputElement.hidden = true;
-			playContainers[i].append(button.element);
+			playContainers[i].append(button.buttonElement);
 		}
 
 		for (const p of result.specialSpacesActivated) {
@@ -332,59 +336,49 @@ flipButton.addEventListener('click', () => {
 });
 
 function addTestDeckCard(card: Card) {
-	const button = new CardButton('radio', cardDatabase.get(card.number));
-	button.inputElement.name = 'deckEditorTestSelectedCard'
-	testDeckList.appendChild(button.element);
+	card = cardDatabase.get(card.number);
+	const button = new CardButton(card);
+	testCardButtonGroup.add(button, card);
+	testDeckList.appendChild(button.buttonElement);
 	testDeckCardButtons.push(button);
-	button.inputElement.addEventListener('input', () => {
-		if (button.checked) {
-			for (const button2 of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
-				if (button2 != button)
-					button2.element.classList.remove('checked');
-			}
-			board.autoHighlight = true;
-			board.cardPlaying = card;
-			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
-				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
-				board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
-			}
-			board.cardRotation = board.flip ? 2 : 0;
-			board.refreshHighlight();
-			board.table.focus();
-		}
-	});
+	button.buttonElement.addEventListener('click', () => testCardButton_click(button));
 }
 
 function addTestCard(card: Card) {
-	const button = new CardButton('radio', cardDatabase.get(card.number));
-	button.inputElement.name = 'deckEditorTestSelectedCard'
+	card = cardDatabase.get(card.number);
+	const button = new CardButton(card);
+	testCardButtonGroup.add(button, card);
 	testAllCardsList.add(button);
-	button.inputElement.addEventListener('input', () => {
-		if (button.checked) {
-			for (const button2 of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
-				if (button2 != button)
-					button2.element.classList.remove('checked');
-			}
-			board.autoHighlight = true;
-			board.cardPlaying = card;
-			if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
-				board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
-				board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
-			}
-			board.cardRotation = board.flip ? 2 : 0;
-			board.refreshHighlight();
-			board.table.focus();
-			if (!testCardListBackdrop.hidden) {
-				testCardListBackdrop.hidden = true;
-				gamePage.removeChild(testAllCardsContainer);
-				testControls.appendChild(testAllCardsContainer);
-				setTestListPage(false);
-			}
+	button.buttonElement.addEventListener('click', () => {
+		testCardButton_click(button);
+		if (!testCardListBackdrop.hidden) {
+			testCardListBackdrop.hidden = true;
+			gamePage.removeChild(testAllCardsContainer);
+			testControls.appendChild(testAllCardsContainer);
+			setTestListPage(false);
 		}
 	});
 }
 
-testUndoButton.addEventListener('click', _ => {
+function testCardButton_click(button: CardButton) {
+	if (!button.enabled) {
+		showPlayHintError('This card has already been played.');
+		return;
+	}
+	board.autoHighlight = true;
+	board.cardPlaying = testCardButtonGroup.value!;
+	for (const button of testCardButtonGroup.buttons)
+		button.checked = (button as CardButton).card?.number == testCardButtonGroup.value?.number;
+	if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+		board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
+		board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
+	}
+	board.cardRotation = board.flip ? 2 : 0;
+	board.refreshHighlight();
+	board.table.focus();
+}
+
+testUndoButton.buttonElement.addEventListener('click', () => {
 	const turn = testPlacements.pop();
 	if (turn) {
 		undoTurn(turn.placementResults);
@@ -395,7 +389,7 @@ testUndoButton.addEventListener('click', _ => {
 				button.enabled = true;
 		}
 
-		testUndoButton.disabled = testPlacements.length == 0;
+		testUndoButton.enabled = testPlacements.length > 0;
 	}
 });
 
@@ -403,11 +397,11 @@ testBackButton.addEventListener('click', _ => {
 	showPage(editingDeck ? 'deckEdit' : 'deckList');
 });
 
-testDeckButton.input.addEventListener('input', _ => {
-	if (testDeckButton.checked) setTestListPage(false);
+testDeckButton.buttonElement.addEventListener('click', _ => {
+	setTestListPage(false);
 });
-testAllCardsButton.input.addEventListener('input', _ => {
-	if (testAllCardsButton.checked) setTestListPage(true);
+testAllCardsButton.buttonElement.addEventListener('click', _ => {
+	setTestListPage(true);
 });
 function setTestListPage(showAllCards: boolean) {
 	testDeckButton.checked = !showAllCards;
@@ -501,8 +495,8 @@ function resetPlayControls() {
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
 			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
-			&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
-			handButtons[i].enabled = canPlayCard[i];
+				&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
+			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
 
 		passButton.enabled = true;
@@ -512,8 +506,8 @@ function resetPlayControls() {
 	} else {
 		lockGamePage();
 		if (currentGame?.me?.move) {
-			for (const button of handButtons)
-				button.checked = button.card.number == currentGame.me.move.card.number;
+			for (const el of handButtons.entries)
+				el.button.checked = el.value.number == currentGame.me.move.card.number;
 			passButton.checked = currentGame.me.move.isPass;
 			specialButton.checked = (currentGame.me.move as PlayMove).isSpecialAttack;
  		}
@@ -524,7 +518,7 @@ function resetPlayControls() {
 function lockGamePage() {
 	canPlay = false;
 	board.autoHighlight = false;
-	for (const el of handButtons) el.enabled = false;
+	for (const button of handButtons.buttons) button.enabled = false;
 	passButton.enabled = false;
 	specialButton.enabled = false;
 	passHint.hidden = true;
@@ -635,12 +629,12 @@ function clearShowDeck() {
 function populateShowDeck(deck: Card[]) {
 	if (showDeckButtons.length == 0) {
 		for (const card of deck) {
-			const button = new CardButton('checkbox', card);
-			button.inputElement.hidden = true;
+			const button = new CardButton(card);
+			button.buttonElement.disabled = true;
 			showDeckButtons.push(button);
 
 			const li = document.createElement('li');
-			li.appendChild(button.element);
+			li.appendChild(button.buttonElement);
 			showDeckListElement.appendChild(li);
 		}
 	}
@@ -648,15 +642,12 @@ function populateShowDeck(deck: Card[]) {
 
 /** Handles an update to the player's hand and/or deck during a game. */
 function updateHandAndDeck(playerData: PlayerData) {
-	for (const button of handButtons) {
-		handContainer.removeChild(button.element);
-	}
-	handButtons.splice(0);
+	handButtons.clear();
 
 	populateShowDeck(playerData.deck!);
 
 	for (const button of showDeckButtons) {
-		const li = button.element.parentElement!;
+		const li = button.buttonElement.parentElement!;
 		if (playerData.hand!.find(c => c.number == button.card.number))
 			li.className = 'inHand';
 		else if (playerData.cardsUsed.includes(button.card.number))
@@ -669,58 +660,58 @@ function updateHandAndDeck(playerData: PlayerData) {
 	currentGame.me.hand = playerData.hand!.map(Card.fromJson);
 	for (let i = 0; i < currentGame.me.hand.length; i++) {
 		const card = currentGame.me.hand[i];
-		const button = new CardButton('radio', card);
-		button.inputElement.name = 'handCard';
-		handButtons.push(button);
-		button.inputElement.addEventListener('input', _ => {
-			if (button.checked) {
-				for (const button2 of handButtons) {
-					if (button2 != button)
-						button2.element.classList.remove('checked');
+		const button = new CardButton(card);
+		handButtons.add(button, card);
+		button.buttonElement.addEventListener('click', e => {
+			if (!button.enabled) {
+				if (specialButton.checked && currentGame!.players[currentGame!.me!.playerIndex].specialPoints < card.specialCost)
+					showPlayHintError('Not enough special points.');
+				else if (!(specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i])
+					showPlayHintError('No place to play this card.');
+				e.preventDefault();
+				return;
+			}
+			if (passButton.checked) {
+				if (canPlay) {
+					timeLabel.faded = true;
+					lockGamePage();
+					sendPlay({ clientToken, cardNumber: card.number.toString(), isPass: 'true' });
 				}
-				if (passButton.checked) {
-					if (canPlay) {
-						timeLabel.faded = true;
-						lockGamePage();
-						sendPlay({ clientToken, cardNumber: card.number.toString(), isPass: 'true' });
-					}
-				} else {
-					board.cardPlaying = card;
-					if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
-						board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
-						board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
-					}
-					board.cardRotation = board.flip ? 2 : 0;
-					board.refreshHighlight();
-					board.table.focus();
+			} else {
+				board.cardPlaying = card;
+				if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
+					board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
+					board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
 				}
+				board.cardRotation = board.flip ? 2 : 0;
+				board.refreshHighlight();
+				board.table.focus();
 			}
 		});
-		button.inputElement.addEventListener('keydown', e => {
+		button.buttonElement.addEventListener('keydown', e => {
 			switch (e.key) {
 				case 'ArrowUp':
 					if (i >= 2)
-						handButtons[i - 2].inputElement.focus();
+						handButtons.entries[i - 2].button.buttonElement.focus();
 					e.preventDefault();
 					break;
 				case 'ArrowDown':
 					if (i < 2)
-						handButtons[i + 2].inputElement.focus();
+						handButtons.entries[i + 2].button.buttonElement.focus();
 					e.preventDefault();
 					break;
 				case 'ArrowLeft':
 					if (i % 2 != 0)
-						handButtons[i - 1].inputElement.focus();
+						handButtons.entries[i - 1].button.buttonElement.focus();
 					e.preventDefault();
 					break;
 				case 'ArrowRight':
 					if (i % 2 == 0)
-						handButtons[i + 1].inputElement.focus();
+						handButtons.entries[i + 1].button.buttonElement.focus();
 					e.preventDefault();
 					break;
 			}
 		});
-		handContainer.appendChild(button.element);
 	}
 }
 
@@ -728,15 +719,12 @@ function updateHandAndDeck(playerData: PlayerData) {
 function replayUpdateHand() {
 	if (currentGame == null || currentReplay == null) return;
 
-	for (const button of handButtons) {
-		handContainer.removeChild(button.element);
-	}
-	handButtons.splice(0);
+	handButtons.clear();
 
 	const playerData = currentReplay.replayPlayerData[currentReplay.watchingPlayer];
 	populateShowDeck(playerData.deck);
 	for (const b of showDeckButtons)
-		b.element.parentElement!.className = '';
+		b.buttonElement.parentElement!.className = '';
 
 	let indices;
 	if (currentGame.turnNumber == 0) {
@@ -748,7 +736,7 @@ function replayUpdateHand() {
 			let j = indices.findIndex(k => playerData.deck[k].number == move.card.number);
 			if (j < 0) j = indices.findIndex(k => k < 0 || k >= 15);
 			if (j >= 0) {
-				showDeckButtons[indices[j]].element.parentElement!.className = 'used';
+				showDeckButtons[indices[j]].buttonElement.parentElement!.className = 'used';
 				if (i < 11)
 					indices[j] = playerData.drawOrder[4 + i];
 			}
@@ -756,7 +744,7 @@ function replayUpdateHand() {
 	}
 
 	for (let i = 0; i < showDeckButtons.length; i++) {
-		const li = showDeckButtons[i].element.parentElement!;
+		const li = showDeckButtons[i].buttonElement.parentElement!;
 		if (!li.className)
 			li.className = indices.includes(i) ? 'inHand' : 'unused';
 	}
@@ -764,10 +752,10 @@ function replayUpdateHand() {
 	for (let i = 0; i < 4; i++) {
 		if (indices[i] >= 15) continue;  // Accounts for an old bug in the server that corrupted the initialDrawOrder replay fields.
 		const card = playerData.deck[indices[i]];
-		const button = new CardButton('radio', card);
-		button.inputElement.hidden = true;
-		handButtons.push(button);
-		handContainer.appendChild(button.element);
+		const button = new CardButton(card);
+		button.buttonElement.disabled = true;
+		handButtons.add(button, card);
+		handContainer.appendChild(button.buttonElement);
 	}
 }
 
@@ -784,7 +772,12 @@ function redrawButton_click(e: MouseEvent) {
 	redrawModal.hidden = true;
 }
 
-function passButton_input() {
+function passButton_click(e: Event) {
+	if (!passButton.enabled) {
+		e.preventDefault();
+		return;
+	}
+	passButton.checked = !passButton.checked;
 	board.autoHighlight = !passButton.checked;
 	passHint.hidden = !passButton.checked;
 	if (passButton.checked) {
@@ -793,40 +786,46 @@ function passButton_input() {
 		board.cardPlaying = null;
 		board.specialAttack = false;
 		board.clearHighlight();
-		for (const el of handButtons) {
-			el.enabled = true;
-			el.checked = false;
-		}
+		handButtons.deselect();
+		for (const button of handButtons.buttons)
+			button.enabled = true;
 	} else {
 		for (let i = 0; i < 4; i++) {
-			handButtons[i].enabled = canPlayCard[i];
+			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
 	}
 }
-passButton.input.addEventListener('input', passButton_input);
+passButton.buttonElement.addEventListener('click', passButton_click);
 
-function specialButton_input() {
+function specialButton_click(e: Event) {
+	if (!specialButton.enabled) {
+		if (currentGame!.me!.hand!.every(c => currentGame!.players[currentGame!.me!.playerIndex].specialPoints < c.specialCost))
+			showPlayHintError('Not enough special points.');
+		else if (!canPlayCardAsSpecialAttack.includes(true))
+			showPlayHintError('No place to play a special attack.');
+		e.preventDefault();
+		return;
+	}
+	specialButton.checked = !specialButton.checked;
 	board.specialAttack = specialButton.checked;
+	handButtons.deselect();
 	if (specialButton.checked) {
 		passHint.hidden = true;
 		showPlayHint('Unleash it next to <div class="playHintSpecial">&nbsp;</div>!');
 		passButton.checked = false;
 		board.autoHighlight = true;
-		for (let i = 0; i < 4; i++) {
-			handButtons[i].enabled = canPlayCardAsSpecialAttack[i];
-			if (!canPlayCardAsSpecialAttack[i])
-				handButtons[i].checked = false;
-		}
+		board.cardPlaying = null;
+		board.clearHighlight();
+		for (let i = 0; i < 4; i++)
+			handButtons.entries[i].button.enabled = canPlayCardAsSpecialAttack[i];
 	} else {
 		clearPlayHint();
 		for (let i = 0; i < 4; i++) {
-			handButtons[i].enabled = canPlayCard[i];
-			if (!canPlayCard[i])
-				handButtons[i].checked = false;
+			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
 	}
 }
-specialButton.input.addEventListener('input', specialButton_input);
+specialButton.buttonElement.addEventListener('click', specialButton_click);
 
 function sendPlay(data: { clientToken: string, [k: string]: string }) {
 	if (!currentGame) throw new Error('No game in progress.');
@@ -837,7 +836,8 @@ function sendPlay(data: { clientToken: string, [k: string]: string }) {
 			alert(`The server rejected the play. This is probably a bug.\n${req.responseText}`);
 			canPlay = true;
 			board.autoHighlight = true;
-			for (let i = 0; i < handButtons.length; i++) handButtons[i].enabled = passButton.checked || (specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i];
+			for (let i = 0; i < handButtons.entries.length; i++)
+				handButtons.entries[i].button.enabled = passButton.checked || (specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i];
 			passButton.enabled = true;
 			specialButton.enabled = canPlayCardAsSpecialAttack.includes(true);
 			board.clearHighlight();
@@ -877,7 +877,7 @@ board.onsubmit = (x, y) => {
 		}
 
 		board.cardPlaying = null;
-		testUndoButton.disabled = false;
+		testUndoButton.enabled = true;
 	} else if (canPlay) {
 		timeLabel.faded = true;
 		lockGamePage();
@@ -904,10 +904,10 @@ board.onsubmit = (x, y) => {
 board.oncancel = () => {
 	board.cardPlaying = null;
 	board.clearHighlight();
-	for (const button of handButtons) {
+	for (const button of handButtons.buttons) {
 		if (button.checked) {
 			button.checked = false;
-			button.inputElement.focus();
+			button.buttonElement.focus();
 			break;
 		}
 	}
@@ -931,15 +931,15 @@ timeLabel.ontimeout = () => {
 		redrawModal.hidden = true;
 	} else {
 		// When time runs out, automatically discard the largest card in the player's hand.
-		let button = handButtons[0];
-		for (let i = 1; i < handButtons.length; i++) {
-			if (handButtons[i].card.size > button.card.size)
-				button = handButtons[i];
+		let entry = handButtons.entries[0];
+		for (let i = 1; i < handButtons.entries.length; i++) {
+			if (handButtons.entries[i].value.size > entry.value.size)
+				entry = handButtons.entries[i];
 		}
-		for (const el of handButtons) el.checked = false;
-		button.checked = true;
+		handButtons.deselect();
+		entry.button.checked = true;
 		lockGamePage();
-		sendPlay({ clientToken, cardNumber: button.card.number.toString(), isPass: 'true', isTimeout: 'true' });
+		sendPlay({ clientToken, cardNumber: entry.value.number.toString(), isPass: 'true', isTimeout: 'true' });
 	}
 };
 
@@ -953,11 +953,11 @@ function focusFirstEnabledHandCard() {
 			return;
 		}
 	}
-	const firstEnabledButton = handButtons.find(b => b.enabled);
+	const firstEnabledButton = handButtons.buttons.find(b => b.enabled);
 	if (firstEnabledButton)
-		firstEnabledButton.inputElement.focus();
+		firstEnabledButton.buttonElement.focus();
 	else
-		passButton.input.focus();
+		passButton.buttonElement.focus();
 }
 
 function toggleShowDeck() {
@@ -988,20 +988,16 @@ document.addEventListener('keydown', e => {
 		switch (e.key) {
 			case 'p':
 				if (playRow.hidden) return;
-				if (passButton.enabled) {
-					passButton.checked = !passButton.checked;
-					passButton_input();
+				passButton_click(e);
+				if (passButton.enabled)
 					focusFirstEnabledHandCard();
-				}
 				e.preventDefault();
 				break;
 			case 's':
 				if (playRow.hidden) return;
-				if (specialButton.enabled) {
-					specialButton.checked = !specialButton.checked;
-					specialButton_input();
+				specialButton_click(e);
+				if (specialButton.enabled)
 					focusFirstEnabledHandCard();
-				}
 				e.preventDefault();
 				break;
 			case 'd':
