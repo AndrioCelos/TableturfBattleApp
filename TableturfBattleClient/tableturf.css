@@ -1250,6 +1250,15 @@ dialog::backdrop {
 	justify-content: center;
 }
 
+#deckImportForm, #deckImportTextSection:not([hidden]) {
+	display: flex;
+	flex-flow: column;
+}
+
+#deckImportDialog ol {
+	text-align: start;
+}
+
 /* Help */
 
 #helpControls {

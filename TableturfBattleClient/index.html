@@ -371,6 +371,7 @@
 			<section id="deckEditordeckListPage">
 				<a id="deckListBackButton" href=".">Back</a>
 				<h3>Deck list</h3>
+				<button id="deckExportAllButton">Export all</button>
 				<div id="deckList" class="deckList">
 					<div id="addDeckControls">
 						<button id="newDeckButton">New deck</button>
@@ -395,12 +396,53 @@
 			</section>
 			<dialog id="deckImportDialog">
 				<form id="deckImportForm" method="dialog">
-					<textarea id="deckImportTextBox" rows="24" cols="45"></textarea>
-					<div id="deckImportErrorBox" class="error" hidden></div>
-					<div>
+					<label for="deckImportTextButton">
+						<input type="radio" id="deckImportTextButton" name="deckImportMethod"/>
+						Import from a Tableturf Battle simulator
+					</label>
+					<section id="deckImportTextSection">
+						<textarea id="deckImportTextBox" rows="4" cols="45" autocomplete="off" placeholder="Paste the export string here."></textarea>
 						<button type="submit" id="deckImportOkButton">OK</button>
-						<button type="submit" id="deckImportCancelButton">Cancel</button>
-					</div>
+					</section>
+					<label for="deckImportScreenshotButton">
+						<input type="radio" id="deckImportScreenshotButton" name="deckImportMethod"/>
+						Import from screenshots
+					</label>
+					<section id="deckImportScreenshotSection">
+						<input type="file" id="deckImportFileBox" accept="image/png,image/jpeg,image/webp,image/bmp" multiple autocomplete="off"/>
+						<div>
+							<button type="button" id="deckImportScreenshotInstructionsButton">Show instructions</button>
+							<div id="deckImportScreenshotInstructions" hidden>
+								<ol>
+									<li>In <em>Splatoon 3</em>, open the main menu with X, select the Status tab, the Tableturf Battle section, then Card List.</li>
+									<li>Enter the Edit Deck menu with Y.</li>
+									<li>Move the cursor to the deck you want to import.</li>
+									<li>Take a screenshot using the capture button on your controller.<br/>If you have an external capture device, you can alternatively take a screenshot that way.</li>
+									<li>Repeat steps 3 and 4 for each deck you want to import.</li>
+								</ol>
+								<label for="deckImportScreenshotInstructionsButtonPC">
+									<input type="radio" id="deckImportScreenshotInstructionsButtonPC" name="deckImportScreenshotMethod"/>
+									Download screenshots using a PC
+								</label>
+								<label for="deckImportScreenshotInstructionsButtonMobile">
+									<input type="radio" id="deckImportScreenshotInstructionsButtonMobile" name="deckImportScreenshotMethod"/>
+									Download screenshots using a mobile device
+								</label>
+								<ol id="deckImportScreenshotInstructionsPC" start="6" hidden>
+									<li>Go to System Settings, then select Data Management, then Manage Screenshots and Videos, then Copy to PC via USB Connection.</li>
+									<li>Connect a USB cable to your PC and the USB-C port on the bottom of your Nintendo Switch.</li>
+									<li>The Nintendo Switch Album is now accessible in This PC or Devices in your file manager. Click Browse below and select the screenshots you created.</li>
+								</ol>
+								<ol id="deckImportScreenshotInstructionsMobile" start="6" hidden>
+									<li>In the Album, select one of the screenshots you created.</li>
+									<li>Enter the Editing and Posting menu with A, then select Send to Smart Device.</li>
+									<li>Follow the prompts to download the screenshots on your mobile device.<br/>On Android devices, it may be necessary to turn off mobile data.</li>
+								</ol>
+							</div>
+						</div>
+					</section>
+					<div id="deckImportErrorBox" class="error" hidden></div>
+					<button type="submit" id="deckImportCancelButton">Cancel</button>
 				</form>
 			</dialog>
 			<dialog id="deckExportDialog">

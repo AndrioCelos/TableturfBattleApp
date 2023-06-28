@@ -19,13 +19,26 @@ const deckExportDialog = document.getElementById('deckExportDialog') as HTMLDial
 const deckExportCopyButton = document.getElementById('deckExportCopyButton') as HTMLButtonElement;
 const deckExportTextBox = document.getElementById('deckExportTextBox') as HTMLTextAreaElement;
 
+const deckExportAllButton = document.getElementById('deckExportAllButton') as HTMLButtonElement;
+
 const deckImportDialog = document.getElementById('deckImportDialog') as HTMLDialogElement;
 const deckImportForm = document.getElementById('deckImportForm') as HTMLFormElement;
 const deckImportTextBox = document.getElementById('deckImportTextBox') as HTMLTextAreaElement;
+const deckImportTextButton = document.getElementById('deckImportTextButton') as HTMLInputElement;
+const deckImportTextSection = document.getElementById('deckImportTextSection')!;
+const deckImportScreenshotButton = document.getElementById('deckImportScreenshotButton') as HTMLInputElement;
+const deckImportScreenshotSection = document.getElementById('deckImportScreenshotSection')!;
+const deckImportScreenshotInstructionsButton = document.getElementById('deckImportScreenshotInstructionsButton') as HTMLButtonElement;
+const deckImportScreenshotInstructionsButtonPC = document.getElementById('deckImportScreenshotInstructionsButtonPC') as HTMLInputElement;
+const deckImportScreenshotInstructionsButtonMobile = document.getElementById('deckImportScreenshotInstructionsButtonMobile') as HTMLInputElement;
+const deckImportScreenshotInstructions = document.getElementById('deckImportScreenshotInstructions')!;
+const deckImportScreenshotInstructionsPC = document.getElementById('deckImportScreenshotInstructionsPC')!;
+const deckImportScreenshotInstructionsMobile = document.getElementById('deckImportScreenshotInstructionsMobile')!;
+const deckImportFileBox = document.getElementById('deckImportFileBox') as HTMLInputElement;
 const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
-const deckButtons = new CheckButtonGroup<number>();
+const deckButtons = new CheckButtonGroup<Deck>();
 
 function showDeckList() {
 	showPage('deckList');
@@ -84,16 +97,39 @@ function saveDecks() {
 function createDeckButton(index: number, deck: Deck) {
 	const buttonElement = document.createElement('button');
 	buttonElement.type = 'button';
-	buttonElement.dataset.index = index.toString();
-	deckButtons.add(new CheckButton(buttonElement), index);
+	const button = new CheckButton(buttonElement);
+	deckButtons.add(button, deck);
 	buttonElement.addEventListener('click', () => {
-		selectedDeck = decks[deckButtons.value!];
+		selectedDeck = deckButtons.value;
 		selectDeck();
 	});
 	buttonElement.innerText = deck.name;
 
 	deckList.insertBefore(buttonElement, addDeckControls);
-	return buttonElement;
+	return button;
+}
+
+function importDecks(decksToImport: (Deck | number[])[]) {
+	let newSelectedDeck: Deck | null = null;
+	for (const el of decksToImport) {
+		let deck;
+		if (el instanceof Array)
+			deck = new Deck(`Imported Deck ${decks.length + 1}`, el, false);
+		else {
+			deck = el;
+			if (!deck.name) deck.name = `Imported Deck ${decks.length + 1}`;
+		}
+		createDeckButton(decks.length, deck);
+		decks.push(deck);
+		newSelectedDeck ??= deck;
+	}
+	if (newSelectedDeck) {
+		selectedDeck = newSelectedDeck;
+		deckButtons.deselect();
+		deckButtons.entries.find(e => e.value == newSelectedDeck)!.button.checked = true;
+		selectDeck();
+		saveDecks();
+	}
 }
 
 newDeckButton.addEventListener('click', () => {
@@ -104,17 +140,28 @@ newDeckButton.addEventListener('click', () => {
 });
 importDeckButton.addEventListener('click', () => {
 	deckImportErrorBox.hidden = true;
+	deckImportTextSection.hidden = true;
+	deckImportScreenshotSection.hidden = true;
+	deckImportScreenshotInstructions.hidden = true;
+	deckImportScreenshotInstructionsPC.hidden = true;
+	deckImportScreenshotInstructionsMobile.hidden = true;
+	deckImportTextButton.checked = false;
+	deckImportScreenshotButton.checked = false;
+	deckImportScreenshotInstructionsButtonPC.checked = false;
+	deckImportScreenshotInstructionsButtonMobile.checked = false;
+	deckImportScreenshotInstructionsButton.innerText = 'Show instructions';
 	deckImportDialog.showModal();
 });
 deckImportForm.addEventListener('submit', e => {
 	if (e.submitter == deckImportOkButton) {
 		try {
-			const deck = JSON.parse(deckImportTextBox.value) as Deck;
-			if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => i < 0 || i > cardDatabase.cards!.length))
-				throw new SyntaxError('Invalid JSON deck');
-			if (!deck.name) deck.name = `Deck ${decks.length + 1}`;
-			createDeckButton(decks.length, deck);
-			decks.push(deck);
+			const data = JSON.parse(deckImportTextBox.value);
+			const decks = (data instanceof Array ? data : [ data ]) as Deck[];
+			for (const deck of decks) {
+				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => i < 0 || i > cardDatabase.cards!.length))
+					throw new SyntaxError('Invalid JSON deck');
+			}
+			importDecks(decks);
 		} catch (ex: any) {
 			e.preventDefault();
 			deckImportErrorBox.innerText = ex.message;
@@ -167,13 +214,12 @@ function deselectDeck() {
 
 deckExportButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	const json = JSON.stringify(selectedDeck, [ 'name', 'cards' ], '\t');
+	const json = JSON.stringify(selectedDeck, [ 'name', 'cards' ]);
 	deckExportTextBox.value = json;
 	deckExportCopyButton.innerText = 'Copy';
 	deckExportDialog.showModal();
 });
 deckExportCopyButton.addEventListener('click', () => {
-	if (selectedDeck == null) return;
 	navigator.clipboard.writeText(deckExportTextBox.value);
 	deckExportCopyButton.innerText = 'Copied';
 });
@@ -190,36 +236,75 @@ deckRenameButton.addEventListener('click', () => {
 
 deckCopyButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	selectedDeck = new Deck(selectedDeck.name, Array.from(selectedDeck.cards), false);
-	const button = createDeckButton(decks.length, selectedDeck);
-	decks.push(selectedDeck);
-	(button.getElementsByTagName('input')[0] as HTMLInputElement).checked = true;
-	selectDeck();
-	saveDecks();
+	importDecks([ new Deck(`${selectedDeck.name} - Copy`, Array.from(selectedDeck.cards), false) ]);
 });
 
 deckDeleteButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	const index = decks.indexOf(selectedDeck);
-	if (index < 0) return;
 	if (!confirm(`Are you sure you want to delete ${selectedDeck.name}?`)) return;
 
-	let removed = false;
 	for (const el of deckButtons.entries) {
-		if (removed) {
-			el.value--;
-		} else if (el.value == index) {
+		if (el.value == selectedDeck) {
 			deckList.removeChild(el.button.buttonElement);
-			removed = true;
+			break;
 		}
 	}
 
-	decks.splice(index, 1);
+	const index = decks.indexOf(selectedDeck);
+	if (index >= 0) decks.splice(index, 1);
 	deckButtons.entries.splice(index, 1);
 	deckButtons.deselect();
 	selectedDeck = null;
 	deckEditorDeckViewSection.hidden = true;
 	saveDecks();
+});
+
+deckImportTextButton.addEventListener('input', () => {
+	deckImportTextSection.hidden = false;
+	deckImportScreenshotSection.hidden = true;
+});
+deckImportScreenshotButton.addEventListener('input', () => {
+	deckImportTextSection.hidden = true;
+	deckImportScreenshotSection.hidden = false;
+});
+
+deckImportScreenshotInstructionsButton.addEventListener('click', () => {
+	if (deckImportScreenshotInstructions.hidden) {
+		deckImportScreenshotInstructions.hidden = false;
+		deckImportScreenshotInstructionsButton.innerText = 'Hide instructions';
+	} else {
+		deckImportScreenshotInstructions.hidden = true;
+		deckImportScreenshotInstructionsButton.innerText = 'Show instructions';
+	}
+});
+deckImportScreenshotInstructionsButtonPC.addEventListener('input', () => {
+	deckImportScreenshotInstructionsPC.hidden = false;
+	deckImportScreenshotInstructionsMobile.hidden = true;
+});
+deckImportScreenshotInstructionsButtonMobile.addEventListener('input', () => {
+	deckImportScreenshotInstructionsPC.hidden = true;
+	deckImportScreenshotInstructionsMobile.hidden = false;
+});
+
+deckImportFileBox.addEventListener('change', async () => {
+	if (deckImportFileBox.files && deckImportFileBox.files.length > 0) {
+		try {
+			const bitmaps = await Promise.all(Array.from(deckImportFileBox.files, f => createImageBitmap(f)));
+			importDecks(bitmaps.map(getCardListFromImageBitmap));
+		} catch (ex: any) {
+			deckImportErrorBox.innerText = ex.message;
+			deckImportErrorBox.hidden = false;
+		}
+		deckImportFileBox.value = '';
+		deckImportDialog.close();
+	}
+});
+
+deckExportAllButton.addEventListener('click', () => {
+	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards' ]);
+	deckExportTextBox.value = json;
+	deckExportCopyButton.innerText = 'Copy';
+	deckExportDialog.showModal();
 });
 
 if (!canPushState)
