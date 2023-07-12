@@ -6,17 +6,19 @@ class Board {
 	playerIndex: number | null = 0;
 	cardPlaying: Card | null = null;
 	cardRotation = 0;
-	specialAttack = false;
+	_specialAttack = false;
 
 	autoHighlight = true;
 	flip = false;
 
 	highlightX = NaN;
 	highlightY = NaN;
-	private highlightedCells: [x: number, y: number][] = [ ];
+	private highlightedCells: Point[] = [ ];
+	private animatedCells: Point[] = [ ];
+	private specialAnimatedCells: [point: Point, elements: HTMLElement[]][] = [ ];
 	private touch: [index: number, x: number, y: number, highlightX: number, highlightY: number] | null = null;
 
-	startSpaces: { x: number, y: number }[] = [ ];
+	startSpaces: Point[] = [ ];
 
 	onsubmit: ((x: number, y: number) => void) | null = null;
 	oncancel: (() => void) | null = null;
@@ -98,6 +100,15 @@ class Board {
 			if (this.touch != null && Array.from(e.changedTouches).find(t => t.identifier == this.touch![0]))
 				this.touch = null;
 		});
+	}
+
+	get specialAttack() { return this._specialAttack; }
+	set specialAttack(value: boolean) {
+		this._specialAttack = value;
+		if (value)
+			this.table.classList.add('specialAttackVisual');
+		else
+			this.table.classList.remove('specialAttackVisual');
 	}
 
 	moveHighlight(move: (x: number, y: number, r: number) => [number, number, number], clamp: boolean) {
@@ -185,7 +196,7 @@ class Board {
 							cell.classList.add('hoverillegal');
 						if (space == Space.SpecialInactive1)
 							cell.classList.add('hoverspecial');
-						this.highlightedCells.push([x2, y2]);
+						this.highlightedCells.push({ x: x2, y: y2 });
 					}
 				}
 			}
@@ -201,10 +212,73 @@ class Board {
 	}
 
 	private internalClearHighlight() {
-		for (const [x, y] of this.highlightedCells) {
-			this.cells[x][y].setAttribute('class', Space[this.grid[x][y]] );
+		for (const s of this.highlightedCells) {
+			this.cells[s.x][s.y].setAttribute('class', Space[this.grid[s.x][s.y]] );
 		}
 		this.highlightedCells.splice(0);
+	}
+
+	enableInkAnimations() {
+		this.table.classList.add('enableInkAnimation');
+	}
+
+	showInkAnimation(x: number, y: number) {
+		this.animatedCells.push({ x, y });
+		this.cells[x][y].classList.add('inkAnimation');
+	}
+
+	clearInkAnimations() {
+		for (const s of this.animatedCells)
+			this.cells[s.x][s.y].classList.remove('inkAnimation');
+		this.animatedCells.splice(0);
+		this.table.classList.remove('enableInkAnimation');
+	}
+
+	showSubmitAnimation() {
+		for (const s of this.highlightedCells)
+			this.cells[s.x][s.y].classList.add('submitted');
+	}
+
+	private showSpecialAnimation(x: number, y: number) {
+		if ((this.grid[x][y] & Space.SpecialActive1) != Space.SpecialActive1 || this.specialAnimatedCells.find(el => el[0].x == x && el[0].y == y))
+			return;
+
+		const parent = this.cells[x][y];
+		const els = [ ];
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		els.push(this.createSpecialAnimationElement(parent));
+		this.specialAnimatedCells.push([{ x, y }, els]);
+	}
+
+	private createSpecialAnimationElement(parent: Element) {
+		const el = document.createElement('div');
+		parent.appendChild(el);
+		return el;
+	}
+
+	private clearSpecialAnimation(x: number, y: number) {
+		const i = this.specialAnimatedCells.findIndex(el => el[0].x == x && el[0].y == y);
+		if (i < 0) return;
+
+		for (const el of this.specialAnimatedCells[i][1])
+			el.parentElement!.removeChild(el);
+		this.specialAnimatedCells.splice(i, 1);
+	}
+
+	clearAllSpecialAnimations() {
+		for (const entry of this.specialAnimatedCells) {
+			for (const el of entry[1])
+				el.parentElement!.removeChild(el);
+		}
+		this.specialAnimatedCells.splice(0);
 	}
 
 	resize(grid?: Space[][]) {
@@ -213,6 +287,7 @@ class Board {
 		clearChildren(this.table);
 		this.cells.splice(0);
 		this.highlightedCells.splice(0);
+		this.specialAnimatedCells.splice(0);
 
 		const boardWidth = this.grid.length;
 		const boardHeight = this.grid[0].length;
@@ -229,7 +304,8 @@ class Board {
 				col.push(td);
 				td.addEventListener('click', () => {
 					if (this.autoHighlight && this.cardPlaying != null && this.onsubmit && !isNaN(this.highlightX) && !isNaN(this.highlightY)) {
-						this.onsubmit(this.highlightX, this.highlightY);
+						if (this.onsubmit)
+							this.onsubmit(this.highlightX, this.highlightY);
 					}
 				});
 				td.addEventListener('contextmenu', e => e.preventDefault());
@@ -291,15 +367,21 @@ class Board {
 
 	refresh() {
 		this.clearHighlight();
+		this.clearInkAnimations();
 		for (let x = 0; x < this.grid.length; x++) {
 			for (let y = 0; y < this.grid[x].length; y++) {
-				this.cells[x][y].setAttribute('class', Space[this.grid[x][y]] );
+				this.setDisplayedSpace(x, y, this.grid[x][y]);
 			}
 		}
 	}
 
 	setDisplayedSpace(x: number, y: number, newState: Space) {
 		this.cells[x][y].setAttribute('class', Space[newState]);
+		if (this.cells[x][y].childNodes.length > 0) {
+			if ((newState & Space.SpecialActive1) != Space.SpecialActive1)
+				this.clearSpecialAnimation(x, y);
+		} else
+			this.showSpecialAnimation(x, y);
 	}
 
 	getScores() {

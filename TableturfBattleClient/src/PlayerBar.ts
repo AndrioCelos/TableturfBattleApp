@@ -66,6 +66,23 @@ class PlayerBar {
 		}
 	}
 
+	set highlightSpecialPoints(value: number) {
+		const points = this.specialPointsContainer.getElementsByClassName('specialPoint');
+		for (let i = 0; i < points.length; i++) {
+			if (i < value) {
+				points[i].classList.add('specialAnimation');
+				for (let j = 0; j < 10; j++) {
+					const el = document.createElement('div');
+					points[i].appendChild(el);
+				}
+			} else {
+				points[i].classList.remove('specialAnimation');
+				clearChildren(points[i]);
+				(points[i] as HTMLElement).innerText = `${i + 1}`;
+			}
+		}
+	}
+
 	get pointsTo() { return this.pointsToContainer.hidden ? null : parseInt(this.pointsToElement.innerText); }
 	set pointsTo(value: number | null) {
 		if (value == null || value == 0)  // A player can never actually have 0 points because they start with a permanent special space.

@@ -422,14 +422,60 @@ dialog::backdrop {
 #gameBoard td.SpecialInactive2 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
 #gameBoard td.SpecialInactive3 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
 #gameBoard td.SpecialInactive4 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
-#gameBoard td.SpecialActive1 { background: url('assets/SpecialOverlay.png') center/contain, radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
+#gameBoard td.SpecialActive1 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
 #gameBoard td.SpecialActive2 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
 #gameBoard td.SpecialActive3 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
 #gameBoard td.SpecialActive4 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
 
+#gameBoard.specialAttackVisual td:is(.Ink1, .Ink2, .Ink3, .Ink4) {
+	opacity: 0.5;
+}
+
+#gameBoard.enableInkAnimation td.inkAnimation { animation: 0.333s inkPlaceAnimation; }
+#gameBoard td.submitted { animation: 0.333s inkPlaceAnimation; }
+
+@keyframes inkPlaceAnimation {
+	from { box-shadow: 0 0 0px 0 #ffffffff; }
+	to { box-shadow: 0 0 50px 10px #ffffff00; }
+}
+
+:is(#gameBoard td, .specialAnimation) > div {
+	position: absolute;
+	border-radius: var(--anim-size);
+	filter: blur(calc(var(--anim-size) * 0.1));
+	animation: 1.5s linear infinite specialSpaceAnimation;
+	left: calc(var(--x) * 0.01 * var(--anim-size));
+	top: calc(var(--y) * 0.01 * var(--anim-size));
+	width: calc(var(--w) * 0.01 * var(--anim-size));
+	height: calc(var(--w) * 0.01 * var(--anim-size));
+	z-index: 1;
+}
+#gameBoard td > div { --anim-size: min(3.5vh, 3.5vw); }
+#gameBoard td.SpecialActive1 > div { background: color-mix(in srgb, var(--special-colour-1), var(--special-accent-colour-1) 75%); }
+#gameBoard td.SpecialActive2 > div { background: color-mix(in srgb, var(--special-colour-2), var(--special-accent-colour-2) 75%); }
+#gameBoard td.SpecialActive3 > div { background: color-mix(in srgb, var(--special-colour-3), var(--special-accent-colour-3) 75%); }
+#gameBoard td.SpecialActive4 > div { background: color-mix(in srgb, var(--special-colour-4), var(--special-accent-colour-4) 75%); }
+
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 1) { --x: -12; --y: 29; --w: 36; animation-delay:  -900ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 2) { --x: -10; --y: 20; --w: 52; animation-delay:  -300ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 3) { --x:   1; --y:  4; --w: 48; animation-delay:  -600ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 4) { --x:  12; --y:  7; --w: 46; animation-delay:  -750ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 5) { --x:  20; --y: -1; --w: 52; animation-delay: -1350ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 6) { --x:  29; --y:  3; --w: 52; animation-delay:  -150ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 7) { --x:  44; --y: 11; --w: 42; animation-delay:  -450ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 8) { --x:  50; --y:  9; --w: 50; animation-delay: -1200ms; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type( 9) { --x:  66; --y: 20; --w: 36; animation-delay:     0  ; }
+:is(#gameBoard td, .specialAnimation) > div:nth-of-type(10) { --x:  72; --y: 16; --w: 46; animation-delay: -1050ms; }
+
+@keyframes specialSpaceAnimation {
+	from { transform: translateY(0) scale(0); }
+	 20% { transform: translateY(calc(var(--anim-size) * -0.15)) scale(1); }
+	 60% { transform: translateY(calc(var(--anim-size) * -0.45)) scale(1); }
+	  to { transform: translateY(calc(var(--anim-size) * -0.75)) scale(0); }
+}
+
 #gameBoard td {
 	position: relative;
-	overflow: hidden;
 }
 
 #gameBoard td.hover::after {
@@ -443,6 +489,7 @@ dialog::backdrop {
 	background: repeating-linear-gradient(135deg, var(--hover-colour) 0, var(--hover-colour) 0.6ex, transparent 0.6ex, transparent 1.2ex);
 	background-attachment: fixed;
 }
+#gameBoard td.hoverspecial { overflow: hidden; }
 #gameBoard td.hoverspecial::after {
 	left: -50%;
 	top: -50%;
@@ -500,21 +547,25 @@ dialog::backdrop {
 .playerBar[data-index="0"] {
 	--colour: var(--primary-colour-1);
 	--special-colour: var(--special-colour-1);
+	--special-accent-colour: var(--special-accent-colour-1);
 	grid-row: player-row-0;
 }
 .playerBar[data-index="1"] {
 	--colour: var(--primary-colour-2);
 	--special-colour: var(--special-colour-2);
+	--special-accent-colour: var(--special-accent-colour-2);
 	grid-row: player-row-1;
 }
 .playerBar[data-index="2"] {
 	--colour: var(--primary-colour-3);
 	--special-colour: var(--special-colour-3);
+	--special-accent-colour: var(--special-accent-colour-3);
 	grid-row: player-row-2;
 }
 .playerBar[data-index="3"] {
 	--colour: var(--primary-colour-4);
 	--special-colour: var(--special-colour-4);
+	--special-accent-colour: var(--special-accent-colour-4);
 	grid-row: player-row-3;
 }
 
@@ -847,15 +898,22 @@ dialog::backdrop {
 
 .specialPoints div {
 	display: inline-block;
-	width: 1em;
-	height: 1em;
-	border: 1px solid;
+	width: 1.25em;
+	height: 1.25em;
 	text-align: center;
 }
 
 .playerBar .specialPoint {
+	position: relative;
 	color: transparent;
-	background: var(--special-colour);
+	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour);
+}
+.playerBar .specialPoint.specialAnimation {
+	background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour) 25%, var(--special-colour) 75%);
+}
+.playerBar .specialPoint.specialAnimation > div {
+	background: color-mix(in srgb, var(--special-colour), var(--special-accent-colour) 75%);
+	--anim-size: 1.25em;
 }
 
 .specialPoints div {

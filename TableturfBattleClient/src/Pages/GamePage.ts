@@ -229,7 +229,7 @@ replayNextButton.addEventListener('click', _ => {
 
 		replayAnimationAbortController = new AbortController();
 		(async () => {
-			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
+			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
 			turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 			clearPlayContainers();
 			if (currentGame.turnNumber > 12) {
@@ -527,6 +527,7 @@ function lockGamePage() {
 
 async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
+	moves: Move[],
 	placements: Placement[],
 	specialSpacesActivated: Point[]
 }, anySpecialAttacks: boolean, abortSignal?: AbortSignal) {
@@ -535,9 +536,16 @@ async function playInkAnimations(data: {
 	board.clearHighlight();
 	board.cardPlaying = null;
 	board.autoHighlight = false;
+	board.specialAttack = false;
 	canPlay = false;
 	timeLabel.faded = true;
 	await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
+	for (let i = 0; i < data.game.players.length; i++) {
+		if ((data.moves[i] as PlayMove).isSpecialAttack)
+			playerBars[i].specialPoints -= data.moves[i].card.specialCost;
+		playerBars[i].highlightSpecialPoints = 0;
+	}
+	board.enableInkAnimations();
 	for (const placement of placements) {
 		// Skip the delay when cards don't overlap.
 		if (placement.spacesAffected.find(p => inkPlaced.has(p.space.y * 37 + p.space.x))) {
@@ -548,9 +556,12 @@ async function playInkAnimations(data: {
 		for (const p of placement.spacesAffected) {
 			inkPlaced.add(p.space.y * 37 + p.space.x);
 			board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
+			board.showInkAnimation(p.space.x, p.space.y);
 		}
 	}
-	await delay(1000, abortSignal);
+	await delay(500, abortSignal);
+	board.clearInkAnimations();
+	await delay(500, abortSignal);
 
 	// Show special spaces.
 	if (data.game.board)
@@ -679,6 +690,8 @@ function updateHandAndDeck(playerData: PlayerData) {
 				}
 			} else {
 				board.cardPlaying = card;
+				if (specialButton.checked)
+					playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = card.specialCost;
 				if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
 					board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
 					board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
@@ -784,6 +797,7 @@ function passButton_click(e: Event) {
 		clearPlayHint();
 		specialButton.checked = false;
 		board.cardPlaying = null;
+		playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = 0;
 		board.specialAttack = false;
 		board.clearHighlight();
 		handButtons.deselect();
@@ -809,6 +823,7 @@ function specialButton_click(e: Event) {
 	specialButton.checked = !specialButton.checked;
 	board.specialAttack = specialButton.checked;
 	handButtons.deselect();
+	playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = 0;
 	if (specialButton.checked) {
 		passHint.hidden = true;
 		showPlayHint('Unleash it next to <div class="playHintSpecial">&nbsp;</div>!');
@@ -857,9 +872,16 @@ board.onsubmit = (x, y) => {
 	}
 	if (testMode) {
 		const move: PlayMove = { card: board.cardPlaying, isPass: false, isTimeout: false, x, y, rotation: board.cardRotation, isSpecialAttack: false };
-		const r = board.makePlacements([ move ]);
-		testPlacements.push({ card: board.cardPlaying, placementResults: r });
-		board.refresh();
+		const result = board.makePlacements([ move ]);
+		testPlacements.push({ card: board.cardPlaying, placementResults: result });
+		board.enableInkAnimations();
+		for (const p of result.placements[0].spacesAffected) {
+			board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
+			board.showInkAnimation(p.space.x, p.space.y);
+		}
+
+		if (result.specialSpacesActivated.length > 0)
+			setTimeout(() => board.refresh(), 333);
 
 		var li = document.createElement('div');
 		li.innerText = board.cardPlaying.name;
@@ -879,6 +901,7 @@ board.onsubmit = (x, y) => {
 		board.cardPlaying = null;
 		testUndoButton.enabled = true;
 	} else if (canPlay) {
+		board.showSubmitAnimation();
 		timeLabel.faded = true;
 		lockGamePage();
 		let req = new XMLHttpRequest();
@@ -903,6 +926,8 @@ board.onsubmit = (x, y) => {
 
 board.oncancel = () => {
 	board.cardPlaying = null;
+	if (currentGame?.me)
+		playerBars[currentGame.me.playerIndex].highlightSpecialPoints = 0;
 	board.clearHighlight();
 	for (const button of handButtons.buttons) {
 		if (button.checked) {
