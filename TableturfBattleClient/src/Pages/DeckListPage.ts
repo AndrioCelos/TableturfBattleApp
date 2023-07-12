@@ -291,12 +291,12 @@ deckImportFileBox.addEventListener('change', async () => {
 		try {
 			const bitmaps = await Promise.all(Array.from(deckImportFileBox.files, f => createImageBitmap(f)));
 			importDecks(bitmaps.map(getCardListFromImageBitmap));
+			deckImportDialog.close();
 		} catch (ex: any) {
 			deckImportErrorBox.innerText = ex.message;
 			deckImportErrorBox.hidden = false;
 		}
 		deckImportFileBox.value = '';
-		deckImportDialog.close();
 	}
 });
 
