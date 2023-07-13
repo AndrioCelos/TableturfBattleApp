@@ -621,14 +621,6 @@ dialog::backdrop {
 	text-align: center;
 }
 
-#passHint:not([hidden]) {
-	position: absolute;
-	margin: 0 0 35em 1em;
-	padding: 0.5em 1em;
-	background: #80808080;
-	border-radius: 0.5em;
-}
-
 #playRow:not([hidden]) {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -790,27 +782,18 @@ dialog::backdrop {
 	margin: 0;
 }
 
-#playHint {
-	grid-column: -3 / -1; grid-row: -2 / -1; align-self: end;
-	justify-self: end;
-	margin: 0 3em 1.5em 0;
-	font-size: larger;
-	padding: 0 0.5em;
-	background: #00000080;
-	border-radius: 0.5em;
+.hintError {
+	animation: 1s infinite hintError;
 }
-#playHint.playError {
-	animation: 1s infinite playHintError;
+.hintError.repeated {
+	animation: 1s infinite hintError, 0.5s linear 1 hintShake;
 }
-#playHint.playError.repeated {
-	animation: 1s infinite playHintError, 0.5s linear 1 playHintShake;
-}
-@keyframes playHintError {
+@keyframes hintError {
 	from { background: #ff0000ff; }
 	50% { background: #ff000080; }
 	to { background: #ff0000ff; }
 }
-@keyframes playHintShake {
+@keyframes hintShake {
 	0% { transform: translate(1px, 1px); }
 	10% { transform: translate(-1px, -2px); }
 	20% { transform: translate(-3px, 0px); }
@@ -822,6 +805,49 @@ dialog::backdrop {
 	80% { transform: translate(-1px, -1px); }
 	90% { transform: translate(1px, 2px); }
 	100% { transform: translate(0px, 0px); }
+}
+
+.hintSpecial:before {
+	content: '';
+	position: absolute;
+	left: -24em;
+	top: -31em;
+	right: -24em;
+	bottom: -31em;
+	transform: scaleY(0.05) rotateZ(0deg);
+	z-index: -1;
+	background: radial-gradient(grey, transparent 50%), conic-gradient(hsl(0, 100%, 75%), hsl(45, 100%, 75%), hsl(90, 100%, 75%), hsl(135, 100%, 75%), hsl(180, 100%, 75%), hsl(225, 100%, 75%), hsl(270, 100%, 75%), hsl(315, 100%, 75%), hsl(360, 100%, 75%));
+	animation: 3s linear infinite hintSpecial;
+}
+
+@keyframes hintSpecial {
+	to { transform: scaleY(0.05) rotateZ(360deg); }
+}
+
+#cardHint:not([hidden]) {
+	position: absolute;
+	left: -1em;
+	width: 16em;
+	margin: 0 0 30em 0em;
+	padding: 0 1em 0 3em;
+	font-size: larger;
+	background: #80808080;
+	border-radius: 0.5em;
+	z-index: 0;
+	overflow: hidden;
+}
+#playHint:not([hidden]) {
+	position: relative;
+	grid-column: -3 / -1; grid-row: -2 / -1; align-self: end;
+	justify-self: end;
+	width: 16em;
+	margin: 0 -1em 1.5em 0;
+	padding: 0 3em 0 1.5em;
+	font-size: larger;
+	background: #00000080;
+	border-radius: 0.5em;
+	z-index: 1;
+	overflow: hidden;
 }
 
 #testPlacementList {
@@ -1138,7 +1164,7 @@ dialog::backdrop {
 	text-align: center;
 	font-size: larger;
 	border-radius: 0.5em;
-	animation: 3s specialAttackAnimation;
+	animation: 3s forwards specialAttackAnimation;
 }
 
 @keyframes specialAttackAnimation {
@@ -1443,9 +1469,18 @@ dialog::backdrop {
 		min-height: 12em;
 	}
 
-	#passHint:not([hidden]) {
-		margin: 0 0 16em 0;
+	#cardHint:not([hidden]) {
+		left: auto;
 		align-self: center;
+		margin: 0 0 16em 0;
+		padding: 0;
+		text-align: center;
+	}
+
+	#playHint:not([hidden]) {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		margin-bottom: 0;
 	}
 
 	#scoreSection:not([hidden]) {
@@ -1518,12 +1553,6 @@ dialog::backdrop {
 		background: black;
 		z-index: 2;
 		margin-top: 5em;
-	}
-
-	#playHint {
-		grid-column: 1 / -1;
-		grid-row: 2;
-		margin: 0 1em 0 0;
 	}
 
 	/* Deck editor - Mobile layout */

@@ -7,7 +7,6 @@ const timeLabel = new TimeLabel(document.getElementById('timeLabel')!);
 
 const passButton = CheckButton.fromId('passButton');
 const specialButton = CheckButton.fromId('specialButton');
-const passHint = document.getElementById('passHint')!;
 const gameButtonsContainer = document.getElementById('gameButtonsContainer')!;
 const rotateLeftButton = document.getElementById('rotateLeftButton') as HTMLButtonElement;
 const rotateRightButton = document.getElementById('rotateRightButton') as HTMLButtonElement;
@@ -25,8 +24,8 @@ const replayPreviousButton = document.getElementById('replayPreviousButton')!;
 const flipButton = document.getElementById('flipButton') as HTMLButtonElement;
 let replayAnimationAbortController: AbortController | null = null;
 
-const playHint = document.getElementById('playHint')!;
-let playHintTimeout: number | null = null;
+const cardHint = HintLabel.fromId('cardHint');
+const playHint = HintLabel.fromId('playHint');
 
 const shareReplayLinkButton = document.getElementById('shareReplayLinkButton') as HTMLButtonElement;
 let canShareReplay = false;
@@ -56,6 +55,8 @@ const testCardButtonGroup = new CheckButtonGroup<Card>();
 const testDeckCardButtons: CardButton[] = [ ];
 const testPlacements: { card: Card, placementResults: PlacementResults }[] = [ ];
 const testCardListBackdrop = document.getElementById('testCardListBackdrop')!;
+
+let playHintHtml: string | null = null;
 
 let testMode = false;
 let canPlay = false;
@@ -362,7 +363,7 @@ function addTestCard(card: Card) {
 
 function testCardButton_click(button: CardButton) {
 	if (!button.enabled) {
-		showPlayHintError('This card has already been played.');
+		cardHint.showError('This card has already been played.');
 		return;
 	}
 	board.autoHighlight = true;
@@ -447,30 +448,6 @@ function updateStats(playerIndex: number, scores: number[]) {
 	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
 }
 
-function clearPlayHint() {
-	playHint.hidden = true;
-	if (playHintTimeout) {
-		clearTimeout(playHintTimeout);
-		playHintTimeout = null;
-	}
-}
-function showPlayHint(html: string) {
-	clearPlayHint();
-	playHint.innerHTML = html;
-	playHint.className = '';
-	playHint.hidden = false;
-}
-function showPlayHintError(html: string) {
-	playHint.className = !playHint.hidden && html == playHint.innerHTML ? 'playError repeated' : 'playError';
-	if (playHintTimeout) {
-		clearTimeout(playHintTimeout!);
-		resetAnimation(playHint);
-	}
-	playHint.innerHTML = html;
-	playHint.hidden = false;
-	playHintTimeout = setTimeout(() => playHint.hidden = true, 5000);
-}
-
 /** Shows the ready indication for the specified player. */
 function showReady(playerIndex: number) {
 	const el = document.createElement('div');
@@ -521,8 +498,8 @@ function lockGamePage() {
 	for (const button of handButtons.buttons) button.enabled = false;
 	passButton.enabled = false;
 	specialButton.enabled = false;
-	passHint.hidden = true;
-	clearPlayHint();
+	cardHint.clear();
+	playHint.clear();
 }
 
 async function playInkAnimations(data: {
@@ -550,7 +527,10 @@ async function playInkAnimations(data: {
 		// Skip the delay when cards don't overlap.
 		if (placement.spacesAffected.find(p => inkPlaced.has(p.space.y * 37 + p.space.x))) {
 			inkPlaced.clear();
-			await delay(1000, abortSignal);
+			await delay(500, abortSignal);
+			board.clearInkAnimations();
+			await delay(500, abortSignal);
+			board.enableInkAnimations();
 		}
 
 		for (const p of placement.spacesAffected) {
@@ -676,12 +656,13 @@ function updateHandAndDeck(playerData: PlayerData) {
 		button.buttonElement.addEventListener('click', e => {
 			if (!button.enabled) {
 				if (specialButton.checked && currentGame!.players[currentGame!.me!.playerIndex].specialPoints < card.specialCost)
-					showPlayHintError('Not enough special points.');
+					cardHint.showError('Not enough special points.');
 				else if (!(specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i])
-					showPlayHintError('No place to play this card.');
+					cardHint.showError('No place to play this card.');
 				e.preventDefault();
 				return;
 			}
+			cardHint.clear();
 			if (passButton.checked) {
 				if (canPlay) {
 					timeLabel.faded = true;
@@ -696,6 +677,8 @@ function updateHandAndDeck(playerData: PlayerData) {
 					board.highlightX = board.startSpaces[board.playerIndex!].x - (board.flip ? 4 : 3);
 					board.highlightY = board.startSpaces[board.playerIndex!].y - (board.flip ? 4 : 3);
 				}
+				if (specialButton.checked)
+					playHint.show('Unleash it next to <div class="playHintSpecial">&nbsp;</div>!', true);
 				board.cardRotation = board.flip ? 2 : 0;
 				board.refreshHighlight();
 				board.table.focus();
@@ -792,9 +775,9 @@ function passButton_click(e: Event) {
 	}
 	passButton.checked = !passButton.checked;
 	board.autoHighlight = !passButton.checked;
-	passHint.hidden = !passButton.checked;
 	if (passButton.checked) {
-		clearPlayHint();
+		cardHint.show('Pick a card to discard.', false);
+		playHint.clear();
 		specialButton.checked = false;
 		board.cardPlaying = null;
 		playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = 0;
@@ -804,6 +787,7 @@ function passButton_click(e: Event) {
 		for (const button of handButtons.buttons)
 			button.enabled = true;
 	} else {
+		cardHint.clear();
 		for (let i = 0; i < 4; i++) {
 			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
@@ -814,9 +798,9 @@ passButton.buttonElement.addEventListener('click', passButton_click);
 function specialButton_click(e: Event) {
 	if (!specialButton.enabled) {
 		if (currentGame!.me!.hand!.every(c => currentGame!.players[currentGame!.me!.playerIndex].specialPoints < c.specialCost))
-			showPlayHintError('Not enough special points.');
+			cardHint.showError('Not enough special points.');
 		else if (!canPlayCardAsSpecialAttack.includes(true))
-			showPlayHintError('No place to play a special attack.');
+			cardHint.showError('No place to play a special attack.');
 		e.preventDefault();
 		return;
 	}
@@ -824,9 +808,9 @@ function specialButton_click(e: Event) {
 	board.specialAttack = specialButton.checked;
 	handButtons.deselect();
 	playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = 0;
+	playHint.clear();
 	if (specialButton.checked) {
-		passHint.hidden = true;
-		showPlayHint('Unleash it next to <div class="playHintSpecial">&nbsp;</div>!');
+		cardHint.show('Pick a card to do a Special Attack!', true);
 		passButton.checked = false;
 		board.autoHighlight = true;
 		board.cardPlaying = null;
@@ -834,7 +818,7 @@ function specialButton_click(e: Event) {
 		for (let i = 0; i < 4; i++)
 			handButtons.entries[i].button.enabled = canPlayCardAsSpecialAttack[i];
 	} else {
-		clearPlayHint();
+		cardHint.clear();
 		for (let i = 0; i < 4; i++) {
 			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
@@ -867,7 +851,7 @@ board.onsubmit = (x, y) => {
 		return;
 	const message = board.checkMoveLegality(currentGame.me.playerIndex, board.cardPlaying, x, y, board.cardRotation, board.specialAttack);
 	if (message != null) {
-		showPlayHintError(message);
+		playHint.showError(message);
 		return;
 	}
 	if (testMode) {
