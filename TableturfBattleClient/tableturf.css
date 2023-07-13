@@ -932,7 +932,7 @@ dialog::backdrop {
 .playerBar .specialPoint {
 	position: relative;
 	color: transparent;
-	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour);
+  background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour);
 }
 .playerBar .specialPoint.specialAnimation {
 	background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour) 25%, var(--special-colour) 75%);
@@ -948,6 +948,25 @@ dialog::backdrop {
 
 .specialPoint:nth-of-type(5n) {
 	margin-right: 0.5em;
+}
+
+.playerBar .specialPoint:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 100%;
+	outline: 2px solid var(--special-accent-colour);
+	animation: 333ms linear forwards specialPointRing;
+}
+
+@keyframes specialPointRing {
+	from { outline-offset: 1em; }
+	66% { outline-offset: -0.5em; background: transparent; }
+	67% { left: 0; top: 0; right: 0; bottom: 0; background: var(--special-accent-colour); }
+	to { left: 50%; top: 50%; right: 50%; bottom: 50%; background: var(--special-accent-colour); visibility: hidden; }
 }
 
 .result {
