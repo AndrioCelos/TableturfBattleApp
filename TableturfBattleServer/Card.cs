@@ -16,11 +16,11 @@ public class Card {
 	[JsonProperty("grid")]
 	private readonly Space[,] grid;
 
-	internal Card(int number, string name, Rarity rarity, int specialCost, Space[,] grid) {
+	internal Card(int number, string name, Rarity rarity, Space[,] grid) : this(number, name, rarity, null, grid) { }
+	internal Card(int number, string name, Rarity rarity, int? specialCost, Space[,] grid) {
 		this.Number = number;
 		this.Name = name ?? throw new ArgumentNullException(nameof(name));
 		this.Rarity = rarity;
-		this.SpecialCost = specialCost;
 		this.grid = grid ?? throw new ArgumentNullException(nameof(grid));
 
 		var size = 0;
@@ -41,6 +41,8 @@ public class Card {
 			}
 		}
 		this.Size = size;
+
+		this.SpecialCost = specialCost ?? size switch { <= 3 => 1, <= 5 => 2, <= 8 => 3, <= 11 => 4, <= 15 => 5, _ => 6 };
 	}
 
 	/// <summary>Returns the space in the specified position on the card grid when rotated in the specified manner.</summary>
