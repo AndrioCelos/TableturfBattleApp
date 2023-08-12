@@ -63,7 +63,7 @@ class TimeLabel {
 			if (this.timeLeft == 0) {
 				clearInterval(this.interval!);
 				this.interval = null;
-				if (this.ontimeout)
+				if (this.ontimeout && !this.faded)
 					this.ontimeout();
 			}
 			if (!this.paused) {
