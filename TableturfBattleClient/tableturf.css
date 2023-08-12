@@ -284,7 +284,6 @@ dialog::backdrop {
 	display: flex;
 	position: relative;
 	align-items: center;
-	padding: 0 5px;
 	justify-content: center;
 	z-index: 1;
 }
@@ -616,8 +615,9 @@ dialog::backdrop {
 }
 
 #handContainer {
-	grid-column: 1 / -1;
-	grid-row: hand-row;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
 	text-align: center;
 }
 
