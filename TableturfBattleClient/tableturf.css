@@ -298,7 +298,7 @@ dialog::backdrop {
 	line-height: 1.25em;
 	flex-grow: 1;
 }
-.card:is([data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"], [data-card-number="202"]) .cardName {
+.card:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"], [data-card-number="202"]) .cardName {
 	position: absolute;
 	left: -1em;
 	right: -1em;
