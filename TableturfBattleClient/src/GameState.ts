@@ -1,7 +1,9 @@
 enum GameState {
 	WaitingForPlayers,
-	Preparing,
+	ChoosingStage,
+	ChoosingDeck,
 	Redraw,
 	Ongoing,
-	Ended
+	GameEnded,
+	SetEnded
 }

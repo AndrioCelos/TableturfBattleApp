@@ -6,13 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
 using System.Web;
-
 using Newtonsoft.Json;
-
 using TableturfBattleServer.DTO;
-
 using WebSocketSharp.Server;
-
 using HttpListenerRequest = WebSocketSharp.Net.HttpListenerRequest;
 using HttpListenerResponse = WebSocketSharp.Net.HttpListenerResponse;
 using Timer = System.Timers.Timer;
@@ -128,6 +124,10 @@ internal class Program {
 						SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidName", "Missing name."));
 						return;
 					}
+					if (name.Length > 32) {
+						SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidName", "Name is too long."));
+						return;
+					}
 					var maxPlayers = 2;
 					if (d.TryGetValue("maxPlayers", out var maxPlayersString)) {
 						if (!int.TryParse(maxPlayersString, out maxPlayers) || maxPlayers < 2 || maxPlayers > 4) {
@@ -143,6 +143,14 @@ internal class Program {
 						}
 						turnTimeLimit = turnTimeLimit2;
 					}
+					int? goalWinCount = null;
+					if (d.TryGetValue("goalWinCount", out var goalWinCountString) && goalWinCountString != "") {
+						if (!int.TryParse(goalWinCountString, out var goalWinCount2) || goalWinCount2 < 1) {
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGoalWinCount", "Invalid goal win count."));
+							return;
+						}
+						goalWinCount = goalWinCount2;
+					}
 					if (d.TryGetValue("clientToken", out var tokenString) && tokenString != "") {
 						if (!Guid.TryParse(tokenString, out clientToken)) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidClientToken", "Invalid client token."));
@@ -150,7 +158,7 @@ internal class Program {
 						}
 					} else
 						clientToken = Guid.NewGuid();
-					var game = new Game(maxPlayers) { TurnTimeLimit = turnTimeLimit };
+					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit };
 					game.Players.Add(new(game, name, clientToken));
 					games.Add(game.ID, game);
 					timer.Start();
@@ -219,6 +227,10 @@ internal class Program {
 										Guid clientToken;
 										if (!d.TryGetValue("name", out var name)) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidName", "Missing name."));
+											return;
+										}
+										if (name.Length > 32) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidName", "Name is too long."));
 											return;
 										}
 										if (d.TryGetValue("clientToken", out var tokenString) && tokenString != "") {
@@ -317,7 +329,7 @@ internal class Program {
 											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "NotInGame", "You're not in the game."));
 											return;
 										}
-										if (player.Deck != null) {
+										if (player.CurrentGameData.Deck != null) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "DeckAlreadyChosen", "You've already chosen a deck."));
 											return;
 										}
@@ -357,7 +369,7 @@ internal class Program {
 											}
 										}
 
-										player.Deck = cards.Select(CardDatabase.GetCard).ToArray();
+										player.CurrentGameData.Deck = cards.Select(CardDatabase.GetCard).ToArray();
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
 										game.SendPlayerReadyEvent(playerIndex, false);
 										timer.Start();
@@ -473,13 +485,48 @@ internal class Program {
 								}
 								break;
 							}
+							case "nextGame": {
+								if (e.Request.HttpMethod != "POST") {
+									e.Response.AddHeader("Allow", "POST");
+									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
+								} else if (e.Request.ContentLength64 >= 65536) {
+									e.Response.StatusCode = (int) HttpStatusCode.RequestEntityTooLarge;
+								} else {
+									try {
+										if (game.State is not (GameState.GameEnded or GameState.SetEnded)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "GameNotSetUp", "You can't do that in this game state."));
+											return;
+										}
+
+										var d = DecodeFormData(e.Request.InputStream);
+										if (!d.TryGetValue("clientToken", out var tokenString) || !Guid.TryParse(tokenString, out var clientToken)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidClientToken", "Invalid client token."));
+											return;
+										}
+										if (!game.GetPlayer(clientToken, out var playerIndex, out var player)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.Forbidden, "NotInGame", "You're not in the game."));
+											return;
+										}
+
+										if (player.Move == null) {
+											player.Move = new(player.Hand![0], false, 0, 0, 0, false, false);  // Dummy move to indicate that the player is ready.
+											game.SendPlayerReadyEvent(playerIndex, false);
+										}
+										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
+										timer.Start();
+									} catch (ArgumentException) {
+										e.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+									}
+								}
+								break;
+							}
 							case "replay": {
 								if (e.Request.HttpMethod != "GET") {
 									e.Response.AddHeader("Allow", "GET");
 									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
 								} else {
-									if (game.State != GameState.Ended) {
-										SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "GameInProgress", "You can't see the replay until the game has ended."));
+									if (game.State != GameState.SetEnded) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "GameInProgress", "You can't see the replay until the set has ended."));
 										return;
 									}
 									var ms = new MemoryStream();

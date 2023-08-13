@@ -8,6 +8,7 @@ interface Player {
 	uiBaseColourIsSpecialColour?: boolean;
 	totalSpecialPoints: number;
 	passes: number;
+	gamesWon: number;
 }
 
 interface Colour {

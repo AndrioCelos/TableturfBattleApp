@@ -19,8 +19,12 @@ const redrawModal = document.getElementById('redrawModal')!;
 const gameControls = document.getElementById('gameControls')!;
 const playRow = document.getElementById('playRow')!;
 const spectatorRow = document.getElementById('spectatorRow')!;
-const replayNextButton = document.getElementById('replayNextButton')!;
-const replayPreviousButton = document.getElementById('replayPreviousButton')!;
+const leaveButton = document.getElementById('leaveButton') as HTMLLinkElement;
+const replayPreviousGameButton = CheckButton.fromId('replayPreviousGameButton');
+const replayNextGameButton = CheckButton.fromId('replayNextGameButton');
+const replayPreviousButton = CheckButton.fromId('replayPreviousButton');
+const replayNextButton = CheckButton.fromId('replayNextButton');
+const nextGameButton = CheckButton.fromId('nextGameButton');
 const flipButton = document.getElementById('flipButton') as HTMLButtonElement;
 let replayAnimationAbortController: AbortController | null = null;
 
@@ -83,8 +87,12 @@ function clear() {
 	handContainer.hidden = true;
 	playRow.hidden = true;
 	spectatorRow.hidden = true;
-	replayPreviousButton.hidden = true;
-	replayNextButton.hidden = true;
+	leaveButton.hidden = false;
+	replayPreviousGameButton.buttonElement.hidden = true;
+	replayNextGameButton.buttonElement.hidden = true;
+	replayPreviousButton.buttonElement.hidden = true;
+	replayNextButton.buttonElement.hidden = true;
+	nextGameButton.buttonElement.hidden = true;
 	shareReplayLinkButton.hidden = true;
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = true;
@@ -124,16 +132,20 @@ function initReplay() {
 	gameControls.hidden = false;
 	handContainer.hidden = false;
 	spectatorRow.hidden = false;
-	replayPreviousButton.hidden = false;
-	replayNextButton.hidden = false;
+	replayPreviousGameButton.buttonElement.hidden = false;
+	replayNextGameButton.buttonElement.hidden = false;
+	replayPreviousButton.buttonElement.hidden = false;
+	replayNextButton.buttonElement.hidden = false;
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
+	gamePage.dataset.myPlayerIndex = '0';
+	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
 	timeLabel.hide();
 	turnNumberLabel.setTurnNumber(null);
-	replayUpdateHand();
+	replaySwitchGame(0);
 }
 
 /** Shows the game page for deck editor testing. */
@@ -141,7 +153,7 @@ function initTest(stage: Stage) {
 	clear();
 	testMode = true;
 	gamePage.classList.add('deckTest');
-	currentGame = { id: 'test', state: GameState.Ongoing, maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
+	currentGame = { id: 'test', state: GameState.Ongoing, maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
 	board.startSpaces = startSpaces;
@@ -169,8 +181,9 @@ function initTest(stage: Stage) {
 	testAllCardsList.clearFilter();
 }
 
-replayNextButton.addEventListener('click', _ => {
-	if (currentGame == null || currentReplay == null || currentGame.turnNumber > 12) return;
+replayNextButton.buttonElement.addEventListener('click', _ => {
+	if (currentGame == null || currentReplay == null || currentGame.state == GameState.GameEnded || currentGame.state == GameState.SetEnded)
+		return;
 
 	if (replayAnimationAbortController) {
 		replayUpdateHand();
@@ -187,9 +200,16 @@ replayNextButton.addEventListener('click', _ => {
 	clearPlayContainers();
 	if (currentGame.turnNumber == 0) {
 		// Show redraw decisions.
+		replayPreviousButton.enabled = true;
+		currentGame.state = GameState.Ongoing;
 		currentGame.turnNumber++;
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 		replayUpdateHand();
+	} else if (currentGame.turnNumber > 12) {
+		currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
+		gameButtonsContainer.hidden = true;
+		gamePage.classList.add('gameEnded');
+		showResult();
 	} else {
 		const moves = currentReplay.turns[currentGame.turnNumber - 1];
 		const result = board.makePlacements(moves);
@@ -234,9 +254,8 @@ replayNextButton.addEventListener('click', _ => {
 			turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 			clearPlayContainers();
 			if (currentGame.turnNumber > 12) {
+				currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
 				gameButtonsContainer.hidden = true;
-				passButton.enabled = false;
-				specialButton.enabled = false;
 				gamePage.classList.add('gameEnded');
 				showResult();
 			} else
@@ -245,11 +264,19 @@ replayNextButton.addEventListener('click', _ => {
 	}
 });
 
-replayPreviousButton.addEventListener('click', _ => {
+replayPreviousButton.buttonElement.addEventListener('click', _ => {
 	if (currentGame == null || currentReplay == null || currentGame.turnNumber == 0) return;
 
 	replayAnimationAbortController?.abort();
 	replayAnimationAbortController = null;
+
+	if (currentGame.state == GameState.GameEnded || currentGame.state == GameState.SetEnded) {
+		for (let i = 0; i < currentGame.players.length; i++) {
+			if (currentReplay.games[currentReplay.gameNumber].playerData[i].won)
+				currentGame.players[i].gamesWon--;
+			playerBars[i].wins = currentGame.players[i].gamesWon;
+		}
+	}
 
 	if (currentGame.turnNumber > 1) {
 		const result = currentReplay.placements.pop();
@@ -264,11 +291,13 @@ replayPreviousButton.addEventListener('click', _ => {
 		undoTurn(result);
 	}
 	currentGame.turnNumber--;
+	replayNextButton.enabled = true;
 	gamePage.classList.remove('gameEnded');
 	handContainer.hidden = false;
 	gameButtonsContainer.hidden = false;
 
 	if (currentGame.turnNumber > 0) {
+		currentGame.state = GameState.Ongoing;
 		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
 		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
@@ -280,8 +309,11 @@ replayPreviousButton.addEventListener('click', _ => {
 				currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
 			updateStats(i, scores);
 		}
-	} else
+	} else {
+		currentGame.state = GameState.Redraw;
+		replayPreviousButton.enabled = false;
 		turnNumberLabel.setTurnNumber(null);
+	}
 
 	replayUpdateHand();
 });
@@ -309,6 +341,57 @@ function undoTurn(turn: PlacementResults) {
 	board.refresh();
 }
 
+function replaySwitchGame(gameNumber: number) {
+	if (!currentGame || !currentReplay)
+		throw new Error('Not in a replay.');
+	if (gameNumber < 0 || gameNumber >= currentReplay.games.length)
+		throw new RangeError(`No game number ${gameNumber} in replay.`);
+
+	replayAnimationAbortController?.abort();
+	replayAnimationAbortController = null;
+
+	for (let i = 0; i < currentGame.players.length; i++) {
+		currentGame.players[i].specialPoints = 0;
+		currentGame.players[i].totalSpecialPoints = 0;
+		currentGame.players[i].passes = 0;
+		currentGame.players[i].gamesWon = 0;
+		for (let j = 0; j < gameNumber; j++) {
+			if (currentReplay.games[j].playerData[i].won)
+				currentGame.players[i].gamesWon++;
+		}
+		playerBars[i].wins = currentGame.players[i].gamesWon;
+	}
+
+	currentReplay.gameNumber = gameNumber;
+	currentReplay.turns = currentReplay.games[gameNumber].turns;
+	currentReplay.placements.splice(0);
+	currentGame.state = GameState.Ongoing;
+	currentGame.turnNumber = 0;
+	clearPlayContainers();
+	gamePage.classList.remove('gameEnded');
+	replayPreviousGameButton.enabled = gameNumber > 0;
+	replayNextGameButton.enabled = gameNumber + 1 < currentReplay.games.length;
+	replayPreviousButton.enabled = false;
+	replayNextButton.enabled = true;
+	handContainer.hidden = false;
+	gameButtonsContainer.hidden = false;
+	turnNumberLabel.setTurnNumber(null);
+
+	const stage = currentReplay.games[gameNumber].stage;
+	board.resize(stage.copyGrid());
+	const startSpaces = stage.getStartSpaces(currentGame.players.length);
+	for (let i = 0; i < currentGame.players.length; i++) {
+		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
+		playerBars[i].points = 1;
+		playerBars[i].pointsDelta = null;
+		playerBars[i].pointsTo = null;
+		playerBars[i].specialPoints = 0;
+	}
+	board.refresh();
+
+	replayUpdateHand();
+}
+
 flipButton.addEventListener('click', () => {
 	if (currentGame == null) return;
 	if (replayAnimationAbortController) {
@@ -326,6 +409,7 @@ flipButton.addEventListener('click', () => {
 		if (currentReplay.watchingPlayer >= currentGame.players.length)
 		currentReplay.watchingPlayer = 0;
 		gamePage.dataset.myPlayerIndex = currentReplay.watchingPlayer.toString();
+		gamePage.dataset.uiBaseColourIsSpecialColour = currentGame.players[currentReplay.watchingPlayer].uiBaseColourIsSpecialColour?.toString();
 		board.flip = currentReplay.watchingPlayer % 2 != 0;
 		clearShowDeck();
 		replayUpdateHand();
@@ -426,6 +510,7 @@ function loadPlayers(players: Player[]) {
 		const player = players[i];
 		currentGame!.players[i] = players[i];
 		playerBars[i].name = player.name;
+		playerBars[i].wins = players[i].gamesWon;
 		updateStats(i, scores);
 		if (player.colour.r || player.colour.g || player.colour.b) {
 			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
@@ -448,8 +533,16 @@ function updateStats(playerIndex: number, scores: number[]) {
 	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
 }
 
+/** Shows the waiting indication for the specified player. */
+function showWaiting(playerIndex: number) {
+	const el = document.createElement('div');
+	el.className = 'cardBack waiting';
+	playContainers[playerIndex].appendChild(el);
+}
+
 /** Shows the ready indication for the specified player. */
 function showReady(playerIndex: number) {
+	clearChildren(playContainers[playerIndex]);
 	const el = document.createElement('div');
 	el.className = 'cardBack';
 	el.innerText = 'Ready';
@@ -583,6 +676,7 @@ function showResult() {
 				el.classList.remove('lose');
 				el.classList.remove('draw');
 				el.innerText = 'Victory';
+				playerBars[i].wins++;
 			} else {
 				el.classList.remove('win');
 				el.classList.remove('lose');
@@ -598,15 +692,27 @@ function showResult() {
 	}
 
 	handContainer.hidden = true;
+	replayNextButton.enabled = false;
 	if (!currentReplay) {
 		playRow.hidden = true;
 		spectatorRow.hidden = false;
-		replayPreviousButton.hidden = true;
-		replayNextButton.hidden = true;
-		shareReplayLinkButton.hidden = false;
+		replayPreviousGameButton.buttonElement.hidden = true;
+		replayPreviousButton.buttonElement.hidden = true;
+		replayNextButton.buttonElement.hidden = true;
+		replayNextGameButton.buttonElement.hidden = true;
 		flipButton.hidden = true;
-		canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
-		shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
+		if (currentGame.state == GameState.SetEnded) {
+			leaveButton.hidden = false;
+			nextGameButton.buttonElement.hidden = currentGame.goalWinCount != null;
+			shareReplayLinkButton.hidden = false;
+			canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
+			shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
+		} else {
+			leaveButton.hidden = currentGame.me != null;
+			nextGameButton.buttonElement.hidden = currentGame.me == null;
+		}
+		nextGameButton.enabled = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
+		nextGameButton.buttonElement.innerHTML = nextGameButton.enabled ? 'Next game' : '<div class="loadingSpinner"></div> Waiting for other player';
 	}
 }
 
@@ -717,7 +823,7 @@ function replayUpdateHand() {
 
 	handButtons.clear();
 
-	const playerData = currentReplay.replayPlayerData[currentReplay.watchingPlayer];
+	const playerData = currentReplay.games[currentReplay.gameNumber].playerData[currentReplay.watchingPlayer];
 	populateShowDeck(playerData.deck);
 	for (const b of showDeckButtons)
 		b.buttonElement.parentElement!.className = '';
@@ -1018,7 +1124,28 @@ document.addEventListener('keydown', e => {
 	}
 });
 
-shareReplayLinkButton.addEventListener('click', _ => {
+replayPreviousGameButton.buttonElement.addEventListener('click', () => {
+	if (!currentGame || !currentReplay) return;
+	if (currentReplay.gameNumber > 0)
+		replaySwitchGame(currentReplay.gameNumber - 1);
+});
+
+replayNextGameButton.buttonElement.addEventListener('click', () => {
+	if (!currentGame || !currentReplay) return;
+	if (currentReplay.gameNumber < currentReplay.games.length - 1)
+		replaySwitchGame(currentReplay.gameNumber + 1);
+});
+nextGameButton.buttonElement.addEventListener('click', () => {
+	if (!currentGame) return;
+	nextGameButton.enabled = false;
+	nextGameButton.buttonElement.innerHTML = '<div class="loadingSpinner"></div> Waiting for other player';
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame.id}/nextGame`);
+	req.addEventListener('error', () => communicationError());
+	req.send(new URLSearchParams({ clientToken }).toString());
+});
+
+shareReplayLinkButton.addEventListener('click', () => {
 	shareReplayLinkButton.disabled = true;
 
 	let req = new XMLHttpRequest();
@@ -1048,7 +1175,7 @@ function leaveButton_click(e: MouseEvent) {
 	newGameButton.focus();
 }
 
-document.getElementById('leaveButton')!.addEventListener('click', leaveButton_click);
+leaveButton.addEventListener('click', leaveButton_click);
 
 const colBoxes = [
 	[

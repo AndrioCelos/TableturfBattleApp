@@ -13,15 +13,26 @@ let currentGame: {
 	turnNumber: number,
 	turnTimeLimit: number | null,
 	turnTimeLeft: number | null,
+	goalWinCount: number | null,
 	/** The WebSocket used for receiving game events, or null if not yet connected. */
 	webSocket: WebSocket | null
 } | null = null;
 
 let enterGameTimeout: number | null = null;
 let currentReplay: {
+	gameNumber: number,
+	games: {
+		stage: Stage,
+		playerData: {
+			deck: Card[],
+			initialDrawOrder: number[],
+			drawOrder: number[],
+			won: boolean
+		}[],
+		turns: Move[][],
+	}[],
 	turns: Move[][],
 	placements: PlacementResults[],
-	replayPlayerData: ReplayPlayerData[],
 	watchingPlayer: number
 } | null = null;
 

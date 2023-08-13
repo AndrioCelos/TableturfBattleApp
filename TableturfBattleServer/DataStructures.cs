@@ -40,5 +40,5 @@ public class PlayerData {
 		this.Move = move;
 		this.CardsUsed = cardsUsed;
 	}
-	public PlayerData(int playerIndex, Player player) : this(playerIndex, player.Hand, player.Deck, player.Move, player.CardsUsed) { }
+	public PlayerData(int playerIndex, Player player) : this(playerIndex, player.Hand, player.CurrentGameData.Deck, player.Move, player.CardsUsed) { }
 }

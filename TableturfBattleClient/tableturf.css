@@ -597,6 +597,11 @@ dialog::backdrop {
 	padding-right: 10px;
 }
 
+#gamePage:not(.boardFlipped):not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) .wins,
+#gamePage.boardFlipped:not([data-players="2"]) .playerBar:is([data-index="0"], [data-index="3"]) .wins {
+	float: left;
+}
+
 #gamePage.deckTest #scoreSection { display: none; }
 #scoreSection:not([hidden]) {
 	grid-column: score-column;
@@ -624,7 +629,7 @@ dialog::backdrop {
 	justify-content: center;
 }
 
-#handContainer {
+#handContainer:not([hidden]) {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: 1fr 1fr;
@@ -638,26 +643,44 @@ dialog::backdrop {
 	grid-template-columns: 1fr 1fr;
 }
 
-:is(#playRow, #testControlsHeader) > button {
-	grid-row: button-row;
+.gameButton {
 	border: none;
-	margin: 0.5em;
-	padding: 0 0.5em;
+	margin: 0.25rem;
+	padding: 0.25rem 0.5rem;
 	font: inherit;
 	text-align: center;
 	background: var(--player-ui-base-colour);
 	text-shadow: 0 0 4px black;
-	border-radius: 0.5em;
+	border-radius: 0.5rem;
+	line-height: 1.5em;
 }
-:is(#playRow, #testControlsHeader, #testControlsFooter) > button:hover { background: var(--player-ui-highlight-colour); }
-:is(#playRow, #testControlsHeader, #testControlsFooter) > button:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
-:is(#playRow, #testControlsHeader, #testControlsFooter) > button:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
-:is(#playRow, #testControlsHeader, #testControlsFooter) > button.disabled:not(.checked) { background: grey; }
+.gameButton:hover { background: var(--player-ui-highlight-colour); }
+.gameButton:focus-within { outline: 2px solid var(--player-ui-highlight2-colour); }
+.gameButton:is(:active, .checked) { background: var(--player-ui-highlight2-colour); }
+.gameButton.disabled:not(.checked) { background: grey; }
+
+:is(#playRow, #testControlsHeader, #spectatorRow) > button.replayButton:not([hidden]) {
+	font-size: 60%;
+	flex-basis: 7em;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	gap: 0.5em;
+}
 
 #spectatorRow:not([hidden]) {
-	display: grid;
-	grid-template-columns: auto 1fr 1fr auto;
-	gap: 0.5em;
+	display: flex;
+	gap: 0.25em;
+}
+#spectatorRow > * {
+	flex-grow: 1;
+}
+
+#nextGameButton:not([hidden]) {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25em;
 }
 
 #debugColour input {
@@ -703,21 +726,8 @@ dialog::backdrop {
 #showDeckList > li.used {
 	opacity: 0.35;
 }
-#showDeckCloseButton, #testControlsFooter button {
-	border: none;
-	font-family: inherit;
-	color: inherit;
-	margin: 0.5em;
-	padding: 0 0.5em;
-	text-align: center;
-	background: var(--player-ui-base-colour);
-	text-shadow: 0 0 4px black;
-	border-radius: 0.5em;
-	font-size: inherit;
-}
 #showDeckCloseButton {
 	width: 40%;
-	grid-row: button-row;
 }
 
 #testControls:not([hidden]) {
@@ -981,6 +991,24 @@ dialog::backdrop {
 	to { left: 50%; top: 50%; right: 50%; bottom: 50%; background: var(--special-accent-colour); visibility: hidden; }
 }
 
+.wins {
+	float: right;
+	display: flex;
+	margin-top: 1.25em;
+}
+.wins > div {
+	display: inline-block;
+	background: url('assets/external/IconMedal_00.webp') center/cover;
+	width: 2em;
+	height: 2em;
+}
+.winCount {
+	font-size: larger;
+	text-align: center;
+	text-shadow: 0.1em 0.1em 0 black;
+}
+.winCount:not(:first-child) { display: none; }
+
 .result {
 	font-family: 'Splatoon 1';
 	color: var(--colour);
@@ -1172,7 +1200,7 @@ dialog::backdrop {
 	top: 0;
 	right: -50vw;
 	bottom: 0;
-	padding-right: 50vw;  /* Centre the dialog over the board but extend the backdrop all the way to the right of the page. */
+  padding-right: 50vw;  /* Centre the dialog over the board but extend the backdrop all the way to the right of the page. */
 	background: #000000C0;
 	z-index: 1;
 }
@@ -1441,18 +1469,21 @@ dialog::backdrop {
 		left: -3em;
 		top: 3em;
 	}
-	.playerBar[data-index="0"] {
-		grid-row: player-row-0;
-	}
-	.playerBar[data-index="1"] {
-		grid-row: player-row-1;
-	}
-	.playerBar[data-index="2"] {
-		grid-row: player-row-0;
-	}
-	.playerBar[data-index="3"] {
-		grid-row: player-row-1;
-	}
+	.playerBar[data-index="0"] { grid-row: player-row-0; }
+	.playerBar[data-index="1"] { grid-row: player-row-1; }
+	.playerBar[data-index="2"] { grid-row: player-row-0; }
+	.playerBar[data-index="3"] { grid-row: player-row-1; }
+
+  #gamePage.boardFlipped .playerBar[data-index="0"] { grid-row: player-row-1; }
+	#gamePage.boardFlipped .playerBar[data-index="1"] { grid-row: player-row-0; }
+	#gamePage.boardFlipped .playerBar[data-index="2"] { grid-row: player-row-1; }
+	#gamePage.boardFlipped .playerBar[data-index="3"] { grid-row: player-row-0; }
+
+	#gamePage:not(.boardFlipped):not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) .wins,
+  #gamePage.boardFlipped:not([data-players="2"]) .playerBar:is([data-index="0"], [data-index="3"]) .wins {
+    float: initial;
+		justify-content: end;
+  }
 }
 
 @media (max-width: 40rem) {
@@ -1501,6 +1532,8 @@ dialog::backdrop {
 	.playerBar[data-index="1"] { grid-column: 1 / span 4; grid-row: 1; }
 	.playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 3; }
 	.playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 1; }
+	
+	.wins { margin-right: 8em; }
 
 	#gamePage.boardFlipped .playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 3; }
 	#gamePage.boardFlipped .playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 1; }

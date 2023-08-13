@@ -15,6 +15,7 @@ const gameSetupDialog = document.getElementById('gameSetupDialog') as HTMLDialog
 const gameSetupForm = document.getElementById('gameSetupForm') as HTMLFormElement;
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
+const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -107,6 +108,8 @@ function createRoom(useOptionsForm: boolean) {
 		data.append('maxPlayers', maxPlayersBox.value);
 		if (turnTimeLimitBox.value)
 			data.append('turnTimeLimit', turnTimeLimitBox.value);
+		if (goalWinCountBox.value)
+			data.append('goalWinCount', goalWinCountBox.value);
 	}
 	request.send(data.toString());
 	setLoadingMessage('Creating a room...');

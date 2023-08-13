@@ -55,7 +55,7 @@
 					<a id="preGameHelpButton" href="help">Help</a>
 				</p>
 				<div id="preGameLoadingSection" class="loadingContainer" hidden>
-					<div class="loadingSpinner"><div></div><div></div></div> <span id="preGameLoadingLabel"></span>
+					<div class="loadingSpinner"></div> <span id="preGameLoadingLabel"></span>
 				</div>
 			</form>
 			<footer>
@@ -79,13 +79,13 @@
 					<div class="submitButtonContainer">
 						<button type="submit" id="submitStageButton">Submit</button>
 						<div class="loadingContainer">
-							<div class="loadingSpinner"><div></div><div></div></div>
+							<div class="loadingSpinner"></div>
 						</div>
 					</div>
 					<div id="stageList">
 						<button type="button" id="stageRandomButton" class="stageRandom">Random</button>
 					</div>
-					<div id="stageListLoadingSection"><div class="loadingSpinner"><div></div><div></div></div> Loading stages...</div>
+					<div id="stageListLoadingSection"><div class="loadingSpinner"></div> Loading stages...</div>
 				</form>
 			</section>
 			<div id="lobbyDeckSection" hidden>
@@ -94,7 +94,7 @@
 					<div class="submitButtonContainer">
 						<button type="submit" id="submitDeckButton" disabled>Submit</button>
 						<div class="loadingContainer">
-							<div class="loadingSpinner"><div></div><div></div></div>
+							<div class="loadingSpinner"></div>
 						</div>
 					</div>
 					<div id="lobbyDeckList" class="deckList"></div>
@@ -111,6 +111,7 @@
 		<div id="gamePage" hidden>
 			<div class="playerBar" data-index="1">
 				<div class="result"></div>
+				<div class="wins" title="Battles won">0</div>
 				<div class="name">Player 2</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
@@ -126,6 +127,7 @@
 			</div>
 			<div class="playerBar" data-index="3">
 				<div class="result"></div>
+				<div class="wins" title="Battles won">0</div>
 				<div class="name">Player 4</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
@@ -243,20 +245,51 @@
 				<div id="handContainer"></div>
 
 				<div id="playRow">
-					<button type="button" id="passButton">Pass</button>
-					<button type="button" id="specialButton">Special Attack</button>
+					<button type="button" id="passButton" class="gameButton">Pass</button>
+					<button type="button" id="specialButton" class="gameButton">Special Attack</button>
 				</div>
 				<div id="spectatorRow">
-					<a id="leaveButton" href="#">Exit</a>
-					<button id="replayPreviousButton">Previous turn</button>
-					<button id="replayNextButton">Next turn</button>
-					<button id="shareReplayLinkButton">Copy replay link</button>
-					<button id="flipButton">Change view</button>
+					<a id="leaveButton" href="#">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+							<path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+						</svg>
+						Exit
+					</a>
+					<button id="replayPreviousGameButton" class="gameButton replayButton">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skip-backward-fill" viewBox="0 0 16 16">
+							<path d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5z"/>
+						</svg>
+						Previous game
+					</button>
+					<button id="replayPreviousButton" class="gameButton replayButton">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-rewind-fill" viewBox="0 0 16 16">
+							<path d="M8.404 7.304a.802.802 0 0 0 0 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696L8.404 7.304Z"/>
+							<path d="M.404 7.304a.802.802 0 0 0 0 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696L.404 7.304Z"/>
+						</svg>
+						Previous turn
+					</button>
+					<button id="replayNextButton" class="gameButton replayButton">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fast-forward-fill" viewBox="0 0 16 16">
+							<path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692Z"/>
+							<path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692Z"/>
+						</svg>
+						Next turn
+					</button>
+					<button id="replayNextGameButton" class="gameButton replayButton">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skip-forward-fill" viewBox="0 0 16 16">
+							<path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5z"/>
+						</svg>
+						Next game
+					</button>
+					<button id="shareReplayLinkButton" class="gameButton">Copy replay link</button>
+					<button id="flipButton" class="gameButton">Change view</button>
 				</div>
+				<button id="nextGameButton" class="gameButton">Next game</button>
 			</div>
 
 			<div class="playerBar" data-index="2">
 				<div class="result"></div>
+				<div class="wins" title="Battles won">0</div>
 				<div class="name">Player 3</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
@@ -272,6 +305,7 @@
 			</div>
 			<div class="playerBar" data-index="0">
 				<div class="result"></div>
+				<div class="wins" title="Battles won">0</div>
 				<div class="name">Player 1</div>
 				<div class="specialPoints">&nbsp;</div>
 				<div class="playerStats">
@@ -290,15 +324,15 @@
 				<div id="showDeck">
 					<ul id="showDeckList"></ul>
 					<div>
-						<button type="button" id="showDeckCloseButton">Close</button>
+						<button type="button" id="showDeckCloseButton" class="gameButton">Close</button>
 					</div>
 				</div>
 			</div>
 
 			<div id="testControls">
 				<div id="testControlsHeader" class="testControls">
-					<button type="button" id="testDeckButton">Deck</button>
-					<button type="button" id="testAllCardsButton">All cards</button>
+					<button type="button" id="testDeckButton" class="gameButton">Deck</button>
+					<button type="button" id="testAllCardsButton" class="gameButton">All cards</button>
 				</div>
 				<div id="testDeckContainer" class="testControls">
 					<button id="testAllCardsMobileButton">All cards</button>
@@ -315,8 +349,8 @@
 					<div id="testAllCardsList" class="cardListGrid"></div>
 				</div>
 				<div id="testControlsFooter" class="testControls">
-					<button type="button" id="testUndoButton">Undo</button>
-					<button type="button" id="testBackButton">End test</button>
+					<button type="button" id="testUndoButton" class="gameButton">Undo</button>
+					<button type="button" id="testBackButton" class="gameButton">End test</button>
 				</div>
 			</div>
 			<div id="testCardListBackdrop" hidden></div>
@@ -506,6 +540,18 @@
 							Turn time limit:
 							<input type="number" id="turnTimeLimitBox" min="10" max="120" step="10" placeholder="None"/>
 							<span id="turnTimeLimitUnit">seconds</span>
+						</label>
+					</p>
+					<p>
+						<label for="goalWinCountBox">
+							Format:
+							<select id="goalWinCountBox">
+								<option value="">Single game</option>
+								<option value="1">First to 1 (replay draws)</option>
+								<option value="2">First to 2</option>
+								<option value="3">First to 3</option>
+								<option value="4">First to 4</option>
+							</select>
 						</label>
 					</p>
 					<p>

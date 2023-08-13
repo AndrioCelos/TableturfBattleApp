@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
 public class Player {
@@ -16,28 +14,9 @@ public class Player {
 	public Colour SpecialAccentColour { get; set; }
 	[JsonProperty("uiBaseColourIsSpecialColour")]
 	public bool UIBaseColourIsSpecialColour { get; set; }
-	[JsonProperty("specialPoints")]
-	public int SpecialPoints { get; set; }
-
-	[JsonProperty("totalSpecialPoints")]
-	public int TotalSpecialPoints { get; set; }
-	[JsonProperty("passes")]
-	public int Passes { get; set; }
-
-	[JsonProperty("isReady")]
-	public bool IsReady => this.game.State switch {
-		GameState.WaitingForPlayers => this.selectedStageIndex != null,
-		GameState.Preparing => this.Deck != null,
-		_ => this.Move != null
-	};
-
-	[JsonIgnore]
-	internal List<ReplayTurn> turns = new(12);
 
 	[JsonIgnore]
 	private readonly Game game;
-	[JsonIgnore]
-	internal Card[]? Deck;
 	[JsonIgnore]
 	internal readonly List<int> CardsUsed = new(12);
 	[JsonIgnore]
@@ -46,10 +25,31 @@ public class Player {
 	internal Move? Move;
 	[JsonIgnore]
 	internal Move? ProvisionalMove;
+
+	[JsonProperty("gamesWon")]
+	public int GamesWon { get; set; }
+
 	[JsonIgnore]
-	internal int[]? initialDrawOrder;
+	internal List<SingleGameData> Games { get; } = new() { new() };
+
 	[JsonIgnore]
-	internal int[]? drawOrder;
+	public SingleGameData CurrentGameData => this.Games[^1];
+
+	[JsonProperty("specialPoints")]
+	public int SpecialPoints => this.CurrentGameData.SpecialPoints;
+
+	[JsonProperty("totalSpecialPoints")]
+	public int TotalSpecialPoints => this.CurrentGameData.TotalSpecialPoints;
+	[JsonProperty("passes")]
+	public int Passes => this.CurrentGameData.Passes;
+
+	[JsonProperty("isReady")]
+	public bool IsReady => this.game.State switch {
+		GameState.WaitingForPlayers or GameState.ChoosingStage => this.selectedStageIndex != null,
+		GameState.ChoosingDeck => this.CurrentGameData.Deck != null,
+		_ => this.Move != null
+	};
+
 	[JsonIgnore]
 	internal int? selectedStageIndex;
 
@@ -64,19 +64,18 @@ public class Player {
 		this.ProvisionalMove = null;
 	}
 
-	[MemberNotNull(nameof(drawOrder))]
 	internal void Shuffle(Random random) {
-		this.drawOrder = new int[15];
-		this.initialDrawOrder ??= this.drawOrder;
-		for (int i = 0; i < 15; i++) this.drawOrder[i] = i;
+		this.CurrentGameData.drawOrder = new int[15];
+		this.CurrentGameData.initialDrawOrder ??= this.CurrentGameData.drawOrder;
+		for (int i = 0; i < 15; i++) this.CurrentGameData.drawOrder[i] = i;
 		for (int i = 14; i > 0; i--) {
 			var j = random.Next(i);
-			(this.drawOrder[i], this.drawOrder[j]) = (this.drawOrder[j], this.drawOrder[i]);
+			(this.CurrentGameData.drawOrder[i], this.CurrentGameData.drawOrder[j]) = (this.CurrentGameData.drawOrder[j], this.CurrentGameData.drawOrder[i]);
 		}
-		if (this.Deck != null) {
+		if (this.CurrentGameData.Deck != null) {
 			this.Hand = new Card[4];
 			for (int i = 0; i < 4; i++) {
-				this.Hand[i] = this.Deck[this.drawOrder[i]];
+				this.Hand[i] = this.CurrentGameData.Deck[this.CurrentGameData.drawOrder[i]];
 			}
 		}
 	}

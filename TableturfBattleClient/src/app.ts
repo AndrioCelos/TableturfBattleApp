@@ -117,12 +117,14 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	gamePage.classList.remove('gameEnded');
 	switch (game.state) {
 		case GameState.WaitingForPlayers:
+		case GameState.ChoosingStage:
+			initLobbyPage(window.location.toString());
 			showPage('lobby');
 			clearConfirmLeavingGame();
 			lobbySelectedStageSection.hidden = true;
 			lobbyStageSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
-		case GameState.Preparing:
+		case GameState.ChoosingDeck:
 			showPage('lobby');
 			if (currentGame.me) setConfirmLeavingGame();
 			if (selectedStageIndicator)
@@ -138,7 +140,8 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 			break;
 		case GameState.Redraw:
 		case GameState.Ongoing:
-		case GameState.Ended:
+		case GameState.GameEnded:
+		case GameState.SetEnded:
 			board.autoHighlight = false;
 			redrawModal.hidden = true;
 			if (playerData) {
@@ -148,7 +151,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 				initSpectator();
 
 			currentGame.turnNumber = game.turnNumber;
-			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.Ended;
+			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.GameEnded || game.state == GameState.SetEnded;
 
 			switch (game.state) {
 				case GameState.Redraw:
@@ -160,6 +163,8 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					timeLabel.paused = false;
 					break;
 				case GameState.Ongoing:
+					for (let i = 0; i < currentGame.players.length; i++)
+						showWaiting(i);
 					if (currentGame.me) setConfirmLeavingGame();
 					turnNumberLabel.setTurnNumber(game.turnNumber);
 					board.autoHighlight = true;
@@ -168,7 +173,8 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					timeLabel.paused = false;
 					resetPlayControls();
 					break;
-				case GameState.Ended:
+				case GameState.GameEnded:
+				case GameState.SetEnded:
 					clearConfirmLeavingGame();
 					gamePage.classList.add('gameEnded');
 					turnNumberLabel.setTurnNumber(null);
@@ -239,6 +245,7 @@ function setupWebSocket(gameID: string) {
 						turnNumber: payload.data.turnNumber,
 						turnTimeLimit: payload.data.turnTimeLimit,
 						turnTimeLeft: payload.data.turnTimeLeft,
+						goalWinCount: payload.data.goalWinCount,
 						webSocket: webSocket
 					};
 
@@ -265,8 +272,7 @@ function setupWebSocket(gameID: string) {
 					onGameStateChange(payload.data, payload.playerData);
 
 					for (let i = 0; i < currentGame.players.length; i++) {
-						if (currentGame.players[i].isReady)
-							showReady(i);
+						if (currentGame.players[i].isReady) showReady(i);
 					}
 
 					if (currentGame.me) {
@@ -317,9 +323,7 @@ function setupWebSocket(gameID: string) {
 							lobbyDeckSection.hidden = true;
 						}
 
-						if (playContainers[payload.data.playerIndex].getElementsByTagName('div').length == 0) {
-							showReady(payload.data.playerIndex);
-						}
+						showReady(payload.data.playerIndex);
 						break;
 					case 'stateChange':
 						clearReady();
@@ -345,6 +349,8 @@ function setupWebSocket(gameID: string) {
 							player.specialPoints = payload.data.game.players[i].specialPoints;
 							player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
 							player.passes = payload.data.game.players[i].passes;
+							player.gamesWon = payload.data.game.players[i].gamesWon;
+							player.isReady = payload.data.game.players[i].isReady;
 
 							const move = payload.data.moves[i];
 							const button = new CardButton(move.card);
@@ -370,7 +376,7 @@ function setupWebSocket(gameID: string) {
 							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
-								currentGame.state = GameState.Ended;
+								currentGame.state = payload.data.game.state;
 								clearConfirmLeavingGame();
 								gameButtonsContainer.hidden = true;
 								passButton.enabled = false;
@@ -386,6 +392,8 @@ function setupWebSocket(gameID: string) {
 								timeLabel.paused = false;
 								if (payload.data.game.turnTimeLeft)
 									timeLabel.show();
+								for (let i = 0; i < currentGame.players.length; i++)
+									showWaiting(i);
 							}
 						})();
 						break;
@@ -397,101 +405,6 @@ function setupWebSocket(gameID: string) {
 }
 function webSocket_close() {
 	communicationError();
-}
-
-function loadReplay(base64: string) {
-	if (stageDatabase.stages == null)
-		throw new Error('Game data not loaded');
-
-	base64 = base64.replaceAll('-', '+');
-	base64 = base64.replaceAll('_', '/');
-	const bytes = Base64.base64DecToArr(base64);
-	const dataView = new DataView(bytes.buffer);
-	if (dataView.getUint8(0) != 1) {
-		alert('Unknown replay data version');
-		return;
-	}
-	const n = dataView.getUint8(1);
-	const stage = stageDatabase.stages[n & 0x1F];
-	const numPlayers = n >> 5;
-
-	let pos = 2;
-	const players = [ ];
-	currentReplay = { turns: [ ], placements: [ ], replayPlayerData: [ ], watchingPlayer: 0 };
-	for (let i = 0; i < numPlayers; i++) {
-		const len = dataView.getUint8(pos + 34);
-		const player: Player = {
-			name: new TextDecoder().decode(new DataView(bytes.buffer, pos + 35, len)),
-			specialPoints: 0,
-			isReady: false,
-			colour: { r: dataView.getUint8(pos + 0), g: dataView.getUint8(pos + 1), b: dataView.getUint8(pos + 2) },
-			specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
-			specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
-			totalSpecialPoints: 0,
-			passes: 0
-		};
-		players.push(player);
-
-		const deck = [ ];
-		const initialDrawOrder = [ ];
-		const drawOrder = [ ];
-		for (let j = 0; j < 15; j++) {
-			deck.push(cardDatabase.get(dataView.getUint8(pos + 9 + j)));
-		}
-		for (let j = 0; j < 2; j++) {
-			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
-			initialDrawOrder.push(dataView.getUint8(pos + 24 + j) >> 4 & 0xF);
-		}
-		for (let j = 0; j < 8; j++) {
-			drawOrder.push(dataView.getUint8(pos + 26 + j) & 0xF);
-			if (j == 7)
-				player.uiBaseColourIsSpecialColour = (dataView.getUint8(pos + 26 + j) & 0x80) != 0;
-			else
-				drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
-		}
-		currentReplay.replayPlayerData.push({ deck, initialDrawOrder, drawOrder });
-		pos += 35 + len;
-	}
-
-	for (let i = 0; i < 12; i++) {
-		const turn = [ ];
-		for (let j = 0; j < numPlayers; j++) {
-			const cardNumber = dataView.getUint8(pos);
-			const b = dataView.getUint8(pos + 1);
-			const x = dataView.getInt8(pos + 2);
-			const y = dataView.getInt8(pos + 3);
-			if (b & 0x80)
-				turn.push({ card: cardDatabase.get(cardNumber), isPass: true, isTimeout: (b & 0x20) != 0 });
-			else {
-				const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
-				turn.push(move);
-			}
-			pos += 4;
-		}
-		currentReplay.turns.push(turn);
-	}
-
-	currentGame = {
-		id: 'replay',
-		state: GameState.Redraw,
-		me: null,
-		players: players,
-		maxPlayers: numPlayers,
-		turnNumber: 0,
-		turnTimeLimit: null,
-		turnTimeLeft: null,
-		webSocket: null
-	};
-
-	board.resize(stage.copyGrid());
-	const startSpaces = stage.getStartSpaces(numPlayers);
-	for (let i = 0; i < numPlayers; i++)
-		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
-	board.refresh();
-
-	loadPlayers(players);
-	setUrl(`replay/${encodeToUrlSafeBase64(bytes)}`)
-	initReplay();
 }
 
 function setConfirmLeavingGame() {

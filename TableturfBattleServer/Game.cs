@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -24,12 +25,17 @@ public class Game {
 	[JsonProperty("startSpaces")]
 	public Point[]? StartSpaces;
 
+	[JsonProperty("goalWinCount")]
+	public int? GoalWinCount { get; set; }
+
 	[JsonProperty("turnTimeLimit")]
 	public int? TurnTimeLimit { get; set; }
 	[JsonProperty("turnTimeLeft")]
 	public int? TurnTimeLeft { get; set; }
 	[JsonIgnore]
 	internal DateTime abandonedSince = DateTime.UtcNow;
+
+	internal List<string> setStages = new();
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
@@ -73,9 +79,9 @@ public class Game {
 
 	public bool CanPlay(int playerIndex, Card card, int x, int y, int rotation, bool isSpecialAttack) {
 		if (card is null) throw new ArgumentNullException(nameof(card));
-		if (this.Board == null) return false;
+		if (this.Board is null || this.Players[playerIndex].CurrentGameData is not SingleGameData gameData) return false;
 
-		if (isSpecialAttack && (this.Players[playerIndex].SpecialPoints < card.SpecialCost))
+		if (isSpecialAttack && (gameData.SpecialPoints < card.SpecialCost))
 			return false;
 
 		var isAnchored = false;
@@ -124,7 +130,7 @@ public class Game {
 	}
 
 	internal void Tick() {
-		if (this.State == GameState.WaitingForPlayers && this.Players.Count >= 2 && this.Players.All(p => p.selectedStageIndex != null)) {
+		if (this.State is GameState.WaitingForPlayers or GameState.ChoosingStage && this.Players.Count >= 2 && this.Players.All(p => p.selectedStageIndex != null)) {
 			// Choose colours.
 			for (int i = 0; i < this.Players.Count; i++) {
 				this.Players[i].Colour = i switch {
@@ -154,6 +160,7 @@ public class Game {
 			if (stageIndex < 0) stageIndex = random.Next(StageDatabase.Stages.Count);
 			var stage = StageDatabase.Stages[stageIndex];
 			this.StageName = stage.Name;
+			this.setStages.Add(stage.Name);
 			this.Board = (Space[,]) stage.grid.Clone();
 
 			// Place starting positions.
@@ -162,9 +169,9 @@ public class Game {
 			for (int i = 0; i < this.Players.Count; i++)
 				this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;
 
-			this.State = GameState.Preparing;
+			this.State = GameState.ChoosingDeck;
 			this.SendEvent("stateChange", this, true);
-		} else if (this.State == GameState.Preparing && this.Players.All(p => p.Deck != null)) {
+		} else if (this.State == GameState.ChoosingDeck && this.Players.All(p => p.CurrentGameData.Deck != null)) {
 			// Draw cards.
 			var random = new Random();
 			foreach (var player in this.Players)
@@ -196,7 +203,7 @@ public class Game {
 
 			foreach (var player in this.Players) {
 				var move = player.Move!;
-				player.turns.Add(new() { CardNumber = move.Card.Number, X = move.X, Y = move.Y, Rotation = move.Rotation, IsPass = move.IsPass, IsTimeout = move.IsTimeout, IsSpecialAttack = move.IsSpecialAttack });
+				player.CurrentGameData.turns.Add(new() { CardNumber = move.Card.Number, X = move.X, Y = move.Y, Rotation = move.Rotation, IsPass = move.IsPass, IsTimeout = move.IsTimeout, IsSpecialAttack = move.IsSpecialAttack });
 			}
 
 			// Place the ink.
@@ -210,12 +217,12 @@ public class Game {
 				player.CardsUsed.Add(move.Card.Number);
 
 				if (move.IsPass) {
-					player.Passes++;
-					player.SpecialPoints++;
+					player.CurrentGameData.Passes++;
+					player.CurrentGameData.SpecialPoints++;
 				} else {
 					if (move.IsSpecialAttack) {
 						anySpecialAttacks = true;
-						player.SpecialPoints -= move.Card.SpecialCost;
+						player.CurrentGameData.SpecialPoints -= move.Card.SpecialCost;
 					}
 					if (placementData == null || move.Card.Size != placementData.Value.cardSize) {
 						if (placementData != null)
@@ -280,19 +287,42 @@ public class Game {
 						if (!anyEmptySpace) {
 							var player = this.Players[(int) this.Board[x, y] & 3]!;
 							this.Board[x, y] |= Space.SpecialActive1;
-							player.SpecialPoints++;
-							player.TotalSpecialPoints++;
+							player.CurrentGameData.SpecialPoints++;
+							player.CurrentGameData.TotalSpecialPoints++;
 							specialSpacesActivated.Add(new(x, y));
 						}
 					}
 				}
 			}
 
-			if (this.TurnNumber == 12) {
-				this.State = GameState.Ended;
+			if (this.TurnNumber >= 12) {
 				this.TurnTimeLeft = null;
-				this.SendEvent("gameEnd", new { game = this, moves, placements, specialSpacesActivated }, true);
+				this.State = this.GoalWinCount is not null ? GameState.GameEnded : GameState.SetEnded;
+
+				// Determine the winner and check whether a player has won the set yet.
+				var scores = new int[this.Players.Count]; int? winner = null; int maxScore = 0;
+				for (var x = 0; x < this.Board.GetLength(0); x++) {
+					for (var y = 0; y < this.Board.GetLength(1); y++) {
+						if (((int) this.Board[x, y] & 0xC) != 0)
+							scores[(int) this.Board[x, y] & 0x3]++;
+					}
+				}
+				for (var i = 0; i < scores.Length; i++) {
+					if (scores[i] > maxScore) {
+						winner = i;
+						maxScore = scores[i];
+					} else if (scores[i] == maxScore)
+						winner = null;
+				}
+				if (winner is not null) {
+					this.Players[winner.Value].CurrentGameData.won = true;
+					this.Players[winner.Value].GamesWon++;
+					if (this.Players[winner.Value].GamesWon >= this.GoalWinCount)
+						this.State = GameState.SetEnded;
+				}
+
 				foreach (var player in this.Players) player.ClearMoves();
+				this.SendEvent("gameEnd", new { game = this, moves, placements, specialSpacesActivated }, true);
 			} else {
 				this.TurnNumber++;
 				this.TurnTimeLeft = this.TurnTimeLimit + (anySpecialAttacks ? 6 : 4) + coveringMoves + (specialSpacesActivated.Count > 0 ? 1 : 0);  // Extra seconds for the animations.
@@ -300,8 +330,8 @@ public class Game {
 				// Draw cards.
 				foreach (var player in this.Players) {
 					var index = player.GetHandIndex(player.Move!.Card.Number);
-					var draw = player.drawOrder![this.TurnNumber + 2];
-					player.Hand![index] = player.Deck![draw];
+					var draw = player.CurrentGameData.drawOrder![this.TurnNumber + 2];
+					player.Hand![index] = player.CurrentGameData.Deck![draw];
 					player.ClearMoves();
 				}
 				this.SendEvent("turn", new { game = this, moves, placements, specialSpacesActivated }, true);
@@ -328,6 +358,17 @@ public class Game {
 					}
 				}
 			}
+		} else if (this.State is GameState.GameEnded or GameState.SetEnded && this.Players.All(p => p.Move != null)) {
+			foreach (var player in this.Players) {
+				player.selectedStageIndex = null;
+				player.Hand = null;
+				player.CardsUsed.Clear();
+				player.Games.Add(new());
+				player.ClearMoves();
+			}
+			this.State = GameState.ChoosingStage;
+			this.TurnTimeLeft = this.TurnTimeLimit;
+			this.SendEvent("stateChange", this, true);
 		}
 	}
 
@@ -356,16 +397,14 @@ public class Game {
 	}
 
 	public void WriteReplayData(Stream stream) {
-		const int VERSION = 1;
+		const int VERSION = 2;
 
-		if (this.State < GameState.Ended)
-			throw new InvalidOperationException("Can't save a replay until the game has ended.");
+		if (this.State < GameState.SetEnded)
+			throw new InvalidOperationException("Can't save a replay until the set has ended.");
 
 		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 		writer.Write((byte) VERSION);
-
-		var stageNumber = Enumerable.Range(0, StageDatabase.Stages.Count).First(i => this.StageName == StageDatabase.Stages[i].Name);
-		writer.Write((byte) (stageNumber | (this.Players.Count << 5)));
+		writer.Write((byte) (this.Players.Count | (this.GoalWinCount ?? 0) << 4));
 		foreach (var player in this.Players) {
 			writer.Write((byte) player.Colour.R);
 			writer.Write((byte) player.Colour.G);
@@ -376,21 +415,32 @@ public class Game {
 			writer.Write((byte) player.SpecialAccentColour.R);
 			writer.Write((byte) player.SpecialAccentColour.G);
 			writer.Write((byte) player.SpecialAccentColour.B);
-			foreach (var card in player.Deck!)
-				writer.Write((byte) card.Number);
-			for (int i = 0; i < 4; i += 2)
-				writer.Write((byte) (player.initialDrawOrder![i] | player.initialDrawOrder[i + 1] << 4));
-			for (int i = 0; i < 15; i += 2)
-				writer.Write((byte) (player.drawOrder![i] | (i < 14 ? player.drawOrder[i + 1] << 4 : player.UIBaseColourIsSpecialColour ? 0x80 : 0)));
-			writer.Write(player.Name);
+
+			var nameBytes = Encoding.UTF8.GetBytes(player.Name);
+			writer.Write((byte) (nameBytes.Length | (player.UIBaseColourIsSpecialColour ? 0x80 : 0)));
+			writer.Write(nameBytes);
 		}
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < this.Players[0].Games.Count; i++) {
+			var stageNumber = Enumerable.Range(0, StageDatabase.Stages.Count).First(j => this.setStages[i] == StageDatabase.Stages[j].Name);
+			writer.Write((byte) stageNumber);
+
 			foreach (var player in this.Players) {
-				var move = player.turns[i];
-				writer.Write((byte) move.CardNumber);
-				writer.Write((byte) ((move.Rotation & 3) | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0) | (move.IsTimeout ? 0x20 : 0)));
-				writer.Write((sbyte) move.X);
-				writer.Write((sbyte) move.Y);
+				var gameData = player.Games[i];
+				foreach (var card in gameData.Deck!)
+					writer.Write((byte) card.Number);
+				for (int j = 0; j < 4; j += 2)
+					writer.Write((byte) (gameData.initialDrawOrder![j] | gameData.initialDrawOrder[j + 1] << 4));
+				for (int j = 0; j < 15; j += 2)
+					writer.Write((byte) (gameData.drawOrder![j] | (j < 14 ? gameData.drawOrder[j + 1] << 4 : gameData.won ? 0x80 : 0)));
+			}
+			for (int j = 0; j < 12; j++) {
+				foreach (var player in this.Players) {
+					var move = player.Games[i].turns[j];
+					writer.Write((byte) move.CardNumber);
+					writer.Write((byte) ((move.Rotation & 3) | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0) | (move.IsTimeout ? 0x20 : 0)));
+					writer.Write((sbyte) move.X);
+					writer.Write((sbyte) move.Y);
+				}
 			}
 		}
 	}

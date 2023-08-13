@@ -5,9 +5,3 @@ interface PlayerData {
 	cardsUsed: number[];
 	move: Move | null;
 }
-
-interface ReplayPlayerData {
-	deck: Card[],
-	initialDrawOrder: number[],
-	drawOrder: number[]
-}
