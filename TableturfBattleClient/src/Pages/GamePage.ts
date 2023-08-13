@@ -931,7 +931,7 @@ board.onhighlightchange = dScores => {
 };
 
 timeLabel.ontimeout = () => {
-	if (currentGame == null) return;
+	if (currentGame == null || !canPlay) return;
 	if (currentGame.turnNumber == 0) {
 		let req = new XMLHttpRequest();
 		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);

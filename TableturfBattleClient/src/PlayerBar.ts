@@ -99,10 +99,13 @@ class PlayerBar {
 			this.pointsDeltaElement.hidden = true;
 		else {
 			this.pointsDeltaElement.hidden = false;
-			if (value > 0)
+			if (value > 0) {
 				this.pointsDeltaElement.innerText = `+${value}`;
-			else
+				this.pointsDeltaElement.classList.remove('minus');
+			} else {
 				this.pointsDeltaElement.innerText = value.toString();
+				this.pointsDeltaElement.classList.add('minus');
+			}
 		}
 	}
 
