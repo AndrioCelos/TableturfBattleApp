@@ -249,16 +249,9 @@ function setupWebSocket(gameID: string) {
 						webSocket: webSocket
 					};
 
-					for (const li of playerListItems)
-						playerList.removeChild(li);
-					playerListItems.splice(0);
-					for (let i = 0; i < currentGame.maxPlayers; i++) {
-						var el = document.createElement('li');
-						playerListItems.push(el);
-						playerList.appendChild(el);
-						updatePlayerListItem(i);
-					}
-
+					lobbyResetSlots();
+					for (let i = 0; i < currentGame.players.length; i++)
+						lobbyAddPlayer(i);
 					lobbyTimeLimitBox.value = currentGame.turnTimeLimit?.toString() ?? '';
 					lobbyTimeLimitUnit.hidden = currentGame.turnTimeLimit == null;
 
@@ -308,15 +301,14 @@ function setupWebSocket(gameID: string) {
 					case 'join':
 						if (payload.data.playerIndex == currentGame.players.length) {
 							currentGame.players.push(payload.data.player);
-							playerListItems[payload.data.playerIndex].innerText = payload.data.player.name;
-							updatePlayerListItem(payload.data.playerIndex);
+							lobbyAddPlayer(payload.data.playerIndex);
 						}
 						else
 							communicationError();
 						break;
 					case 'playerReady':
 						currentGame.players[payload.data.playerIndex].isReady = true;
-						updatePlayerListItem(payload.data.playerIndex);
+						lobbySetReady(payload.data.playerIndex);
 
 						if (payload.data.playerIndex == currentGame.me?.playerIndex) {
 							lobbyStageSection.hidden = true;
@@ -351,6 +343,7 @@ function setupWebSocket(gameID: string) {
 							player.passes = payload.data.game.players[i].passes;
 							player.gamesWon = payload.data.game.players[i].gamesWon;
 							player.isReady = payload.data.game.players[i].isReady;
+							lobbyWinCounters[i].wins = player.gamesWon;
 
 							const move = payload.data.moves[i];
 							const button = new CardButton(move.card);

@@ -274,7 +274,7 @@ replayPreviousButton.buttonElement.addEventListener('click', _ => {
 		for (let i = 0; i < currentGame.players.length; i++) {
 			if (currentReplay.games[currentReplay.gameNumber].playerData[i].won)
 				currentGame.players[i].gamesWon--;
-			playerBars[i].wins = currentGame.players[i].gamesWon;
+			playerBars[i].winCounter.wins = currentGame.players[i].gamesWon;
 		}
 	}
 
@@ -359,7 +359,7 @@ function replaySwitchGame(gameNumber: number) {
 			if (currentReplay.games[j].playerData[i].won)
 				currentGame.players[i].gamesWon++;
 		}
-		playerBars[i].wins = currentGame.players[i].gamesWon;
+		playerBars[i].winCounter.wins = currentGame.players[i].gamesWon;
 	}
 
 	currentReplay.gameNumber = gameNumber;
@@ -510,7 +510,7 @@ function loadPlayers(players: Player[]) {
 		const player = players[i];
 		currentGame!.players[i] = players[i];
 		playerBars[i].name = player.name;
-		playerBars[i].wins = players[i].gamesWon;
+		playerBars[i].winCounter.wins = players[i].gamesWon;
 		updateStats(i, scores);
 		if (player.colour.r || player.colour.g || player.colour.b) {
 			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
@@ -676,7 +676,7 @@ function showResult() {
 				el.classList.remove('lose');
 				el.classList.remove('draw');
 				el.innerText = 'Victory';
-				playerBars[i].wins++;
+				playerBars[i].winCounter.wins++;
 			} else {
 				el.classList.remove('win');
 				el.classList.remove('lose');

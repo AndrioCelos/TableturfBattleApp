@@ -173,6 +173,27 @@ footer {
 	to { left: 0; }
 }
 
+.wins {
+	display: flex;
+}
+.wins > div {
+	display: inline-block;
+	background: url('assets/external/IconMedal_00.webp') center/cover;
+	width: 2em;
+	height: 2em;
+}
+.winCount {
+	font-size: larger;
+	text-align: center;
+	text-shadow: 0.1em 0.1em 0 black;
+}
+.winCount:not(:first-child) { display: none; }
+
+#playerList .wins {
+	float: right;
+	margin-right: 1.5em;
+}
+
 #lobbyTimeLimitBox {
 	width: 8ch;
 	text-align: right;
@@ -991,23 +1012,10 @@ dialog::backdrop {
 	to { left: 50%; top: 50%; right: 50%; bottom: 50%; background: var(--special-accent-colour); visibility: hidden; }
 }
 
-.wins {
+#gamePage .wins {
 	float: right;
-	display: flex;
 	margin-top: 1.25em;
 }
-.wins > div {
-	display: inline-block;
-	background: url('assets/external/IconMedal_00.webp') center/cover;
-	width: 2em;
-	height: 2em;
-}
-.winCount {
-	font-size: larger;
-	text-align: center;
-	text-shadow: 0.1em 0.1em 0 black;
-}
-.winCount:not(:first-child) { display: none; }
 
 .result {
 	font-family: 'Splatoon 1';

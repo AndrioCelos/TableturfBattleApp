@@ -2,9 +2,9 @@ class PlayerBar {
 	readonly playerIndex: number;
 
 	readonly element: HTMLElement;
+	readonly winCounter: WinCounter;
 
 	private nameElement: HTMLElement;
-	private winsElement: HTMLElement;
 	private specialPointsContainer: HTMLElement;
 	private pointsElement: HTMLElement;
 	private pointsContainer: HTMLElement;
@@ -16,15 +16,14 @@ class PlayerBar {
 	statSpecialPointsElement: HTMLElement;
 	statPassesElement: HTMLElement;
 
-	private _wins: number = 0;
 
 	constructor(element: HTMLDivElement) {
 		this.element = element;
 		this.playerIndex = parseInt(element.dataset.index!);
 		if (isNaN(this.playerIndex))
 			throw new Error('Missing player index');
+		this.winCounter = new WinCounter(element.getElementsByClassName('wins')[0] as HTMLDivElement);
 		this.nameElement = element.getElementsByClassName('name')[0] as HTMLElement;
-		this.winsElement = element.getElementsByClassName('wins')[0] as HTMLElement;
 		this.specialPointsContainer = element.getElementsByClassName('specialPoints')[0] as HTMLElement;
 
 		let pointsContainer: HTMLElement | null = null;
@@ -50,23 +49,6 @@ class PlayerBar {
 
 	get name() { return this.nameElement.innerText; }
 	set name(value: string) { this.nameElement.innerText = value; }
-
-	get wins() { return this._wins; }
-	set wins(value: number) {
-		this._wins = value;
-		clearChildren(this.winsElement);
-		if (value) {
-			if (value < 5) {
-				for (let i = 0; i < value; i++) {
-					this.winsElement.appendChild(document.createElement('div'));
-				}
-			}
-			const el = document.createElement('div');
-			el.classList.add('winCount');
-			el.innerText = value.toString();
-			this.winsElement.appendChild(el);
-		}
-	}
 
 	get points() { return parseInt(this.pointsElement.innerText); }
 	set points(value: number) { this.pointsElement.innerText = value.toString(); }

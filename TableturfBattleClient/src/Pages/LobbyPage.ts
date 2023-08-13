@@ -1,3 +1,5 @@
+const lobbyWinCounters: WinCounter[] = [ ];
+
 const stageButtons = new CheckButtonGroup<Stage>(document.getElementById('stageList')!);
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
@@ -38,8 +40,6 @@ function lobbyInitStageDatabase(stages: Stage[]) {
 }
 
 function initLobbyPage(url: string) {
-	stageSelectionFormSubmitButton.disabled = false;
-	stageSelectionFormLoadingSection.hidden = true;
 	lobbyShareData = { url: url, title: 'Tableturf Battle' };
 	if (navigator.canShare && navigator.canShare(lobbyShareData)) {
 		shareLinkButton.innerText = 'Share link';
@@ -85,26 +85,52 @@ qrCodeDialog.addEventListener('click', e => {
 		// Background was clicked.
 		qrCodeDialog.close();
 	}
-})
+});
 
-function clearReady() {
-	if (currentGame == null) return;
-	for (var i = 0; i < currentGame.players.length; i++) {
-		currentGame.players[i].isReady = false;
-		updatePlayerListItem(i);
+function lobbyResetSlots() {
+	if (!currentGame) throw new Error('No current game');
+	for (const li of playerListItems)
+		playerList.removeChild(li);
+	playerListItems.splice(0);
+	lobbyWinCounters.splice(0);
+
+	for (let i = 0; i < currentGame.maxPlayers; i++) {
+		var el = document.createElement('li');
+		el.className = 'empty';
+		el.innerText = 'Waiting...';
+		playerListItems.push(el);
+		playerList.appendChild(el);
 	}
 }
 
-function updatePlayerListItem(playerIndex: number) {
-	const listItem = playerListItems[playerIndex];
-	if (!currentGame?.players || playerIndex >= currentGame.players.length) {
-		listItem.className = 'empty';
-		listItem.innerText = 'Waiting...';
-	} else {
-		const player = currentGame.players[playerIndex];
-		listItem.innerText = player.name;
-		listItem.className = player.isReady ? 'filled ready' : 'filled';
+function clearReady() {
+	if (!currentGame) throw new Error('No current game');
+	stageSelectionFormSubmitButton.disabled = false;
+	stageSelectionFormLoadingSection.hidden = true;
+	for (var i = 0; i < currentGame.players.length; i++) {
+		currentGame.players[i].isReady = false;
+		playerListItems[i].className = 'filled';
 	}
+}
+
+function lobbyAddPlayer(playerIndex: number) {
+	if (!currentGame) throw new Error('No current game');
+	const listItem = playerListItems[playerIndex];
+	const player = currentGame.players[playerIndex];
+	listItem.innerText = player.name;
+	listItem.className = player.isReady ? 'filled ready' : 'filled';
+
+	const el = document.createElement('div');
+	el.className = 'wins';
+	el.title = 'Battles won';
+	listItem.appendChild(el);
+	const winCounter = new WinCounter(el);
+	winCounter.wins = currentGame.players[playerIndex].gamesWon;
+	lobbyWinCounters.push(winCounter);
+}
+
+function lobbySetReady(playerIndex: number) {
+	playerListItems[playerIndex].className = 'filled ready';
 }
 
 function initDeckSelection() {
