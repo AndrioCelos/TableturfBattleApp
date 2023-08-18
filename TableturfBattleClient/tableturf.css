@@ -434,8 +434,8 @@ dialog::backdrop {
 	opacity: 0.25;
 	z-index: 0;
 }
-.card:is(.checked, :hover, :focus-within):not([disabled]) {
-	transform: rotate(-3deg);
+.card.checked, .card:is(:hover, :focus-within):not([disabled]) {
+	transform: rotate(-2deg);
 }
 .card:is(:hover, :focus-within):not(.checked, .disabled, [disabled])::before {
 	content: '';
