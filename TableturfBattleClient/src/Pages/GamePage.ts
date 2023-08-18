@@ -676,6 +676,7 @@ function showResult() {
 				el.classList.remove('lose');
 				el.classList.remove('draw');
 				el.innerText = 'Victory';
+				if (currentReplay) currentGame.players[i].gamesWon++;
 				playerBars[i].winCounter.wins++;
 			} else {
 				el.classList.remove('win');
