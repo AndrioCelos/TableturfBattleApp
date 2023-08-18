@@ -158,7 +158,7 @@ deckImportForm.addEventListener('submit', e => {
 			const data = JSON.parse(deckImportTextBox.value);
 			const decks = (data instanceof Array ? data : [ data ]) as Deck[];
 			for (const deck of decks) {
-				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => i < 0 || i > cardDatabase.cards!.length))
+				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => !cardDatabase.isValidCardNumber(i)))
 					throw new SyntaxError('Invalid JSON deck');
 			}
 			importDecks(decks);
@@ -187,7 +187,7 @@ function selectDeck() {
 	deckNameLabel.innerText = selectedDeck.name;
 	for (const cardNumber of selectedDeck.cards) {
 		if (cardNumber) {
-			const card = cardDatabase.cards![cardNumber - 1];
+			const card = cardDatabase.get(cardNumber);
 			size += card.size;
 
 			const button = new CardButton(card);

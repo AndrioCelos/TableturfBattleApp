@@ -349,7 +349,7 @@ internal class Program {
 										}
 										var cards = new int[15];
 										for (int i = 0; i < 15; i++) {
-											if (!int.TryParse(array[i], out var cardNumber) || cardNumber < 0 || cardNumber > CardDatabase.Cards.Count) {
+											if (!int.TryParse(array[i], out var cardNumber) || !CardDatabase.IsValidCardNumber(cardNumber)) {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
 												return;
 											}

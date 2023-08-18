@@ -2097,21 +2097,158 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+
+		// Upcoming Drizzle Season 2023 cards
+		new(-1, "Custom Goo Tuber", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, S, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-2, "Sloshing Machine Neo", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, S, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-3, "Heavy Edit Splatling", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, S, 0, 0 },
+			{ 0, 0, 0, I, 0, I, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-4, "Dread Wringer", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, S, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-5, "Octobrush Nouveau", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, I, I, I, 0, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, I, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-6, "Gold Dynamo Roller", Rarity.Common, new Space[,] {
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, S, I, I, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-7, "Tri-Stringer Collab", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, I, 0, 0, 0, 0, 0 },
+			{ 0, S, 0, I, 0, 0, 0, 0 },
+			{ 0, I, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-8, "Bloblobber Deco", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, S, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-9, "Horrorboros", Rarity.Fresh, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, I, 0, 0, 0, 0 },
+			{ 0, I, I, 0, I, I, I, 0 },
+			{ I, 0, I, 0, I, 0, I, 0 },
+			{ 0, 0, I, I, I, 0, I, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-10, "Cohozuna", Rarity.Fresh, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, I, I, 0, 0, 0 },
+			{ 0, I, I, I, I, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, S, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-11, "Sorella Brella", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, I, I, S, I, I, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-12, "Ballpoint Splatling Nouveau", Rarity.Common, new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, I, S, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		})
 	};
 
-	public static Version Version { get; } = new(4, 1, 0, 0);
-	public static DateTime LastModified { get; } = new(2023, 8, 12, 9, 0, 0, DateTimeKind.Utc);
+	private static readonly Dictionary<int, Card> byAltNumber;
+
+	public static int LastOfficialCardNumber { get; }
+
+	public static Version Version { get; } = new(5, 0, 0, 0);
+	public static DateTime LastModified { get; } = new(2023, 8, 18, 1, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
 	static CardDatabase() {
 		Cards = Array.AsReadOnly(cards);
 		JSON = JsonConvert.SerializeObject(cards);
+		LastOfficialCardNumber = cards.Last(c => c.Number > 0).Number;
+		byAltNumber = new(from c in cards where c.Number < 0 || c.AltNumber is not null select new KeyValuePair<int, Card>(c.Number < 0 ? c.Number : c.AltNumber ?? 0, c));
 	}
 
-	public static Card GetCard(int number) {
-		number--;
-		return number >= 0 && number < cards.Length ? cards[number] : throw new ArgumentOutOfRangeException(nameof(number));
-	}
+	// Upcoming cards are identified with a negative number, as their actual numbers aren't known until their release.
+	// The placeholder numbers will be kept as alternate numbers then, to avoid breaking replay and saved deck data that uses them.
+	public static Card GetCard(int number) => number switch {
+		> 0 => --number < LastOfficialCardNumber ? cards[number] : throw new ArgumentOutOfRangeException(nameof(number)),
+		< 0 => byAltNumber.TryGetValue(number, out var card) ? card : throw new ArgumentOutOfRangeException(nameof(number)),
+		_ => throw new ArgumentOutOfRangeException(nameof(number))
+	};
+
+	public static bool IsValidCardNumber(int number) => number switch {
+		> 0 => number <= LastOfficialCardNumber,
+		< 0 => byAltNumber.ContainsKey(number),
+		_ => false
+	};
 }

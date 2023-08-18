@@ -306,6 +306,8 @@ dialog::backdrop {
 	display: inline-block;
 }
 
+:is(#deckCardListView, #deckCardListEdit, .cardListGrid) .card.upcoming { background: midnightblue; }
+
 .card.common { --colour: rgb(89, 49, 255); }
 .card.rare { --colour: rgb(231, 180, 39); }
 .card.fresh { --colour: white; }
@@ -323,12 +325,25 @@ dialog::backdrop {
 	display: none;
 }
 
+.cardListGrid .card:hover .cardNumber {
+	display: block;
+	position: absolute;
+	background: grey;
+	border: 1px solid black;
+	top: -1.5em;
+	left: -1em;
+	padding: 0 1em;
+	transform: rotate(-10deg);
+	z-index: 1;
+}
+
 .cardName {
 	text-align: center;
 	line-height: 1.25em;
 	flex-grow: 1;
 }
-.card:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"], [data-card-number="202"]) .cardName {
+.card:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"],
+	[data-card-number="202"], [data-card-number="-3"], [data-card-number="-5"], [data-card-number="-12"]) .cardName {
 	position: absolute;
 	left: -1em;
 	right: -1em;
@@ -415,10 +430,14 @@ dialog::backdrop {
 	top: 0;
 	right: 0;
 	bottom: 0;
+	border-radius: 0.5em;
 	opacity: 0.25;
 	z-index: 0;
 }
-.card:is(:hover, :focus-within):not(.checked, .disabled)::before {
+.card:is(.checked, :hover, :focus-within):not([disabled]) {
+	transform: rotate(-3deg);
+}
+.card:is(:hover, :focus-within):not(.checked, .disabled, [disabled])::before {
 	content: '';
 	background: grey;
 }
@@ -1540,7 +1559,7 @@ dialog::backdrop {
 	.playerBar[data-index="1"] { grid-column: 1 / span 4; grid-row: 1; }
 	.playerBar[data-index="2"] { grid-column: 1 / span 4; grid-row: 3; }
 	.playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 1; }
-	
+
 	.wins { margin-right: 8em; }
 
 	#gamePage.boardFlipped .playerBar[data-index="3"] { grid-column: 1 / span 4; grid-row: 3; }

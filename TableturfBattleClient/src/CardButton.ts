@@ -10,6 +10,7 @@ class CardButton extends CheckButton {
 		button.type = 'button';
 		button.classList.add('card');
 		button.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
+		if (card.number < 0) button.classList.add('upcoming');
 		button.dataset.cardNumber = card.number.toString();
 		super(button);
 
@@ -40,7 +41,7 @@ class CardButton extends CheckButton {
 
 		let el2 = document.createElement('div');
 		el2.classList.add('cardNumber');
-		el2.innerText = card.number.toString();
+		el2.innerText = card.number >= 0 ? `No. ${card.number}` : 'Upcoming';
 		row.appendChild(el2);
 
 		el2 = document.createElement('div');

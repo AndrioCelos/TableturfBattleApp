@@ -347,6 +347,7 @@ function setupWebSocket(gameID: string) {
 
 							const move = payload.data.moves[i];
 							const button = new CardButton(move.card);
+							button.buttonElement.disabled = true;
 							if (move.isSpecialAttack) {
 								anySpecialAttacks = true;
 								button.buttonElement.classList.add('specialAttack');

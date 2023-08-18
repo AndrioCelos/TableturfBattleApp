@@ -287,6 +287,7 @@ class Board {
 		clearChildren(this.table);
 		this.cells.splice(0);
 		this.highlightedCells.splice(0);
+		this.animatedCells.splice(0);
 		this.specialAnimatedCells.splice(0);
 
 		const boardWidth = this.grid.length;

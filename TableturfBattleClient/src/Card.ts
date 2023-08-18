@@ -1,5 +1,6 @@
 class Card {
 	number: number;
+	altNumber: number | null;
 	name: string;
 	rarity: Rarity;
 	specialCost: number;
@@ -11,8 +12,9 @@ class Card {
 	private maxX: number;
 	private maxY: number;
 
-	constructor(number: number, name: string, rarity: Rarity, specialCost: number, grid: Space[][]) {
+	constructor(number: number, altNumber: number | null, name: string, rarity: Rarity, specialCost: number, grid: Space[][]) {
 		this.number = number;
+		this.altNumber = altNumber;
 		this.name = name;
 		this.rarity = rarity;
 		this.specialCost = specialCost;
@@ -38,8 +40,10 @@ class Card {
 	}
 
 	static fromJson(obj: any) {
-		return new Card(obj.number, obj.name, obj.rarity, obj.specialCost, obj.grid);
+		return new Card(obj.number, obj.altNumber ?? null, obj.name, obj.rarity, obj.specialCost, obj.grid);
 	}
+
+	get isUpcoming() { return this.number < 0; }
 
 	getSpace(x: number, y: number, rotation: number) {
 		switch (rotation & 3) {

@@ -68,9 +68,8 @@ function deckEditInitStageDatabase(stages: Stage[]) {
 				}
 			} else if (selectedDeck) {
 				for (const cardNumber of selectedDeck.cards) {
-					if (cardNumber > 0 && cardNumber <= cardDatabase.cards!.length) {
+					if (cardDatabase.isValidCardNumber(cardNumber))
 						addTestDeckCard(cardDatabase.get(cardNumber));
-					}
 				}
 			}
 
@@ -105,12 +104,12 @@ function editDeck() {
 	showPage('deckEdit');
 }
 
-function createDeckEditCardButton(index: number, card: number) {
-	const button = new CardButton(cardDatabase.cards![card - 1]);
+function createDeckEditCardButton(index: number, cardNumber: number) {
+	const button = new CardButton(cardDatabase.get(cardNumber));
 	button.buttonElement.addEventListener('click', () => {
 		selectedDeckCardIndex = index;
 		for (const button2 of cardList.cardButtons) {
-			button2.checked = button2.card.number == card;
+			button2.checked = button2.card.number == cardNumber;
 		}
 		cardList.listElement.parentElement!.classList.add('selecting');
 	});

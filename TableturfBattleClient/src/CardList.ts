@@ -4,11 +4,11 @@ class CardList {
 	readonly filterBox: HTMLInputElement;
 	readonly cardButtons: CardButton[] = [ ];
 
-	static readonly cardSortOrders: { [key: string]: ((a: Card, b: Card) => number) | undefined } = {
-		'number': (a, b) => a.number - b.number,
+	static readonly cardSortOrders: { [key: string]: (a: Card, b: Card) => number } = {
+		'number': (a, b) => compareCardNumbers(a, b),
 		'name': (a, b) => a.name.localeCompare(b.name),
-		'size': (a, b) => a.size != b.size ? a.size - b.size : a.number - b.number,
-		'rarity': (a, b) => a.rarity != b.rarity ? a.rarity - b.rarity : a.number - b.number,
+		'size': (a, b) => a.size != b.size ? a.size - b.size : compareCardNumbers(a, b),
+		'rarity': (a, b) => a.rarity != b.rarity ? a.rarity - b.rarity : compareCardNumbers(a, b),
 	}
 
 	constructor(listElement: HTMLElement, sortBox: HTMLSelectElement, filterBox: HTMLInputElement) {
@@ -54,4 +54,8 @@ class CardList {
 		for (const button of this.cardButtons)
 			button.buttonElement.hidden = false;
 	}
+}
+function compareCardNumbers(a: Card, b: Card) {
+	// Sort upcoming cards after released cards.
+	return a.number >= 0 ? (b.number >= 0 ? a.number - b.number : -1) : (b.number >= 0 ? 1 : b.number - a.number);
 }

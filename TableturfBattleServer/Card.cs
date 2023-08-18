@@ -4,6 +4,8 @@ namespace TableturfBattleServer;
 public class Card {
 	[JsonProperty("number")]
 	public int Number { get; }
+	[JsonProperty("altNumber")]
+	public int? AltNumber { get; }
 	[JsonProperty("name")]
 	public string Name { get; }
 	[JsonProperty("rarity")]
@@ -16,9 +18,12 @@ public class Card {
 	[JsonProperty("grid")]
 	private readonly Space[,] grid;
 
-	internal Card(int number, string name, Rarity rarity, Space[,] grid) : this(number, name, rarity, null, grid) { }
-	internal Card(int number, string name, Rarity rarity, int? specialCost, Space[,] grid) {
+	internal Card(int number, string name, Rarity rarity, Space[,] grid) : this(number, null, name, rarity, null, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, Space[,] grid) : this(number, altNumber, name, rarity, null, grid) { }
+	internal Card(int number, string name, Rarity rarity, int? specialCost, Space[,] grid) : this(number, null, name, rarity, specialCost, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, int? specialCost, Space[,] grid) {
 		this.Number = number;
+		this.AltNumber = altNumber;
 		this.Name = name ?? throw new ArgumentNullException(nameof(name));
 		this.Rarity = rarity;
 		this.grid = grid ?? throw new ArgumentNullException(nameof(grid));

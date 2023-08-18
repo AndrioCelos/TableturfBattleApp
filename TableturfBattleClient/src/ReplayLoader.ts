@@ -38,7 +38,7 @@ function loadReplay(base64: string) {
 				const initialDrawOrder = [ ];
 				const drawOrder = [ ];
 				for (let j = 0; j < 15; j++) {
-					deck.push(cardDatabase.get(dataView.getUint8(pos + 9 + j)));
+					deck.push(loadCardFromReplay(dataView, pos + 9 + j));
 				}
 				for (let j = 0; j < 2; j++) {
 					initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
@@ -59,14 +59,14 @@ function loadReplay(base64: string) {
 			for (let i = 0; i < 12; i++) {
 				const turn = [ ];
 				for (let j = 0; j < numPlayers; j++) {
-					const cardNumber = dataView.getUint8(pos);
+					const card = loadCardFromReplay(dataView, pos);
 					const b = dataView.getUint8(pos + 1);
 					const x = dataView.getInt8(pos + 2);
 					const y = dataView.getInt8(pos + 3);
 					if (b & 0x80)
-						turn.push({ card: cardDatabase.get(cardNumber), isPass: true, isTimeout: (b & 0x20) != 0 });
+						turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
 					else {
-						const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+						const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
 						turn.push(move);
 					}
 					pos += 4;
@@ -113,7 +113,7 @@ function loadReplay(base64: string) {
 					const drawOrder = [ ];
 					let won = false;
 					for (let j = 0; j < 15; j++) {
-						deck.push(cardDatabase.get(dataView.getUint8(pos + j)));
+						deck.push(loadCardFromReplay(dataView, pos + j));
 					}
 					for (let j = 0; j < 2; j++) {
 						initialDrawOrder.push(dataView.getUint8(pos + 15 + j) & 0xF);
@@ -162,14 +162,14 @@ function replayLoadTurns(dataView: DataView, numPlayers: number, pos: number) {
 	for (let i = 0; i < 12; i++) {
 		const turn = [ ];
 		for (let j = 0; j < numPlayers; j++) {
-			const cardNumber = dataView.getUint8(pos);
+			const card = loadCardFromReplay(dataView, pos);
 			const b = dataView.getUint8(pos + 1);
 			const x = dataView.getInt8(pos + 2);
 			const y = dataView.getInt8(pos + 3);
 			if (b & 0x80)
-				turn.push({ card: cardDatabase.get(cardNumber), isPass: true, isTimeout: (b & 0x20) != 0 });
+				turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
 			else {
-				const move: PlayMove = { card: cardDatabase.get(cardNumber), isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+				const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
 				turn.push(move);
 			}
 			pos += 4;
@@ -178,3 +178,5 @@ function replayLoadTurns(dataView: DataView, numPlayers: number, pos: number) {
 	}
 	return turns;
 }
+
+function loadCardFromReplay(dataView: DataView, index: number) { return cardDatabase.get(dataView.getUint8(index) > cardDatabase.lastOfficialCardNumber ? dataView.getInt8(index) : dataView.getUint8(index)); }
