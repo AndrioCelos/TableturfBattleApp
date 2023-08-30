@@ -229,7 +229,8 @@ deckRenameButton.addEventListener('click', () => {
 	const name = prompt(`What will you rename ${selectedDeck.name} to?`, selectedDeck.name)?.trim();
 	if (name) {
 		selectedDeck.name = name;
-		deckNameLabel.innerText = selectedDeck.name;
+		deckNameLabel.innerText = name;
+		deckButtons.entries[decks.indexOf(selectedDeck)].button.buttonElement.innerText = name;
 		saveDecks();
 	}
 });
