@@ -5,6 +5,7 @@ const deckEditSize = document.getElementById('deckEditSize')!;
 const deckCardListEdit = document.getElementById('deckCardListEdit')!;
 const cardList = CardList.fromId('cardList', 'cardListSortBox', 'cardListFilterBox');
 const cardListButtonGroup = new CheckButtonGroup<Card>();
+const deckSortButton = document.getElementById('deckSortButton') as HTMLButtonElement;
 const deckTestButton = document.getElementById('deckTestButton') as HTMLButtonElement;
 const deckSaveButton = document.getElementById('deckSaveButton') as HTMLButtonElement;
 const deckCancelButton = document.getElementById('deckCancelButton') as HTMLButtonElement;
@@ -24,22 +25,29 @@ function deckEditInitCardDatabase(cards: Card[]) {
 		cardList.add(button);
 		cardListButtonGroup.add(button, card);
 		button.buttonElement.addEventListener('click', () => {
+			if (!button.enabled) return;
+
 			for (const button2 of cardList.cardButtons) {
 				if (button2 != button)
 					button2.checked = false;
 			}
 
 			if (selectedDeckCardIndex == null) return;
-			const oldButton = deckEditCardButtons.entries[selectedDeckCardIndex].button;
+			const oldEntry = deckEditCardButtons.entries[selectedDeckCardIndex];
+			const oldCardNumber = oldEntry.value;
 
-			const button3 = createDeckEditCardButton(selectedDeckCardIndex, card.number);
+			if (oldCardNumber != 0)
+				cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber)!.button.enabled = true;
+			cardListButtonGroup.entries.find(e => e.value.number == card.number)!.button.enabled = false;
+
+			const button3 = createDeckEditCardButton(card.number);
 			button3.checked = true;
 
-			const oldElement = oldButton.buttonElement;
+			const oldElement = oldEntry.button.buttonElement;
 			deckCardListEdit.insertBefore(button3.buttonElement, oldElement);
 			deckCardListEdit.removeChild(oldElement);
 
-			deckEditCardButtons.replace(selectedDeckCardIndex, button3, selectedDeckCardIndex);
+			deckEditCardButtons.replace(selectedDeckCardIndex, button3, card.number);
 			deckEditUpdateSize();
 
 			cardList.listElement.parentElement!.classList.remove('selecting');
@@ -90,13 +98,16 @@ function editDeck() {
 
 	for (let i = 0; i < 15; i++) {
 		if (selectedDeck.cards[i]) {
-			const button = createDeckEditCardButton(i, selectedDeck.cards[i]);
-			deckEditCardButtons.add(button, i);
+			const button = createDeckEditCardButton(selectedDeck.cards[i]);
+			deckEditCardButtons.add(button, selectedDeck.cards[i]);
 		} else {
-			const element = createDeckEditEmptySlotButton(i);
-			deckEditCardButtons.add(element, i);
+			const element = createDeckEditEmptySlotButton();
+			deckEditCardButtons.add(element, 0);
 		}
 	}
+
+	for (const entry of cardListButtonGroup.entries)
+		entry.button.enabled = !selectedDeck.cards.includes(entry.value.number);
 
 	deckEditUpdateSize();
 	cardList.clearFilter();
@@ -104,10 +115,10 @@ function editDeck() {
 	showPage('deckEdit');
 }
 
-function createDeckEditCardButton(index: number, cardNumber: number) {
+function createDeckEditCardButton(cardNumber: number) {
 	const button = new CardButton(cardDatabase.get(cardNumber));
 	button.buttonElement.addEventListener('click', () => {
-		selectedDeckCardIndex = index;
+		selectedDeckCardIndex = deckEditCardButtons.entries.findIndex(e => e.button == button);
 		for (const button2 of cardList.cardButtons) {
 			button2.checked = button2.card.number == cardNumber;
 		}
@@ -116,22 +127,46 @@ function createDeckEditCardButton(index: number, cardNumber: number) {
 	return button;
 }
 
-function createDeckEditEmptySlotButton(index: number) {
+function createDeckEditEmptySlotButton() {
 	const buttonElement = document.createElement('button');
+	const button = new CheckButton(buttonElement);
 	buttonElement.type = 'button';
 	buttonElement.className = 'card emptySlot';
 	buttonElement.addEventListener('click', () => {
-		selectedDeckCardIndex = index;
+		selectedDeckCardIndex = deckEditCardButtons.entries.findIndex(e => e.button == button);
 		for (const button2 of cardList.cardButtons)
 			button2.checked = false;
 		cardList.listElement.parentElement!.classList.add('selecting');
 	});
-	return new CheckButton(buttonElement);
+	return button;
 }
+
+deckSortButton.addEventListener('click', _ => {
+	let isSorted = true;
+	let lastCardNumber = deckEditCardButtons.entries[0].value;
+	for (let i = 1; i < deckEditCardButtons.entries.length; i++) {
+		const entry = deckEditCardButtons.entries[i];
+		if (lastCardNumber == 0 ? entry.value != 0 : (entry.value != 0 && cardDatabase.get(entry.value).size < cardDatabase.get(lastCardNumber).size)) {
+			isSorted = false;
+			break;
+		}
+		lastCardNumber = entry.value;
+	}
+	const comparer = CardList.cardSortOrders['size'];
+	if (isSorted)
+		// If the deck is already sorted, reverse the order.
+		deckEditCardButtons.entries.sort((a, b) => a.value == 0 ? (b.value == 0 ? 0 : 1) : (b.value == 0 ? -1 : comparer(cardDatabase.get(b.value), cardDatabase.get(a.value))));
+	else
+		deckEditCardButtons.entries.sort((a, b) => a.value == 0 ? (b.value == 0 ? 0 : 1) : (b.value == 0 ? -1 : comparer(cardDatabase.get(a.value), cardDatabase.get(b.value))));
+
+	clearChildren(deckCardListEdit);
+	for (const button of deckEditCardButtons.buttons)
+		deckCardListEdit.appendChild(button.buttonElement);
+});
 
 deckSaveButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	selectedDeck.cards = deckEditCardButtons.buttons.map(o => (o as CardButton).card?.number ?? 0);
+	selectedDeck.cards = deckEditCardButtons.entries.map(e => e.value);
 	saveDecks();
 	selectDeck();
 	stopEditingDeck();
