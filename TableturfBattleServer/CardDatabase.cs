@@ -2160,7 +2160,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(-7, "Tri-Stringer Collab", Rarity.Common, new Space[,] {
+		new(-7, "Inkline Tri-Stringer", Rarity.Common, new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
@@ -2226,8 +2226,8 @@ public static class CardDatabase {
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(5, 0, 0, 0);
-	public static DateTime LastModified { get; } = new(2023, 8, 18, 1, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(5, 0, 1, 0);
+	public static DateTime LastModified { get; } = new(2023, 8, 30, 9, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
