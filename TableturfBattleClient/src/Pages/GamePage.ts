@@ -179,6 +179,8 @@ function initTest(stage: Stage) {
 	testAllCardsButton.checked = false;
 	setTestListPage(false);
 	testAllCardsList.clearFilter();
+	for (const button of testDeckCardButtons.concat(testAllCardsList.cardButtons))
+		button.enabled = true;
 }
 
 replayNextButton.buttonElement.addEventListener('click', _ => {
