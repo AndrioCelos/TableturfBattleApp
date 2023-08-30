@@ -1089,12 +1089,10 @@ function toggleShowDeck() {
 }
 
 rotateLeftButton.addEventListener('click', () => {
-	board.cardRotation--;
-	board.refreshHighlight();
+	board.rotateAnticlockwise(true);
 });
 rotateRightButton.addEventListener('click', () => {
-	board.cardRotation++;
-	board.refreshHighlight();
+	board.rotateClockwise(true);
 });
 gameDeckButton.addEventListener('click', toggleShowDeck);
 showDeckCloseButton.addEventListener('click', toggleShowDeck);

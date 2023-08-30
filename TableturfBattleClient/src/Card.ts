@@ -54,7 +54,7 @@ class Card {
 		}
 	}
 
-	clampPosition(x: number, y: number, boardWidth: number, boardHeight: number, rotation: number) {
+	clampPosition(x: number, y: number, boardWidth: number, boardHeight: number, rotation: number): Point {
 		let x1, y1, x2, y2;
 		switch (rotation & 3) {
 			case 0: x1 = this.minX; y1 = this.minY; x2 = this.maxX; y2 = this.maxY; break;
@@ -66,4 +66,6 @@ class Card {
 		y = Math.min(Math.max(y, -y1), boardHeight - 1 - y2);
 		return { x, y };
 	}
+
+	get inkAreaDimensions() { return { x: this.maxX - this.minX + 1, y: this.maxY - this.minY + 1 }; }
 }

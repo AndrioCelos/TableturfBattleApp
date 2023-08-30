@@ -4,9 +4,12 @@ class Board {
 	cells: HTMLTableCellElement[][] = [ ];
 
 	playerIndex: number | null = 0;
-	cardPlaying: Card | null = null;
 	cardRotation = 0;
 	_specialAttack = false;
+
+	private _cardPlaying: Card | null = null;
+	private mouseOffset: Point = { x: 3.5, y: 3.5 };
+	private rotationOffsets: Point[] | null = null;
 
 	autoHighlight = true;
 	flip = false;
@@ -33,10 +36,10 @@ class Board {
 			if (this.autoHighlight) {
 				switch (e.key) {
 					case 'r':
-						this.moveHighlight((x, y, r) => [x, y, r + 1], false);
+						this.rotateClockwise(true);
 						break;
 					case 'R':
-						this.moveHighlight((x, y, r) => [x, y, r - 1], false);
+						this.rotateAnticlockwise(true);
 						break;
 					case 'ArrowUp':
 						this.moveHighlight((x, y, r) => [x, y + (this.flip ? 1 : -1), r], true);
@@ -102,6 +105,39 @@ class Board {
 		});
 	}
 
+	private get rotatedMouseOffset() {
+		switch ((this.cardRotation % 4 + 4) % 4) {
+			case 0: return this.mouseOffset;
+			case 1: return { x: 7 - this.mouseOffset.y, y: this.mouseOffset.x };
+			case 2: return { x: 7 - this.mouseOffset.x, y: 7 - this.mouseOffset.y };
+			default: return { x: this.mouseOffset.y, y: 7 - this.mouseOffset.x };
+		}
+	}
+
+	get cardPlaying(): Card | null { return this._cardPlaying; }
+	set cardPlaying(value: Card | null) {
+		this._cardPlaying = value;
+		if (!value) {
+			this.rotationOffsets = null;
+			return;
+		}
+		// Figure out the centre point for rotating the card.
+		// If the ink pattern's width and height are both even or both odd, it rotates around the centre (either the centre of an ink space or a corner).
+		// If the width is even, it rotates around the left of the two central spaces.
+		// If the height is even, it rotates around the lower of the two central spaces.
+		const size = value.inkAreaDimensions;
+		if (size.x % 2 == 0 && size.y % 2 == 0) {
+			this.mouseOffset = { x: 3.5, y: 3.5 };
+			this.rotationOffsets = null;
+		} else if (size.y % 2 != 0){
+			this.mouseOffset = { x: 3, y: 3 };
+			this.rotationOffsets = [ { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 } ];
+		} else {
+			this.mouseOffset = { x: 3, y: 4 };
+			this.rotationOffsets = [ { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 } ];
+		}
+	}
+
 	get specialAttack() { return this._specialAttack; }
 	set specialAttack(value: boolean) {
 		this._specialAttack = value;
@@ -115,7 +151,7 @@ class Board {
 		if (this.playerIndex == null) return;
 		if (this.highlightedCells.length == 0 || isNaN(this.highlightX) || isNaN(this.highlightY) || isNaN(this.cardRotation)) {
 			const startSpace = this.startSpaces[this.playerIndex];
-			[this.highlightX, this.highlightY, this.cardRotation] = [startSpace.x - (this.flip ? 4 : 3), startSpace.y - (this.flip ? 4 : 3), 0];
+			[this.highlightX, this.highlightY, this.cardRotation] = [startSpace.x - (this.flip ? 4 : 3), startSpace.y + (this.flip ? 4 : 3), 0];
 		} else {
 			let [x, y, r] = move(this.highlightX, this.highlightY, this.cardRotation);
 			let clampedPosition = clamp
@@ -124,6 +160,26 @@ class Board {
 			[this.highlightX, this.highlightY, this.cardRotation] = [clampedPosition.x, clampedPosition.y, r];
 		}
 		this.refreshHighlight();
+	}
+
+	rotateClockwise(clamp: boolean) {
+		if (this.rotationOffsets) {
+			const offset = this.rotationOffsets[((this.cardRotation) % 4 + 4) % 4];
+			this.moveHighlight((x, y, r) => [x + offset.x, y + offset.y, r + 1], clamp);
+		} else {
+			this.moveHighlight((x, y, r) => [x, y, r + 1], clamp);
+			this.refreshHighlight();
+		}
+	}
+
+	rotateAnticlockwise(clamp: boolean) {
+		if (this.rotationOffsets) {
+			const offset = this.rotationOffsets[((this.cardRotation + 1) % 4 + 4) % 4];
+			this.moveHighlight((x, y, r) => [x + offset.x, y + offset.y, r - 1], clamp);
+		} else {
+			this.moveHighlight((x, y, r) => [x, y, r - 1], clamp);
+			this.refreshHighlight();
+		}
 	}
 
 	checkMoveLegality(playerIndex: number, card: Card, x: number, y: number, rotation: number, isSpecialAttack: boolean): string | null {
@@ -313,8 +369,9 @@ class Board {
 				td.addEventListener('pointermove', e => {
 					if (e.pointerType != 'touch') {
 						if (this.autoHighlight && this.cardPlaying != null) {
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? 4 : 3);
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? 4 : 3);
+							const offset = this.rotatedMouseOffset;
+							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? Math.ceil(offset.x) : Math.floor(offset.x));
+							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? Math.ceil(offset.y) : Math.floor(offset.y));
 							if (x != this.highlightX || y != this.highlightY) {
 								this.highlightX = x;
 								this.highlightY = y;
@@ -326,17 +383,15 @@ class Board {
 				td.addEventListener('mouseup', e => {
 					if (this.autoHighlight && this.cardPlaying != null) {
 						if (e.button == 2) {
-							this.cardRotation++;
-							this.refreshHighlight();
+							this.rotateClockwise(false);
 						}
 					}
 				});
 				td.addEventListener('wheel', e => {
 					if (this.autoHighlight && this.cardPlaying != null) {
 						e.preventDefault();
-						if (e.deltaY > 0) this.cardRotation++;
-						else if (e.deltaY < 0) this.cardRotation--;
-						this.refreshHighlight();
+						if (e.deltaY > 0) this.rotateClockwise(false);
+						else if (e.deltaY < 0) this.rotateAnticlockwise(false);
 					}
 				});
 			}
