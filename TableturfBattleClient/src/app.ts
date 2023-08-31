@@ -166,7 +166,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 				case GameState.Redraw:
 					if (currentGame.me) setConfirmLeavingGame();
 					redrawModal.hidden = currentGame.me == null || currentGame.players[currentGame.me.playerIndex].isReady;
-					turnNumberLabel.setTurnNumber(null);
+					turnNumberLabel.turnNumber = null;
 					canPlay = false;
 					timeLabel.faded = redrawModal.hidden;
 					timeLabel.paused = false;
@@ -175,7 +175,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					for (let i = 0; i < currentGame.players.length; i++)
 						showWaiting(i);
 					if (currentGame.me) setConfirmLeavingGame();
-					turnNumberLabel.setTurnNumber(game.turnNumber);
+					turnNumberLabel.turnNumber = game.turnNumber;
 					board.autoHighlight = true;
 					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
 					timeLabel.faded = !canPlay;
@@ -186,7 +186,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 				case GameState.SetEnded:
 					clearConfirmLeavingGame();
 					gamePage.classList.add('gameEnded');
-					turnNumberLabel.setTurnNumber(null);
+					turnNumberLabel.turnNumber = null;
 					timeLabel.hide();
 					canPlay = false;
 					showResult();
@@ -379,7 +379,7 @@ function setupWebSocket(gameID: string) {
 						(async () => {
 							await playInkAnimations(payload.data, anySpecialAttacks);
 							if (payload.playerData) updateHandAndDeck(payload.playerData);
-							turnNumberLabel.setTurnNumber(payload.data.game.turnNumber);
+							turnNumberLabel.turnNumber = payload.data.game.turnNumber;
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
 								currentGame.state = payload.data.game.state;

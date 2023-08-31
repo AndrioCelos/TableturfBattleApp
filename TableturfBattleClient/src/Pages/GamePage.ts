@@ -144,7 +144,7 @@ function initReplay() {
 	showPage('game');
 	clearPlayContainers();
 	timeLabel.hide();
-	turnNumberLabel.setTurnNumber(null);
+	turnNumberLabel.turnNumber = null;
 	replaySwitchGame(0);
 }
 
@@ -172,7 +172,7 @@ function initTest(stage: Stage) {
 	testControls.hidden = false;
 	clearPlayContainers();
 	timeLabel.hide();
-	turnNumberLabel.setTurnNumber(null);
+	turnNumberLabel.turnNumber = null;
 	showPage('game');
 
 	testDeckButton.checked = true;
@@ -191,7 +191,7 @@ replayNextButton.buttonElement.addEventListener('click', _ => {
 		replayUpdateHand();
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
-		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		turnNumberLabel.turnNumber = currentGame.turnNumber;
 		board.refresh();
 		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
@@ -205,7 +205,7 @@ replayNextButton.buttonElement.addEventListener('click', _ => {
 		replayPreviousButton.enabled = true;
 		currentGame.state = GameState.Ongoing;
 		currentGame.turnNumber++;
-		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		turnNumberLabel.turnNumber = currentGame.turnNumber;
 		replayUpdateHand();
 	} else if (currentGame.turnNumber > 12) {
 		currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
@@ -253,7 +253,7 @@ replayNextButton.buttonElement.addEventListener('click', _ => {
 		replayAnimationAbortController = new AbortController();
 		(async () => {
 			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
-			turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+			turnNumberLabel.turnNumber = currentGame.turnNumber;
 			clearPlayContainers();
 			if (currentGame.turnNumber > 12) {
 				currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
@@ -300,7 +300,7 @@ replayPreviousButton.buttonElement.addEventListener('click', _ => {
 
 	if (currentGame.turnNumber > 0) {
 		currentGame.state = GameState.Ongoing;
-		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		turnNumberLabel.turnNumber = currentGame.turnNumber;
 		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
 			const move = currentReplay.turns[currentGame.turnNumber - 1][i];
@@ -314,7 +314,7 @@ replayPreviousButton.buttonElement.addEventListener('click', _ => {
 	} else {
 		currentGame.state = GameState.Redraw;
 		replayPreviousButton.enabled = false;
-		turnNumberLabel.setTurnNumber(null);
+		turnNumberLabel.turnNumber = null;
 	}
 
 	replayUpdateHand();
@@ -377,7 +377,7 @@ function replaySwitchGame(gameNumber: number) {
 	replayNextButton.enabled = true;
 	handContainer.hidden = false;
 	gameButtonsContainer.hidden = false;
-	turnNumberLabel.setTurnNumber(null);
+	turnNumberLabel.turnNumber = null;
 
 	const stage = currentReplay.games[gameNumber].stage;
 	board.resize(stage.copyGrid());
@@ -400,7 +400,7 @@ flipButton.addEventListener('click', () => {
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
 		clearPlayContainers();
-		turnNumberLabel.setTurnNumber(currentGame.turnNumber);
+		turnNumberLabel.turnNumber = currentGame.turnNumber;
 		const scores = board.getScores();
 		for (let i = 0; i < currentGame.players.length; i++) {
 			updateStats(i, scores);
@@ -658,7 +658,7 @@ async function playInkAnimations(data: {
 
 function showResult() {
 	if (currentGame == null) return;
-	turnNumberLabel.setTurnNumber(null);
+	turnNumberLabel.turnNumber = null;
 
 	let winners = [ 0 ]; let maxPoints = playerBars[0].points;
 	for (let i = 1; i < currentGame.players.length; i++) {
