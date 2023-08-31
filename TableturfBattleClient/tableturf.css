@@ -828,7 +828,7 @@ dialog::backdrop {
 	bottom: 0;
 }
 
-.playContainer { text-align: center; margin: 8em 0; }
+.playContainer { margin: 8em 0; }
 
 .playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
