@@ -52,6 +52,7 @@ function deckEditInitCardDatabase(cards: Card[]) {
 				deckModified = true;
 				window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
 			}
+			selectFirstEmptySlot();
 		});
 		addTestCard(card);
 	}
@@ -109,6 +110,23 @@ function editDeck() {
 	cardList.clearFilter();
 	editingDeck = true;
 	showPage('deckEdit');
+	selectFirstEmptySlot();
+}
+
+function selectFirstEmptySlot() {
+	let found = false;
+	for (const el of deckEditCardButtons.entries) {
+		if (!found && el.value == 0) {
+			for (const el2 of deckEditCardButtons.entries) {
+				if (el2 == el) break;
+				el2.button.checked = false;
+			}
+			found = true;
+			el.button.checked = true;
+			deckEditCardButtons.value = 0;
+		} else if (found)
+			el.button.checked = false;
+	}
 }
 
 function createDeckEditCardButton(cardNumber: number) {
