@@ -152,8 +152,7 @@ function createDeckButton(deck: Deck) {
 function deckButton_dragover(e: DragEvent) {
 	e.preventDefault();
 	if (e.dataTransfer == null) return;
-	const indexString = e.dataTransfer.getData('application/tableturf-deck-index');
-	if (indexString != '' && draggingDeckButton != null) {
+	if (draggingDeckButton != null) {
 		e.dataTransfer.dropEffect = 'move';
 		if (e.currentTarget != draggingDeckButton && e.currentTarget != deckList) {
 			// Move the deck being dragged into the new position as a preview.
@@ -172,15 +171,14 @@ function deckButton_dragover(e: DragEvent) {
 function deckButton_drop(e: DragEvent) {
 	e.preventDefault();
 	if (e.dataTransfer == null) return;
-	const indexString = e.dataTransfer.getData('application/tableturf-deck-index');
-	if (indexString) {
-		const index = parseInt(indexString);
+	if (draggingDeckButton != null) {
+		const index = deckButtons.entries.findIndex(el => el.button.buttonElement == draggingDeckButton);
 		let newIndex = 0;
 		for (let el = deckList.firstElementChild; el != null; el = el.nextElementSibling) {
 			if (el == draggingDeckButton) break;
 			newIndex++;
 		}
-		if (newIndex == index) return;
+		if (index < 0 || newIndex == index) return;
 		console.log(`Moving deck ${index} to ${newIndex}.`);
 
 		deckButtons.move(index, newIndex);

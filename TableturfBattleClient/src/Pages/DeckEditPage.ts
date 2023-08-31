@@ -174,8 +174,7 @@ function createDeckEditCardButton(cardNumber: number) {
 function deckEditCardButton_dragover(e: DragEvent) {
 	e.preventDefault();
 	if (e.dataTransfer == null) return;
-	const indexString = e.dataTransfer.getData('application/tableturf-card-index');
-	if (indexString != '' && draggingCardButton != null) {
+	if (draggingCardButton != null) {
 		e.dataTransfer.dropEffect = 'move';
 		if (e.currentTarget != draggingCardButton && e.currentTarget != deckCardListEdit) {
 			// Move the card being dragged into the new position as a preview.
@@ -194,15 +193,14 @@ function deckEditCardButton_dragover(e: DragEvent) {
 function deckEditCardButton_drop(e: DragEvent) {
 	e.preventDefault();
 	if (e.dataTransfer == null) return;
-	const indexString = e.dataTransfer.getData('application/tableturf-card-index');
-	if (indexString) {
-		const index = parseInt(indexString);
+	if (draggingCardButton != null) {
+		const index = deckEditCardButtons.entries.findIndex(el => el.button.buttonElement == draggingCardButton);
 		let newIndex = 0;
 		for (let el = deckCardListEdit.firstElementChild; el != null; el = el.nextElementSibling) {
 			if (el == draggingCardButton) break;
 			newIndex++;
 		}
-		if (newIndex == index) return;
+		if (index < 0 || newIndex == index) return;
 		console.log(`Moving card ${index} to ${newIndex}.`);
 
 		deckEditCardButtons.move(index, newIndex);
