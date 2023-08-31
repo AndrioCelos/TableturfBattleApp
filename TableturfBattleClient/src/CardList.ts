@@ -16,15 +16,7 @@ class CardList {
 		this.sortBox = sortBox;
 		this.filterBox = filterBox;
 
-		sortBox.addEventListener('change', () => {
-			const sortOrder = CardList.cardSortOrders[sortBox.value];
-			if (sortOrder) {
-				clearChildren(listElement);
-				this.cardButtons.sort((a, b) => sortOrder(a.card, b.card));
-				for (const button of this.cardButtons)
-					listElement.appendChild(button.buttonElement);
-			}
-		});
+		sortBox.addEventListener('change', this.updateSort.bind(this));
 
 		filterBox.addEventListener('input', () => {
 			const s = filterBox.value.toLowerCase();
@@ -40,6 +32,16 @@ class CardList {
 		}
 	}
 
+	private updateSort() {
+		const sortOrder = CardList.cardSortOrders[this.sortBox.value];
+		if (sortOrder) {
+			clearChildren(this.listElement);
+			this.cardButtons.sort((a, b) => sortOrder(a.card, b.card));
+			for (const button of this.cardButtons)
+				this.listElement.appendChild(button.buttonElement);
+		}
+	}
+
 	static fromId(id: string, sortBoxId: string, filterBoxId: string) {
 		return new CardList(document.getElementById(id)!, document.getElementById(sortBoxId) as HTMLSelectElement, document.getElementById(filterBoxId) as HTMLInputElement);
 	}
@@ -47,6 +49,11 @@ class CardList {
 	add(button: CardButton) {
 		this.cardButtons.push(button);
 		this.listElement.appendChild(button.buttonElement);
+	}
+
+	setSortOrder(sortOrder: string) {
+		this.sortBox.value = sortOrder;
+		this.updateSort();
 	}
 
 	clearFilter() {

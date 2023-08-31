@@ -56,6 +56,8 @@ function deckEditInitCardDatabase(cards: Card[]) {
 		});
 		addTestCard(card);
 	}
+	cardList.setSortOrder('size');
+	testAllCardsList.setSortOrder('size');
 }
 
 function deckEditInitStageDatabase(stages: Stage[]) {
