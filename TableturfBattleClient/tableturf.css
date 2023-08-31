@@ -1375,7 +1375,6 @@ button.dragging {
 #addDeckControls > button:is(:active, .checked) { border-color: var(--special-accent-colour-2); }
 
 .handle {
-	width: 2em;
 	background: url('assets/grip-horizontal.svg') 0.5em center/1em no-repeat;
 }
 .deckList .handle {
@@ -1384,6 +1383,9 @@ button.dragging {
 	right: 0;
 	top: 0;
 	bottom: 0;
+}
+.touchmode .deckList .handle {
+	width: 2em;
 }
 .card .handle {
 	position: absolute;
