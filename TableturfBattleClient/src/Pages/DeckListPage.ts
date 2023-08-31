@@ -165,7 +165,7 @@ function deckButton_dragover(e: DragEvent) {
 			}
 			deckList.insertBefore(draggingDeckButton, e.currentTarget as Node);
 		}
-	} else if (e.dataTransfer.getData('text/plain'))
+	} else if (e.dataTransfer.types.includes('text/plain'))
 		e.dataTransfer.dropEffect = 'copy';
 }
 
@@ -193,9 +193,11 @@ function deckButton_drop(e: DragEvent) {
 	}
 	const text = e.dataTransfer.getData('text/plain');
 	if (text) {
-		const data = JSON.parse(text);
-		const decks = (data instanceof Array ? data : [ data ]) as Deck[];
-		importDecks(decks);
+		try {
+			importDecks(parseDecksForImport(text));
+		} catch (ex: any) {
+			alert(`Couldn't import dropped deck data: ${ex}`);
+		}
 	}
 }
 
@@ -245,13 +247,7 @@ importDeckButton.addEventListener('click', () => {
 deckImportForm.addEventListener('submit', e => {
 	if (e.submitter == deckImportOkButton) {
 		try {
-			const data = JSON.parse(deckImportTextBox.value);
-			const decks = (data instanceof Array ? data : [ data ]) as Deck[];
-			for (const deck of decks) {
-				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length != 15 || deck.cards.find(i => !cardDatabase.isValidCardNumber(i)))
-					throw new SyntaxError('Invalid JSON deck');
-			}
-			importDecks(decks);
+			importDecks(parseDecksForImport(deckImportTextBox.value));
 		} catch (ex: any) {
 			e.preventDefault();
 			deckImportErrorBox.innerText = ex.message;
@@ -260,6 +256,38 @@ deckImportForm.addEventListener('submit', e => {
 		}
 	}
 });
+
+function parseDecksForImport(s: string) {
+	let isKoishiShareUrl = false;
+	const pos = s.indexOf('deck=');
+	if (pos >= 0) {
+		isKoishiShareUrl = true;
+		s = decodeURIComponent(s.substring(pos + 5));
+	}
+	const data = JSON.parse(s);
+	if (Array.isArray(data)) {
+		if (data.length > 0 && typeof(data[0]) == 'number') {
+			if (data.length > 15 || data.find(i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(isKoishiShareUrl ? i : i + 1)))
+				throw new SyntaxError('Invalid deck data');
+			if (isKoishiShareUrl)
+				return [ data ];  // tableturf.koishi.top share URL
+			else
+				return [ data.map(n => n + 1) ];  // Tooltip export data
+		} else {
+			for (const deck of data) {
+				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length > 15 || (deck.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
+					throw new SyntaxError('Invalid JSON deck');
+			}
+			return data;  // Our export data
+		}
+	} else if (typeof(data) == 'object') {
+		if (!Array.isArray(data.cards) || data.cards.length > 15 || (data.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
+			throw new SyntaxError('Invalid JSON deck');
+		return [ data ];  // Our old export data
+	} else
+		throw new SyntaxError('Invalid JSON deck');
+	// TODO: add support for tblturf.ink
+}
 
 deckEditButton.addEventListener('click', editDeck);
 
