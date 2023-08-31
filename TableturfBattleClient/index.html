@@ -15,6 +15,11 @@
 		<link rel="stylesheet" href="tableturf.css"/>
 		<script src="config/config.js"></script>
 		<script src="qrcodejs/qrcode.js"></script>
+		<script src="mobile-drag-drop/release/index.min.js"></script>
+		<script>
+			// Enable a polyfill for drag/drop support on mobile Firefox.
+			MobileDragDrop.polyfill({ dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride });
+		</script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta property="og:type" content="website"/>
 		<meta name="title" property="og:title" content="Tableturf Battle"/>
@@ -402,27 +407,27 @@
 			<div id="testPlacementList"></div>
 		</div>
 		<div id="deckListPage" hidden>
-			<section id="deckEditordeckListPage">
+			<section id="deckEditorDeckListSection">
 				<a id="deckListBackButton" href=".">Back</a>
 				<h3>Deck list</h3>
 				<button id="deckExportAllButton">Export all</button>
 				<div id="deckList" class="deckList">
-					<div id="addDeckControls">
-						<button id="newDeckButton">New deck</button>
-						<button id="importDeckButton">Import deck</button>
-					</div>
+				</div>
+				<div id="addDeckControls">
+					<button id="newDeckButton">New deck</button>
+					<button id="importDeckButton">Import deck</button>
 				</div>
 			</section>
-			<section id="deckEditorDeckViewSection" hidden>
+			<section id="deckEditorDeckViewSection">
 				<a id="deckViewBackButton" href="#">Back</a>
-				<h3 id="deckName">Deck</h3>
-				<div>
-					<button type="button" id="deckEditButton">Edit</button>
-					<button type="button" id="deckListTestButton">Test</button>
-					<button type="button" id="deckExportButton">Export</button>
-					<button type="button" id="deckRenameButton">Rename</button>
-					<button type="button" id="deckCopyButton">Copy</button>
-					<button type="button" id="deckDeleteButton" class="danger">Delete</button>
+				<h3 id="deckName">&nbsp;</h3>
+				<div id="deckListToolbar">
+					<button type="button" id="deckListTestButton" disabled>Test</button>
+					<button type="button" id="deckExportButton" disabled>Export</button>
+					<button type="button" id="deckCopyButton" disabled>Copy</button>
+					<button type="button" id="deckEditButton" disabled>Edit</button>
+					<button type="button" id="deckRenameButton" disabled>Rename</button>
+					<button type="button" id="deckDeleteButton" class="danger" disabled>Delete</button>
 				</div>
 				<div class="deckSizeContainer">Total: <div id="deckViewSize">0</div></div>
 				<div id="deckCardListView">
@@ -490,15 +495,15 @@
 			</dialog>
 		</div>
 		<div id="deckEditPage" hidden>
-			<section id="deckEditordeckEditPage">
+			<section id="deckEditorDeckEditPage">
 				<h3 id="deckName2">Deck</h3>
-				<div>
+				<div id="deckEditToolbar">
 					<button type="button" id="deckSortButton">Sort</button>
 					<button type="button" id="deckTestButton">Test</button>
 					<button type="button" id="deckSaveButton">Save</button>
 					<button type="button" id="deckCancelButton">Cancel</button>
 				</div>
-				<div class="deckSizeContainer">Total: <div id="deckEditSize">0</div></div>
+				<div class="deckSizeContainer">Total <div id="deckEditSize">0</div></div>
 				<div id="deckCardListEdit">
 				</div>
 			</section>

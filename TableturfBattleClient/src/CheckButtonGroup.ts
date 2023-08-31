@@ -31,9 +31,33 @@ class CheckButtonGroup<TValue> {
 	}
 
 	replace(index: number, button: CheckButton, value: TValue) {
+		const existingChild = this.entries[index].button.buttonElement;
 		this.entries[index] = { button, value };
 		this.setupButton(button, value);
-		// The caller is responsible for adding the button to the DOM.
+		this.parentElement?.insertBefore(button.buttonElement, existingChild);
+		this.parentElement?.removeChild(existingChild);
+	}
+
+	insert(index: number, button: CheckButton, value: TValue) {
+		const existingChild = this.entries[index].button.buttonElement;
+		this.entries.splice(index, 0, { button, value });
+		this.setupButton(button, value);
+		this.parentElement?.insertBefore(button.buttonElement, existingChild);
+	}
+
+	removeAt(index: number) {
+		const existingChild = this.entries[index].button.buttonElement;
+		this.entries.splice(index, 1)
+		this.parentElement?.removeChild(existingChild);
+	}
+
+	move(index: number, newIndex: number | null) {
+		const entry = this.entries[index];
+		this.entries.splice(index, 1)
+		const existingChild = newIndex == null || newIndex >= this.entries.length ? null : this.entries[newIndex].button.buttonElement;
+		if (newIndex == null) this.entries.push(entry);
+		else this.entries.splice(newIndex, 0, entry);
+		this.parentElement?.insertBefore(entry.button.buttonElement, existingChild);
 	}
 
 	clear() {

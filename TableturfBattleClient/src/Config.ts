@@ -7,3 +7,4 @@ interface Config {
 }
 
 declare var config: Config;
+declare var polyfillActive: boolean;

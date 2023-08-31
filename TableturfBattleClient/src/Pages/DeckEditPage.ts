@@ -17,7 +17,7 @@ const testStageSelectionDialog = document.getElementById('testStageSelectionDial
 
 const deckEditCardButtons = new CheckButtonGroup<number>(deckCardListEdit);
 
-let selectedDeckCardIndex: number | null = null;
+let draggingCardButton: Element | null = null;
 
 function deckEditInitCardDatabase(cards: Card[]) {
 	for (const card of cards) {
@@ -32,8 +32,9 @@ function deckEditInitCardDatabase(cards: Card[]) {
 					button2.checked = false;
 			}
 
-			if (selectedDeckCardIndex == null) return;
-			const oldEntry = deckEditCardButtons.entries[selectedDeckCardIndex];
+			const index = deckEditCardButtons.entries.findIndex(el => el.button.checked);
+			if (index < 0) return;
+			const oldEntry = deckEditCardButtons.entries[index];
 			const oldCardNumber = oldEntry.value;
 
 			if (oldCardNumber != 0)
@@ -43,11 +44,7 @@ function deckEditInitCardDatabase(cards: Card[]) {
 			const button3 = createDeckEditCardButton(card.number);
 			button3.checked = true;
 
-			const oldElement = oldEntry.button.buttonElement;
-			deckCardListEdit.insertBefore(button3.buttonElement, oldElement);
-			deckCardListEdit.removeChild(oldElement);
-
-			deckEditCardButtons.replace(selectedDeckCardIndex, button3, card.number);
+			deckEditCardButtons.replace(index, button3, card.number);
 			deckEditUpdateSize();
 
 			cardList.listElement.parentElement!.classList.remove('selecting');
@@ -94,7 +91,6 @@ function editDeck() {
 	deckNameLabel2.innerText = selectedDeck.name;
 
 	deckEditCardButtons.clear();
-	selectedDeckCardIndex = null;
 
 	for (let i = 0; i < 15; i++) {
 		if (selectedDeck.cards[i]) {
@@ -117,14 +113,73 @@ function editDeck() {
 
 function createDeckEditCardButton(cardNumber: number) {
 	const button = new CardButton(cardDatabase.get(cardNumber));
+	button.buttonElement.draggable = true;
 	button.buttonElement.addEventListener('click', () => {
-		selectedDeckCardIndex = deckEditCardButtons.entries.findIndex(e => e.button == button);
 		for (const button2 of cardList.cardButtons) {
 			button2.checked = button2.card.number == cardNumber;
 		}
 		cardList.listElement.parentElement!.classList.add('selecting');
 	});
+	button.buttonElement.addEventListener('dragstart', e => {
+		if (e.dataTransfer == null) return;
+		const index = deckEditCardButtons.entries.findIndex(el => el.button.buttonElement == e.currentTarget);
+		draggingCardButton = button.buttonElement;
+		e.dataTransfer.effectAllowed = 'move';
+		e.dataTransfer.setData('application/tableturf-card-index', index.toString());
+		button.buttonElement.classList.add('dragging');
+	});
+	button.buttonElement.addEventListener('dragend', e => {
+		button.buttonElement.classList.remove('dragging');
+		if (draggingCardButton != null && e.currentTarget == draggingCardButton) {
+			const index = deckEditCardButtons.entries.findIndex(el => el.button.buttonElement == e.currentTarget) + 1;
+			deckCardListEdit.insertBefore(draggingCardButton, index >= deckEditCardButtons.entries.length ? null : deckEditCardButtons.entries[index].button.buttonElement);
+			draggingCardButton = null;
+		}
+	});
+	button.buttonElement.addEventListener('dragenter', e => e.preventDefault());
+	button.buttonElement.addEventListener('dragover', deckEditCardButton_dragover);
+	button.buttonElement.addEventListener('drop', deckEditCardButton_drop);
+
 	return button;
+}
+
+function deckEditCardButton_dragover(e: DragEvent) {
+	e.preventDefault();
+	if (e.dataTransfer == null) return;
+	const indexString = e.dataTransfer.getData('application/tableturf-card-index');
+	if (indexString != '' && draggingCardButton != null) {
+		e.dataTransfer.dropEffect = 'move';
+		if (e.currentTarget != draggingCardButton && e.currentTarget != deckCardListEdit) {
+			// Move the card being dragged into the new position as a preview.
+			for (let el = draggingCardButton.nextElementSibling; el != null; el = el.nextElementSibling) {
+				if (el == e.currentTarget) {
+					deckCardListEdit.insertBefore(draggingCardButton, el.nextElementSibling);
+					return;
+				}
+			}
+			deckCardListEdit.insertBefore(draggingCardButton, e.currentTarget as Node);
+		}
+	} else if (e.dataTransfer.getData('text/plain'))
+		e.dataTransfer.dropEffect = 'copy';
+}
+
+function deckEditCardButton_drop(e: DragEvent) {
+	e.preventDefault();
+	if (e.dataTransfer == null) return;
+	const indexString = e.dataTransfer.getData('application/tableturf-card-index');
+	if (indexString) {
+		const index = parseInt(indexString);
+		let newIndex = 0;
+		for (let el = deckCardListEdit.firstElementChild; el != null; el = el.nextElementSibling) {
+			if (el == draggingCardButton) break;
+			newIndex++;
+		}
+		if (newIndex == index) return;
+		console.log(`Moving card ${index} to ${newIndex}.`);
+
+		deckEditCardButtons.move(index, newIndex);
+		draggingCardButton = null;
+	}
 }
 
 function createDeckEditEmptySlotButton() {
@@ -133,11 +188,13 @@ function createDeckEditEmptySlotButton() {
 	buttonElement.type = 'button';
 	buttonElement.className = 'card emptySlot';
 	buttonElement.addEventListener('click', () => {
-		selectedDeckCardIndex = deckEditCardButtons.entries.findIndex(e => e.button == button);
 		for (const button2 of cardList.cardButtons)
 			button2.checked = false;
 		cardList.listElement.parentElement!.classList.add('selecting');
 	});
+	buttonElement.addEventListener('dragenter', e => e.preventDefault());
+	buttonElement.addEventListener('dragover', deckEditCardButton_dragover);
+	buttonElement.addEventListener('drop', deckEditCardButton_drop);
 	return button;
 }
 

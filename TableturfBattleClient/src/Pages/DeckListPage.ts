@@ -1,3 +1,4 @@
+const deckListPage = document.getElementById('deckListPage')!;
 const deckListBackButton = document.getElementById('deckListBackButton') as HTMLLinkElement;
 const deckViewBackButton = document.getElementById('deckViewBackButton') as HTMLLinkElement;
 const deckEditorDeckViewSection = document.getElementById('deckEditorDeckViewSection')!;
@@ -38,12 +39,27 @@ const deckImportFileBox = document.getElementById('deckImportFileBox') as HTMLIn
 const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
-const deckButtons = new CheckButtonGroup<Deck>();
+const deckButtons = new CheckButtonGroup<Deck>(deckList);
+
+let deckListTouchMode = false;
+let draggingDeckButton: Element | null = null;
 
 function showDeckList() {
 	showPage('deckList');
 	deselectDeck();
 	deckButtons.deselect();
+}
+
+deckList.addEventListener('touchstart', deckListEnableTouchMode);
+
+function deckListEnableTouchMode() {
+	if (deckListTouchMode) return;
+	deckListTouchMode = true;
+	deckListPage.classList.add('touchmode');
+	for (var b of deckButtons.buttons) {
+		b.buttonElement.draggable = false;
+		(b.buttonElement.getElementsByClassName('handle')[0] as HTMLElement).draggable = true;
+	}
 }
 
 deckListBackButton.addEventListener('click', e => {
@@ -65,7 +81,7 @@ deckViewBackButton.addEventListener('click', e => {
 	e.preventDefault();
 	clearChildren(deckCardListView);
 	deselectDeck();
-	deckEditorDeckViewSection.hidden = true;
+	deckListPage.classList.remove('showingDeck');
 });
 
 function saveDecks() {
@@ -90,23 +106,97 @@ function saveDecks() {
 	}
 
 	for (let i = 0; i < decks.length; i++) {
-		createDeckButton(i, decks[i]);
+		createDeckButton(decks[i]);
 	}
 }
 
-function createDeckButton(index: number, deck: Deck) {
+function createDeckButton(deck: Deck) {
 	const buttonElement = document.createElement('button');
 	buttonElement.type = 'button';
+	buttonElement.draggable = true;
 	const button = new CheckButton(buttonElement);
 	deckButtons.add(button, deck);
 	buttonElement.addEventListener('click', () => {
 		selectedDeck = deckButtons.value;
 		selectDeck();
 	});
-	buttonElement.innerText = deck.name;
+	buttonElement.addEventListener('dragstart', e => {
+		if (e.dataTransfer == null) return;
+		const index = decks.indexOf(deck);
+		draggingDeckButton = buttonElement;
+		e.dataTransfer.effectAllowed = 'copyMove';
+		e.dataTransfer.setData('text/plain', JSON.stringify(deck, [ 'name', 'cards' ]));
+		e.dataTransfer.setData('application/tableturf-deck-index', index.toString());
+		buttonElement.classList.add('dragging');
+	});
+	buttonElement.addEventListener('dragend', e => {
+		buttonElement.classList.remove('dragging');
+		if (draggingDeckButton != null && e.currentTarget == draggingDeckButton) {
+			const index = deckButtons.entries.findIndex(el => el.button.buttonElement == e.currentTarget) + 1;
+			deckList.insertBefore(draggingDeckButton, index >= deckButtons.entries.length ? null : deckButtons.entries[index].button.buttonElement);
+			draggingDeckButton = null;
+		}
+	});
+	buttonElement.addEventListener('dragenter', e => e.preventDefault());
+	buttonElement.addEventListener('dragover', deckButton_dragover);
+	buttonElement.addEventListener('drop', deckButton_drop);
 
-	deckList.insertBefore(buttonElement, addDeckControls);
+	const handle = document.createElement('div');
+	handle.className = 'handle';
+	buttonElement.appendChild(handle);
+	buttonElement.appendChild(document.createTextNode(deck.name));
+
 	return button;
+}
+
+function deckButton_dragover(e: DragEvent) {
+	e.preventDefault();
+	if (e.dataTransfer == null) return;
+	const indexString = e.dataTransfer.getData('application/tableturf-deck-index');
+	if (indexString != '' && draggingDeckButton != null) {
+		e.dataTransfer.dropEffect = 'move';
+		if (e.currentTarget != draggingDeckButton && e.currentTarget != deckList) {
+			// Move the deck being dragged into the new position as a preview.
+			for (let el = draggingDeckButton.nextElementSibling; el != null; el = el.nextElementSibling) {
+				if (el == e.currentTarget) {
+					deckList.insertBefore(draggingDeckButton, el.nextElementSibling);
+					return;
+				}
+			}
+			deckList.insertBefore(draggingDeckButton, e.currentTarget as Node);
+		}
+	} else if (e.dataTransfer.getData('text/plain'))
+		e.dataTransfer.dropEffect = 'copy';
+}
+
+function deckButton_drop(e: DragEvent) {
+	e.preventDefault();
+	if (e.dataTransfer == null) return;
+	const indexString = e.dataTransfer.getData('application/tableturf-deck-index');
+	if (indexString) {
+		const index = parseInt(indexString);
+		let newIndex = 0;
+		for (let el = deckList.firstElementChild; el != null; el = el.nextElementSibling) {
+			if (el == draggingDeckButton) break;
+			newIndex++;
+		}
+		if (newIndex == index) return;
+		console.log(`Moving deck ${index} to ${newIndex}.`);
+
+		deckButtons.move(index, newIndex);
+		const deck = decks[index];
+		decks.splice(index, 1);
+		decks.splice(newIndex, 0, deck);
+		saveDecks();
+		draggingDeckButton = null;
+		return;
+	}
+	const text = e.dataTransfer.getData('text/plain');
+	if (text) {
+		const data = JSON.parse(text);
+		const decks = (data instanceof Array ? data : [ data ]) as Deck[];
+		importDecks(decks);
+	}
 }
 
 function importDecks(decksToImport: (Deck | number[])[]) {
@@ -119,7 +209,7 @@ function importDecks(decksToImport: (Deck | number[])[]) {
 			deck = el;
 			if (!deck.name) deck.name = `Imported Deck ${decks.length + 1}`;
 		}
-		createDeckButton(decks.length, deck);
+		createDeckButton(deck);
 		decks.push(deck);
 		newSelectedDeck ??= deck;
 	}
@@ -134,7 +224,7 @@ function importDecks(decksToImport: (Deck | number[])[]) {
 
 newDeckButton.addEventListener('click', () => {
 	selectedDeck = new Deck(`Deck ${decks.length + 1}`, [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], false);
-	createDeckButton(decks.length, selectedDeck);
+	createDeckButton(selectedDeck);
 	decks.push(selectedDeck);
 	editDeck();
 });
@@ -196,20 +286,29 @@ function selectDeck() {
 		}
 	}
 
+	deckListTestButton.disabled = false;
+	deckExportButton.disabled = false;
+	deckCopyButton.disabled = false;
 	deckEditButton.disabled = selectedDeck.isReadOnly;
 	deckRenameButton.disabled = selectedDeck.isReadOnly;
-	deckCopyButton.disabled = false;
 	deckDeleteButton.disabled = selectedDeck.isReadOnly;
 	deckViewSize.innerText = size.toString();
-	deckEditorDeckViewSection.hidden = false;
+	deckListPage.classList.add('showingDeck');
 }
 
 function deselectDeck() {
 	selectedDeck = null;
+	deckButtons.deselect();
+	clearChildren(deckCardListView);
+	deckNameLabel.innerText = '\u00a0';
+	deckViewSize.innerText = '0';
+	deckListTestButton.disabled = true;
+	deckExportButton.disabled = true;
+	deckCopyButton.disabled = true;
 	deckEditButton.disabled = true;
 	deckRenameButton.disabled = true;
-	deckCopyButton.disabled = true;
 	deckDeleteButton.disabled = true;
+	deckListPage.classList.remove('showingDeck');
 }
 
 deckExportButton.addEventListener('click', () => {
@@ -244,19 +343,10 @@ deckDeleteButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
 	if (!confirm(`Are you sure you want to delete ${selectedDeck.name}?`)) return;
 
-	for (const el of deckButtons.entries) {
-		if (el.value == selectedDeck) {
-			deckList.removeChild(el.button.buttonElement);
-			break;
-		}
-	}
-
 	const index = decks.indexOf(selectedDeck);
 	if (index >= 0) decks.splice(index, 1);
-	deckButtons.entries.splice(index, 1);
-	deckButtons.deselect();
-	selectedDeck = null;
-	deckEditorDeckViewSection.hidden = true;
+	deckButtons.removeAt(index);
+	deselectDeck();
 	saveDecks();
 });
 

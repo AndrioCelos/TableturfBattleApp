@@ -195,6 +195,8 @@ document.getElementById('preGameBackButton')!.addEventListener('click', e => {
 	backPreGameForm(true);
 })
 
+preGameDeckEditorButton.addEventListener('touchstart', deckListEnableTouchMode);
+
 preGameDeckEditorButton.addEventListener('click', e => {
 	e.preventDefault();
 	showDeckList();

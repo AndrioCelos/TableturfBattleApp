@@ -1328,11 +1328,16 @@ dialog::backdrop {
 
 :is(#deckListPage, #deckEditPage):not([hidden]) {
 	height: 100vh;
-	display: grid;
-	grid-template-columns: auto 1fr;
+	display: flex;
+	justify-content: center;
 }
 
-.deckList button {
+.deckList {
+	display: flex;
+	flex-flow: column;
+}
+
+.deckList button, #addDeckControls button {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -1341,12 +1346,15 @@ dialog::backdrop {
 	border: inherit;
 	text-shadow: 0 0 4px black;
 }
-.deckList > * {
+button.dragging {
+	opacity: 0.5;
+}
+.deckList > button, #addDeckControls {
 	width: 20rem;
 	height: 3rem;
 	margin: 0.5em;
 }
-.deckList > button { background: var(--primary-colour-2); }
+.deckList > button { background: var(--primary-colour-2); position: relative;}
 .deckList > button:hover { background: var(--special-colour-2); }
 .deckList > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
 .deckList > button:is(:active, .checked) { background: var(--special-accent-colour-2); }
@@ -1357,6 +1365,7 @@ dialog::backdrop {
 	gap: 1em;
 }
 #addDeckControls > button {
+	flex-basis: 8em;
 	flex-grow: 1;
 	background: black;
 	border: 0.25em solid var(--primary-colour-2);
@@ -1365,13 +1374,22 @@ dialog::backdrop {
 #addDeckControls > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
 #addDeckControls > button:is(:active, .checked) { border-color: var(--special-accent-colour-2); }
 
-.deckList {
-	display: flex;
-	flex-flow: column;
+.deckList .handle {
+	position: absolute;
+	background: url('assets/grip-horizontal.svg') 0.5em center/1em no-repeat;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.touchmode .handle {
+	width: 2em;
 }
 
 .card.emptySlot {
 	--colour: dimgrey;
+	background: url('assets/plus-circle.svg') center/2em no-repeat, black;
 }
 
 #deckCardListView, #deckCardListEdit {
@@ -1379,14 +1397,15 @@ dialog::backdrop {
 	grid-template-columns: auto auto auto;
 	justify-items: center;
 	grid-column: 2;
-	grid-row: 1 / 5;
+	grid-row: 2 / -1;
 	overflow-y: scroll;
+	width: 33em;
 }
 
-#deckEditorDeckViewSection:not([hidden]), #deckEditordeckEditPage {
+#deckEditorDeckViewSection:not([hidden]), #deckEditorDeckEditPage {
 	display: grid;
-	grid-template-columns: minmax(min-content, auto) min-content;
-	grid-template-rows: auto auto auto 1fr;
+	grid-template-columns: 1fr auto;
+	grid-template-rows: auto auto 1fr;
 	height: 100vh;
 }
 
@@ -1395,21 +1414,35 @@ dialog::backdrop {
 }
 
 #deckName, #deckName2 {
-	grid-column: 1;
+	grid-column: 1 / -1;
 	grid-row: 1;
 }
 
-:is(#deckEditorDeckViewSection, #deckEditordeckEditPage) > h3 + div {
-	grid-row: 2;
+#deckEditToolbar, #deckListToolbar {
 	grid-column: 1;
+	grid-row: 3;
+	display: flex;
+	flex-flow: column;
+}
+:is(#deckListToolbar, #deckEditToolbar) button {
+	margin: 0.25em;
+	width: 5em;
+	height: 4em;
 }
 
 .deckSizeContainer {
 	grid-column: 1;
-	grid-row: 3;
+	grid-row: 2;
+	background: dimgrey;
+	text-align: center;
+	line-height: 1.5em;
+	margin: 0.25em;
+	min-width: 4em;
 }
 
 #deckEditorCardListSection {
+	flex-grow: 1;
+	background: #00000080;
 	height: 100vh;
 	display: grid;
 	grid-template-rows: auto 1fr;
@@ -1684,16 +1717,21 @@ dialog::backdrop {
 
 	:is(#deckListPage, #deckEditPage) section {
 		position: absolute;
-		background: black;
 		left: 0;
 		right: 0;
 		top: 0;
 	}
 
+  #deckListPage:not(.showingDeck) #deckEditorDeckViewSection {
+		display: none;
+	}
+  #deckListPage.showingDeck #deckEditorDeckListSection {
+		display: none;
+	}
+
 	#deckEditorDeckViewSection:not([hidden]) {
 		z-index: 10;
-		grid-template-columns: auto 1fr 1fr;
-		grid-template-rows: auto auto 1fr;
+		grid-template-columns: auto 1fr auto;
 	}
 
 	#deckViewBackButton {
@@ -1709,16 +1747,23 @@ dialog::backdrop {
 	}
 
 	#deckName {
-		grid-column: 2;
+		grid-column: 2 / -1;
 	}
 
-	:is(#deckEditorDeckViewSection, #deckEditordeckEditPage) > h3 + div {
-		grid-row: 1;
-		grid-column: -2;
+	#deckListToolbar, #deckEditToolbar {
+		grid-row: 2;
+		grid-column: 1 / -2;
+		flex-flow: row;
+	}
+
+	:is(#deckListToolbar, #deckEditToolbar) button {
+		width: auto;
+		flex-grow: 1;
+		flex-basis: 4em;
 	}
 
 	.deckSizeContainer {
-		grid-column: 1 / -1;
+		grid-column: -2;
 		grid-row: 2;
 		justify-self: end;
 	}
@@ -1729,6 +1774,7 @@ dialog::backdrop {
 		overflow-y: scroll;
 		font-size: 80%;
 		grid-template-columns: 1fr 1fr 1fr;
+		width: 100%;
 	}
 
 	#deckEditorCardListSection:not(.selecting) {
