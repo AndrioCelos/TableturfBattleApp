@@ -95,6 +95,12 @@ function clearUrlFromGame() {
 		location.hash = '';
 }
 
+function onGameSettingsChange() {
+	if (currentGame == null) return;
+	if (lobbyTimeLimitBox.value != currentGame.turnTimeLimit?.toString() ?? '')
+		lobbyTimeLimitBox.value = currentGame.turnTimeLimit?.toString() ?? '';
+}
+
 function onGameStateChange(game: any, playerData: PlayerData | null) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
@@ -112,6 +118,9 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	loadPlayers(game.players);
 	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
 	gamePage.dataset.uiBaseColourIsSpecialColour = playerData && game.players[playerData.playerIndex].uiBaseColourIsSpecialColour ? 'true' : 'false';
+
+	if (game.stage != GameState.WaitingForPlayers)
+		lobbyLockSettings(true);
 
 	redrawModal.hidden = true;
 	gamePage.classList.remove('gameEnded');
@@ -252,8 +261,7 @@ function setupWebSocket(gameID: string) {
 					lobbyResetSlots();
 					for (let i = 0; i < currentGame.players.length; i++)
 						lobbyAddPlayer(i);
-					lobbyTimeLimitBox.value = currentGame.turnTimeLimit?.toString() ?? '';
-					lobbyTimeLimitUnit.hidden = currentGame.turnTimeLimit == null;
+					onGameSettingsChange();
 
 					for (let i = 0; i < playerBars.length; i++) {
 						playerBars[i].visible = i < currentGame.maxPlayers;
@@ -298,6 +306,10 @@ function setupWebSocket(gameID: string) {
 					return;
 				}
 				switch (payload.event) {
+					case 'settingsChange':
+						currentGame.turnTimeLimit = payload.data.turnTimeLimit;
+						onGameSettingsChange();
+						break;
 					case 'join':
 						if (payload.data.playerIndex == currentGame.players.length) {
 							currentGame.players.push(payload.data.player);

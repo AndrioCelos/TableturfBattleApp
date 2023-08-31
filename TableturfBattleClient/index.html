@@ -73,7 +73,11 @@
 				<p>Other players can join using a link to this page.<br/>
 					<button type="button" id="shareLinkButton">Share link</button><button type="button" id="showQrCodeButton">Show QR code</button></p>
 				<ul id="playerList"></ul>
-				<label for="lobbyTimeLimitBox">Turn time limit: <input type="text" id="lobbyTimeLimitBox" placeholder="None" readonly/><span id="lobbyTimeLimitUnit"> seconds</span></label>
+				<label for="lobbyTimeLimitBox">
+					Turn time limit:
+					<input type="number" id="lobbyTimeLimitBox" min="10" max="120" step="10" placeholder="None"/>
+					<span id="lobbyTimeLimitUnit">seconds</span>
+				</label>
 				<div id="lobbySelectedStageSection" hidden>
 					<h3>Stage</h3>
 				</div>

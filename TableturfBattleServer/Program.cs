@@ -264,6 +264,43 @@ internal class Program {
 								}
 								break;
 							}
+							case "setTurnTimeLimit": {
+								if (e.Request.HttpMethod != "POST") {
+									e.Response.AddHeader("Allow", "POST");
+									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
+								} else if (e.Request.ContentLength64 >= 65536) {
+									e.Response.StatusCode = (int) HttpStatusCode.RequestEntityTooLarge;
+								} else {
+									var d = DecodeFormData(e.Request.InputStream);
+									if (!d.TryGetValue("clientToken", out var tokenString) || !Guid.TryParse(tokenString, out var clientToken)) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidClientToken", "Invalid client token."));
+										return;
+									}
+									if (game.State != GameState.WaitingForPlayers) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Gone, "GameAlreadyStarted", "The game has already started."));
+										return;
+									}
+									if (!game.GetPlayer(clientToken, out var playerIndex, out var player) || playerIndex != 0) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Forbidden, "AccessDenied", "Only the host can do that."));
+										return;
+									}
+									if (d.TryGetValue("turnTimeLimit", out var turnTimeLimitString)) {
+										if (turnTimeLimitString == "")
+											game.TurnTimeLimit = null;
+										else if (!int.TryParse(turnTimeLimitString, out var turnTimeLimit2) || turnTimeLimit2 < 10) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
+											return;
+										} else
+											game.TurnTimeLimit = turnTimeLimit2;
+									} else {
+										SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
+										return;
+									}
+
+									game.SendEvent("settingsChange", game, false);
+								}
+								break;
+							}
 							case "chooseStage": {
 								if (e.Request.HttpMethod != "POST") {
 									e.Response.AddHeader("Allow", "POST");

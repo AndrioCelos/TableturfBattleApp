@@ -101,6 +101,12 @@ function lobbyResetSlots() {
 		playerListItems.push(el);
 		playerList.appendChild(el);
 	}
+
+	lobbyLockSettings(currentGame.me?.playerIndex != 0);
+}
+
+function lobbyLockSettings(lock: boolean) {
+	lobbyTimeLimitBox.readOnly = lock;
 }
 
 function clearReady() {
@@ -168,6 +174,15 @@ function initDeckSelection() {
 		lobbyDeckSection.hidden = true;
 	}
 }
+
+lobbyTimeLimitBox.addEventListener('change', () => {
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/setTurnTimeLimit`);
+	let data = new URLSearchParams();
+	data.append('clientToken', clientToken);
+	data.append('turnTimeLimit', lobbyTimeLimitBox.value || '');
+	req.send(data.toString());
+});
 
 deckSelectionForm.addEventListener('submit', e => {
 	e.preventDefault();
