@@ -113,7 +113,6 @@ function saveDecks() {
 function createDeckButton(deck: Deck) {
 	const buttonElement = document.createElement('button');
 	buttonElement.type = 'button';
-	buttonElement.draggable = true;
 	const button = new CheckButton(buttonElement);
 	deckButtons.add(button, deck);
 	buttonElement.addEventListener('click', () => {
@@ -145,6 +144,7 @@ function createDeckButton(deck: Deck) {
 	handle.className = 'handle';
 	buttonElement.appendChild(handle);
 	buttonElement.appendChild(document.createTextNode(deck.name));
+	(deckListTouchMode ? handle : buttonElement).draggable = true;
 
 	return button;
 }
@@ -329,7 +329,7 @@ deckRenameButton.addEventListener('click', () => {
 	if (name) {
 		selectedDeck.name = name;
 		deckNameLabel.innerText = name;
-		deckButtons.entries[decks.indexOf(selectedDeck)].button.buttonElement.innerText = name;
+		deckButtons.entries[decks.indexOf(selectedDeck)].button.buttonElement.lastChild!.nodeValue = name;
 		saveDecks();
 	}
 });

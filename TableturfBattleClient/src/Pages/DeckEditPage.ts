@@ -113,7 +113,6 @@ function editDeck() {
 
 function createDeckEditCardButton(cardNumber: number) {
 	const button = new CardButton(cardDatabase.get(cardNumber));
-	button.buttonElement.draggable = true;
 	button.buttonElement.addEventListener('click', () => {
 		for (const button2 of cardList.cardButtons) {
 			button2.checked = button2.card.number == cardNumber;
@@ -139,6 +138,15 @@ function createDeckEditCardButton(cardNumber: number) {
 	button.buttonElement.addEventListener('dragenter', e => e.preventDefault());
 	button.buttonElement.addEventListener('dragover', deckEditCardButton_dragover);
 	button.buttonElement.addEventListener('drop', deckEditCardButton_drop);
+
+	const handle = document.createElement('div');
+	handle.className = 'handle';
+	button.buttonElement.insertBefore(handle, button.buttonElement.firstChild);
+	if (deckListTouchMode) {
+		handle.draggable = true;
+		(button.buttonElement.getElementsByClassName('cardHeader')[0] as HTMLElement).draggable = true;
+	} else
+		button.buttonElement.draggable = true;
 
 	return button;
 }

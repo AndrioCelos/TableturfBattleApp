@@ -1374,17 +1374,23 @@ button.dragging {
 #addDeckControls > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
 #addDeckControls > button:is(:active, .checked) { border-color: var(--special-accent-colour-2); }
 
+.handle {
+	width: 2em;
+	background: url('assets/grip-horizontal.svg') 0.5em center/1em no-repeat;
+}
 .deckList .handle {
 	position: absolute;
-	background: url('assets/grip-horizontal.svg') 0.5em center/1em no-repeat;
 	left: 0;
 	right: 0;
 	top: 0;
 	bottom: 0;
 }
-
-.touchmode .handle {
-	width: 2em;
+.card .handle {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 3em;
 }
 
 .card.emptySlot {
