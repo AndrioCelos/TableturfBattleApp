@@ -1330,6 +1330,7 @@ dialog::backdrop {
 	height: 100vh;
 	display: flex;
 	justify-content: center;
+	gap: 3em;
 }
 
 .deckList {
@@ -1407,7 +1408,7 @@ button.dragging {
 	grid-column: 2;
 	grid-row: 2 / -1;
 	overflow-y: scroll;
-	width: 33em;
+	min-width: 33em;
 }
 
 #deckEditorDeckViewSection:not([hidden]), #deckEditorDeckEditPage {
