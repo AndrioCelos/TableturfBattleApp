@@ -8,7 +8,7 @@ class CardList {
 		'number': (a, b) => compareCardNumbers(a.number, b.number),
 		'name': (a, b) => a.name.localeCompare(b.name),
 		'size': (a, b) => a.size != b.size ? a.size - b.size : compareCardNumbers(a.number, b.number),
-		'rarity': (a, b) => a.rarity != b.rarity ? a.rarity - b.rarity : compareCardNumbers(a.number, b.number),
+		'rarity': (a, b) => a.rarity != b.rarity ? b.rarity - a.rarity : compareCardNumbers(a.number, b.number),
 	}
 
 	constructor(listElement: HTMLElement, sortBox: HTMLSelectElement, filterBox: HTMLInputElement) {
