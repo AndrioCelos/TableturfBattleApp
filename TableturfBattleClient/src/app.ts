@@ -8,8 +8,8 @@ let initialised = false;
 let initialiseCallback: (() => void) | null = null;
 let canPushState = isSecureContext && location.protocol != 'file:';
 
-const decks: Deck[] = [ new Deck('Starter Deck', [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], true) ];
-let selectedDeck: Deck | null = null;
+const decks = [ new SavedDeck('Starter Deck', 0, [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], new Array(15), true) ];
+let selectedDeck: SavedDeck | null = null;
 let editingDeck = false;
 let deckModified = false;
 let shouldConfirmLeavingGame = false;
@@ -97,15 +97,15 @@ function clearUrlFromGame() {
 
 function onGameSettingsChange() {
 	if (currentGame == null) return;
-	if (lobbyTimeLimitBox.value != currentGame.turnTimeLimit?.toString() ?? '')
-		lobbyTimeLimitBox.value = currentGame.turnTimeLimit?.toString() ?? '';
+	if (lobbyTimeLimitBox.value != currentGame.game.turnTimeLimit?.toString() ?? '')
+		lobbyTimeLimitBox.value = currentGame.game.turnTimeLimit?.toString() ?? '';
 }
 
 function onGameStateChange(game: any, playerData: PlayerData | null) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
 	clearPlayContainers();
-	currentGame.state = game.state;
+	currentGame.game.state = game.state;
 
 	if (game.board) {
 		board.flip = playerData != null && playerData.playerIndex % 2 != 0;
@@ -119,7 +119,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
 	gamePage.dataset.uiBaseColourIsSpecialColour = playerData && game.players[playerData.playerIndex].uiBaseColourIsSpecialColour ? 'true' : 'false';
 
-	if (game.stage != GameState.WaitingForPlayers)
+	if (game.state != GameState.WaitingForPlayers)
 		lobbyLockSettings(true);
 
 	redrawModal.hidden = true;
@@ -159,25 +159,25 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 			} else
 				initSpectator();
 
-			currentGame.turnNumber = game.turnNumber;
+			currentGame.game.turnNumber = game.turnNumber;
 			gameButtonsContainer.hidden = currentGame.me == null || game.state == GameState.GameEnded || game.state == GameState.SetEnded;
 
 			switch (game.state) {
 				case GameState.Redraw:
 					if (currentGame.me) setConfirmLeavingGame();
-					redrawModal.hidden = currentGame.me == null || currentGame.players[currentGame.me.playerIndex].isReady;
+					redrawModal.hidden = currentGame.me == null || currentGame.game.players[currentGame.me.playerIndex].isReady;
 					turnNumberLabel.turnNumber = null;
 					canPlay = false;
 					timeLabel.faded = redrawModal.hidden;
 					timeLabel.paused = false;
 					break;
 				case GameState.Ongoing:
-					for (let i = 0; i < currentGame.players.length; i++)
+					for (let i = 0; i < currentGame.game.players.length; i++)
 						showWaiting(i);
 					if (currentGame.me) setConfirmLeavingGame();
 					turnNumberLabel.turnNumber = game.turnNumber;
 					board.autoHighlight = true;
-					canPlay = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
+					canPlay = currentGame.me != null && !currentGame.game.players[currentGame.me.playerIndex].isReady;
 					timeLabel.faded = !canPlay;
 					timeLabel.paused = false;
 					resetPlayControls();
@@ -214,7 +214,7 @@ errorDialog.addEventListener('close', e => {
 
 function playerDataReviver(key: string, value: any) {
 	return !value ? value
-		: key == 'hand' || key == 'deck'
+		: key == 'hand' || key == 'cards'
 		? (value as (Card | number)[]).map(v => typeof v == 'number' ? cardDatabase.get(v) : Card.fromJson(v))
 		: key == 'card'
 		? typeof value == 'number' ? cardDatabase.get(value) : Card.fromJson(value)
@@ -247,33 +247,35 @@ function setupWebSocket(gameID: string) {
 				} else {
 					currentGame = {
 						id: gameID,
-						state: payload.data.state,
+						game: {
+							state: payload.data.state,
+							players: payload.data.players,
+							maxPlayers: payload.data.maxPlayers,
+							turnNumber: payload.data.turnNumber,
+							turnTimeLimit: payload.data.turnTimeLimit,
+							turnTimeLeft: payload.data.turnTimeLeft,
+							goalWinCount: payload.data.goalWinCount,
+						},
 						me: payload.playerData,
-						players: payload.data.players,
-						maxPlayers: payload.data.maxPlayers,
-						turnNumber: payload.data.turnNumber,
-						turnTimeLimit: payload.data.turnTimeLimit,
-						turnTimeLeft: payload.data.turnTimeLeft,
-						goalWinCount: payload.data.goalWinCount,
 						webSocket: webSocket
 					};
 
 					lobbyResetSlots();
-					for (let i = 0; i < currentGame.players.length; i++)
+					for (let i = 0; i < currentGame.game.players.length; i++)
 						lobbyAddPlayer(i);
 					onGameSettingsChange();
 
 					for (let i = 0; i < playerBars.length; i++) {
-						playerBars[i].visible = i < currentGame.maxPlayers;
+						playerBars[i].visible = i < currentGame.game.maxPlayers;
 					}
 
 					for (const button of stageButtons.buttons)
-						(button as StageButton).setStartSpaces(currentGame.maxPlayers);
+						(button as StageButton).setStartSpaces(currentGame.game.maxPlayers);
 
 					onGameStateChange(payload.data, payload.playerData);
 
-					for (let i = 0; i < currentGame.players.length; i++) {
-						if (currentGame.players[i].isReady) showReady(i);
+					for (let i = 0; i < currentGame.game.players.length; i++) {
+						if (currentGame.game.players[i].isReady) showReady(i);
 					}
 
 					if (currentGame.me) {
@@ -294,8 +296,8 @@ function setupWebSocket(gameID: string) {
 					}
 
 					timeLabel.paused = false;
-					if (currentGame.turnTimeLeft) {
-						timeLabel.setTime(currentGame.turnTimeLeft);
+					if (currentGame.game.turnTimeLeft) {
+						timeLabel.setTime(currentGame.game.turnTimeLeft);
 						timeLabel.show();
 					} else
 						timeLabel.hide();
@@ -307,19 +309,19 @@ function setupWebSocket(gameID: string) {
 				}
 				switch (payload.event) {
 					case 'settingsChange':
-						currentGame.turnTimeLimit = payload.data.turnTimeLimit;
+						currentGame.game.turnTimeLimit = payload.data.turnTimeLimit;
 						onGameSettingsChange();
 						break;
 					case 'join':
-						if (payload.data.playerIndex == currentGame.players.length) {
-							currentGame.players.push(payload.data.player);
+						if (payload.data.playerIndex == currentGame.game.players.length) {
+							currentGame.game.players.push(payload.data.player);
 							lobbyAddPlayer(payload.data.playerIndex);
 						}
 						else
 							communicationError();
 						break;
 					case 'playerReady':
-						currentGame.players[payload.data.playerIndex].isReady = true;
+						currentGame.game.players[payload.data.playerIndex].isReady = true;
 						lobbySetReady(payload.data.playerIndex);
 
 						if (payload.data.playerIndex == currentGame.me?.playerIndex) {
@@ -343,46 +345,28 @@ function setupWebSocket(gameID: string) {
 						clearReady();
 						board.autoHighlight = false;
 						showPage('game');
-						currentGame.turnNumber = payload.data.game.turnNumber;
+						currentGame.game.turnNumber = payload.data.game.turnNumber;
 
-						let anySpecialAttacks = false;
-						// Show the cards that were played.
-						clearPlayContainers();
-						for (let i = 0; i < currentGame.players.length; i++) {
-							const player = currentGame.players[i];
+						for (let i = 0; i < currentGame.game.players.length; i++) {
+							const player = currentGame.game.players[i];
 							player.specialPoints = payload.data.game.players[i].specialPoints;
 							player.totalSpecialPoints = payload.data.game.players[i].totalSpecialPoints;
 							player.passes = payload.data.game.players[i].passes;
 							player.gamesWon = payload.data.game.players[i].gamesWon;
 							player.isReady = payload.data.game.players[i].isReady;
 							lobbyWinCounters[i].wins = player.gamesWon;
-
-							const move = payload.data.moves[i];
-							const button = new CardButton(move.card);
-							button.buttonElement.disabled = true;
-							if (move.isSpecialAttack) {
-								anySpecialAttacks = true;
-								button.buttonElement.classList.add('specialAttack');
-							} else if (move.isPass) {
-								const el = document.createElement('div');
-								el.className = move.isTimeout ? 'passLabel timeout' : 'passLabel';
-								el.innerText = 'Pass';
-								button.buttonElement.appendChild(el);
-							}
-							button.buttonElement.disabled = false;
-							playContainers[i].append(button.buttonElement);
 						}
 						timeLabel.paused = true;
 						if (payload.data.game.turnTimeLeft)
 							timeLabel.setTime(payload.data.game.turnTimeLeft);
 
 						(async () => {
-							await playInkAnimations(payload.data, anySpecialAttacks);
+							await playInkAnimations(payload.data);
 							if (payload.playerData) updateHandAndDeck(payload.playerData);
 							turnNumberLabel.turnNumber = payload.data.game.turnNumber;
 							clearPlayContainers();
 							if (payload.event == 'gameEnd') {
-								currentGame.state = payload.data.game.state;
+								currentGame.game.state = payload.data.game.state;
 								clearConfirmLeavingGame();
 								gameButtonsContainer.hidden = true;
 								passButton.enabled = false;
@@ -398,7 +382,7 @@ function setupWebSocket(gameID: string) {
 								timeLabel.paused = false;
 								if (payload.data.game.turnTimeLeft)
 									timeLabel.show();
-								for (let i = 0; i < currentGame.players.length; i++)
+								for (let i = 0; i < currentGame.game.players.length; i++)
 									showWaiting(i);
 							}
 						})();
@@ -552,7 +536,6 @@ function resetAnimation(el: HTMLElement) {
 	el.offsetHeight;  // Trigger a reflow.
 	el.style.animation = '';
 }
-
 
 document.getElementById('noJSPage')!.innerText = 'Loading client...';
 

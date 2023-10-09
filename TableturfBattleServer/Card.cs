@@ -2,31 +2,43 @@
 
 namespace TableturfBattleServer;
 public class Card {
-	[JsonProperty("number")]
 	public int Number { get; }
-	[JsonProperty("altNumber")]
-	public int? AltNumber { get; }
-	[JsonProperty("name")]
+	public int? AltNumber { get; init; }
 	public string Name { get; }
-	[JsonProperty("rarity")]
 	public Rarity Rarity { get; }
-	[JsonProperty("specialCost")]
 	public int SpecialCost { get; }
 	[JsonIgnore]
 	public int Size { get; }
 
-	[JsonProperty("grid")]
+	public string? Line1 { get; init; }
+	public string? Line2 { get; init; }
+	public string? ArtFileName { get; init; }
+	public float TextScale { get; init; }
+	public Colour? InkColour1 { get; init; }
+	public Colour? InkColour2 { get; init; }
+
+	[JsonProperty]
 	private readonly Space[,] grid;
 
-	internal Card(int number, string name, Rarity rarity, Space[,] grid) : this(number, null, name, rarity, null, grid) { }
-	internal Card(int number, int? altNumber, string name, Rarity rarity, Space[,] grid) : this(number, altNumber, name, rarity, null, grid) { }
-	internal Card(int number, string name, Rarity rarity, int? specialCost, Space[,] grid) : this(number, null, name, rarity, specialCost, grid) { }
-	internal Card(int number, int? altNumber, string name, Rarity rarity, int? specialCost, Space[,] grid) {
+	internal Card(int number, string name, Rarity rarity, float textScale, string? artFileName, Space[,] grid) : this(number, null, name, rarity, null, textScale, artFileName, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, float textScale, string? artFileName, Space[,] grid) : this(number, altNumber, name, rarity, null, textScale, artFileName, grid) { }
+	internal Card(int number, string name, Rarity rarity, int? specialCost, float textScale, string? artFileName, Space[,] grid) : this(number, null, name, rarity, specialCost, textScale, artFileName, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, int? specialCost, float textScale, string? artFileName, Space[,] grid) {
 		this.Number = number;
 		this.AltNumber = altNumber;
-		this.Name = name ?? throw new ArgumentNullException(nameof(name));
 		this.Rarity = rarity;
+		this.TextScale = textScale;
+		this.ArtFileName = artFileName;
 		this.grid = grid ?? throw new ArgumentNullException(nameof(grid));
+
+		var pos = (name ?? throw new ArgumentNullException(nameof(name))).IndexOf('\n');
+		if (pos < 0)
+			this.Name = name;
+		else {
+			this.Name = name[pos - 1] == '-' ? name.Remove(pos, 1) : name.Replace('\n', ' ');
+			this.Line1 = name[0..pos];
+			this.Line2 = name[(pos + 1)..];
+		}
 
 		var size = 0;
 		if (grid.GetUpperBound(0) != 7 || grid.GetUpperBound(1) != 7)

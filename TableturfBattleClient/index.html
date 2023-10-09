@@ -16,6 +16,7 @@
 		<script src="config/config.js"></script>
 		<script src="qrcodejs/qrcode.js"></script>
 		<script src="mobile-drag-drop/release/index.min.js"></script>
+		<script src="js-untar/build/dist/untar.js"></script>
 		<script>
 			// Enable a polyfill for drag/drop support on mobile Firefox.
 			MobileDragDrop.polyfill({ dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride });
@@ -429,6 +430,7 @@
 					<button type="button" id="deckListTestButton" disabled>Test</button>
 					<button type="button" id="deckExportButton" disabled>Export</button>
 					<button type="button" id="deckCopyButton" disabled>Copy</button>
+					<button type="button" id="deckSleevesButton" disabled>Sleeves</button>
 					<button type="button" id="deckEditButton" disabled>Edit</button>
 					<button type="button" id="deckRenameButton" disabled>Rename</button>
 					<button type="button" id="deckDeleteButton" class="danger" disabled>Delete</button>
@@ -437,6 +439,41 @@
 				<div id="deckCardListView">
 				</div>
 			</section>
+			<dialog id="deckSleevesDialog">
+				<form id="deckSleevesForm" method="dialog">
+					<section id="deckSleevesList">
+						<input type="radio" name="deckSleeves" id="deckSleeve0" value="0"/><label for="deckSleeve0"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve1" value="1"/><label for="deckSleeve1"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve2" value="2"/><label for="deckSleeve2"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve3" value="3"/><label for="deckSleeve3"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve4" value="4"/><label for="deckSleeve4"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve5" value="5"/><label for="deckSleeve5"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve6" value="6"/><label for="deckSleeve6"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve7" value="7"/><label for="deckSleeve7"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve8" value="8"/><label for="deckSleeve8"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve9" value="9"/><label for="deckSleeve9"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve10" value="10"/><label for="deckSleeve10"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve11" value="11"/><label for="deckSleeve11"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve12" value="12"/><label for="deckSleeve12"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve13" value="13"/><label for="deckSleeve13"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve14" value="14"/><label for="deckSleeve14"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve15" value="15"/><label for="deckSleeve15"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve16" value="16"/><label for="deckSleeve16"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve17" value="17"/><label for="deckSleeve17"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve18" value="18"/><label for="deckSleeve18"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve19" value="19"/><label for="deckSleeve19"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve20" value="20"/><label for="deckSleeve20"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve21" value="21"/><label for="deckSleeve21"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve22" value="22"/><label for="deckSleeve22"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve23" value="23"/><label for="deckSleeve23"></label>
+						<input type="radio" name="deckSleeves" id="deckSleeve24" value="24"/><label for="deckSleeve24"></label>
+					</section>
+					<section id="deckSleevesFormButtons">
+						<button type="submit" id="deckSleevesOkButton">Select</button>
+						<button type="submit" id="deckSleevesCancelButton">Cancel</button>
+					</section>
+				</form>
+			</dialog>
 			<dialog id="deckImportDialog">
 				<form id="deckImportForm" method="dialog">
 					<label for="deckImportTextButton">

@@ -2,9 +2,8 @@
 
 namespace TableturfBattleServer;
 public class Stage {
-	[JsonProperty("name")]
 	public string Name { get; }
-	[JsonProperty("grid")]
+	[JsonProperty]
 	internal readonly Space[,] grid;
 	/// <summary>
 	///		The lists of starting spaces on this stage.
@@ -13,7 +12,7 @@ public class Stage {
 	///		The smallest list with at least as many spaces as players in the game will be used.
 	///		For example, if there is a list of 3 and a list of 4, the list of 3 will be used for 2 or 3 players, and the list of 4 will be used for 4 players.
 	/// </remarks>
-	[JsonProperty("startSpaces")]
+	[JsonProperty]
 	internal readonly Point[][] startSpaces;
 
 	public Stage(string name, Space[,] grid, Point[][] startSpaces) {

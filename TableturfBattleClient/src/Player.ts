@@ -6,6 +6,7 @@ interface Player {
 	specialColour: Colour;
 	specialAccentColour: Colour;
 	uiBaseColourIsSpecialColour?: boolean;
+	sleeves: number;
 	totalSpecialPoints: number;
 	passes: number;
 	gamesWon: number;

@@ -15,7 +15,7 @@ const lobbyStageSection = document.getElementById('lobbyStageSection')!;
 const lobbyStageSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
-const lobbyDeckButtons = new CheckButtonGroup<Deck>(lobbyDeckList);
+const lobbyDeckButtons = new CheckButtonGroup<SavedDeck>(lobbyDeckList);
 const lobbyDeckSubmitButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 
 const lobbyTimeLimitBox = document.getElementById('lobbyTimeLimitBox') as HTMLInputElement;
@@ -94,7 +94,7 @@ function lobbyResetSlots() {
 	playerListItems.splice(0);
 	lobbyWinCounters.splice(0);
 
-	for (let i = 0; i < currentGame.maxPlayers; i++) {
+	for (let i = 0; i < currentGame.game.maxPlayers; i++) {
 		var el = document.createElement('li');
 		el.className = 'empty';
 		el.innerText = 'Waiting...';
@@ -113,8 +113,8 @@ function clearReady() {
 	if (!currentGame) throw new Error('No current game');
 	stageSelectionFormSubmitButton.disabled = false;
 	stageSelectionFormLoadingSection.hidden = true;
-	for (var i = 0; i < currentGame.players.length; i++) {
-		currentGame.players[i].isReady = false;
+	for (var i = 0; i < currentGame.game.players.length; i++) {
+		currentGame.game.players[i].isReady = false;
 		playerListItems[i].className = 'filled';
 	}
 }
@@ -122,7 +122,7 @@ function clearReady() {
 function lobbyAddPlayer(playerIndex: number) {
 	if (!currentGame) throw new Error('No current game');
 	const listItem = playerListItems[playerIndex];
-	const player = currentGame.players[playerIndex];
+	const player = currentGame.game.players[playerIndex];
 	listItem.innerText = player.name;
 	listItem.className = player.isReady ? 'filled ready' : 'filled';
 
@@ -131,7 +131,7 @@ function lobbyAddPlayer(playerIndex: number) {
 	el.title = 'Battles won';
 	listItem.appendChild(el);
 	const winCounter = new WinCounter(el);
-	winCounter.wins = currentGame.players[playerIndex].gamesWon;
+	winCounter.wins = currentGame.game.players[playerIndex].gamesWon;
 	lobbyWinCounters.push(winCounter);
 }
 
@@ -151,7 +151,9 @@ function initDeckSelection() {
 
 			const buttonElement = document.createElement('button');
 			buttonElement.type = 'button';
+			buttonElement.className = 'deckButton';
 			buttonElement.innerText = deck.name;
+			buttonElement.dataset.sleeves = deck.sleeves.toString();
 			const button = new CheckButton(buttonElement);
 			lobbyDeckButtons.add(button, deck);
 
@@ -202,6 +204,7 @@ deckSelectionForm.addEventListener('submit', e => {
 	data.append('clientToken', clientToken);
 	data.append('deckName', selectedDeck.name);
 	data.append('deckCards', selectedDeck.cards.join('+'));
+	data.append('deckSleeves', selectedDeck.sleeves.toString());
 	req.send(data.toString());
 
 	localStorage.setItem('lastDeckName', selectedDeck.name);

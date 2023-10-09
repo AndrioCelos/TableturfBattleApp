@@ -8,7 +8,7 @@ class CardButton extends CheckButton {
 	constructor(card: Card) {
 		let button = document.createElement('button');
 		button.type = 'button';
-		button.classList.add('card');
+		button.classList.add('cardButton');
 		button.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
 		if (card.number < 0) button.classList.add('upcoming');
 		button.dataset.cardNumber = card.number.toString();
@@ -33,6 +33,13 @@ class CardButton extends CheckButton {
 				}
 				tr.appendChild(td);
 			}
+		}
+
+		if (card.imageUrl) {
+			const bgDiv = document.createElement('div');
+			bgDiv.setAttribute('class', 'cardArt');
+			bgDiv.style.backgroundImage = `url(${card.imageUrl})`;
+			button.appendChild(bgDiv);
 		}
 
 		let row = document.createElement('div');

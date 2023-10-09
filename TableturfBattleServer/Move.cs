@@ -1,22 +1,13 @@
 ﻿using System.ComponentModel;
 
-using Newtonsoft.Json;
-
 namespace TableturfBattleServer;
 public class Move {
-	[JsonProperty("card")]
 	public Card Card { get; }
-	[JsonProperty("isPass")]
 	public bool IsPass { get; }
-	[JsonProperty("x")]
 	public int X { get; }
-	[JsonProperty("y")]
 	public int Y { get; }
-	[JsonProperty("rotation")]
 	public int Rotation { get; }
-	[JsonProperty("isSpecialAttack")]
 	public bool IsSpecialAttack { get; }
-	[JsonProperty("isTimeout")]
 	public bool IsTimeout { get; }
 
 	public Move(Card card, bool isPass, int x, int y, int rotation, bool isSpecialAttack, bool isTimeout) {

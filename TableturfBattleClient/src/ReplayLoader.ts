@@ -28,17 +28,18 @@ function loadReplay(base64: string) {
 					specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
 					specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
 					uiBaseColourIsSpecialColour: false,
+					sleeves: 0,
 					totalSpecialPoints: 0,
 					passes: 0,
 					gamesWon: 0
 				};
 				players.push(player);
 
-				const deck = [ ];
+				const cards = [ ];
 				const initialDrawOrder = [ ];
 				const drawOrder = [ ];
 				for (let j = 0; j < 15; j++) {
-					deck.push(loadCardFromReplay(dataView, pos + 9 + j));
+					cards.push(loadCardFromReplay(dataView, pos + 9 + j));
 				}
 				for (let j = 0; j < 2; j++) {
 					initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
@@ -51,7 +52,7 @@ function loadReplay(base64: string) {
 					else
 						drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
 				}
-				playerData.push({ deck, initialDrawOrder, drawOrder, won: false });
+				playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won: false });
 				pos += 35 + len;
 			}
 
@@ -95,6 +96,7 @@ function loadReplay(base64: string) {
 					specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
 					specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
 					uiBaseColourIsSpecialColour: (n2 & 0x80) != 0,
+					sleeves: 0,
 					totalSpecialPoints: 0,
 					passes: 0,
 					gamesWon: 0
@@ -108,12 +110,12 @@ function loadReplay(base64: string) {
 				const playerData = [ ];
 				pos++;
 				for (let i = 0; i < numPlayers; i++) {
-					const deck = [ ];
+					const cards = [ ];
 					const initialDrawOrder = [ ];
 					const drawOrder = [ ];
 					let won = false;
 					for (let j = 0; j < 15; j++) {
-						deck.push(loadCardFromReplay(dataView, pos + j));
+						cards.push(loadCardFromReplay(dataView, pos + j));
 					}
 					for (let j = 0; j < 2; j++) {
 						initialDrawOrder.push(dataView.getUint8(pos + 15 + j) & 0xF);
@@ -126,7 +128,7 @@ function loadReplay(base64: string) {
 						else
 							drawOrder.push(dataView.getUint8(pos + 17 + j) >> 4 & 0xF);
 					}
-					playerData.push({ deck, initialDrawOrder, drawOrder, won });
+					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won });
 					pos += 25;
 				}
 				const turns = replayLoadTurns(dataView, numPlayers, pos);
@@ -141,14 +143,16 @@ function loadReplay(base64: string) {
 
 	currentGame = {
 		id: 'replay',
-		state: GameState.Redraw,
+		game: {
+			state: GameState.Redraw,
+			players: players,
+			maxPlayers: players.length,
+			turnNumber: 0,
+			turnTimeLimit: null,
+			turnTimeLeft: null,
+			goalWinCount: goalWinCount
+		},
 		me: null,
-		players: players,
-		maxPlayers: players.length,
-		turnNumber: 0,
-		turnTimeLimit: null,
-		turnTimeLeft: null,
-		goalWinCount: goalWinCount,
 		webSocket: null
 	};
 

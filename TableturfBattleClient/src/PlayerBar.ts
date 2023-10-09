@@ -55,7 +55,7 @@ class PlayerBar {
 
 	get specialPoints() { return this.specialPointsContainer.getElementsByClassName('specialPoint').length; }
 	set specialPoints(value: number) {
-		const oldList = this.specialPointsContainer.getElementsByClassName('specialPoint');
+		const oldList = Array.from(this.specialPointsContainer.getElementsByClassName('specialPoint'));
 		if (value < oldList.length) {
 			for (let i = oldList.length - 1; i >= value; i--)
 				this.specialPointsContainer.removeChild(oldList[i]);

@@ -30,9 +30,9 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 					break;
 				}
 			}
-			this.Send(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData)));
+			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData)));
 		} else
-			this.Send(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
+			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
 	}
 
 	internal void SendInternal(string data) => this.Send(data);

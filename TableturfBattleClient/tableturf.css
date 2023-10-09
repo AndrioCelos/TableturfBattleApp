@@ -212,6 +212,73 @@ dialog::backdrop {
 	border: 1em solid white;
 }
 
+.deckList {
+	display: flex;
+	flex-flow: column;
+}
+
+.deckList button, #addDeckControls button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font: inherit;
+	color: inherit;
+	border: inherit;
+	text-shadow: 0 0 4px black;
+}
+
+.deckButton, #addDeckControls {
+	width: 20rem;
+	height: 4rem;
+	margin: 0.5em;
+}
+.deckButton {
+	position: relative;
+	background: linear-gradient(#00000040, #00000040), url('assets/external/sleeves.webp') 0 11%/800%;
+	outline: 0.25em solid grey;
+	border-radius: 0.5em;
+	outline-offset: -0.2em;
+}
+
+.deckButton[data-sleeves="0"] { background-position: 0 11%; }
+.deckButton[data-sleeves="1"] { background-position: 14.3% 11%; }
+.deckButton[data-sleeves="2"] { background-position: 28.6% 11%; }
+.deckButton[data-sleeves="3"] { background-position: 42.9% 11%; }
+.deckButton[data-sleeves="4"] { background-position: 57.1% 11%; }
+.deckButton[data-sleeves="5"] { background-position: 71.4% 11%; }
+.deckButton[data-sleeves="6"] { background-position: 85.7% 11%; }
+.deckButton[data-sleeves="7"] { background-position: 100% 11%; }
+.deckButton[data-sleeves="8"] { background-position: 0 37%; }
+.deckButton[data-sleeves="9"] { background-position: 14.3% 37%; }
+.deckButton[data-sleeves="10"] { background-position: 28.6% 37%; }
+.deckButton[data-sleeves="11"] { background-position: 42.9% 37%; }
+.deckButton[data-sleeves="12"] { background-position: 57.1% 37%; }
+.deckButton[data-sleeves="13"] { background-position: 71.4% 37%; }
+.deckButton[data-sleeves="14"] { background-position: 85.7% 37%; }
+.deckButton[data-sleeves="15"] { background-position: 100% 37%; }
+.deckButton[data-sleeves="16"] { background-position: 0 63%; }
+.deckButton[data-sleeves="17"] { background-position: 14.3% 63%; }
+.deckButton[data-sleeves="18"] { background-position: 28.6% 63%; }
+.deckButton[data-sleeves="19"] { background-position: 42.9% 63%; }
+.deckButton[data-sleeves="20"] { background-position: 57.1% 63%; }
+.deckButton[data-sleeves="21"] { background-position: 71.4% 63%; }
+.deckButton[data-sleeves="22"] { background-position: 85.7% 63%; }
+.deckButton[data-sleeves="23"] { background-position: 100% 63%; }
+.deckButton[data-sleeves="24"] { background-position: 0 89%; }
+
+.deckButton:is(:active, .checked) {
+	outline-color: lightgrey;
+}
+.deckButton:hover {
+	outline-color: white;
+}
+.deckButton:focus-within {
+	outline-color: white;
+}
+.deckButton.disabled {
+	opacity: 0.5;
+}
+
 /* Stages */
 
 #stageList {
@@ -268,7 +335,7 @@ dialog::backdrop {
 
 /* Cards */
 
-.card, .cardBack {
+.cardButton, .cardBack {
 	box-sizing: border-box;
 	width: 10em;
 	height: 12em;
@@ -278,22 +345,51 @@ dialog::backdrop {
 
 .cardBack {
 	--colour: grey;
-	background: #000000C0;
+	background: url(assets/external/sleeves.webp) 0 0/800%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 14em;
+	animation: 0.25s ease-out forwards cardBackFadeIn;
 }
-.cardBack.waiting::before {
-	content: '';
-	width: 2em;
-	height: 2em;
-	background: url(assets/external/IconUp_00.webp) center/cover;
-	animation: 2s infinite linear loadingSpinner;
-	opacity: 0.333;
+.cardBack[data-sleeves="0"] { background-position: 0% 0%; }
+.cardBack[data-sleeves="1"] { background-position: 14.3% 0%; }
+.cardBack[data-sleeves="2"] { background-position: 28.6% 0%; }
+.cardBack[data-sleeves="3"] { background-position: 42.9% 0%; }
+.cardBack[data-sleeves="4"] { background-position: 57.1% 0%; }
+.cardBack[data-sleeves="5"] { background-position: 71.4% 0%; }
+.cardBack[data-sleeves="6"] { background-position: 85.7% 0%; }
+.cardBack[data-sleeves="7"] { background-position: 100% 0%; }
+.cardBack[data-sleeves="8"] { background-position: 0% 33.3% }
+.cardBack[data-sleeves="9"] { background-position: 14.3% 33.3% }
+.cardBack[data-sleeves="10"] { background-position: 28.6% 33.3% }
+.cardBack[data-sleeves="11"] { background-position: 42.9% 33.3% }
+.cardBack[data-sleeves="12"] { background-position: 57.1% 33.3% }
+.cardBack[data-sleeves="13"] { background-position: 71.4% 33.3% }
+.cardBack[data-sleeves="14"] { background-position: 85.7% 33.3% }
+.cardBack[data-sleeves="15"] { background-position: 100% 33.3% }
+.cardBack[data-sleeves="16"] { background-position: 0% 66.7% }
+.cardBack[data-sleeves="17"] { background-position: 14.3% 66.7% }
+.cardBack[data-sleeves="18"] { background-position: 28.6% 66.7% }
+.cardBack[data-sleeves="19"] { background-position: 42.9% 66.7% }
+.cardBack[data-sleeves="20"] { background-position: 57.1% 66.7% }
+.cardBack[data-sleeves="21"] { background-position: 71.4% 66.7% }
+.cardBack[data-sleeves="22"] { background-position: 85.7% 66.7% }
+.cardBack[data-sleeves="23"] { background-position: 100% 66.7% }
+.cardBack[data-sleeves="24"] { background-position: 0% 100%; }
+
+@keyframes cardBackFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-4rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
-.card {
+.cardButton {
 	position: relative;
 	color: currentColor;  /* Override disabled colour */
 	background: black;
@@ -302,15 +398,27 @@ dialog::backdrop {
 	font-weight: 599;
 	margin: 0.5em;
 }
-.card:not([hidden]) {
+.cardButton:not([hidden]) {
 	display: inline-block;
 }
 
-:is(#deckCardListView, #deckCardListEdit, .cardListGrid) .card.upcoming { background: midnightblue; }
+:is(#deckCardListView, #deckCardListEdit, .cardListGrid) .cardButton.upcoming { background: midnightblue; }
 
-.card.common { --colour: rgb(89, 49, 255); }
-.card.rare { --colour: rgb(231, 180, 39); }
-.card.fresh { --colour: white; }
+.cardButton.common { --colour: rgb(89, 49, 255); }
+.cardButton.rare { --colour: rgb(231, 180, 39); }
+.cardButton.fresh { --colour: white; }
+
+.cardButton .cardArt {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	opacity: 0.333;
+}
 
 .cardHeader {
 	height: 2.5em;
@@ -325,7 +433,7 @@ dialog::backdrop {
 	display: none;
 }
 
-.cardListGrid .card:hover .cardNumber {
+.cardListGrid .cardButton:hover .cardNumber {
 	display: block;
 	position: absolute;
 	background: grey;
@@ -342,25 +450,25 @@ dialog::backdrop {
 	line-height: 1.25em;
 	flex-grow: 1;
 }
-.card:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"],
-	[data-card-number="202"], [data-card-number="-3"], [data-card-number="-5"], [data-card-number="-12"]) .cardName {
+.cardButton:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"],
+	[data-card-number="202"], [data-card-number="216"]) .cardName {
 	position: absolute;
 	left: -1em;
 	right: -1em;
 	transform: scaleX(0.8);
 }
 
-.card.common .cardName {
+.cardButton.common .cardName {
 	color: var(--colour);
 }
-.card.rare .cardName {
+.cardButton.rare .cardName {
 	background: var(--colour);
 	background: linear-gradient(90deg, rgb(255, 242, 129) 0%, rgb(255, 255, 224) 15%, rgb(231, 180, 39) 50%, rgb(255, 255, 224) 85%, rgb(255, 242, 129) 100%);
 	background-clip: text;
 	-webkit-background-clip: text;
 	color: transparent;
 }
-.card.fresh .cardName {
+.cardButton.fresh .cardName {
 	background: var(--colour);
 	background: linear-gradient(120deg, rgba(253, 217, 169, 1) 0%, rgba(200, 58, 141, 1) 50%, rgba(55, 233, 207, 1) 100%);
 	background-clip: text;
@@ -368,8 +476,7 @@ dialog::backdrop {
 	color: transparent;
 	flex-grow: 0;
 }
-
-.cardGrid {
+.cardButton .cardGrid {
 	position: relative;
 	margin: 0 auto;
 	border-spacing: 0;
@@ -380,6 +487,7 @@ dialog::backdrop {
 	outline: 1px solid #80808080;
 	outline-offset: -1px;
 }
+.cardGrid td { background: #00000080; }
 .cardGrid td.ink { background: url('assets/InkOverlay.png') center/cover, var(--player-primary-colour); outline: none; }
 .cardGrid td.special { background: url('assets/SpecialOverlay.png') center/cover, var(--player-special-colour); outline: none; }
 
@@ -423,7 +531,55 @@ dialog::backdrop {
 .playHintSpecial:nth-of-type(3) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
 .playHintSpecial:nth-of-type(4) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
 
-:is(.card, .stage, .stageRandom)::before {
+.card {
+	position: relative;
+	color: currentColor;  /* Override disabled colour */
+	font-family: 'Splatoon 1', 'Arial Black', sans-serif;
+	font-size: 2rem;
+	font-weight: 599;
+	aspect-ratio: 5/7;
+	border-radius: 1rem;
+}
+.playContainer .card {
+	animation: 0.1s ease-out forwards flipCardIn;
+}
+
+@keyframes flipCardOut {
+	from { transform: scaleX(1); }
+	to { transform: scaleX(0); }
+}
+@keyframes flipCardIn {
+	from { transform: scaleX(0); }
+	to { transform: scaleX(1); }
+}
+
+svg.card {
+	display: block;
+}
+
+svg.card text {
+	text-anchor: middle;
+}
+
+svg.card text.cardDisplayName {
+	transform: scaleX(var(--scale));
+}
+
+rect.empty {
+	fill: #00000080;
+	stroke: #60606080;
+	stroke-width: 6;
+}
+
+rect.ink {
+	fill: var(--player-primary-colour);
+}
+
+rect.special, g.specialCost rect {
+	fill: var(--player-special-colour);
+}
+
+:is(.cardButton, .stage, .stageRandom)::before {
 	/* If it exists */
 	position: absolute;
 	left: 0;
@@ -434,19 +590,19 @@ dialog::backdrop {
 	opacity: 0.25;
 	z-index: 0;
 }
-.card.checked, .card:is(:hover, :focus-within):not([disabled]) {
+.cardButton.checked, .cardButton:is(:hover, :focus-within):not([disabled]) {
 	transform: rotate(-2deg);
 }
-.card:is(:hover, :focus-within):not(.checked, .disabled, [disabled])::before {
+.cardButton:is(:hover, :focus-within):not(.checked, .disabled, [disabled])::before {
 	content: '';
 	background: grey;
 }
-.card.checked::before {
+.cardButton.checked::before {
 	content: '';
 	background: var(--colour);
 }
 
-.card.disabled {
+.cardButton.disabled {
 	opacity: 0.5;
 }
 
@@ -828,7 +984,25 @@ dialog::backdrop {
 	bottom: 0;
 }
 
-.playContainer { margin: 8em 0; }
+.playContainer:not([hidden]) {
+	position: relative;
+	margin: 8em 0;
+	width: 10em;
+	height: 14em;
+	border: 1px solid grey;
+	border-radius: 1em;
+	background: #00000080;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.playContainer .waiting {
+	width: 2em;
+	height: 2em;
+	background: url(assets/external/IconUp_00.webp) center/cover;
+	animation: 2s infinite linear loadingSpinner;
+	opacity: 0.333;
+}
 
 .playContainer[data-index="2"] { grid-column: play-column-2; grid-row: 2 / -1; align-self: end; }
 .playContainer[data-index="1"] { grid-column: play-column-2; grid-row: 1 / 4; align-self: start; }
@@ -840,7 +1014,7 @@ dialog::backdrop {
 #gamePage.boardFlipped .playContainer[data-index="1"] { grid-column: play-column-1; grid-row: 2 / -1; align-self: end; }
 #gamePage.boardFlipped .playContainer[data-index="2"] { grid-column: play-column-1; grid-row: 1 / 4; align-self: start; }
 
-.playContainer .card {
+.playContainer .cardButton {
 	margin: 0;
 }
 
@@ -1264,13 +1438,13 @@ dialog::backdrop {
 }
 
 
-.specialAttack, .specialAttack::after {
+.specialAttack, .specialAttackLabel {
 	box-shadow: 0px 0 8px 4px var(--player-colour);
 }
 
-.specialAttack::after {
-	content: 'Special Attack!';
+.specialAttackLabel {
 	position: absolute;
+	font-family: 'Splatoon 1', sans-serif;
 	left: -2em;
 	top: 4em;
 	right: -2em;
@@ -1333,33 +1507,10 @@ dialog::backdrop {
 	gap: 3em;
 }
 
-.deckList {
-	display: flex;
-	flex-flow: column;
-}
-
-.deckList button, #addDeckControls button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font: inherit;
-	color: inherit;
-	border: inherit;
-	text-shadow: 0 0 4px black;
-}
 button.dragging {
 	opacity: 0.5;
 }
-.deckList > button, #addDeckControls {
-	width: 20rem;
-	height: 3rem;
-	margin: 0.5em;
-}
-.deckList > button { background: var(--primary-colour-2); position: relative;}
-.deckList > button:hover { background: var(--special-colour-2); }
-.deckList > button:focus-within { outline: 2px solid var(--special-accent-colour-2); }
-.deckList > button:is(:active, .checked) { background: var(--special-accent-colour-2); }
-.deckList > button.disabled { background: grey; }
+
 #addDeckControls {
 	display: flex;
 	align-items: stretch;
@@ -1388,7 +1539,7 @@ button.dragging {
 .touchmode .deckList .handle {
 	width: 2em;
 }
-.card .handle {
+.cardButton .handle {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -1396,7 +1547,7 @@ button.dragging {
 	height: 3em;
 }
 
-.card.emptySlot {
+.cardButton.emptySlot {
 	--colour: dimgrey;
 	background: url('assets/plus-circle.svg') center/2em no-repeat, black;
 }
@@ -1501,6 +1652,60 @@ button.dragging {
 	text-align: start;
 }
 
+#deckSleevesList {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	max-width: 80em;
+	gap: 1em;
+}
+
+#deckSleevesList input {
+	visibility: hidden;
+	position: absolute;
+}
+#deckSleevesList label {
+	display: inline-block;
+	width: 10em;
+	height: 14em;
+	border-radius: 0.75em;
+	background: url('assets/external/sleeves.webp') 0px 0px/800%;
+}
+#deckSleevesList input:hover+label {
+	outline: 0.25em solid grey;
+}
+#deckSleevesList input:focus+label {
+	outline: 0.25em solid grey;
+}
+#deckSleevesList input:checked+label {
+	outline: 0.25em solid yellow;
+}
+#deckSleevesList label:nth-of-type(1) { background-position: 0% 0%; }
+#deckSleevesList label:nth-of-type(2) { background-position: -100% 0%; }
+#deckSleevesList label:nth-of-type(3) { background-position: -200% 0%; }
+#deckSleevesList label:nth-of-type(4) { background-position: -300% 0%; }
+#deckSleevesList label:nth-of-type(5) { background-position: -400% 0%; }
+#deckSleevesList label:nth-of-type(6) { background-position: -500% 0%; }
+#deckSleevesList label:nth-of-type(7) { background-position: -600% 0%; }
+#deckSleevesList label:nth-of-type(8) { background-position: -700% 0%; }
+#deckSleevesList label:nth-of-type(9) { background-position: 0% -100%; }
+#deckSleevesList label:nth-of-type(10) { background-position: -100% -100%; }
+#deckSleevesList label:nth-of-type(11) { background-position: -200% -100%; }
+#deckSleevesList label:nth-of-type(12) { background-position: -300% -100%; }
+#deckSleevesList label:nth-of-type(13) { background-position: -400% -100%; }
+#deckSleevesList label:nth-of-type(14) { background-position: -500% -100%; }
+#deckSleevesList label:nth-of-type(15) { background-position: -600% -100%; }
+#deckSleevesList label:nth-of-type(16) { background-position: -700% -100%; }
+#deckSleevesList label:nth-of-type(17) { background-position: 0% -200%; }
+#deckSleevesList label:nth-of-type(18) { background-position: -100% -200%; }
+#deckSleevesList label:nth-of-type(19) { background-position: -200% -200%; }
+#deckSleevesList label:nth-of-type(20) { background-position: -300% -200%; }
+#deckSleevesList label:nth-of-type(21) { background-position: -400% -200%; }
+#deckSleevesList label:nth-of-type(22) { background-position: -500% -200%; }
+#deckSleevesList label:nth-of-type(23) { background-position: -600% -200%; }
+#deckSleevesList label:nth-of-type(24) { background-position: -700% -200%; }
+#deckSleevesList label:nth-of-type(25) { background-position: 0% -300%; }
+
 /* Help */
 
 #helpControls {
@@ -1549,22 +1754,22 @@ button.dragging {
 	#gamePage.boardFlipped .playerBar[data-index="3"] { grid-row: player-row-0; }
 
 	#gamePage:not(.boardFlipped):not([data-players="2"]) .playerBar:is([data-index="1"], [data-index="2"]) .wins,
-  #gamePage.boardFlipped:not([data-players="2"]) .playerBar:is([data-index="0"], [data-index="3"]) .wins {
-    float: initial;
+	#gamePage.boardFlipped:not([data-players="2"]) .playerBar:is([data-index="0"], [data-index="3"]) .wins {
+		float: initial;
 		justify-content: end;
-  }
+	}
 }
 
 @media (max-width: 40rem) {
-	.card {
+	.cardButton {
 		margin: 0;
 	}
 	.cardListGrid:not([hidden]) {
 		justify-items: stretch;
 	}
-.cardListGrid .card {
-	width: auto;
-	justify-self: stretch;
+	.cardListGrid .cardButton {
+		width: auto;
+		justify-self: stretch;
 	}
 
 	/* Lobby - Mobile layout */
@@ -1676,7 +1881,7 @@ button.dragging {
 		grid-column: 1 / -1;
 		grid-row: 2 / -1;
 	}
-	#showDeckList .card {
+	#showDeckList .cardButton {
 		width: 30vw;
 	}
 
@@ -1724,17 +1929,17 @@ button.dragging {
 		display: block;
 	}
 
-	:is(#deckListPage, #deckEditPage) section {
+	:is(#deckListPage, #deckEditPage) > section {
 		position: absolute;
 		left: 0;
 		right: 0;
 		top: 0;
 	}
 
-  #deckListPage:not(.showingDeck) #deckEditorDeckViewSection {
+	#deckListPage:not(.showingDeck) #deckEditorDeckViewSection {
 		display: none;
 	}
-  #deckListPage.showingDeck #deckEditorDeckListSection {
+	#deckListPage.showingDeck #deckEditorDeckListSection {
 		display: none;
 	}
 
@@ -1804,7 +2009,7 @@ button.dragging {
 		font-size: 55%;
 	}
 
-	#cardList .card {
+	#cardList .cardButton {
 		height: 13em;
 	}
 
@@ -1845,6 +2050,12 @@ button.dragging {
 	}
 	#testPlacementList div {
 		padding: 0 0.5em;
+	}
+
+	#deckSleevesList label {
+		width: 20%;
+		height: auto;
+		aspect-ratio: 5 / 7;
 	}
 }
 

@@ -94,7 +94,7 @@ internal class Program {
 		if (!e.Request.RawUrl.StartsWith("/api/")) {
 			var path = e.Request.RawUrl == "/" || e.Request.RawUrl.StartsWith("/deckeditor") || e.Request.RawUrl.StartsWith("/game/") || e.Request.RawUrl.StartsWith("/replay/")
 				? "index.html"
-				: e.Request.RawUrl[1..];
+				: HttpUtility.UrlDecode(e.Request.RawUrl[1..]);
 			if (e.TryReadFile(path, out var bytes))
 				SetResponse(e.Response, HttpStatusCode.OK,
 					Path.GetExtension(path) switch {
@@ -102,6 +102,7 @@ internal class Program {
 						".css" => "text/css",
 						".js" => "text/javascript",
 						".png" => "image/png",
+						".webp" => "image/webp",
 						".woff" or ".woff2" => "font/woff",
 						_ => "application/octet-stream"
 					}, bytes);
@@ -163,7 +164,7 @@ internal class Program {
 					games.Add(game.ID, game);
 					timer.Start();
 
-					SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { gameID = game.ID, clientToken, maxPlayers }));
+					SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonUtils.Serialise(new { gameID = game.ID, clientToken, maxPlayers }));
 					Console.WriteLine($"New game started: {game.ID}; {games.Count} games active; {inactiveGames.Count} inactive");
 				} catch (ArgumentException) {
 					SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidRequestData", "Invalid form data"));
@@ -193,7 +194,7 @@ internal class Program {
 									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
 									return;
 								}
-								SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(game));
+								SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonUtils.Serialise(game));
 								break;
 							}
 							case "playerData": {
@@ -206,7 +207,7 @@ internal class Program {
 								if (!Guid.TryParse(m.Groups[3].Value, out var clientToken))
 									clientToken = Guid.Empty;
 
-								SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new {
+								SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonUtils.Serialise(new {
 									game,
 									playerData = game.GetPlayer(clientToken, out var playerIndex, out var player)
 										? new PlayerData(playerIndex, player)
@@ -256,7 +257,7 @@ internal class Program {
 											game.SendEvent("join", new { playerIndex, player }, false);
 										}
 										// If they're already in the game, resend the original join response instead of an error.
-										SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(new { playerIndex, clientToken }));
+										SetResponse(e.Response, HttpStatusCode.OK, "application/json", JsonUtils.Serialise(new { playerIndex, clientToken }));
 										timer.Start();
 									} catch (ArgumentException) {
 										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidRequestData", "Invalid form data"));
@@ -375,6 +376,11 @@ internal class Program {
 											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidDeckName", "Missing deck name."));
 											return;
 										}
+										var deckSleeves = 0;
+										if (d.TryGetValue("deckSleeves", out var deckSleevesString) && (!int.TryParse(deckSleevesString, out deckSleeves) || deckSleeves is < 0 or >= 25)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidDeckSleeves", "Invalid deck sleeves."));
+											return;
+										}
 										if (!d.TryGetValue("deckCards", out var deckString)) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidDeckCards", "Missing deck cards."));
 											return;
@@ -384,8 +390,21 @@ internal class Program {
 											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
 											return;
 										}
+										int[]? upgrades = null;
+										if (d.TryGetValue("deckUpgrades", out var deckUpgradesString)) {
+											upgrades = new int[15];
+											var array2 = deckUpgradesString.Split(new[] { ',', '+', ' ' }, 15);
+											for (var i = 0; i < 15; i++) {
+												if (int.TryParse(array2[i], out var j) && i is >= 0 and <= 2)
+													upgrades[i] = j;
+												else {
+													SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckUpgrades", "Invalid deck upgrade list."));
+													return;
+												}
+											}
+										}
 										var cards = new int[15];
-										for (int i = 0; i < 15; i++) {
+										for (var i = 0; i < 15; i++) {
 											if (!int.TryParse(array[i], out var cardNumber) || !CardDatabase.IsValidCardNumber(cardNumber)) {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
 												return;
@@ -406,7 +425,7 @@ internal class Program {
 											}
 										}
 
-										player.CurrentGameData.Deck = cards.Select(CardDatabase.GetCard).ToArray();
+										player.CurrentGameData.Deck = game.GetDeck(deckName, deckSleeves, cards, upgrades ?? Enumerable.Repeat(0, 15));
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
 										game.SendPlayerReadyEvent(playerIndex, false);
 										timer.Start();
@@ -584,7 +603,7 @@ internal class Program {
 	}
 
 	private static void SetErrorResponse(HttpListenerResponse response, Error error) {
-		var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(error));
+		var bytes = Encoding.UTF8.GetBytes(JsonUtils.Serialise(error));
 		SetResponse(response, error.HttpStatusCode, "application/json", bytes);
 	}
 	private static void SetResponse(HttpListenerResponse response, HttpStatusCode statusCode, string contentType, string content) {

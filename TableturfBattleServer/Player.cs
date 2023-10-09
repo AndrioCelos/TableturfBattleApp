@@ -2,17 +2,12 @@
 
 namespace TableturfBattleServer;
 public class Player {
-	[JsonProperty("name")]
 	public string Name { get; }
 	[JsonIgnore]
 	public Guid Token { get; }
-	[JsonProperty("colour")]
 	public Colour Colour { get; set; }
-	[JsonProperty("specialColour")]
 	public Colour SpecialColour { get; set; }
-	[JsonProperty("specialAccentColour")]
 	public Colour SpecialAccentColour { get; set; }
-	[JsonProperty("uiBaseColourIsSpecialColour")]
 	public bool UIBaseColourIsSpecialColour { get; set; }
 
 	[JsonIgnore]
@@ -26,7 +21,6 @@ public class Player {
 	[JsonIgnore]
 	internal Move? ProvisionalMove;
 
-	[JsonProperty("gamesWon")]
 	public int GamesWon { get; set; }
 
 	[JsonIgnore]
@@ -35,15 +29,12 @@ public class Player {
 	[JsonIgnore]
 	public SingleGameData CurrentGameData => this.Games[^1];
 
-	[JsonProperty("specialPoints")]
 	public int SpecialPoints => this.CurrentGameData.SpecialPoints;
 
-	[JsonProperty("totalSpecialPoints")]
 	public int TotalSpecialPoints => this.CurrentGameData.TotalSpecialPoints;
-	[JsonProperty("passes")]
 	public int Passes => this.CurrentGameData.Passes;
+	public int? Sleeves => this.CurrentGameData.Deck?.Sleeves;
 
-	[JsonProperty("isReady")]
 	public bool IsReady => this.game.State switch {
 		GameState.WaitingForPlayers or GameState.ChoosingStage => this.selectedStageIndex != null,
 		GameState.ChoosingDeck => this.CurrentGameData.Deck != null,
@@ -75,7 +66,7 @@ public class Player {
 		if (this.CurrentGameData.Deck != null) {
 			this.Hand = new Card[4];
 			for (int i = 0; i < 4; i++) {
-				this.Hand[i] = this.CurrentGameData.Deck[this.CurrentGameData.drawOrder[i]];
+				this.Hand[i] = this.CurrentGameData.Deck.Cards[this.CurrentGameData.drawOrder[i]];
 			}
 		}
 	}

@@ -2,12 +2,8 @@
 
 namespace TableturfBattleServer;
 public class SingleGameData {
-	[JsonProperty("specialPoints")]
 	public int SpecialPoints { get; set; }
-
-	[JsonProperty("totalSpecialPoints")]
 	public int TotalSpecialPoints { get; set; }
-	[JsonProperty("passes")]
 	public int Passes { get; set; }
 
 	[JsonIgnore]
@@ -17,7 +13,7 @@ public class SingleGameData {
 	internal List<ReplayTurn> turns = new(12);
 
 	[JsonIgnore]
-	internal Card[]? Deck;
+	internal Deck? Deck;
 	[JsonIgnore]
 	internal int[]? initialDrawOrder;
 	[JsonIgnore]

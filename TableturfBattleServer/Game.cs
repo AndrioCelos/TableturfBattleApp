@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Numerics;
 using System.Text;
 
 using Newtonsoft.Json;
@@ -10,31 +9,25 @@ public class Game {
 	[JsonIgnore]
 	public Guid ID { get; } = Guid.NewGuid();
 
-	[JsonProperty("state")]
 	public GameState State { get; set; }
-	[JsonProperty("turnNumber")]
 	public int TurnNumber { get; set; }
-	[JsonProperty("players")]
 	public List<Player> Players { get; } = new(4);
-	[JsonProperty("maxPlayers")]
 	public int MaxPlayers { get; set; }
 	[JsonProperty("stage")]
 	public string? StageName { get; private set; }
-	[JsonProperty("board")]
 	public Space[,]? Board { get; private set; }
-	[JsonProperty("startSpaces")]
 	public Point[]? StartSpaces;
 
-	[JsonProperty("goalWinCount")]
 	public int? GoalWinCount { get; set; }
 
-	[JsonProperty("turnTimeLimit")]
 	public int? TurnTimeLimit { get; set; }
-	[JsonProperty("turnTimeLeft")]
 	public int? TurnTimeLeft { get; set; }
 	[JsonIgnore]
 	internal DateTime abandonedSince = DateTime.UtcNow;
 
+	[JsonIgnore]
+	internal List<Deck> deckCache = new();
+	[JsonIgnore]
 	internal List<string> setStages = new();
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
@@ -76,6 +69,10 @@ public class Game {
 		player = null;
 		return false;
 	}
+
+	public Deck GetDeck(string name, int sleeves, IEnumerable<int> cardNumbers, IEnumerable<int> cardUpgrades)
+		=> this.deckCache.FirstOrDefault(d => d.Name == name && d.Sleeves == sleeves && cardNumbers.SequenceEqual(from c in d.Cards select c.Number) && cardUpgrades.SequenceEqual(d.Upgrades))
+			?? new(name, sleeves, (from i in cardNumbers select CardDatabase.GetCard(i)).ToArray(), cardUpgrades.ToArray());
 
 	public bool CanPlay(int playerIndex, Card card, int x, int y, int rotation, bool isSpecialAttack) {
 		if (card is null) throw new ArgumentNullException(nameof(card));
@@ -331,7 +328,7 @@ public class Game {
 				foreach (var player in this.Players) {
 					var index = player.GetHandIndex(player.Move!.Card.Number);
 					var draw = player.CurrentGameData.drawOrder![this.TurnNumber + 2];
-					player.Hand![index] = player.CurrentGameData.Deck![draw];
+					player.Hand![index] = player.CurrentGameData.Deck!.Cards[draw];
 					player.ClearMoves();
 				}
 				this.SendEvent("turn", new { game = this, moves, placements, specialSpacesActivated }, true);
@@ -372,9 +369,7 @@ public class Game {
 		}
 	}
 
-	internal void SendPlayerReadyEvent(int playerIndex, bool isTimeout) {
-		this.SendEvent("playerReady", new { playerIndex, isTimeout }, false);
-	}
+	internal void SendPlayerReadyEvent(int playerIndex, bool isTimeout) => this.SendEvent("playerReady", new { playerIndex, isTimeout }, false);
 
 	internal void SendEvent<T>(string eventType, T data, bool includePlayerData) {
 		foreach (var session in Program.httpServer!.WebSocketServices.Hosts.First().Sessions.Sessions) {
@@ -388,22 +383,24 @@ public class Game {
 							break;
 						}
 					}
-					behaviour.SendInternal(JsonConvert.SerializeObject(new DTO.WebSocketPayloadWithPlayerData<T>(eventType, data, playerData)));
+					behaviour.SendInternal(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<T>(eventType, data, playerData)));
 				} else {
-					behaviour.SendInternal(JsonConvert.SerializeObject(new DTO.WebSocketPayload<T>(eventType, data)));
+					behaviour.SendInternal(JsonUtils.Serialise(new DTO.WebSocketPayload<T>(eventType, data)));
 				}
 			}
 		}
 	}
 
 	public void WriteReplayData(Stream stream) {
-		const int VERSION = 2;
+		const int VERSION = 3;
 
 		if (this.State < GameState.SetEnded)
 			throw new InvalidOperationException("Can't save a replay until the set has ended.");
 
 		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 		writer.Write((byte) VERSION);
+
+		// Players
 		writer.Write((byte) (this.Players.Count | (this.GoalWinCount ?? 0) << 4));
 		foreach (var player in this.Players) {
 			writer.Write((byte) player.Colour.R);
@@ -420,14 +417,29 @@ public class Game {
 			writer.Write((byte) (nameBytes.Length | (player.UIBaseColourIsSpecialColour ? 0x80 : 0)));
 			writer.Write(nameBytes);
 		}
+
+		// Deck cache
+		writer.Write7BitEncodedInt(this.deckCache.Count);
+		foreach (var deck in this.deckCache) {
+			writer.Write(deck.Name);
+			writer.Write((byte) deck.Sleeves);
+			foreach (var card in deck.Cards)
+				writer.Write((byte) card.Number);
+
+			int upgradesPacked = 0;
+			for (var i = 0; i < 15; i++)
+				upgradesPacked |= deck.Upgrades[i] << (i * 2);
+			writer.Write(upgradesPacked);
+		}
+
+		// Games
 		for (int i = 0; i < this.Players[0].Games.Count; i++) {
 			var stageNumber = Enumerable.Range(0, StageDatabase.Stages.Count).First(j => this.setStages[i] == StageDatabase.Stages[j].Name);
 			writer.Write((byte) stageNumber);
 
 			foreach (var player in this.Players) {
 				var gameData = player.Games[i];
-				foreach (var card in gameData.Deck!)
-					writer.Write((byte) card.Number);
+				writer.Write7BitEncodedInt(this.deckCache.IndexOf(gameData.Deck!));
 				for (int j = 0; j < 4; j += 2)
 					writer.Write((byte) (gameData.initialDrawOrder![j] | gameData.initialDrawOrder[j + 1] << 4));
 				for (int j = 0; j < 15; j += 2)

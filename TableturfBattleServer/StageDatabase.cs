@@ -127,6 +127,6 @@ internal class StageDatabase {
 
 	static StageDatabase() {
 		Stages = Array.AsReadOnly(stages);
-		JSON = JsonConvert.SerializeObject(stages);
+		JSON = JsonUtils.Serialise(stages);
 	}
 }

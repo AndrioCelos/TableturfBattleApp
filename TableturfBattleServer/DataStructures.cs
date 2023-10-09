@@ -14,7 +14,6 @@ internal class WebSocketPayload<T> {
 	}
 }
 internal class WebSocketPayloadWithPlayerData<T> : WebSocketPayload<T> {
-	[JsonProperty("playerData")]
 	public PlayerData? PlayerData;
 
 	public WebSocketPayloadWithPlayerData(string eventName, T payload, PlayerData? playerData) : base(eventName, payload)
@@ -22,18 +21,13 @@ internal class WebSocketPayloadWithPlayerData<T> : WebSocketPayload<T> {
 }
 
 public class PlayerData {
-	[JsonProperty("playerIndex")]
 	public int PlayerIndex;
-	[JsonProperty("hand")]
 	public Card[]? Hand;
-	[JsonProperty("deck")]
-	public Card[]? Deck;
-	[JsonProperty("move")]
+	public Deck? Deck;
 	public Move? Move;
-	[JsonProperty("cardsUsed")]
 	public List<int>? CardsUsed;
 
-	public PlayerData(int playerIndex, Card[]? hand, Card[]? deck, Move? move, List<int>? cardsUsed) {
+	public PlayerData(int playerIndex, Card[]? hand, Deck? deck, Move? move, List<int>? cardsUsed) {
 		this.PlayerIndex = playerIndex;
 		this.Hand = hand;
 		this.Deck = deck;

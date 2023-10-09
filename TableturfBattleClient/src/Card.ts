@@ -2,6 +2,13 @@ class Card {
 	number: number;
 	altNumber: number | null;
 	name: string;
+	line1: string | null;
+	line2: string | null;
+	artFileName: string | null;
+	imageUrl?: string;
+	textScale: number;
+	inkColour1: Colour;
+	inkColour2: Colour;
 	rarity: Rarity;
 	specialCost: number;
 	grid: readonly (readonly Space[])[];
@@ -12,10 +19,19 @@ class Card {
 	private maxX: number;
 	private maxY: number;
 
-	constructor(number: number, altNumber: number | null, name: string, rarity: Rarity, specialCost: number, grid: Space[][]) {
+	private static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
+	private static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
+
+	constructor(number: number, altNumber: number | null, name: string, line1: string | null, line2: string | null, artFileName: string | null, textScale: number, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
 		this.number = number;
 		this.altNumber = altNumber;
 		this.name = name;
+		this.line1 = line1;
+		this.line2 = line2;
+		this.artFileName = artFileName;
+		this.textScale = textScale;
+		this.inkColour1 = inkColour1;
+		this.inkColour2 = inkColour2;
 		this.rarity = rarity;
 		this.specialCost = specialCost;
 		this.grid = grid;
@@ -40,7 +56,9 @@ class Card {
 	}
 
 	static fromJson(obj: any) {
-		return new Card(obj.number, obj.altNumber ?? null, obj.name, obj.rarity, obj.specialCost, obj.grid);
+		return cardDatabase.cards && cardDatabase.isValidCardNumber(obj.number)
+			? cardDatabase.get(obj.number)
+			: new Card(obj.number, obj.altNumber ?? null, obj.name, obj.line1 ?? null, obj.line2 ?? null, obj.artFileName ?? null, obj.textScale ?? 1, obj.inkColour1 ?? this.DEFAULT_INK_COLOUR_1, obj.inkColour2 ?? this.DEFAULT_INK_COLOUR_2, obj.rarity, obj.specialCost, obj.grid);
 	}
 
 	get isUpcoming() { return this.number < 0; }

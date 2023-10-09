@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json;
-
-namespace TableturfBattleServer;
+﻿namespace TableturfBattleServer;
 public struct Point {
-	[JsonProperty("x")]
 	public int X;
-	[JsonProperty("y")]
 	public int Y;
 
 	public Point(int x, int y) {

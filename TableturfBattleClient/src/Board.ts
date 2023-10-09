@@ -196,7 +196,7 @@ class Board {
 				if (space == Space.Wall || space == Space.OutOfBounds)
 					return 'It cannot be over a wall.';
 				if (space >= Space.SpecialInactive1)
-					return `It cannot be over${' <div class="playHintSpecial" aria-label="Special space">&nbsp;</div>'.repeat(Math.max(currentGame?.players?.length ?? 0, 2))}.`;
+					return `It cannot be over${' <div class="playHintSpecial" aria-label="Special space">&nbsp;</div>'.repeat(Math.max(currentGame?.game.players.length ?? 0, 2))}.`;
 				if (space != Space.Empty && !isSpecialAttack)
 					return 'It cannot be over inked spaces.';
 				if (!isAnchored) {

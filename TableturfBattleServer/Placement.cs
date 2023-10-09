@@ -2,9 +2,8 @@
 
 namespace TableturfBattleServer;
 public class Placement {
-	[JsonProperty("players")]
 	public List<int> Players { get; } = new();
-	[JsonProperty("spacesAffected"), JsonConverter(typeof(SpacesAffectedDictionaryConverter))]
+	[JsonConverter(typeof(SpacesAffectedDictionaryConverter))]
 	public Dictionary<Point, Space> SpacesAffected { get; } = new();
 
 	internal class SpacesAffectedDictionaryConverter : JsonConverter<Dictionary<Point, Space>> {

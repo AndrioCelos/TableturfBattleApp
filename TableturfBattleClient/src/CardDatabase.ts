@@ -28,7 +28,7 @@ const cardDatabase = {
 			const cardListRequest = new XMLHttpRequest();
 			cardListRequest.open('GET', `${config.apiBaseUrl}/cards`);
 			cardListRequest.addEventListener('load', e => {
-				const cards = [ ];
+				const cards: Card[] = [ ];
 				if (cardListRequest.status == 200) {
 					const s = cardListRequest.responseText;
 					const response = JSON.parse(s) as object[];
@@ -40,7 +40,38 @@ const cardDatabase = {
 						else if (card.altNumber != null && card.altNumber < 0) cardDatabase._byAltNumber[-card.altNumber] = card;
 					}
 					cardDatabase.cards = cards;
-					resolve(cards);
+
+					if (window.location.protocol == 'file:') {
+						// If debugging locally, just read the files from the assets directory.
+						for (const card of cardDatabase.cards!) {
+							card.imageUrl = `assets/external/card/${card.artFileName}.webp`
+						}
+						resolve(cards);
+						return;
+					}
+					// Otherwise, download and extract card images from a .tar package.
+					const imagesRequest = new XMLHttpRequest();
+					imagesRequest.responseType = 'arraybuffer';
+					imagesRequest.open('GET', 'assets/external/card.tar');
+					imagesRequest.addEventListener('load', () => {
+						if (imagesRequest.status == 200 && imagesRequest.response) {
+							const buffer = imagesRequest.response as ArrayBuffer;
+							untar(buffer).then(files => {
+								for (const tarFile of files) {
+									const card = cardDatabase.cards!.find(c => tarFile.name == `${c.artFileName}.webp`);
+									if (!card) continue;
+									card.imageUrl = tarFile.getBlobUrl();
+								}
+								resolve(cards);
+							});
+						} else {
+							reject(new Error(`Error downloading card images: response was ${imagesRequest.status}`));
+						}
+					});
+					imagesRequest.addEventListener('error', () => {
+						reject(new Error('Error downloading card images: no further information.'))
+					});
+					imagesRequest.send();
 				} else {
 					reject(new Error(`Error downloading card database: response was ${cardListRequest.status}`));
 				}

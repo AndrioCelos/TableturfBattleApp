@@ -153,7 +153,7 @@ function initTest(stage: Stage) {
 	clear();
 	testMode = true;
 	gamePage.classList.add('deckTest');
-	currentGame = { id: 'test', state: GameState.Ongoing, maxPlayers: 2, players: [ ], webSocket: null, turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] } };
+	currentGame = { id: 'test', game: { state: GameState.Ongoing, maxPlayers: 2, players: [ ], turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null }, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ] }, webSocket: null };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
 	board.startSpaces = startSpaces;
@@ -163,6 +163,8 @@ function initTest(stage: Stage) {
 
 	for (var o of playerBars)
 		o.element.hidden = true;
+	for (var el of playContainers)
+		el.hidden = true;
 	testPlacements.splice(0);
 	testUndoButton.enabled = false;
 	clearChildren(testPlacementList);
@@ -184,79 +186,60 @@ function initTest(stage: Stage) {
 }
 
 replayNextButton.buttonElement.addEventListener('click', _ => {
-	if (currentGame == null || currentReplay == null || currentGame.state == GameState.GameEnded || currentGame.state == GameState.SetEnded)
+	if (currentGame == null || currentReplay == null || currentGame.game.state == GameState.GameEnded || currentGame.game.state == GameState.SetEnded)
 		return;
 
 	if (replayAnimationAbortController) {
 		replayUpdateHand();
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
-		turnNumberLabel.turnNumber = currentGame.turnNumber;
+		turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 		board.refresh();
 		const scores = board.getScores();
-		for (let i = 0; i < currentGame.players.length; i++) {
+		for (let i = 0; i < currentGame.game.players.length; i++) {
 			updateStats(i, scores);
 		}
 	}
 
 	clearPlayContainers();
-	if (currentGame.turnNumber == 0) {
+	if (currentGame.game.turnNumber == 0) {
 		// Show redraw decisions.
 		replayPreviousButton.enabled = true;
-		currentGame.state = GameState.Ongoing;
-		currentGame.turnNumber++;
-		turnNumberLabel.turnNumber = currentGame.turnNumber;
+		currentGame.game.state = GameState.Ongoing;
+		currentGame.game.turnNumber++;
+		turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 		replayUpdateHand();
-	} else if (currentGame.turnNumber > 12) {
-		currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
+	} else if (currentGame.game.turnNumber > 12) {
+		currentGame.game.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
 		gameButtonsContainer.hidden = true;
 		gamePage.classList.add('gameEnded');
 		showResult();
 	} else {
-		const moves = currentReplay.turns[currentGame.turnNumber - 1];
+		const moves = currentReplay.turns[currentGame.game.turnNumber - 1];
 		const result = board.makePlacements(moves);
 		currentReplay.placements.push(result);
 
-		let anySpecialAttacks = false;
-		// Show the cards that were played.
 		const entry = handButtons.entries.find(b => b.value.number == moves[currentReplay!.watchingPlayer].card.number);
 		if (entry) entry.button.checked = true;
-		for (let i = 0; i < currentGame.players.length; i++) {
-			const player = currentGame.players[i];
-
-			const move = moves[i];
-			const button = new CardButton(move.card);
-			button.buttonElement.disabled = true;
-			if ((move as PlayMove).isSpecialAttack) {
-				anySpecialAttacks = true;
-				player.specialPoints -= (move as PlayMove).card.specialCost;
-				button.buttonElement.classList.add('specialAttack');
-			} else if (move.isPass) {
-				player.passes++;
-				player.specialPoints++;
-				const el = document.createElement('div');
-				el.className = 'passLabel';
-				el.innerText = 'Pass';
-				button.buttonElement.appendChild(el);
-			}
-			playContainers[i].append(button.buttonElement);
-		}
 
 		for (const p of result.specialSpacesActivated) {
 			const space = board.grid[p.x][p.y];
-			const player2 = currentGame.players[space & 3];
+			const player2 = currentGame.game.players[space & 3];
 			player2.specialPoints++;
 			player2.totalSpecialPoints++;
 		}
-		currentGame.turnNumber++;
+		currentGame.game.turnNumber++;
+
+		for (let i = 0; i < currentGame.game.players.length; i++)
+			showReady(i);
 
 		replayAnimationAbortController = new AbortController();
 		(async () => {
-			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.turnNumber, players: currentGame.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, anySpecialAttacks, replayAnimationAbortController.signal);
-			turnNumberLabel.turnNumber = currentGame.turnNumber;
+			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.game.turnNumber, players: currentGame.game.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, replayAnimationAbortController.signal);
+			turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 			clearPlayContainers();
-			if (currentGame.turnNumber > 12) {
-				currentGame.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
+			if (currentGame.game.turnNumber > 12) {
+				currentGame.game.state = currentReplay.gameNumber + 1 >= currentReplay.games.length ? GameState.SetEnded : GameState.GameEnded;
 				gameButtonsContainer.hidden = true;
 				gamePage.classList.add('gameEnded');
 				showResult();
@@ -267,52 +250,52 @@ replayNextButton.buttonElement.addEventListener('click', _ => {
 });
 
 replayPreviousButton.buttonElement.addEventListener('click', _ => {
-	if (currentGame == null || currentReplay == null || currentGame.turnNumber == 0) return;
+	if (currentGame == null || currentReplay == null || currentGame.game.turnNumber == 0) return;
 
 	replayAnimationAbortController?.abort();
 	replayAnimationAbortController = null;
 
-	if (currentGame.state == GameState.GameEnded || currentGame.state == GameState.SetEnded) {
-		for (let i = 0; i < currentGame.players.length; i++) {
+	if (currentGame.game.state == GameState.GameEnded || currentGame.game.state == GameState.SetEnded) {
+		for (let i = 0; i < currentGame.game.players.length; i++) {
 			if (currentReplay.games[currentReplay.gameNumber].playerData[i].won)
-				currentGame.players[i].gamesWon--;
-			playerBars[i].winCounter.wins = currentGame.players[i].gamesWon;
+				currentGame.game.players[i].gamesWon--;
+			playerBars[i].winCounter.wins = currentGame.game.players[i].gamesWon;
 		}
 	}
 
-	if (currentGame.turnNumber > 1) {
+	if (currentGame.game.turnNumber > 1) {
 		const result = currentReplay.placements.pop();
 		if (!result) return;
 
 		clearPlayContainers();
-		for (let i = 0; i < currentGame.players.length; i++) {
+		for (let i = 0; i < currentGame.game.players.length; i++) {
 			const el = playerBars[i].resultElement;
 			el.innerText = '';
 		}
 
 		undoTurn(result);
 	}
-	currentGame.turnNumber--;
+	currentGame.game.turnNumber--;
 	replayNextButton.enabled = true;
 	gamePage.classList.remove('gameEnded');
 	handContainer.hidden = false;
 	gameButtonsContainer.hidden = false;
 
-	if (currentGame.turnNumber > 0) {
-		currentGame.state = GameState.Ongoing;
-		turnNumberLabel.turnNumber = currentGame.turnNumber;
+	if (currentGame.game.turnNumber > 0) {
+		currentGame.game.state = GameState.Ongoing;
+		turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 		const scores = board.getScores();
-		for (let i = 0; i < currentGame.players.length; i++) {
-			const move = currentReplay.turns[currentGame.turnNumber - 1][i];
+		for (let i = 0; i < currentGame.game.players.length; i++) {
+			const move = currentReplay.turns[currentGame.game.turnNumber - 1][i];
 			if (move.isPass) {
-				currentGame.players[i].passes--;
-				currentGame.players[i].specialPoints--;
+				currentGame.game.players[i].passes--;
+				currentGame.game.players[i].specialPoints--;
 			} else if ((move as PlayMove).isSpecialAttack)
-				currentGame.players[i].specialPoints += (move as PlayMove).card.specialCost;
+				currentGame.game.players[i].specialPoints += (move as PlayMove).card.specialCost;
 			updateStats(i, scores);
 		}
 	} else {
-		currentGame.state = GameState.Redraw;
+		currentGame.game.state = GameState.Redraw;
 		replayPreviousButton.enabled = false;
 		turnNumberLabel.turnNumber = null;
 	}
@@ -324,7 +307,7 @@ replayPreviousButton.buttonElement.addEventListener('click', _ => {
 function undoTurn(turn: PlacementResults) {
 	for (const p of turn.specialSpacesActivated) {
 		const space = board.grid[p.x][p.y];
-		const player2 = currentGame!.players[space & 3];
+		const player2 = currentGame!.game.players[space & 3];
 		if (player2) {
 			player2.specialPoints--;
 			player2.totalSpecialPoints--;
@@ -352,23 +335,23 @@ function replaySwitchGame(gameNumber: number) {
 	replayAnimationAbortController?.abort();
 	replayAnimationAbortController = null;
 
-	for (let i = 0; i < currentGame.players.length; i++) {
-		currentGame.players[i].specialPoints = 0;
-		currentGame.players[i].totalSpecialPoints = 0;
-		currentGame.players[i].passes = 0;
-		currentGame.players[i].gamesWon = 0;
+	for (let i = 0; i < currentGame.game.players.length; i++) {
+		currentGame.game.players[i].specialPoints = 0;
+		currentGame.game.players[i].totalSpecialPoints = 0;
+		currentGame.game.players[i].passes = 0;
+		currentGame.game.players[i].gamesWon = 0;
 		for (let j = 0; j < gameNumber; j++) {
 			if (currentReplay.games[j].playerData[i].won)
-				currentGame.players[i].gamesWon++;
+				currentGame.game.players[i].gamesWon++;
 		}
-		playerBars[i].winCounter.wins = currentGame.players[i].gamesWon;
+		playerBars[i].winCounter.wins = currentGame.game.players[i].gamesWon;
 	}
 
 	currentReplay.gameNumber = gameNumber;
 	currentReplay.turns = currentReplay.games[gameNumber].turns;
 	currentReplay.placements.splice(0);
-	currentGame.state = GameState.Ongoing;
-	currentGame.turnNumber = 0;
+	currentGame.game.state = GameState.Ongoing;
+	currentGame.game.turnNumber = 0;
 	clearPlayContainers();
 	gamePage.classList.remove('gameEnded');
 	replayPreviousGameButton.enabled = gameNumber > 0;
@@ -381,8 +364,8 @@ function replaySwitchGame(gameNumber: number) {
 
 	const stage = currentReplay.games[gameNumber].stage;
 	board.resize(stage.copyGrid());
-	const startSpaces = stage.getStartSpaces(currentGame.players.length);
-	for (let i = 0; i < currentGame.players.length; i++) {
+	const startSpaces = stage.getStartSpaces(currentGame.game.players.length);
+	for (let i = 0; i < currentGame.game.players.length; i++) {
 		board.grid[startSpaces[i].x][startSpaces[i].y] = Space.SpecialInactive1 | i;
 		playerBars[i].points = 1;
 		playerBars[i].pointsDelta = null;
@@ -400,18 +383,18 @@ flipButton.addEventListener('click', () => {
 		replayAnimationAbortController.abort();
 		replayAnimationAbortController = null;
 		clearPlayContainers();
-		turnNumberLabel.turnNumber = currentGame.turnNumber;
+		turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 		const scores = board.getScores();
-		for (let i = 0; i < currentGame.players.length; i++) {
+		for (let i = 0; i < currentGame.game.players.length; i++) {
 			updateStats(i, scores);
 		}
 	}
 	if (currentReplay) {
 		currentReplay.watchingPlayer++;
-		if (currentReplay.watchingPlayer >= currentGame.players.length)
+		if (currentReplay.watchingPlayer >= currentGame.game.players.length)
 		currentReplay.watchingPlayer = 0;
 		gamePage.dataset.myPlayerIndex = currentReplay.watchingPlayer.toString();
-		gamePage.dataset.uiBaseColourIsSpecialColour = currentGame.players[currentReplay.watchingPlayer].uiBaseColourIsSpecialColour?.toString();
+		gamePage.dataset.uiBaseColourIsSpecialColour = currentGame.game.players[currentReplay.watchingPlayer].uiBaseColourIsSpecialColour?.toString();
 		board.flip = currentReplay.watchingPlayer % 2 != 0;
 		clearShowDeck();
 		replayUpdateHand();
@@ -510,7 +493,7 @@ function loadPlayers(players: Player[]) {
 	const scores = board.getScores();
 	for (let i = 0; i < players.length; i++) {
 		const player = players[i];
-		currentGame!.players[i] = players[i];
+		currentGame!.game.players[i] = players[i];
 		playerBars[i].name = player.name;
 		playerBars[i].winCounter.wins = players[i].gamesWon;
 		updateStats(i, scores);
@@ -522,6 +505,7 @@ function loadPlayers(players: Player[]) {
 	}
 	for (let i = 0; i < playerBars.length; i++) {
 		playerBars[i].visible = i < players.length;
+		playContainers[i].hidden = i >= players.length;
 	}
 }
 
@@ -530,15 +514,15 @@ function updateStats(playerIndex: number, scores: number[]) {
 	playerBars[playerIndex].points = scores[playerIndex];
 	playerBars[playerIndex].pointsDelta = 0;
 	playerBars[playerIndex].pointsTo = 0;
-	playerBars[playerIndex].specialPoints = currentGame.players[playerIndex].specialPoints;
-	playerBars[playerIndex].statSpecialPointsElement.innerText = currentGame.players[playerIndex].totalSpecialPoints.toString();
-	playerBars[playerIndex].statPassesElement.innerText = currentGame.players[playerIndex].passes.toString();
+	playerBars[playerIndex].specialPoints = currentGame.game.players[playerIndex].specialPoints;
+	playerBars[playerIndex].statSpecialPointsElement.innerText = currentGame.game.players[playerIndex].totalSpecialPoints.toString();
+	playerBars[playerIndex].statPassesElement.innerText = currentGame.game.players[playerIndex].passes.toString();
 }
 
 /** Shows the waiting indication for the specified player. */
 function showWaiting(playerIndex: number) {
 	const el = document.createElement('div');
-	el.className = 'cardBack waiting';
+	el.className = 'waiting';
 	playContainers[playerIndex].appendChild(el);
 }
 
@@ -547,7 +531,7 @@ function showReady(playerIndex: number) {
 	clearChildren(playContainers[playerIndex]);
 	const el = document.createElement('div');
 	el.className = 'cardBack';
-	el.innerText = 'Ready';
+	el.dataset.sleeves = (currentGame?.game.players[playerIndex].sleeves ?? 0).toString();
 	playContainers[playerIndex].appendChild(el);
 }
 
@@ -566,7 +550,7 @@ function resetPlayControls() {
 	if (canPlay && currentGame?.me?.hand != null) {
 		for (let i = 0; i < 4; i++) {
 			canPlayCard[i] = board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], false);
-			canPlayCardAsSpecialAttack[i] = currentGame.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
+			canPlayCardAsSpecialAttack[i] = currentGame.game.players[currentGame.me.playerIndex].specialPoints >= currentGame.me.hand[i].specialCost
 				&& board.canPlayCard(currentGame.me.playerIndex, currentGame.me.hand[i], true);
 			handButtons.entries[i].button.enabled = canPlayCard[i];
 		}
@@ -602,7 +586,9 @@ async function playInkAnimations(data: {
 	moves: Move[],
 	placements: Placement[],
 	specialSpacesActivated: Point[]
-}, anySpecialAttacks: boolean, abortSignal?: AbortSignal) {
+}, abortSignal?: AbortSignal) {
+	if (!currentGame) return;
+
 	const inkPlaced = new Set<number>();
 	const placements = data.placements;
 	board.clearHighlight();
@@ -611,6 +597,46 @@ async function playInkAnimations(data: {
 	board.specialAttack = false;
 	canPlay = false;
 	timeLabel.faded = true;
+
+	// Show the cards that were played.
+	let anySpecialAttacks = false;
+	for (let i = 0; i < currentGame.game.players.length; i++) {
+		const player = currentGame.game.players[i];
+		const move = data.moves[i];
+		if ((move as PlayMove).isSpecialAttack)
+			anySpecialAttacks = true;
+
+		function addCardDisplay() {
+			clearChildren(playContainers[i]);
+			const display = new CardDisplay(move.card, 1);
+			playContainers[i].append(display.element);
+			if ((move as PlayMove).isSpecialAttack) {
+				if (currentReplay) player.specialPoints -= (move as PlayMove).card.specialCost;
+				const el = document.createElement('div');
+				el.className = 'specialAttackLabel';
+				el.innerText = 'Special Attack!';
+				playContainers[i].appendChild(el);
+				display.element.classList.add('specialAttack');
+			} else if (move.isPass) {
+				if (currentReplay) {
+					player.passes++;
+					player.specialPoints++;
+				}
+				const el = document.createElement('div');
+				el.className = 'passLabel';
+				el.innerText = 'Pass';
+				playContainers[i].appendChild(el);
+			}
+		}
+
+		const back = playContainers[i].firstElementChild as HTMLElement;
+		if (back) {
+			back.style.setProperty('animation', '0.1s ease-in forwards flipCardOut');
+			back.addEventListener('animationend', addCardDisplay);
+		} else
+			addCardDisplay();
+	}
+
 	await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
 	for (let i = 0; i < data.game.players.length; i++) {
 		if ((data.moves[i] as PlayMove).isSpecialAttack)
@@ -661,7 +687,7 @@ function showResult() {
 	turnNumberLabel.turnNumber = null;
 
 	let winners = [ 0 ]; let maxPoints = playerBars[0].points;
-	for (let i = 1; i < currentGame.players.length; i++) {
+	for (let i = 1; i < currentGame.game.players.length; i++) {
 		if (playerBars[i].points > maxPoints) {
 			winners.splice(0);
 			winners.push(i);
@@ -670,7 +696,7 @@ function showResult() {
 			winners.push(i);
 	}
 
-	for (let i = 0; i < currentGame.players.length; i++) {
+	for (let i = 0; i < currentGame.game.players.length; i++) {
 		const el = playerBars[i].resultElement;
 		if (winners.includes(i)) {
 			if (winners.length == 1) {
@@ -678,8 +704,10 @@ function showResult() {
 				el.classList.remove('lose');
 				el.classList.remove('draw');
 				el.innerText = 'Victory';
-				if (currentReplay) currentGame.players[i].gamesWon++;
-				playerBars[i].winCounter.wins++;
+				if (currentReplay) {
+					currentGame.game.players[i].gamesWon++;
+					playerBars[i].winCounter.wins++;
+				}
 			} else {
 				el.classList.remove('win');
 				el.classList.remove('lose');
@@ -704,9 +732,9 @@ function showResult() {
 		replayNextButton.buttonElement.hidden = true;
 		replayNextGameButton.buttonElement.hidden = true;
 		flipButton.hidden = true;
-		if (currentGame.state == GameState.SetEnded) {
+		if (currentGame.game.state == GameState.SetEnded) {
 			leaveButton.hidden = false;
-			nextGameButton.buttonElement.hidden = currentGame.goalWinCount != null;
+			nextGameButton.buttonElement.hidden = currentGame.game.goalWinCount != null;
 			shareReplayLinkButton.hidden = false;
 			canShareReplay = navigator.canShare && navigator.canShare({ url: window.location.href, title: 'Tableturf Battle Replay' });
 			shareReplayLinkButton.innerText = canShareReplay ? 'Share replay link' : 'Copy replay link';
@@ -714,7 +742,7 @@ function showResult() {
 			leaveButton.hidden = currentGame.me != null;
 			nextGameButton.buttonElement.hidden = currentGame.me == null;
 		}
-		nextGameButton.enabled = currentGame.me != null && !currentGame.players[currentGame.me.playerIndex].isReady;
+		nextGameButton.enabled = currentGame.me != null && !currentGame.game.players[currentGame.me.playerIndex].isReady;
 		nextGameButton.buttonElement.innerHTML = nextGameButton.enabled ? 'Next game' : '<div class="loadingSpinner"></div> Waiting for other player';
 	}
 }
@@ -726,9 +754,9 @@ function clearShowDeck() {
 	showDeckButtons.splice(0);
 }
 
-function populateShowDeck(deck: Card[]) {
+function populateShowDeck(deck: Deck) {
 	if (showDeckButtons.length == 0) {
-		for (const card of deck) {
+		for (const card of deck.cards) {
 			const button = new CardButton(card);
 			button.buttonElement.disabled = true;
 			showDeckButtons.push(button);
@@ -764,7 +792,7 @@ function updateHandAndDeck(playerData: PlayerData) {
 		handButtons.add(button, card);
 		button.buttonElement.addEventListener('click', e => {
 			if (!button.enabled) {
-				if (specialButton.checked && currentGame!.players[currentGame!.me!.playerIndex].specialPoints < card.specialCost)
+				if (specialButton.checked && currentGame!.game.players[currentGame!.me!.playerIndex].specialPoints < card.specialCost)
 					cardHint.showError('Not enough special points.');
 				else if (!(specialButton.checked ? canPlayCardAsSpecialAttack : canPlayCard)[i])
 					cardHint.showError('No place to play this card.');
@@ -832,13 +860,13 @@ function replayUpdateHand() {
 		b.buttonElement.parentElement!.className = '';
 
 	let indices;
-	if (currentGame.turnNumber == 0) {
+	if (currentGame.game.turnNumber == 0) {
 		indices = playerData.initialDrawOrder;
 	} else {
 		indices = playerData.drawOrder.slice(0, 4);
-		for (let i = 0; i < currentGame.turnNumber - 1; i++) {
+		for (let i = 0; i < currentGame.game.turnNumber - 1; i++) {
 			const move = currentReplay.turns[i][currentReplay.watchingPlayer];
-			let j = indices.findIndex(k => playerData.deck[k].number == move.card.number);
+			let j = indices.findIndex(k => playerData.deck.cards[k].number == move.card.number);
 			if (j < 0) j = indices.findIndex(k => k < 0 || k >= 15);
 			if (j >= 0) {
 				showDeckButtons[indices[j]].buttonElement.parentElement!.className = 'used';
@@ -856,7 +884,7 @@ function replayUpdateHand() {
 
 	for (let i = 0; i < 4; i++) {
 		if (indices[i] >= 15) continue;  // Accounts for an old bug in the server that corrupted the initialDrawOrder replay fields.
-		const card = playerData.deck[indices[i]];
+		const card = playerData.deck.cards[indices[i]];
 		const button = new CardButton(card);
 		button.buttonElement.disabled = true;
 		handButtons.add(button, card);
@@ -906,7 +934,7 @@ passButton.buttonElement.addEventListener('click', passButton_click);
 
 function specialButton_click(e: Event) {
 	if (!specialButton.enabled) {
-		if (currentGame!.me!.hand!.every(c => currentGame!.players[currentGame!.me!.playerIndex].specialPoints < c.specialCost))
+		if (currentGame!.me!.hand!.every(c => currentGame!.game.players[currentGame!.me!.playerIndex].specialPoints < c.specialCost))
 			cardHint.showError('Not enough special points.');
 		else if (!canPlayCardAsSpecialAttack.includes(true))
 			cardHint.showError('No place to play a special attack.');
@@ -1041,7 +1069,7 @@ board.onhighlightchange = dScores => {
 
 timeLabel.ontimeout = () => {
 	if (currentGame == null || !canPlay) return;
-	if (currentGame.turnNumber == 0) {
+	if (currentGame.game.turnNumber == 0) {
 		let req = new XMLHttpRequest();
 		req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/redraw`);
 		req.addEventListener('error', () => communicationError());
@@ -1263,15 +1291,15 @@ function updateRGB(playerIndex: number, colourIndex: number) {
 	setColour(playerIndex, colourIndex, rgb);
 }
 function setColour(playerIndex: number, colourIndex: number, colour: Colour) {
-	if (!currentGame || playerIndex >= currentGame.players.length) return;
+	if (!currentGame || playerIndex >= currentGame.game.players.length) return;
 	if (colourIndex == 0) {
-		currentGame.players[playerIndex].colour = colour;
+		currentGame.game.players[playerIndex].colour = colour;
 		document.body.style.setProperty(`--primary-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	} else if (colourIndex == 1) {
-		currentGame.players[playerIndex].specialColour = colour;
+		currentGame.game.players[playerIndex].specialColour = colour;
 		document.body.style.setProperty(`--special-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	} else {
-		currentGame.players[playerIndex].specialAccentColour = colour;
+		currentGame.game.players[playerIndex].specialAccentColour = colour;
 		document.body.style.setProperty(`--special-accent-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	}
 }

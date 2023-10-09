@@ -6,9 +6,7 @@ namespace TableturfBattleServer;
 public struct Error {
 	[JsonIgnore]
 	public HttpStatusCode HttpStatusCode { get; }
-	[JsonProperty("code")]
 	public string Code { get; }
-	[JsonProperty("description")]
 	public string Description { get; }
 
 	public Error(HttpStatusCode httpStatusCode, string code, string description) {

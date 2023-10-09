@@ -1,11 +1,15 @@
-class Deck {
+class SavedDeck {
 	name: string;
+	sleeves: number;
 	cards: number[];
-	isReadOnly: boolean;
+	upgrades: number[];
+	isReadOnly?: boolean;
 
-	constructor(name: string, cards: number[], isReadOnly: boolean) {
+	constructor(name: string, sleeves: number, cards: number[], upgrades: number[], isReadOnly: boolean) {
 		this.name = name;
+		this.sleeves = sleeves;
 		this.cards = cards;
+		this.upgrades = upgrades;
 		this.isReadOnly = isReadOnly;
 	}
 
@@ -17,5 +21,19 @@ class Deck {
 			if (this.cards.indexOf(this.cards[i], i + 1) >= 0) return false;  // Duplicate cards
 		}
 		return true;
+	}
+}
+
+class Deck {
+	name: string;
+	sleeves: number;
+	cards: Card[];
+	upgrades: number[];
+
+	constructor(name: string, sleeves: number, cards: Card[], upgrades: number[]) {
+		this.name = name;
+		this.sleeves = sleeves;
+		this.cards = cards;
+		this.upgrades = upgrades;
 	}
 }

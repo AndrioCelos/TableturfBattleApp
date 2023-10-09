@@ -8,7 +8,7 @@ public static class CardDatabase {
 	private const Space S = Space.SpecialInactive1;
 
 	private static readonly Card[] cards = new Card[] {
-		new(  1, "Hero Shot", Rarity.Fresh, new Space[,] {
+		new(  1, "Hero Shot", Rarity.Fresh, 1f, "HeroShooter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -18,7 +18,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  2, "Sploosh-o-matic", Rarity.Common, new Space[,] {
+		new(  2, "Sploosh-o-matic", Rarity.Common, 0.79f, "ShooterShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -28,7 +28,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  3, "Splattershot Jr.", Rarity.Common, new Space[,] {
+		new(  3, "Splattershot Jr.", Rarity.Common, 0.79f, "ShooterFirst00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -38,7 +38,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  4, "Splash-o-matic", Rarity.Common, new Space[,] {
+		new(  4, "Splash-o-matic", Rarity.Common, 0.85f, "ShooterPrecision00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -48,7 +48,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  5, "Aerospray MG", Rarity.Common, new Space[,] {
+		new(  5, "Aerospray MG", Rarity.Common, 0.9f, "ShooterBlaze00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -58,7 +58,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  6, "Splattershot", Rarity.Common, new Space[,] {
+		new(  6, "Splattershot", Rarity.Common, 0.99f, "ShooterNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -68,7 +68,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  7, ".52 Gal", Rarity.Common, new Space[,] {
+		new(  7, ".52 Gal", Rarity.Common, 1f, "ShooterGravity00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -78,7 +78,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  8, "N-ZAP '85", Rarity.Common, new Space[,] {
+		new(  8, "N-ZAP '85", Rarity.Common, 1f, "ShooterQuickMiddle00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -88,7 +88,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(  9, "Splattershot Pro", Rarity.Common, new Space[,] {
+		new(  9, "Splattershot\nPro", Rarity.Common, 0.99f, "ShooterExpert00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -98,7 +98,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 10, ".96 Gal", Rarity.Common, new Space[,] {
+		new( 10, ".96 Gal", Rarity.Common, 1f, "ShooterHeavy00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -108,7 +108,7 @@ public static class CardDatabase {
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 11, "Jet Squelcher", Rarity.Common, new Space[,] {
+		new( 11, "Jet Squelcher", Rarity.Common, 0.9f, "ShooterLong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, S, 0, I, 0, 0, 0 },
@@ -118,7 +118,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 12, "Luna Blaster", Rarity.Common, new Space[,] {
+		new( 12, "Luna Blaster", Rarity.Common, 1f, "BlasterShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -128,7 +128,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 13, "Blaster", Rarity.Common, new Space[,] {
+		new( 13, "Blaster", Rarity.Common, 1f, "BlasterMiddle00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -138,7 +138,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 14, "Range Blaster", Rarity.Common, new Space[,] {
+		new( 14, "Range Blaster", Rarity.Common, 0.9f, "BlasterLong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -148,7 +148,7 @@ public static class CardDatabase {
 			{ 0, 0, S, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 15, "Clash Blaster", Rarity.Common, new Space[,] {
+		new( 15, "Clash Blaster", Rarity.Common, 0.95f, "BlasterLightShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -158,7 +158,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 16, "Rapid Blaster", Rarity.Common, new Space[,] {
+		new( 16, "Rapid Blaster", Rarity.Common, 0.95f, "BlasterLight00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -168,7 +168,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 17, "Rapid Blaster Pro", Rarity.Common, new Space[,] {
+		new( 17, "Rapid Blaster\nPro", Rarity.Common, 0.95f, "BlasterLightLong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -178,7 +178,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 18, "L-3 Nozzlenose", Rarity.Common, new Space[,] {
+		new( 18, "L-3 Nozzlenose", Rarity.Common, 0.87f, "ShooterTripleQuick00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -188,7 +188,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 19, "H-3 Nozzlenose", Rarity.Common, new Space[,] {
+		new( 19, "H-3 Nozzlenose", Rarity.Common, 0.85f, "ShooterTripleMiddle00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -198,7 +198,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 20, "Squeezer", Rarity.Common, new Space[,] {
+		new( 20, "Squeezer", Rarity.Common, 1f, "ShooterFlash00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -208,7 +208,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 21, "Carbon Roller", Rarity.Common, new Space[,] {
+		new( 21, "Carbon Roller", Rarity.Common, 0.94f, "RollerCompact00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -218,7 +218,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 22, "Splat Roller", Rarity.Common, new Space[,] {
+		new( 22, "Splat Roller", Rarity.Common, 1f, "RollerNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -228,7 +228,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 23, "Dynamo Roller", Rarity.Common, new Space[,] {
+		new( 23, "Dynamo Roller", Rarity.Common, 0.88f, "RollerHeavy00", new Space[,] {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -238,7 +238,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 24, "Flingza Roller", Rarity.Common, new Space[,] {
+		new( 24, "Flingza Roller", Rarity.Common, 0.94f, "RollerHunter00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -248,7 +248,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 25, "Inkbrush", Rarity.Common, new Space[,] {
+		new( 25, "Inkbrush", Rarity.Common, 1f, "BrushMini00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -258,7 +258,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 26, "Octobrush", Rarity.Common, new Space[,] {
+		new( 26, "Octobrush", Rarity.Common, 1f, "BrushNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -268,7 +268,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 27, "Classic Squiffer", Rarity.Common, new Space[,] {
+		new( 27, "Classic Squiffer", Rarity.Common, 0.8f, "ChargerQuick00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, S, 0, 0, 0 },
@@ -278,7 +278,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 28, "Splat Charger", Rarity.Common, new Space[,] {
+		new( 28, "Splat Charger", Rarity.Common, 0.92f, "ChargerNormal00", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, S, 0, 0, 0 },
@@ -288,7 +288,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 29, "Splatterscope", Rarity.Common, new Space[,] {
+		new( 29, "Splatterscope", Rarity.Common, 0.9f, "ChargerNormalScope00", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -298,7 +298,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 30, "E-liter 4K", Rarity.Common, new Space[,] {
+		new( 30, "E-liter 4K", Rarity.Common, 1f, "ChargerLong00", new Space[,] {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -308,7 +308,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 31, "E-liter 4K Scope", Rarity.Common, new Space[,] {
+		new( 31, "E-liter 4K Scope", Rarity.Common, 0.8f, "ChargerLongScope00", new Space[,] {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -318,7 +318,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 32, "Bamboozler 14 Mk I", Rarity.Common, new Space[,] {
+		new( 32, "Bamboozler\n14 Mk I", Rarity.Common, 1f, "ChargerLight00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -328,7 +328,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 33, "Goo Tuber", Rarity.Common, new Space[,] {
+		new( 33, "Goo Tuber", Rarity.Common, 1f, "ChargerKeeper00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -338,7 +338,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 34, "Slosher", Rarity.Common, new Space[,] {
+		new( 34, "Slosher", Rarity.Common, 1f, "SlosherStrong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -348,7 +348,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 35, "Tri-Slosher", Rarity.Common, new Space[,] {
+		new( 35, "Tri-Slosher", Rarity.Common, 1f, "SlosherDiffusion00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -358,7 +358,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 36, "Sloshing Machine", Rarity.Common, new Space[,] {
+		new( 36, "Sloshing\nMachine", Rarity.Common, 1f, "SlosherLauncher00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -368,7 +368,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 37, "Bloblobber", Rarity.Common, new Space[,] {
+		new( 37, "Bloblobber", Rarity.Common, 1f, "SlosherBathtub00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, S, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -378,7 +378,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 38, "Explosher", Rarity.Common, new Space[,] {
+		new( 38, "Explosher", Rarity.Common, 1f, "SlosherWashtub00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -388,7 +388,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 39, "Mini Splatling", Rarity.Common, new Space[,] {
+		new( 39, "Mini Splatling", Rarity.Common, 0.91f, "SpinnerQuick00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -398,7 +398,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 40, "Heavy Splatling", Rarity.Common, new Space[,] {
+		new( 40, "Heavy Splatling", Rarity.Common, 0.8f, "SpinnerStandard00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
 			{ 0, I, I, I, I, 0, 0, 0 },
@@ -408,7 +408,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 41, "Hydra Splatling", Rarity.Common, new Space[,] {
+		new( 41, "Hydra Splatling", Rarity.Common, 0.82f, "SpinnerHyper00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
@@ -418,7 +418,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 42, "Ballpoint Splatling", Rarity.Common, new Space[,] {
+		new( 42, "Ballpoint\nSplatling", Rarity.Common, 1f, "SpinnerDownpour00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -428,7 +428,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 43, "Nautilus 47", Rarity.Common, new Space[,] {
+		new( 43, "Nautilus 47", Rarity.Common, 1f, "SpinnerSerein00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -438,7 +438,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 44, "Dapple Dualies", Rarity.Common, new Space[,] {
+		new( 44, "Dapple Dualies", Rarity.Common, 0.87f, "ManeuverShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -448,7 +448,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 45, "Splat Dualies", Rarity.Common, new Space[,] {
+		new( 45, "Splat Dualies", Rarity.Common, 0.97f, "ManeuverNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -458,7 +458,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 46, "Glooga Dualies", Rarity.Common, new Space[,] {
+		new( 46, "Glooga Dualies", Rarity.Common, 0.86f, "ManeuverGallon00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -468,7 +468,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 47, "Dualie Squelchers", Rarity.Common, new Space[,] {
+		new( 47, "Dualie\nSquelchers", Rarity.Common, 1f, "ManeuverDual00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, S, I, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -478,7 +478,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 48, "Dark Tetra Dualies", Rarity.Common, new Space[,] {
+		new( 48, "Dark Tetra\nDualies", Rarity.Common, 1f, "ManeuverStepper00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -488,7 +488,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 49, "Splat Brella", Rarity.Common, new Space[,] {
+		new( 49, "Splat Brella", Rarity.Common, 1f, "ShelterNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -498,7 +498,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 50, "Tenta Brella", Rarity.Common, new Space[,] {
+		new( 50, "Tenta Brella", Rarity.Common, 1f, "ShelterWide00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -508,7 +508,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 51, "Undercover Brella", Rarity.Common, new Space[,] {
+		new( 51, "Undercover\nBrella", Rarity.Common, 1f, "ShelterCompact00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -518,7 +518,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 52, "Tri-Stringer", Rarity.Common, new Space[,] {
+		new( 52, "Tri-Stringer", Rarity.Common, 1f, "StringerNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, I, I, I, 0, 0 },
 			{ 0, S, 0, I, 0, 0, 0, 0 },
@@ -528,7 +528,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 53, "REEF-LUX 450", Rarity.Common, new Space[,] {
+		new( 53, "REEF-LUX 450", Rarity.Common, 0.96f, "StringerShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, I, 0, 0 },
@@ -538,7 +538,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 54, "Splatana Stamper", Rarity.Common, new Space[,] {
+		new( 54, "Splatana\nStamper", Rarity.Common, 1f, "SaberNormal00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -548,7 +548,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 55, "Splatana Wiper", Rarity.Common, new Space[,] {
+		new( 55, "Splatana\nWiper", Rarity.Common, 1f, "SaberLight00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -558,7 +558,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 56, "Splat Bomb", Rarity.Common, new Space[,] {
+		new( 56, "Splat Bomb", Rarity.Common, 1f, "BombSplash", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -568,7 +568,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 57, "Suction Bomb", Rarity.Common, new Space[,] {
+		new( 57, "Suction Bomb", Rarity.Common, 0.94f, "BombSuction", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -578,7 +578,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 58, "Burst Bomb", Rarity.Common, new Space[,] {
+		new( 58, "Burst Bomb", Rarity.Common, 1f, "BombQuick", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -588,7 +588,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 59, "Sprinkler", Rarity.Common, new Space[,] {
+		new( 59, "Sprinkler", Rarity.Common, 1f, "Sprinkler", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -598,7 +598,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 60, "Splash Wall", Rarity.Common, new Space[,] {
+		new( 60, "Splash Wall", Rarity.Common, 1f, "Shield", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -608,7 +608,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 61, "Fizzy Bomb", Rarity.Common, new Space[,] {
+		new( 61, "Fizzy Bomb", Rarity.Common, 1f, "BombFizzy", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -618,7 +618,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 62, "Curling Bomb", Rarity.Common, new Space[,] {
+		new( 62, "Curling Bomb", Rarity.Common, 0.96f, "BombCurling", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -628,7 +628,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 63, "Autobomb", Rarity.Common, new Space[,] {
+		new( 63, "Autobomb", Rarity.Common, 1f, "BombRobot", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -638,7 +638,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 64, "Squid Beakon", Rarity.Common, new Space[,] {
+		new( 64, "Squid Beakon", Rarity.Common, 0.96f, "Beacon", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -648,7 +648,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 65, "Point Sensor", Rarity.Common, new Space[,] {
+		new( 65, "Point Sensor", Rarity.Common, 1f, "PointSensor", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -658,7 +658,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 66, "Ink Mine", Rarity.Common, new Space[,] {
+		new( 66, "Ink Mine", Rarity.Common, 1f, "Trap", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -668,7 +668,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 67, "Toxic Mist", Rarity.Common, new Space[,] {
+		new( 67, "Toxic Mist", Rarity.Common, 1f, "PoisonMist", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -678,7 +678,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 68, "Angle Shooter", Rarity.Common, new Space[,] {
+		new( 68, "Angle Shooter", Rarity.Common, 0.9f, "LineMarker", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -688,7 +688,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 69, "Torpedo", Rarity.Common, new Space[,] {
+		new( 69, "Torpedo", Rarity.Common, 1f, "BombTako", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -698,7 +698,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 70, "Trizooka", Rarity.Rare, 3, new Space[,] {
+		new( 70, "Trizooka", Rarity.Rare, 3, 1f, "SpUltraShot", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
@@ -708,7 +708,7 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 71, "Big Bubbler", Rarity.Rare, 3, new Space[,] {
+		new( 71, "Big Bubbler", Rarity.Rare, 3, 1f, "SpGreatBarrier", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
@@ -718,7 +718,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 72, "Zipcaster", Rarity.Rare, 3, new Space[,] {
+		new( 72, "Zipcaster", Rarity.Rare, 3, 1f, "SpSuperHook", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -728,7 +728,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 73, "Tenta Missiles", Rarity.Rare, 3, new Space[,] {
+		new( 73, "Tenta Missiles", Rarity.Rare, 3, 0.87f, "SpMultiMissile", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -738,7 +738,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 74, "Ink Storm", Rarity.Rare, 3, new Space[,] {
+		new( 74, "Ink Storm", Rarity.Rare, 3, 1f, "SpInkStorm", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -748,7 +748,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 75, "Booyah Bomb", Rarity.Rare, 3, new Space[,] {
+		new( 75, "Booyah Bomb", Rarity.Rare, 3, 0.98f, "SpNiceBall", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -758,7 +758,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 76, "Wave Breaker", Rarity.Rare, 3, new Space[,] {
+		new( 76, "Wave Breaker", Rarity.Rare, 3, 0.94f, "ShockSonar", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -768,7 +768,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 77, "Ink Vac", Rarity.Rare, 3, new Space[,] {
+		new( 77, "Ink Vac", Rarity.Rare, 3, 1f, "Kyuinki", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -778,7 +778,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 78, "Killer Wail 5.1", Rarity.Rare, 3, new Space[,] {
+		new( 78, "Killer Wail 5.1", Rarity.Rare, 3, 0.94f, "SpMegaphoneLaser51", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -788,7 +788,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 79, "Inkjet", Rarity.Rare, 3, new Space[,] {
+		new( 79, "Inkjet", Rarity.Rare, 3, 1f, "Jetpack", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -798,7 +798,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 80, "Ultra Stamp", Rarity.Rare, 3, new Space[,] {
+		new( 80, "Ultra Stamp", Rarity.Rare, 3, 1f, "SpUltraStamp", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -808,7 +808,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 81, "Crab Tank", Rarity.Rare, 3, new Space[,] {
+		new( 81, "Crab Tank", Rarity.Rare, 3, 1f, "Kanitank", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -818,7 +818,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 82, "Reefslider", Rarity.Rare, 3, new Space[,] {
+		new( 82, "Reefslider", Rarity.Rare, 3, 1f, "Chidori", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -828,7 +828,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 83, "Triple Inkstrike", Rarity.Rare, 3, new Space[,] {
+		new( 83, "Triple Inkstrike", Rarity.Rare, 3, 0.82f, "TripleTornado", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -838,7 +838,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 84, "Tacticooler", Rarity.Rare, 3, new Space[,] {
+		new( 84, "Tacticooler", Rarity.Rare, 3, 1f, "EnergyStand", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, I, I, 0, I, 0, 0, 0 },
@@ -848,7 +848,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new( 85, "Sheldon", Rarity.Rare, new Space[,] {
+		new( 85, "Sheldon", Rarity.Rare, 1f, "Bukichi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, S, 0, 0 },
@@ -857,8 +857,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 86, "Gnarly Eddy", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(125, 157, 60), InkColour2 = new(181, 115, 85) },
+		new( 86, "Gnarly Eddy", Rarity.Rare, 1f, "Omura", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -867,8 +867,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 87, "Jel La Fleur", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(205, 113, 74), InkColour2 = new(169, 113, 230) },
+		new( 87, "Jel La Fleur", Rarity.Rare, 1f, "Hanagasa", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -877,8 +877,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 88, "Mr. Coco", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(129, 106, 219), InkColour2 = new(130, 154, 233) },
+		new( 88, "Mr. Coco", Rarity.Rare, 1f, "Yashiganisan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, S, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -887,8 +887,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 89, "Harmony", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(124, 159, 234), InkColour2 = new(218, 101, 63) },
+		new( 89, "Harmony", Rarity.Rare, 1f, "Paruko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, I, I, 0, I, I, 0, 0 },
@@ -897,8 +897,8 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 90, "Murch", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(239, 160, 194), InkColour2 = new(107, 217, 175) },
+		new( 90, "Murch", Rarity.Rare, 1f, "Spiky", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -907,8 +907,8 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 91, "Mr. Grizz", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(131, 110, 211), InkColour2 = new(177, 121, 190) },
+		new( 91, "Mr. Grizz", Rarity.Rare, 1f, "Kumasan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, S, 0, I, I, 0, 0 },
@@ -917,8 +917,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 92, "Marigold", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(98, 145, 107), InkColour2 = new(196, 106, 52) },
+		new( 92, "Marigold", Rarity.Rare, 1f, "Mother", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, 0, I, I, 0, 0 },
@@ -927,8 +927,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 93, "Smallfry", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(230, 139, 122), InkColour2 = new(190, 136, 200) },
+		new( 93, "Smallfry", Rarity.Fresh, 1f, "Kojake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -937,8 +937,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 94, "Cuttlefish", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(98, 140, 146), InkColour2 = new(203, 99, 123) },
+		new( 94, "Cuttlefish", Rarity.Fresh, 1f, "Atarime", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, I, 0, I, I, 0, 0 },
@@ -947,8 +947,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 95, "Captain", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(198, 126, 148), InkColour2 = new(113, 190, 218) },
+		new( 95, "Captain", Rarity.Fresh, 1f, "Shirei", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
 			{ 0, I, I, S, I, 0, 0, 0 },
@@ -957,8 +957,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 96, "Callie", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(244, 231, 129), InkColour2 = new(249, 172, 127) },
+		new( 96, "Callie", Rarity.Fresh, 1f, "Aori", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, 0, 0, I, 0, 0 },
 			{ 0, I, I, I, 0, 0, I, 0 },
@@ -967,8 +967,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 97, "Marie", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(188, 89, 252), InkColour2 = new(246, 78, 171) },
+		new( 97, "Marie", Rarity.Fresh, 1f, "Hotaru", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, S, 0, 0, I, 0 },
@@ -977,8 +977,8 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 98, "Shiver", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(222, 242, 122), InkColour2 = new(181, 214, 121) },
+		new( 98, "Shiver", Rarity.Fresh, 1f, "Fuka", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, I, 0, 0, 0 },
 			{ 0, 0, I, 0, I, I, I, 0 },
@@ -987,8 +987,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new( 99, "Frye", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(116, 112, 250), InkColour2 = new(146, 95, 251) },
+		new( 99, "Frye", Rarity.Fresh, 1f, "Utsuho", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ I, I, 0, I, I, I, 0, 0 },
@@ -997,8 +997,8 @@ public static class CardDatabase {
 			{ 0, 0, S, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(100, "Big Man", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(245, 229, 130), InkColour2 = new(246, 165, 119) },
+		new(100, "Big Man", Rarity.Fresh, 1f, "Mantaro", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
 			{ 0, I, 0, I, I, I, 0, 0 },
@@ -1007,8 +1007,8 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, S, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(101, "Judd", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(220, 241, 141), InkColour2 = new(124, 231, 161) },
+		new(101, "Judd", Rarity.Fresh, 1f, "Judgekun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -1017,8 +1017,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(102, "Li'l Judd", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(228, 241, 130), InkColour2 = new(219, 185, 137) },
+		new(102, "Li'l Judd", Rarity.Fresh, 1f, "KoJudgekun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1027,8 +1027,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(103, "SquidForce", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(130, 103, 253), InkColour2 = new(168, 76, 253) },
+		new(103, "SquidForce", Rarity.Rare, 1f, "Batoroika", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1037,8 +1037,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(104, "Zink", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(228, 117, 56), InkColour2 = new(230, 247, 75) },
+		new(104, "Zink", Rarity.Rare, 1f, "Ironic", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -1047,8 +1047,8 @@ public static class CardDatabase {
 			{ 0, I, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(105, "Krak-On", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(244, 124, 130), InkColour2 = new(122, 192, 195) },
+		new(105, "Krak-On", Rarity.Rare, 1f, "Kuraagesu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1057,8 +1057,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(106, "Rockenberg", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(97, 125, 234), InkColour2 = new(245, 149, 68) },
+		new(106, "Rockenberg", Rarity.Rare, 1f, "Rokkenberugu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
@@ -1067,8 +1067,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(107, "Zekko", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(171, 98, 57), InkColour2 = new(229, 124, 59) },
+		new(107, "Zekko", Rarity.Rare, 1f, "Ezokko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1077,8 +1077,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(108, "Forge", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(98, 95, 224), InkColour2 = new(229, 123, 74) },
+		new(108, "Forge", Rarity.Rare, 1f, "Forima", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, S, I, 0, 0 },
@@ -1087,8 +1087,8 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(109, "Firefin", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(238, 189, 60), InkColour2 = new(103, 101, 58) },
+		new(109, "Firefin", Rarity.Rare, 1f, "Hokkorii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1097,8 +1097,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(110, "Skalop", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(183, 93, 73), InkColour2 = new(225, 113, 64) },
+		new(110, "Skalop", Rarity.Rare, 1f, "Hotakkusu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, S, I, I, I, 0, 0 },
@@ -1107,8 +1107,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(111, "Splash Mob", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(128, 200, 165), InkColour2 = new(180, 102, 190) },
+		new(111, "Splash Mob", Rarity.Rare, 1f, "Jimon", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1117,8 +1117,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(112, "Inkline", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(105, 143, 62), InkColour2 = new(180, 102, 190) },
+		new(112, "Inkline", Rarity.Rare, 1f, "Shigureni", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1127,8 +1127,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(113, "Tentatek", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(214, 96, 188), InkColour2 = new(115, 130, 234) },
+		new(113, "Tentatek", Rarity.Rare, 1f, "Arome", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1137,8 +1137,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(114, "Takoroka", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(222, 98, 119), InkColour2 = new(88, 187, 167) },
+		new(114, "Takoroka", Rarity.Rare, 1f, "Yako", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1147,8 +1147,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(115, "Annaki", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(221, 123, 65), InkColour2 = new(154, 208, 48) },
+		new(115, "Annaki", Rarity.Rare, 1f, "Anaaki", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1157,8 +1157,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(116, "Enperry", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(176, 92, 77), InkColour2 = new(110, 106, 105) },
+		new(116, "Enperry", Rarity.Rare, 1f, "Enperii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -1167,8 +1167,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(117, "Toni Kensa", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(98, 98, 200), InkColour2 = new(204, 102, 56) },
+		new(117, "Toni Kensa", Rarity.Rare, 1f, "Tatakikensaki", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
@@ -1177,8 +1177,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(118, "Barazushi", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(246, 92, 57), InkColour2 = new(103, 101, 58) },
+		new(118, "Barazushi", Rarity.Rare, 1f, "Barazushi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1187,8 +1187,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, S, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(119, "Emberz", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(244, 243, 232), InkColour2 = new(113, 112, 76) },
+		new(119, "Emberz", Rarity.Rare, 1f, "Shichirin", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -1197,8 +1197,8 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(120, "Octotrooper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(97, 187, 234), InkColour2 = new(239, 106, 55) },
+		new(120, "Octotrooper", Rarity.Common, 1f, "TakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1207,8 +1207,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(121, "Shielded Octotrooper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(121, "Shielded\nOctotrooper", Rarity.Common, 1f, "TateTakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1217,8 +1217,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(122, "Twintacle Octotrooper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(122, "Twintacle\nOctotrooper", Rarity.Common, 1f, "BaiTakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -1227,8 +1227,8 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(123, "Octohopper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(123, "Octohopper", Rarity.Common, 1f, "TakoHopper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1237,8 +1237,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(124, "Octocopter", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(124, "Octocopter", Rarity.Common, 1f, "Takopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1247,8 +1247,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(125, "Octobomber", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(125, "Octobomber", Rarity.Common, 1f, "BombTakopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1257,8 +1257,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, S, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(126, "Octodisco", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(126, "Octodisco", Rarity.Common, 1f, "BarrierTakopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, S, I, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1267,8 +1267,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(127, "Octopod", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(127, "Octopod", Rarity.Common, 1f, "TakoPod", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1277,8 +1277,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(128, "Oversized Octopod", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(128, "Oversized\nOctopod", Rarity.Rare, 1f, "TakopodDEV", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -1287,8 +1287,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(129, "Tentakook", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(129, "Tentakook", Rarity.Common, 1f, "Sutakoraa", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -1297,8 +1297,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(130, "Octosniper", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(130, "Octosniper", Rarity.Rare, 1f, "TakoSniper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1307,8 +1307,8 @@ public static class CardDatabase {
 			{ 0, I, 0, S, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(131, "Octocommander", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(131, "Octocommander", Rarity.Rare, 0.79f, "TakoCommander", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1317,8 +1317,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(132, "Octomissile", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(132, "Octomissile", Rarity.Common, 1f, "TakoMissile", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -1327,8 +1327,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(133, "Octozeppelin", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(133, "Octozeppelin", Rarity.Rare, 0.98f, "TakopperinGo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, I, 0, 0, 0 },
@@ -1337,8 +1337,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(134, "Squee-G", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(134, "Squee-G", Rarity.Common, 1f, "Incleaner", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -1347,8 +1347,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(135, "Octostamp", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(135, "Octostamp", Rarity.Common, 1f, "TakoStamp", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1357,8 +1357,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(136, "Amped Octostamp", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(136, "Amped\nOctostamp", Rarity.Rare, 1f, "StampWave", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -1367,8 +1367,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(137, "Flooder", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(137, "Flooder", Rarity.Common, 1f, "TakoDozer", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
@@ -1377,8 +1377,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(138, "Octoballer", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(138, "Octoballer", Rarity.Common, 1f, "TakoStrike", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, I, 0, 0, 0 },
@@ -1387,8 +1387,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(139, "Octoling", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(139, "Octoling", Rarity.Rare, 1f, "TakoZonesu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1397,8 +1397,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(140, "DJ Octavio", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(140, "DJ Octavio", Rarity.Fresh, 1f, "TakowasaShogun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, I, I, I, I, 0, 0, 0 },
@@ -1407,8 +1407,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, I, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(141, "Chum", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		new(141, "Chum", Rarity.Common, 1f, "Shake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
@@ -1417,8 +1417,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(142, "Cohock", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(142, "Cohock", Rarity.Common, 1f, "Dosukoi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -1427,8 +1427,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(143, "Snatcher", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(143, "Snatcher", Rarity.Common, 1f, "Tamahiroi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
@@ -1437,8 +1437,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(144, "Steelhead", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(144, "Steelhead", Rarity.Common, 1f, "Bakudan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, S, I, I, 0, 0, 0, 0 },
@@ -1447,8 +1447,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(145, "Steel Eel", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(145, "Steel Eel", Rarity.Common, 1f, "Hebi", new Space[,] {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, S, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1457,8 +1457,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(146, "Scrapper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(146, "Scrapper", Rarity.Common, 1f, "Teppan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1467,8 +1467,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(147, "Stinger", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(147, "Stinger", Rarity.Common, 1f, "Tower", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1477,8 +1477,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(148, "Maws", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(148, "Maws", Rarity.Common, 1f, "Mogura", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1487,8 +1487,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, S, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(149, "Drizzler", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(149, "Drizzler", Rarity.Common, 1f, "Koumori", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1497,8 +1497,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(150, "Flyfish", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(150, "Flyfish", Rarity.Common, 1f, "Katapaddo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1507,8 +1507,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(151, "Fish Stick", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(151, "Fish Stick", Rarity.Common, 1f, "Buranko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
@@ -1517,8 +1517,8 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(152, "Flipper-Flopper", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(152, "Flipper-Flopper", Rarity.Common, 0.84f, "Iruka", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1527,8 +1527,8 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(153, "Slammin' Lid", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(153, "Slammin' Lid", Rarity.Common, 1f, "Nabebuta", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1537,8 +1537,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(154, "Big Shot", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(154, "Big Shot", Rarity.Common, 1f, "Taihou", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, I, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -1547,8 +1547,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(155, "Goldie", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(155, "Goldie", Rarity.Rare, 1f, "Kinshake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
@@ -1557,8 +1557,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(156, "Griller", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(156, "Griller", Rarity.Rare, 1f, "Grill", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -1567,8 +1567,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(157, "Mothership", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(157, "Mothership", Rarity.Rare, 1f, "Hakobiya", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -1577,8 +1577,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(158, "Mudmouth", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(158, "Mudmouth", Rarity.Rare, 1f, "Tamaire", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, I, 0 },
@@ -1587,8 +1587,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(159, "Zapfish", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(159, "Zapfish", Rarity.Common, 1f, "Denchinamazu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1598,7 +1598,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(160, "Tower Control", Rarity.Rare, new Space[,] {
+		new(160, "Tower Control\nTower", Rarity.Rare, 0.91f, "GachiYagura", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1608,7 +1608,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(161, "Rainmaker", Rarity.Rare, new Space[,] {
+		new(161, "Rainmaker", Rarity.Rare, 1f, "GachiHoko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1618,7 +1618,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(162, "Power Clam", Rarity.Rare, new Space[,] {
+		new(162, "Power Clam", Rarity.Rare, 1f, "GachiAsari", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, S, I, I, 0, 0, 0 },
@@ -1628,7 +1628,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(163, "Custom Splattershot Jr.", Rarity.Common, new Space[,] {
+		new(163, "Custom\nSplattershot Jr.", Rarity.Common, 0.8f, "ShooterFirst01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1638,7 +1638,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(164, "Aerospray RG", Rarity.Common, new Space[,] {
+		new(164, "Aerospray RG", Rarity.Common, 0.94f, "ShooterBlaze01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1648,7 +1648,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(165, "Tentatek Splattershot", Rarity.Common, new Space[,] {
+		new(165, "Tentatek\nSplattershot", Rarity.Common, 0.99f, "ShooterNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1658,7 +1658,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(166, "Forge Splattershot Pro", Rarity.Common, new Space[,] {
+		new(166, "Forge\nSplattershot Pro", Rarity.Common, 0.77f, "ShooterExpert01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, S, I, 0, 0, 0, 0 },
@@ -1668,7 +1668,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(167, "Splattershot Nova", Rarity.Common, new Space[,] {
+		new(167, "Splattershot Nova", Rarity.Common, 0.7f, "ShooterQuickLong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1678,7 +1678,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(168, "Luna Blaster Neo", Rarity.Common, new Space[,] {
+		new(168, "Luna Blaster\nNeo", Rarity.Common, 1f, "BlasterShort01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
@@ -1688,7 +1688,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(169, "Carbon Roller Deco", Rarity.Common, new Space[,] {
+		new(169, "Carbon Roller\nDeco", Rarity.Common, 0.94f, "RollerCompact01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1698,7 +1698,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(170, "Big Swig Roller", Rarity.Common, new Space[,] {
+		new(170, "Big Swig Roller", Rarity.Common, 0.86f, "RollerWide00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1708,7 +1708,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(171, "Inkbrush Noveau", Rarity.Common, new Space[,] {
+		new(171, "Inkbrush\nNouveau", Rarity.Common, 1f, "BrushMini01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, 0, 0, 0, 0, 0 },
 			{ 0, S, I, 0, 0, 0, 0, 0 },
@@ -1718,7 +1718,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(172, "Snipewriter 5H", Rarity.Common, new Space[,] {
+		new(172, "Snipewriter 5H", Rarity.Common, 0.86f, "ChargerPencil00", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1728,7 +1728,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(173, "Slosher Deco", Rarity.Common, new Space[,] {
+		new(173, "Slosher Deco", Rarity.Common, 1f, "SlosherStrong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1738,7 +1738,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(174, "Zink Mini Splatling", Rarity.Common, new Space[,] {
+		new(174, "Zink Mini\nSplatling", Rarity.Common, 1f, "SpinnerQuick01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1748,7 +1748,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(175, "Dapple Dualies Noveau", Rarity.Common, new Space[,] {
+		new(175, "Dapple Dualies\nNouveau", Rarity.Common, 0.88f, "ManeuverShort01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, S, I, 0, 0, 0 },
@@ -1758,7 +1758,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(176, "Neo Sploosh-o-matic", Rarity.Common, new Space[,] {
+		new(176, "Neo Sploosh-\no-matic", Rarity.Common, 1f, "ShooterShort01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1768,7 +1768,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(177, "Neo Splash-o-matic", Rarity.Common, new Space[,] {
+		new(177, "Neo Splash-\no-matic", Rarity.Common, 1f, "ShooterPrecision01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
@@ -1778,7 +1778,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(178, "N-ZAP '89", Rarity.Common, new Space[,] {
+		new(178, "N-ZAP '89", Rarity.Common, 1f, "ShooterQuickMiddle01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1788,7 +1788,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(179, ".96 Gal Deco", Rarity.Common, new Space[,] {
+		new(179, ".96 Gal Deco", Rarity.Common, 1f, "ShooterHeavy01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1798,7 +1798,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(180, "Custom Jet Squelcher", Rarity.Common, new Space[,] {
+		new(180, "Custom Jet\nSquelcher", Rarity.Common, 1f, "ShooterLong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1808,7 +1808,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(181, "Clash Blaster Neo", Rarity.Common, new Space[,] {
+		new(181, "Clash Blaster\nNeo", Rarity.Common, 0.96f, "BlasterLightShort01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, S, 0, 0, 0, 0 },
@@ -1818,7 +1818,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(182, "Rapid Blaster Deco", Rarity.Common, new Space[,] {
+		new(182, "Rapid Blaster\nDeco", Rarity.Common, 0.96f, "BlasterLight01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1828,7 +1828,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(183, "L-3 Nozzlenose D", Rarity.Common, new Space[,] {
+		new(183, "L-3 Nozzlenose D", Rarity.Common, 0.78f, "ShooterTripleQuick01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1838,7 +1838,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(184, "Krak-On Splat Roller", Rarity.Common, new Space[,] {
+		new(184, "Krak-On Splat\nRoller", Rarity.Common, 0.93f, "RollerNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -1848,7 +1848,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(185, "Z+F Splat Charger", Rarity.Common, new Space[,] {
+		new(185, "Z+F Splat\nCharger", Rarity.Common, 1f, "ChargerNormal01", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1858,7 +1858,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(186, "Z+F Splatterscope", Rarity.Common, new Space[,] {
+		new(186, "Z+F\nSplatterscope", Rarity.Common, 0.91f, "ChargerNormalScope01", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1868,7 +1868,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(187, "Tri-Slosher Noveau", Rarity.Common, new Space[,] {
+		new(187, "Tri-Slosher\nNouveau", Rarity.Common, 1f, "SlosherDiffusion01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1878,7 +1878,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(188, "Kraken Royale", Rarity.Rare, 3, new Space[,] {
+		new(188, "Kraken Royale", Rarity.Rare, 3, 0.9f, "SpCastle", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1888,7 +1888,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(189, "Super Chump", Rarity.Rare, 3, new Space[,] {
+		new(189, "Super Chump", Rarity.Rare, 3, 0.98f, "SpFirework", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
@@ -1898,7 +1898,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(190, "Shelly & Donny", Rarity.Rare, new Space[,] {
+		new(190, "Shelly &\nDonny", Rarity.Rare, 1f, "MametsubuBukichi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, I, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -1907,8 +1907,8 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(191, "Annie", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(235, 244, 120), InkColour2 = new(205, 244, 126) },
+		new(191, "Annie", Rarity.Rare, 1f, "Anemo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, S, 0, I, 0, 0, 0 },
@@ -1917,8 +1917,8 @@ public static class CardDatabase {
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(192, "Jelonzo", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(245, 171, 233), InkColour2 = new(203, 168, 230) },
+		new(192, "Jelonzo", Rarity.Rare, 1f, "Echizen", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, S, 0, I, 0, 0 },
@@ -1927,8 +1927,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(193, "Fred Crumbs", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(106, 178, 215), InkColour2 = new(149, 119, 220) },
+		new(193, "Fred Crumbs", Rarity.Rare, 1f, "Ajio", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, I, I, 0, 0, 0, 0, 0 },
@@ -1937,8 +1937,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(194, "Spyke", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(107, 130, 225), InkColour2 = new(235, 218, 71) },
+		new(194, "Spyke", Rarity.Rare, 1f, "Daunii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -1947,8 +1947,8 @@ public static class CardDatabase {
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(195, "The Eel Deal - Frye", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(154, 100, 234), InkColour2 = new(204, 139, 67) },
+		new(195, "The Eel\nDeal - Frye", Rarity.Fresh, 1f, "Utsuho1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -1957,8 +1957,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(196, "The Cold-Blooded Bandit - Shiver", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(146, 95, 251), InkColour2 = new(116, 112, 250) },
+		new(196, "The Cold-Blooded\nBandit - Shiver", Rarity.Fresh, 0.74f, "Fuka1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1967,8 +1967,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 }
-		}),
-		new(197, "The Hype Manta Storm - Big Man", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(246, 165, 119), InkColour2 = new(245, 229, 130) },
+		new(197, "The Hype Manta\nStorm - Big Man", Rarity.Fresh, 0.78f, "Mantaro1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1977,8 +1977,8 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(198, "Z+F", Rarity.Rare, new Space[,] {
+		}) { InkColour1 = new(124, 231, 161), InkColour2 = new(220, 241, 141) },
+		new(198, "Z+F", Rarity.Rare, 1f, "Ezokkorii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1987,8 +1987,8 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(199, "Annaki Splattershot Nova", Rarity.Common, new Space[,] {
+		}) { InkColour1 = new(100, 103, 157), InkColour2 = new(246, 243, 219) },
+		new(199, "Annaki\nSplattershot Nova", Rarity.Common, 0.71f, "ShooterQuickLong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -1998,7 +1998,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(200, "Rapid Blaster Pro Deco", Rarity.Common, new Space[,] {
+		new(200, "Rapid Blaster\nPro Deco", Rarity.Common, 0.96f, "BlasterLightLong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2008,7 +2008,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(201, "S-BLAST '92", Rarity.Common, new Space[,] {
+		new(201, "S-BLAST '92", Rarity.Common, 1f, "BlasterPrecision00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -2018,7 +2018,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(202, "H-3 Nozzlenose D", Rarity.Common, new Space[,] {
+		new(202, "H-3 Nozzlenose D", Rarity.Common, 0.76f, "ShooterTripleMiddle01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
@@ -2028,7 +2028,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(203, "Big Swig Roller Express", Rarity.Common, new Space[,] {
+		new(203, "Big Swig\nRoller Express", Rarity.Common, 0.9f, "RollerWide01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2038,7 +2038,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(204, "Painbrush", Rarity.Common, new Space[,] {
+		new(204, "Painbrush", Rarity.Common, 1f, "BrushHeavy00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -2048,7 +2048,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(205, "Heavy Splatling Deco", Rarity.Common, new Space[,] {
+		new(205, "Heavy Splatling\nDeco", Rarity.Common, 0.81f, "SpinnerStandard01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, S, I, 0 },
@@ -2058,7 +2058,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(206, "Custom Dualie Squelchers", Rarity.Common, new Space[,] {
+		new(206, "Custom Dualie\nSquelchers", Rarity.Common, 0.89f, "ManeuverDual01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -2068,7 +2068,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(207, "Light Tetra Dualies", Rarity.Common, new Space[,] {
+		new(207, "Light Tetra\nDualies", Rarity.Common, 1f, "ManeuverStepper01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -2078,7 +2078,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(208, "Tenta Sorella Brella", Rarity.Common, new Space[,] {
+		new(208, "Tenta Sorella\nBrella", Rarity.Common, 0.95f, "ShelterWide01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -2088,7 +2088,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(209, "Splatana Wiper Deco", Rarity.Common, new Space[,] {
+		new(209, "Splatana\nWiper Deco", Rarity.Common, 1f, "SaberLight01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2098,7 +2098,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(210,  -6, "Gold Dynamo Roller", Rarity.Common, new Space[,] {
+		new(210,  -6, "Gold Dynamo\nRoller", Rarity.Common, 0.98f, "RollerHeavy01", new Space[,] {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -2108,7 +2108,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(211,  -5, "Octobrush Nouveau", Rarity.Common, new Space[,] {
+		new(211,  -5, "Octobrush\nNouveau", Rarity.Common, 1f, "BrushNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
@@ -2118,7 +2118,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(212,  -1, "Custom Goo Tuber", Rarity.Common, new Space[,] {
+		new(212,  -1, "Custom Goo\nTuber", Rarity.Common, 1f, "ChargerKeeper01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -2128,7 +2128,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(213,  -2, "Sloshing Machine Neo", Rarity.Common, new Space[,] {
+		new(213,  -2, "Sloshing\nMachine Neo", Rarity.Common, 1f, "SlosherLauncher01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -2138,7 +2138,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(214,  -8, "Bloblobber Deco", Rarity.Common, new Space[,] {
+		new(214,  -8, "Bloblobber\nDeco", Rarity.Common, 1f, "SlosherBathtub01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -2148,7 +2148,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(215,  -4, "Dread Wringer", Rarity.Common, new Space[,] {
+		new(215,  -4, "Dread Wringer", Rarity.Common, 0.87f, "SlosherDouble00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
@@ -2158,7 +2158,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(216, -12, "Ballpoint Splatling Nouveau", Rarity.Common, new Space[,] {
+		new(216, -12, "Ballpoint Splatling\nNouveau", Rarity.Common, 0.69f, "SpinnerDownpour01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, S, 0, 0, 0 },
@@ -2168,7 +2168,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(217,  -3, "Heavy Edit Splatling", Rarity.Common, new Space[,] {
+		new(217,  -3, "Heavy Edit\nSplatling", Rarity.Common, 1f, "SpinnerHyperShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -2178,7 +2178,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(218, -11, "Sorella Brella", Rarity.Common, new Space[,] {
+		new(218, -11, "Sorella Brella", Rarity.Common, 0.96f, "ShelterNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -2188,7 +2188,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(219,  -7, "Inkline Tri-Stringer", Rarity.Common, new Space[,] {
+		new(219,  -7, "Inkline\nTri-Stringer", Rarity.Common, 1f, "StringerNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
@@ -2198,7 +2198,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(220, -10, "Cohozuna", Rarity.Fresh, new Space[,] {
+		new(220, -10, "Cohozuna", Rarity.Fresh, 1f, "Yokozuna", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, I, 0, 0, 0 },
 			{ 0, I, I, I, I, I, 0, 0 },
@@ -2207,8 +2207,8 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
-		new(221,  -9, "Horrorboros", Rarity.Fresh, new Space[,] {
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(221,  -9, "Horrorboros", Rarity.Fresh, 1f, "Tatsu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, 0, 0, 0 },
@@ -2217,21 +2217,21 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
 	};
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(5, 0, 1, 0);
-	public static DateTime LastModified { get; } = new(2023, 8, 30, 9, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(5, 0, 2, 0);
+	public static DateTime LastModified { get; } = new(2023, 10, 9, 22, 30, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
 	static CardDatabase() {
 		Cards = Array.AsReadOnly(cards);
-		JSON = JsonConvert.SerializeObject(cards);
+		JSON = JsonUtils.Serialise(cards);
 		LastOfficialCardNumber = cards.Last(c => c.Number > 0).Number;
 		byAltNumber = new(from c in cards where c.Number < 0 || c.AltNumber is not null select new KeyValuePair<int, Card>(c.Number < 0 ? c.Number : c.AltNumber ?? 0, c));
 	}

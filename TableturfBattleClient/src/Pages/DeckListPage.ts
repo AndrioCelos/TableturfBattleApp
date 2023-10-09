@@ -9,6 +9,7 @@ const deckCardListView = document.getElementById('deckCardListView')!;
 const addDeckControls = document.getElementById('addDeckControls')!;
 const newDeckButton = document.getElementById('newDeckButton') as HTMLButtonElement;
 const importDeckButton = document.getElementById('importDeckButton') as HTMLButtonElement;
+const deckSleevesButton = document.getElementById('deckSleevesButton') as HTMLButtonElement;
 const deckEditButton = document.getElementById('deckEditButton') as HTMLButtonElement;
 const deckListTestButton = document.getElementById('deckListTestButton') as HTMLButtonElement;
 const deckExportButton = document.getElementById('deckExportButton') as HTMLButtonElement;
@@ -21,6 +22,11 @@ const deckExportCopyButton = document.getElementById('deckExportCopyButton') as 
 const deckExportTextBox = document.getElementById('deckExportTextBox') as HTMLTextAreaElement;
 
 const deckExportAllButton = document.getElementById('deckExportAllButton') as HTMLButtonElement;
+
+const deckSleevesDialog = document.getElementById('deckSleevesDialog') as HTMLDialogElement;
+const deckSleevesForm = document.getElementById('deckSleevesForm') as HTMLFormElement;
+const deckSleevesButtons = deckSleevesForm.getElementsByTagName('input');
+const deckSleevesOkButton = document.getElementById('deckSleevesOkButton') as HTMLButtonElement;
 
 const deckImportDialog = document.getElementById('deckImportDialog') as HTMLDialogElement;
 const deckImportForm = document.getElementById('deckImportForm') as HTMLFormElement;
@@ -39,7 +45,7 @@ const deckImportFileBox = document.getElementById('deckImportFileBox') as HTMLIn
 const deckImportErrorBox = document.getElementById('deckImportErrorBox')!;
 const deckImportOkButton = document.getElementById('deckImportOkButton') as HTMLButtonElement;
 
-const deckButtons = new CheckButtonGroup<Deck>(deckList);
+const deckButtons = new CheckButtonGroup<SavedDeck>(deckList);
 
 let deckListTouchMode = false;
 let draggingDeckButton: Element | null = null;
@@ -85,7 +91,7 @@ deckViewBackButton.addEventListener('click', e => {
 });
 
 function saveDecks() {
-	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards' ]);
+	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards', 'sleeves' ]);
 	localStorage.setItem('decks', json);
 }
 
@@ -93,13 +99,13 @@ function saveDecks() {
 	const decksString = localStorage.getItem('decks');
 	if (decksString) {
 		for (const deck of JSON.parse(decksString)) {
-			decks.push(new Deck(deck.name, deck.cards, false));
+			decks.push(new SavedDeck(deck.name, deck.sleeves ?? 0, deck.cards, deck.upgrades ?? new Array(15), false));
 		}
 	} else {
 		const lastDeckString = localStorage.getItem('lastDeck');
 		const lastDeck = lastDeckString?.split(/\+/)?.map(s => parseInt(s));
 		if (lastDeck && lastDeck.length == 15) {
-			decks.push(new Deck('Custom Deck', lastDeck, false));
+			decks.push(new SavedDeck('Custom Deck', 0, lastDeck, new Array(15), false));
 			saveDecks();
 		}
 		localStorage.removeItem('lastDeck');
@@ -110,9 +116,11 @@ function saveDecks() {
 	}
 }
 
-function createDeckButton(deck: Deck) {
+function createDeckButton(deck: SavedDeck) {
 	const buttonElement = document.createElement('button');
+	buttonElement.className = 'deckButton';
 	buttonElement.type = 'button';
+	buttonElement.dataset.sleeves = deck.sleeves.toString();
 	const button = new CheckButton(buttonElement);
 	deckButtons.add(button, deck);
 	buttonElement.addEventListener('click', () => {
@@ -199,14 +207,17 @@ function deckButton_drop(e: DragEvent) {
 	}
 }
 
-function importDecks(decksToImport: (Deck | number[])[]) {
-	let newSelectedDeck: Deck | null = null;
+function importDecks(decksToImport: (SavedDeck | number[])[]) {
+	let newSelectedDeck: SavedDeck | null = null;
 	for (const el of decksToImport) {
 		let deck;
 		if (el instanceof Array)
-			deck = new Deck(`Imported Deck ${decks.length + 1}`, el, false);
+			deck = new SavedDeck(`Imported Deck ${decks.length + 1}`, 0, el, new Array(15), false);
 		else {
 			deck = el;
+			deck.sleeves ??= 0;
+			deck.upgrades ??= new Array(15);
+			deck.isReadOnly = false;
 			if (!deck.name) deck.name = `Imported Deck ${decks.length + 1}`;
 		}
 		createDeckButton(deck);
@@ -223,7 +234,7 @@ function importDecks(decksToImport: (Deck | number[])[]) {
 }
 
 newDeckButton.addEventListener('click', () => {
-	selectedDeck = new Deck(`Deck ${decks.length + 1}`, [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], false);
+	selectedDeck = new SavedDeck(`Deck ${decks.length + 1}`, 0, new Array(15), new Array(15), false);
 	createDeckButton(selectedDeck);
 	decks.push(selectedDeck);
 	editDeck();
@@ -287,9 +298,29 @@ function parseDecksForImport(s: string) {
 	// TODO: add support for tblturf.ink
 }
 
+deckSleevesButton.addEventListener('click', () => {
+	if (selectedDeck == null) return;
+	deckSleevesButtons[selectedDeck.sleeves].checked = true;
+	deckSleevesDialog.showModal();
+});
+deckSleevesForm.addEventListener('submit', e => {
+	if (e.submitter == deckSleevesOkButton && selectedDeck != null) {
+		let i = 0;
+		for (const button of deckSleevesButtons) {
+			if (button.checked) {
+				selectedDeck.sleeves = i;
+				deckButtons.entries[decks.indexOf(selectedDeck)].button.buttonElement.dataset.sleeves = i.toString();
+				saveDecks();
+				return;
+			}
+			i++;
+		}
+	}
+});
+
 deckEditButton.addEventListener('click', editDeck);
 
-deckListTestButton.addEventListener('click', _ => {
+deckListTestButton.addEventListener('click', () => {
 	testStageButtons.deselect();
 	testStageSelectionDialog.showModal();
 });
@@ -315,9 +346,10 @@ function selectDeck() {
 	deckListTestButton.disabled = false;
 	deckExportButton.disabled = false;
 	deckCopyButton.disabled = false;
-	deckEditButton.disabled = selectedDeck.isReadOnly;
-	deckRenameButton.disabled = selectedDeck.isReadOnly;
-	deckDeleteButton.disabled = selectedDeck.isReadOnly;
+	deckSleevesButton.disabled = selectedDeck.isReadOnly ?? false;
+	deckEditButton.disabled = selectedDeck.isReadOnly ?? false;
+	deckRenameButton.disabled = selectedDeck.isReadOnly ?? false;
+	deckDeleteButton.disabled = selectedDeck.isReadOnly ?? false;
 	deckViewSize.innerText = size.toString();
 	deckListPage.classList.add('showingDeck');
 }
@@ -331,6 +363,7 @@ function deselectDeck() {
 	deckListTestButton.disabled = true;
 	deckExportButton.disabled = true;
 	deckCopyButton.disabled = true;
+	deckSleevesButton.disabled = true;
 	deckEditButton.disabled = true;
 	deckRenameButton.disabled = true;
 	deckDeleteButton.disabled = true;
@@ -362,7 +395,7 @@ deckRenameButton.addEventListener('click', () => {
 
 deckCopyButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	importDecks([ new Deck(`${selectedDeck.name} - Copy`, Array.from(selectedDeck.cards), false) ]);
+	importDecks([ new SavedDeck(`${selectedDeck.name} - Copy`, selectedDeck.sleeves, Array.from(selectedDeck.cards), Array.from(selectedDeck.upgrades), false) ]);
 });
 
 deckDeleteButton.addEventListener('click', () => {
