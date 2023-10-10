@@ -39,6 +39,7 @@ let currentReplay: {
 		}[],
 		turns: Move[][],
 	}[],
+	decks: Deck[],
 	turns: Move[][],
 	placements: PlacementResults[],
 	watchingPlayer: number

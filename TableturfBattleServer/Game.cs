@@ -70,9 +70,14 @@ public class Game {
 		return false;
 	}
 
-	public Deck GetDeck(string name, int sleeves, IEnumerable<int> cardNumbers, IEnumerable<int> cardUpgrades)
-		=> this.deckCache.FirstOrDefault(d => d.Name == name && d.Sleeves == sleeves && cardNumbers.SequenceEqual(from c in d.Cards select c.Number) && cardUpgrades.SequenceEqual(d.Upgrades))
-			?? new(name, sleeves, (from i in cardNumbers select CardDatabase.GetCard(i)).ToArray(), cardUpgrades.ToArray());
+	public Deck GetDeck(string name, int sleeves, IEnumerable<int> cardNumbers, IEnumerable<int> cardUpgrades) {
+		var deck = this.deckCache.FirstOrDefault(d => d.Name == name && d.Sleeves == sleeves && cardNumbers.SequenceEqual(from c in d.Cards select c.Number) && cardUpgrades.SequenceEqual(d.Upgrades));
+		if (deck == null) {
+			deck = new(name, sleeves, (from i in cardNumbers select CardDatabase.GetCard(i)).ToArray(), cardUpgrades.ToArray());
+			this.deckCache.Add(deck);
+		}
+		return deck;
+	}
 
 	public bool CanPlay(int playerIndex, Card card, int x, int y, int rotation, bool isSpecialAttack) {
 		if (card is null) throw new ArgumentNullException(nameof(card));
