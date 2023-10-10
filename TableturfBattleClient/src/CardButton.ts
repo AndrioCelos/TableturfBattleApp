@@ -16,24 +16,10 @@ class CardButton extends CheckButton {
 
 		this.card = card;
 
-		let size = 0;
-		let table = document.createElement('table');
-		table.classList.add('cardGrid');
-		for (var y = 0; y < 8; y++) {
-			let tr = document.createElement('tr');
-			table.appendChild(tr);
-			for (var x = 0; x < 8; x++) {
-				let td = document.createElement('td');
-				if (card.grid[x][y] == Space.Ink1) {
-					size++;
-					td.classList.add('ink');
-				} else if (card.grid[x][y] == Space.SpecialInactive1) {
-					size++;
-					td.classList.add('special');
-				}
-				tr.appendChild(td);
-			}
-		}
+		const gridSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		gridSvg.classList.add('cardGrid');
+		gridSvg.setAttribute('viewBox', '0 0 800 800');
+		CardDisplay.CreateSvgCardGrid(card, gridSvg);
 
 		if (card.imageUrl) {
 			const bgDiv = document.createElement('div');
@@ -56,7 +42,7 @@ class CardButton extends CheckButton {
 		el2.innerText = card.name;
 		row.appendChild(el2);
 
-		button.appendChild(table);
+		button.appendChild(gridSvg);
 
 		row = document.createElement('div');
 		row.className = 'cardFooter';
@@ -65,7 +51,7 @@ class CardButton extends CheckButton {
 
 		el2 = document.createElement('div');
 		el2.classList.add('cardSize');
-		el2.innerText = size.toString();
+		el2.innerText = card.size.toString();
 		row.appendChild(el2);
 
 		el2 = document.createElement('div');

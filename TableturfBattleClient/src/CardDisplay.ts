@@ -47,38 +47,7 @@ class CardDisplay {
 		g.setAttribute('transform', 'translate(380 604) rotate(6.5) scale(0.283)');
 		svg.appendChild(g);
 
-		let size = 0;
-		for (var y = 0; y < 8; y++) {
-			for (var x = 0; x < 8; x++) {
-				if (card.grid[x][y] == Space.Empty) {
-					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-					rect.classList.add('empty');
-					rect.setAttribute('x', (100 * x + 3).toString());
-					rect.setAttribute('y', (100 * y + 3).toString());
-					rect.setAttribute('width', '94');
-					rect.setAttribute('height', '94');
-					g.appendChild(rect);
-				} else {
-					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-					const elements: Element[] = [ rect ];
-
-					size++;
-					rect.classList.add(card.grid[x][y] == Space.SpecialInactive1 ? 'special' : 'ink');
-
-					const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-					image.setAttribute('href', card.grid[x][y] == Space.SpecialInactive1 ? 'assets/SpecialOverlay.png' : 'assets/InkOverlay.png');
-					elements.push(image);
-
-					for (const el of elements) {
-						el.setAttribute('x', (100 * x).toString());
-						el.setAttribute('y', (100 * y).toString());
-						el.setAttribute('width', '100');
-						el.setAttribute('height', '100');
-						g.appendChild(el);
-					}
-				}
-			}
-		}
+		CardDisplay.CreateSvgCardGrid(card, g);
 
 		// Name
 		const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -139,7 +108,7 @@ class CardDisplay {
 
 		// Size
 		svg.insertAdjacentHTML('beforeend', `<image href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='80' height='80' transform='translate(12 798) rotate(-45) scale(1.33)'/>`);
-		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87'>${size}</text>`);
+		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87'>${card.size}</text>`);
 
 		// Special cost
 		const g2 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -161,5 +130,36 @@ class CardDisplay {
 		}
 
 		this.card = card;
+	}
+
+	static CreateSvgCardGrid(card: Card, parent: SVGElement) {
+		for (var y = 0; y < 8; y++) {
+			for (var x = 0; x < 8; x++) {
+				if (card.grid[x][y] == Space.Empty) {
+					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+					rect.classList.add('empty');
+					rect.setAttribute('x', (100 * x + 3).toString());
+					rect.setAttribute('y', (100 * y + 3).toString());
+					rect.setAttribute('width', '94');
+					rect.setAttribute('height', '94');
+					parent.appendChild(rect);
+				} else {
+					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+					rect.classList.add(card.grid[x][y] == Space.SpecialInactive1 ? 'special' : 'ink');
+					const elements: Element[] = [rect];
+					const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+					image.setAttribute('href', card.grid[x][y] == Space.SpecialInactive1 ? 'assets/SpecialOverlay.png' : 'assets/InkOverlay.png');
+					elements.push(image);
+
+					for (const el of elements) {
+						el.setAttribute('x', (100 * x).toString());
+						el.setAttribute('y', (100 * y).toString());
+						el.setAttribute('width', '100');
+						el.setAttribute('height', '100');
+						parent.appendChild(el);
+					}
+				}
+			}
+		}
 	}
 }

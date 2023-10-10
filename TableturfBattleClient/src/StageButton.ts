@@ -2,8 +2,8 @@ class StageButton extends CheckButton {
 	private static idNumber = 0;
 
 	readonly stage: Stage;
-	readonly cells: HTMLTableCellElement[][];
-	private readonly startCells: HTMLTableCellElement[] = [ ];
+	readonly cells: (SVGRectElement | null)[][];
+	private readonly startCells: [SVGRectElement, SVGImageElement][] = [ ];
 
 	constructor(stage: Stage) {
 		let button = document.createElement('button');
@@ -11,66 +11,65 @@ class StageButton extends CheckButton {
 		button.classList.add('stage');
 		super(button);
 
+		const gridSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		gridSvg.classList.add('stageGrid');
+		gridSvg.setAttribute('viewBox', `0 0 ${stage.grid.length * 100} 3000`);
+
+		const offset = (3000 - stage.grid[0].length * 100) / 2;
+
 		this.stage = stage;
 
-		let cols: HTMLTableCellElement[][] = [ ];
-		for (let x = 0; x < stage.grid.length; x++) {
+		const cols = [ ];
+		for (var x = 0; x < stage.grid.length; x++) {
 			let col = [ ];
-			for (let y = 0; y < stage.grid[x].length; y++) {
-				let td = document.createElement('td');
-				if (stage.grid[x][y] == Space.OutOfBounds)
-					td.classList.add('OutOfBounds');
-				else
-					td.classList.add('Empty');
-				col.push(td);
+			for (var y = 0; y < stage.grid[x].length; y++) {
+				if (stage.grid[x][y] == Space.Empty) {
+					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+					rect.classList.add('empty');
+					rect.setAttribute('x', (100 * x).toString());
+					rect.setAttribute('y', (100 * y + offset).toString());
+					rect.setAttribute('width', '100');
+					rect.setAttribute('height', '100');
+					gridSvg.appendChild(rect);
+					col.push(rect);
+				} else
+					col.push(null);
 			}
 			cols.push(col);
 		}
 		this.cells = cols;
 
-		let table = document.createElement('table');
-		table.classList.add('stageGrid');
-		for (let y = 0; y < stage.grid[0].length; y++) {
-			let tr = document.createElement('tr');
-			table.appendChild(tr);
-			for (let x = 0; x < stage.grid.length; x++) {
-				tr.appendChild(cols[x][y]);
-			}
-		}
-
-		let row = document.createElement('div');
-		row.className = 'stageHeader';
-		button.appendChild(row);
-
-		let el2 = document.createElement('div');
-		el2.classList.add('stageName');
-		el2.innerText = stage.name;
-		row.appendChild(el2);
-
-		row = document.createElement('div');
-		row.className = 'stageBody';
-		button.appendChild(row);
-		row.appendChild(table);
+		let el = document.createElement('div');
+		el.classList.add('stageName');
+		el.innerText = stage.name;
+		button.appendChild(el);
+		button.appendChild(gridSvg);
 
 		StageButton.idNumber++;
 	}
 
 	setStartSpaces(numPlayers: number) {
-		for (const td of this.startCells) {
-			td.classList.remove('Start1');
-			td.classList.remove('Start2');
-			td.classList.remove('Start3');
-			td.classList.remove('Start4');
-			td.classList.add('Empty');
+		for (const el of this.startCells) {
+			el[0].setAttribute('class', 'empty');
+			el[1].parentElement!.removeChild(el[1]);
 		}
 		this.startCells.splice(0);
 
 		const startSpaces = this.stage.getStartSpaces(numPlayers);
 		for (let i = 0; i < numPlayers; i++) {
-			const td = this.cells[startSpaces[i].x][startSpaces[i].y];
-			td.classList.remove('Empty');
-			td.classList.add(`Start${i + 1}`);
-			this.startCells.push(td);
+			const space = startSpaces[i];
+			const cell = this.cells[space.x][space.y]!;
+			cell.classList.add(`start${i + 1}`);
+
+			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+			image.setAttribute('href', 'assets/SpecialOverlay.png');
+			image.setAttribute('x', cell.getAttribute('x')!);
+			image.setAttribute('y', cell.getAttribute('y')!);
+			image.setAttribute('width', cell.getAttribute('width')!);
+			image.setAttribute('height', cell.getAttribute('height')!);
+			cell.parentElement!.appendChild(image);
+
+			this.startCells.push([cell, image]);
 		}
 	}
 }
