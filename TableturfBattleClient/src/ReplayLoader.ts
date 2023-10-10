@@ -1,186 +1,206 @@
-function loadReplay(base64: string) {
-	if (stageDatabase.stages == null)
-		throw new Error('Game data not loaded');
+class ReplayLoader {
+	private readonly byteArray: Uint8Array;
+	private readonly dataView: DataView;
+	private pos = 0;
 
-	base64 = base64.replaceAll('-', '+');
-	base64 = base64.replaceAll('_', '/');
-	const bytes = Base64.base64DecToArr(base64);
-	const dataView = new DataView(bytes.buffer);
-	const version = dataView.getUint8(0);
-	const players = [ ];
-	let goalWinCount = null;
-	switch (version) {
-		case 1: {
-			const n = dataView.getUint8(1);
-			const stage = stageDatabase.stages[n & 0x1F];
-			const numPlayers = n >> 5;
+	constructor(base64: string) {
+		base64 = base64.replaceAll('-', '+');
+		base64 = base64.replaceAll('_', '/');
+		this.byteArray = Base64.base64DecToArr(base64);
+		this.dataView = new DataView(this.byteArray.buffer);
+	}
 
-			let pos = 2;
-			const playerData = [ ];
-			currentReplay = { gameNumber: 0, games: [ ], turns: [ ], placements: [ ], watchingPlayer: 0 };
-			for (let i = 0; i < numPlayers; i++) {
-				const len = dataView.getUint8(pos + 34);
-				const player = {
-					name: new TextDecoder().decode(new DataView(bytes.buffer, pos + 35, len)),
-					specialPoints: 0,
-					isReady: false,
-					colour: { r: dataView.getUint8(pos + 0), g: dataView.getUint8(pos + 1), b: dataView.getUint8(pos + 2) },
-					specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
-					specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
-					uiBaseColourIsSpecialColour: false,
-					sleeves: 0,
-					totalSpecialPoints: 0,
-					passes: 0,
-					gamesWon: 0
-				};
-				players.push(player);
+	loadReplay() {
+		if (stageDatabase.stages == null)
+			throw new Error('Game data not loaded');
 
-				const cards = [ ];
-				const initialDrawOrder = [ ];
-				const drawOrder = [ ];
-				for (let j = 0; j < 15; j++) {
-					cards.push(loadCardFromReplay(dataView, pos + 9 + j));
-				}
-				for (let j = 0; j < 2; j++) {
-					initialDrawOrder.push(dataView.getUint8(pos + 24 + j) & 0xF);
-					initialDrawOrder.push(dataView.getUint8(pos + 24 + j) >> 4 & 0xF);
-				}
-				for (let j = 0; j < 8; j++) {
-					drawOrder.push(dataView.getUint8(pos + 26 + j) & 0xF);
-					if (j == 7)
-						player.uiBaseColourIsSpecialColour = (dataView.getUint8(pos + 26 + j) & 0x80) != 0;
-					else
-						drawOrder.push(dataView.getUint8(pos + 26 + j) >> 4 & 0xF);
-				}
-				playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won: false });
-				pos += 35 + len;
-			}
+		const version = this.readUint8();
+		const players = [ ];
+		let goalWinCount = null;
+		switch (version) {
+			case 1: {
+				const n = this.readUint8();
+				const stage = stageDatabase.stages[n & 0x1F];
+				const numPlayers = n >> 5;
 
-			const turns = [ ];
-			for (let i = 0; i < 12; i++) {
-				const turn = [ ];
-				for (let j = 0; j < numPlayers; j++) {
-					const card = loadCardFromReplay(dataView, pos);
-					const b = dataView.getUint8(pos + 1);
-					const x = dataView.getInt8(pos + 2);
-					const y = dataView.getInt8(pos + 3);
-					if (b & 0x80)
-						turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
-					else {
-						const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
-						turn.push(move);
-					}
-					pos += 4;
-				}
-				turns.push(turn);
-			}
-			currentReplay.games.push({ stage, playerData, turns });
-			break;
-		}
-		case 2: {
-			const n = dataView.getUint8(1);
-			const numPlayers = n & 0x0F;
-			goalWinCount = n >> 4;
-			if (goalWinCount == 0) goalWinCount = null;
-
-			let pos = 2;
-			currentReplay = { gameNumber: 0, games: [ ], turns: [ ], placements: [ ], watchingPlayer: 0 };
-			for (let i = 0; i < numPlayers; i++) {
-				const n2 = dataView.getUint8(pos + 9);
-				const len = n2 & 0x7F;
-				const player = {
-					name: new TextDecoder().decode(new DataView(bytes.buffer, pos + 10, len)),
-					specialPoints: 0,
-					isReady: false,
-					colour: { r: dataView.getUint8(pos + 0), g: dataView.getUint8(pos + 1), b: dataView.getUint8(pos + 2) },
-					specialColour: { r: dataView.getUint8(pos + 3), g: dataView.getUint8(pos + 4), b: dataView.getUint8(pos + 5) },
-					specialAccentColour: { r: dataView.getUint8(pos + 6), g: dataView.getUint8(pos + 7), b: dataView.getUint8(pos + 8) },
-					uiBaseColourIsSpecialColour: (n2 & 0x80) != 0,
-					sleeves: 0,
-					totalSpecialPoints: 0,
-					passes: 0,
-					gamesWon: 0
-				};
-				players.push(player);
-				pos += 10 + len;
-			}
-
-			while (pos < dataView.byteLength) {
-				const stage = stageDatabase.stages[dataView.getUint8(pos + 0)];
 				const playerData = [ ];
-				pos++;
+				currentReplay = { gameNumber: 0, decks: [ ], games: [ ], turns: [ ], placements: [ ], watchingPlayer: 0 };
 				for (let i = 0; i < numPlayers; i++) {
+					const colour = this.readColour();
+					const specialColour = this.readColour();
+					const specialAccentColour = this.readColour();
+					let uiBaseColourIsSpecialColour = false;
+
 					const cards = [ ];
 					const initialDrawOrder = [ ];
 					const drawOrder = [ ];
-					let won = false;
 					for (let j = 0; j < 15; j++) {
-						cards.push(loadCardFromReplay(dataView, pos + j));
+						cards.push(this.loadCardFromReplay());
 					}
 					for (let j = 0; j < 2; j++) {
-						initialDrawOrder.push(dataView.getUint8(pos + 15 + j) & 0xF);
-						initialDrawOrder.push(dataView.getUint8(pos + 15 + j) >> 4 & 0xF);
+						const n = this.readUint8();
+						initialDrawOrder.push(n & 0xF);
+						initialDrawOrder.push(n >> 4 & 0xF);
 					}
 					for (let j = 0; j < 8; j++) {
-						drawOrder.push(dataView.getUint8(pos + 17 + j) & 0xF);
+						const n = this.readUint8();
+						drawOrder.push(n & 0xF);
 						if (j == 7)
-							won = (dataView.getUint8(pos + 17 + j) & 0x80) != 0;
+							uiBaseColourIsSpecialColour = (n & 0x80) != 0;
 						else
-							drawOrder.push(dataView.getUint8(pos + 17 + j) >> 4 & 0xF);
+							drawOrder.push(n >> 4 & 0xF);
 					}
-					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won });
-					pos += 25;
+
+					const player = {
+						name: this.readString(),
+						specialPoints: 0,
+						isReady: false,
+						colour,
+						specialColour,
+						specialAccentColour,
+						uiBaseColourIsSpecialColour,
+						sleeves: 0,
+						totalSpecialPoints: 0,
+						passes: 0,
+						gamesWon: 0
+					};
+					players.push(player);
+					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won: false });
 				}
-				const turns = replayLoadTurns(dataView, numPlayers, pos);
-				pos += 48 * numPlayers;
+
+				const turns = this.replayLoadTurns(numPlayers);
 				currentReplay.games.push({ stage, playerData, turns });
+				break;
 			}
-			break;
+			case 2: {
+				const n = this.readUint8();
+				const numPlayers = n & 0x0F;
+				goalWinCount = n >> 4;
+				if (goalWinCount == 0) goalWinCount = null;
+
+				currentReplay = { gameNumber: 0, decks: [ ], games: [ ], turns: [ ], placements: [ ], watchingPlayer: 0 };
+				for (let i = 0; i < numPlayers; i++) {
+					const colour = this.readColour();
+					const specialColour = this.readColour();
+					const specialAccentColour = this.readColour();
+					const n2 = this.readUint8();
+					const len = n2 & 0x7F;
+					const player = {
+						name: this.readString(len),
+						specialPoints: 0,
+						isReady: false,
+						colour,
+						specialColour,
+						specialAccentColour,
+						uiBaseColourIsSpecialColour: (n2 & 0x80) != 0,
+						sleeves: 0,
+						totalSpecialPoints: 0,
+						passes: 0,
+						gamesWon: 0
+					};
+					players.push(player);
+				}
+
+				while (this.pos < this.dataView.byteLength) {
+					const stage = stageDatabase.stages[this.readUint8()];
+					const playerData = [ ];
+					for (let i = 0; i < numPlayers; i++) {
+						const cards = [ ];
+						const initialDrawOrder = [ ];
+						const drawOrder = [ ];
+						let won = false;
+						for (let j = 0; j < 15; j++) {
+							cards.push(this.loadCardFromReplay());
+						}
+						for (let j = 0; j < 2; j++) {
+							const n = this.readUint8();
+							initialDrawOrder.push(n & 0xF);
+							initialDrawOrder.push(n >> 4 & 0xF);
+						}
+						for (let j = 0; j < 8; j++) {
+							const n = this.readUint8();
+							drawOrder.push(n & 0xF);
+							if (j == 7)
+								won = (n & 0x80) != 0;
+							else
+								drawOrder.push(n >> 4 & 0xF);
+						}
+						playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won });
+					}
+					const turns = this.replayLoadTurns(numPlayers);
+					currentReplay.games.push({ stage, playerData, turns });
+				}
+				break;
+			}
+			default:
+				throw new RangeError('Unknown replay data version');
 		}
-		default:
-			throw new RangeError('Unknown replay data version');
+
+		currentGame = {
+			id: 'replay',
+			game: {
+				state: GameState.Redraw,
+				players: players,
+				maxPlayers: players.length,
+				turnNumber: 0,
+				turnTimeLimit: null,
+				turnTimeLeft: null,
+				goalWinCount: goalWinCount
+			},
+			me: null,
+			webSocket: null
+		};
+
+		loadPlayers(players);
+		setUrl(`replay/${encodeToUrlSafeBase64(this.byteArray)}`)
+		initReplay();
 	}
 
-	currentGame = {
-		id: 'replay',
-		game: {
-			state: GameState.Redraw,
-			players: players,
-			maxPlayers: players.length,
-			turnNumber: 0,
-			turnTimeLimit: null,
-			turnTimeLeft: null,
-			goalWinCount: goalWinCount
-		},
-		me: null,
-		webSocket: null
-	};
-
-	loadPlayers(players);
-	setUrl(`replay/${encodeToUrlSafeBase64(bytes)}`)
-	initReplay();
-}
-
-function replayLoadTurns(dataView: DataView, numPlayers: number, pos: number) {
-	const turns = [ ];
-	for (let i = 0; i < 12; i++) {
-		const turn = [ ];
-		for (let j = 0; j < numPlayers; j++) {
-			const card = loadCardFromReplay(dataView, pos);
-			const b = dataView.getUint8(pos + 1);
-			const x = dataView.getInt8(pos + 2);
-			const y = dataView.getInt8(pos + 3);
-			if (b & 0x80)
-				turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
-			else {
-				const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
-				turn.push(move);
-			}
-			pos += 4;
-		}
-		turns.push(turn);
+	private readUint8() { return this.dataView.getUint8(this.pos++); }
+	private readInt8() { return this.dataView.getInt8(this.pos++); }
+	private readColour(): Colour { return { r: this.readUint8(), g: this.readUint8(), b: this.readUint8() }; }
+	private readString(length?: number) {
+		length ??= this.read7BitEncodedInt();
+		const s = new TextDecoder().decode(new DataView(this.byteArray.buffer, this.pos, length));
+		this.pos += length;
+		return s;
 	}
-	return turns;
-}
 
-function loadCardFromReplay(dataView: DataView, index: number) { return cardDatabase.get(dataView.getUint8(index) > cardDatabase.lastOfficialCardNumber ? dataView.getInt8(index) : dataView.getUint8(index)); }
+	private read7BitEncodedInt() {
+		let n = 0, shiftValue = 0;
+		while (true) {
+			const b = this.dataView.getUint8(this.pos);
+			this.pos++;
+			n += (b & 0x7F) << shiftValue;
+			if ((b & 0x80) == 0) break;
+			shiftValue += 7;
+		}
+		return n;
+	}
+
+	private replayLoadTurns(numPlayers: number) {
+		const turns = [ ];
+		for (let i = 0; i < 12; i++) {
+			const turn = [ ];
+			for (let j = 0; j < numPlayers; j++) {
+				const card = this.loadCardFromReplay();
+				const b = this.readUint8();
+				const x = this.readInt8();
+				const y = this.readInt8();
+				if (b & 0x80)
+					turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
+				else {
+					const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+					turn.push(move);
+				}
+			}
+			turns.push(turn);
+		}
+		return turns;
+	}
+
+	private loadCardFromReplay() {
+		const num = this.readUint8();
+		return cardDatabase.get(num > cardDatabase.lastOfficialCardNumber ? num - 256 : num);
+	}
+}

@@ -232,7 +232,7 @@ preGameReplayButton.addEventListener('click', e => {
 		return;
 	}
 
-	loadReplay(m[1]);
+	new ReplayLoader(m[1]).loadReplay();
 });
 
 let playerName = localStorage.getItem('name');

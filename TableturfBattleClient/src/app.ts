@@ -449,7 +449,7 @@ function processUrl() {
 				if (m[1])
 					presetGameID(m[2]);
 				else
-					onInitialise(() => loadReplay(m[2]));
+					onInitialise(() => new ReplayLoader(m[2]).loadReplay());
 			} else if (location.hash) {
 				canPushState = false;
 				presetGameID(location.hash);
