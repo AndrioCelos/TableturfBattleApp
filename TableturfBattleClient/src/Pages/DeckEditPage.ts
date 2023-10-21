@@ -212,7 +212,7 @@ function createDeckEditEmptySlotButton() {
 	const buttonElement = document.createElement('button');
 	const button = new CheckButton(buttonElement);
 	buttonElement.type = 'button';
-	buttonElement.className = 'card emptySlot';
+	buttonElement.className = 'cardButton emptySlot';
 	buttonElement.addEventListener('click', () => {
 		for (const button2 of cardList.cardButtons)
 			button2.checked = false;
@@ -224,24 +224,36 @@ function createDeckEditEmptySlotButton() {
 	return button;
 }
 
+function deckSortCompare(reverse: boolean, numberA: number, numberB: number) {
+	// Any card is always sorted before empty slots.
+	if (numberA == 0) return numberB == 0 ? 0 : 1;
+	if (numberB == 0) return -1;
+
+	const cardA = cardDatabase.get(numberA);
+	const cardB = cardDatabase.get(numberB);
+	if (userConfig.specialWeaponSorting != SpecialWeaponSorting.InOrder) {
+		if (cardA.isSpecialWeapon && !cardB.isSpecialWeapon)
+			return ((userConfig.specialWeaponSorting == SpecialWeaponSorting.Last) != reverse) ? 1 : -1;
+		else if (cardB.isSpecialWeapon && !cardA.isSpecialWeapon)
+			return ((userConfig.specialWeaponSorting == SpecialWeaponSorting.Last) != reverse) ? -1 : 1;
+	}
+	return CardList.cardSortOrders['size'](cardA, cardB);
+}
+
 deckSortButton.addEventListener('click', _ => {
+	// Check whether the deck is already sorted so that the order will be reversed if so.
 	let isSorted = true;
 	let lastCardNumber = deckEditCardButtons.entries[0].value;
 	for (let i = 1; i < deckEditCardButtons.entries.length; i++) {
 		const entry = deckEditCardButtons.entries[i];
-		if (lastCardNumber == 0 ? entry.value != 0 : (entry.value != 0 && cardDatabase.get(entry.value).size < cardDatabase.get(lastCardNumber).size)) {
+		if (lastCardNumber == 0 ? entry.value != 0 : (entry.value != 0 && deckSortCompare(false, entry.value, lastCardNumber) < 0)) {
 			isSorted = false;
 			break;
 		}
 		lastCardNumber = entry.value;
 	}
-	const comparer = CardList.cardSortOrders['size'];
-	if (isSorted)
-		// If the deck is already sorted, reverse the order.
-		deckEditCardButtons.entries.sort((a, b) => a.value == 0 ? (b.value == 0 ? 0 : 1) : (b.value == 0 ? -1 : comparer(cardDatabase.get(b.value), cardDatabase.get(a.value))));
-	else
-		deckEditCardButtons.entries.sort((a, b) => a.value == 0 ? (b.value == 0 ? 0 : 1) : (b.value == 0 ? -1 : comparer(cardDatabase.get(a.value), cardDatabase.get(b.value))));
 
+	deckEditCardButtons.entries.sort((a, b) => deckSortCompare(isSorted, a.value, b.value));
 	clearChildren(deckCardListEdit);
 	for (const button of deckEditCardButtons.buttons)
 		deckCardListEdit.appendChild(button.buttonElement);

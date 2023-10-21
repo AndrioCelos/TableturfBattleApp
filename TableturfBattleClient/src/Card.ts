@@ -62,6 +62,7 @@ class Card {
 	}
 
 	get isUpcoming() { return this.number < 0; }
+	get isSpecialWeapon() { return this.specialCost == 3 && this.size == 12 };
 
 	getSpace(x: number, y: number, rotation: number) {
 		switch (rotation & 3) {

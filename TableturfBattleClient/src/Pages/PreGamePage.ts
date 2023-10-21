@@ -21,6 +21,7 @@ const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelect
 
 const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
 const optionsTurnNumberStyle = document.getElementById('optionsTurnNumberStyle') as HTMLSelectElement;
+const optionsSpecialWeaponSorting = document.getElementById('optionsSpecialWeaponSorting') as HTMLSelectElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -211,6 +212,7 @@ preGameDeckEditorButton.addEventListener('click', e => {
 preGameSettingsButton.addEventListener('click', e => {
 	e.preventDefault();
 	optionsTurnNumberStyle.value = turnNumberLabel.absoluteMode ? 'absolute' : 'remaining';
+	optionsSpecialWeaponSorting.value = SpecialWeaponSorting[userConfig.specialWeaponSorting];
 	settingsDialog.showModal();
 });
 
@@ -261,6 +263,10 @@ optionsColourLock.addEventListener('change', () => {
 })
 
 optionsTurnNumberStyle.addEventListener('change', () => turnNumberLabel.absoluteMode = optionsTurnNumberStyle.value == 'absolute');
+optionsSpecialWeaponSorting.addEventListener('change', () => {
+	userConfig.specialWeaponSorting = SpecialWeaponSorting[optionsSpecialWeaponSorting.value as keyof typeof SpecialWeaponSorting];
+	saveSettings();
+});
 
 let playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';

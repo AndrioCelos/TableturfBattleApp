@@ -6,10 +6,17 @@ interface AppConfig {
 	discordTitle?: string
 }
 
+enum SpecialWeaponSorting {
+	First,
+	Last,
+	InOrder
+}
+
 class Config {
 	name: string | null = null;
 	colourLock = true;
 	absoluteTurnNumber = false;
+	specialWeaponSorting = SpecialWeaponSorting.First;
 }
 
 declare var config: AppConfig;
