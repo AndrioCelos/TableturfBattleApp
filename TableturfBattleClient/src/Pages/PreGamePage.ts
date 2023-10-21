@@ -20,6 +20,7 @@ const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInpu
 const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
 
 const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
+const optionsTurnNumberStyle = document.getElementById('optionsTurnNumberStyle') as HTMLSelectElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -209,6 +210,7 @@ preGameDeckEditorButton.addEventListener('click', e => {
 
 preGameSettingsButton.addEventListener('click', e => {
 	e.preventDefault();
+	optionsTurnNumberStyle.value = turnNumberLabel.absoluteMode ? 'absolute' : 'remaining';
 	settingsDialog.showModal();
 });
 
@@ -257,6 +259,8 @@ optionsColourLock.addEventListener('change', () => {
 		}
 	}
 })
+
+optionsTurnNumberStyle.addEventListener('change', () => turnNumberLabel.absoluteMode = optionsTurnNumberStyle.value == 'absolute');
 
 let playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';

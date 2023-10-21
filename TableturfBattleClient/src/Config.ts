@@ -9,6 +9,7 @@ interface AppConfig {
 class Config {
 	name: string | null = null;
 	colourLock = true;
+	absoluteTurnNumber = false;
 }
 
 declare var config: AppConfig;
