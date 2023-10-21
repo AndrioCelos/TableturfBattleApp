@@ -536,6 +536,8 @@ function updateStats(playerIndex: number, scores: number[]) {
 
 /** Shows the waiting indication for the specified player. */
 function showWaiting(playerIndex: number) {
+	if (playContainers[playerIndex].firstElementChild?.className == 'waiting') return;
+	clearChildren(playContainers[playerIndex]);
 	const el = document.createElement('div');
 	el.className = 'waiting';
 	playContainers[playerIndex].appendChild(el);
@@ -596,6 +598,25 @@ function lockGamePage() {
 	playHint.clear();
 }
 
+function addCardDisplay(playerIndex: number, card: Card, isPass: boolean, isSpecialAttack: boolean, isPreview: boolean) {
+	clearChildren(playContainers[playerIndex]);
+	const display = new CardDisplay(card, 1);
+	if (isPreview) display.element.classList.add('preview');
+	playContainers[playerIndex].append(display.element);
+	if (isSpecialAttack) {
+		const el = document.createElement('div');
+		el.className = 'specialAttackLabel';
+		el.innerText = 'Special Attack!';
+		playContainers[playerIndex].appendChild(el);
+		display.element.classList.add('specialAttack');
+	} else if (isPass) {
+		const el = document.createElement('div');
+		el.className = 'passLabel';
+		el.innerText = 'Pass';
+		playContainers[playerIndex].appendChild(el);
+	}
+}
+
 async function playInkAnimations(data: {
 	game: { state: GameState, board: Space[][] | null, turnNumber: number, players: Player[] },
 	moves: Move[],
@@ -619,38 +640,22 @@ async function playInkAnimations(data: {
 		for (let i = 0; i < currentGame.game.players.length; i++) {
 			const player = currentGame.game.players[i];
 			const move = data.moves[i];
-			if ((move as PlayMove).isSpecialAttack)
+			if ((move as PlayMove).isSpecialAttack) {
 				anySpecialAttacks = true;
-
-			function addCardDisplay() {
-				clearChildren(playContainers[i]);
-				const display = new CardDisplay(move.card, 1);
-				playContainers[i].append(display.element);
-				if ((move as PlayMove).isSpecialAttack) {
-					if (currentReplay) player.specialPoints -= (move as PlayMove).card.specialCost;
-					const el = document.createElement('div');
-					el.className = 'specialAttackLabel';
-					el.innerText = 'Special Attack!';
-					playContainers[i].appendChild(el);
-					display.element.classList.add('specialAttack');
-				} else if (move.isPass) {
-					if (currentReplay) {
-						player.passes++;
-						player.specialPoints++;
-					}
-					const el = document.createElement('div');
-					el.className = 'passLabel';
-					el.innerText = 'Pass';
-					playContainers[i].appendChild(el);
+				if (currentReplay) player.specialPoints -= (move as PlayMove).card.specialCost;
+			} else if (move.isPass) {
+				if (currentReplay) {
+					player.passes++;
+					player.specialPoints++;
 				}
 			}
 
 			const back = playContainers[i].firstElementChild as HTMLElement;
 			if (back) {
 				back.style.setProperty('animation', '0.1s ease-in forwards flipCardOut');
-				back.addEventListener('animationend', addCardDisplay);
+				back.addEventListener('animationend', () => addCardDisplay(i, move.card, move.isPass, (move as PlayMove).isSpecialAttack, false));
 			} else
-				addCardDisplay();
+				addCardDisplay(i, move.card, move.isPass, (move as PlayMove).isSpecialAttack, false);
 		}
 
 		await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
@@ -827,6 +832,7 @@ function updateHandAndDeck(playerData: PlayerData) {
 				}
 			} else {
 				board.cardPlaying = card;
+				addCardDisplay(currentGame!.me!.playerIndex, card, false, false, true);
 				if (specialButton.checked)
 					playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = card.specialCost;
 				if (isNaN(board.highlightX) || isNaN(board.highlightY)) {
@@ -936,6 +942,7 @@ function passButton_click(e: Event) {
 		playHint.clear();
 		specialButton.checked = false;
 		board.cardPlaying = null;
+		showWaiting(currentGame!.me!.playerIndex);
 		playerBars[currentGame!.me!.playerIndex].highlightSpecialPoints = 0;
 		board.specialAttack = false;
 		board.clearHighlight();
@@ -970,6 +977,7 @@ function specialButton_click(e: Event) {
 		passButton.checked = false;
 		board.autoHighlight = true;
 		board.cardPlaying = null;
+		showWaiting(currentGame!.me!.playerIndex);
 		board.clearHighlight();
 		for (let i = 0; i < 4; i++)
 			handButtons.entries[i].button.enabled = canPlayCardAsSpecialAttack[i];
@@ -1066,8 +1074,10 @@ board.onsubmit = (x, y) => {
 
 board.oncancel = () => {
 	board.cardPlaying = null;
-	if (currentGame?.me)
+	if (currentGame?.me) {
+		showWaiting(currentGame.me.playerIndex);
 		playerBars[currentGame.me.playerIndex].highlightSpecialPoints = 0;
+	}
 	board.clearHighlight();
 	for (const button of handButtons.buttons) {
 		if (button.checked) {
@@ -1076,6 +1086,11 @@ board.oncancel = () => {
 			break;
 		}
 	}
+	playHint.clear();
+	if (passButton.checked)
+		cardHint.show('Pick a card to discard.', false);
+	else if (specialButton.checked)
+		cardHint.show('Pick a card to do a Special Attack!', true);
 };
 
 board.onhighlightchange = dScores => {

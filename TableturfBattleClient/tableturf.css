@@ -535,6 +535,9 @@ dialog::backdrop {
 .playContainer .card {
 	animation: 0.1s ease-out forwards flipCardIn;
 }
+.playContainer .card.preview {
+	animation: none;
+}
 
 @keyframes flipCardOut {
 	from { transform: scaleX(1); }
