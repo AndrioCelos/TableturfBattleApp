@@ -32,6 +32,18 @@ public class Game {
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
+	private static readonly PlayerColours[] Colours = new PlayerColours[] {
+		new(new(0xf2200d), new(0xff8c1a), new(0xffd5cc), false),  // Red
+		new(new(0xf2740d), new(0xff4000), new(0xffcc99), true),  // Orange
+		new(new(0xecf901), new(0xfa9e00), new(0xf9f91f), true),  // Yellow
+		new(new(0xc0f915), new(0x6aff00), new(0xe6ff99), true),  // LimeGreen
+		new(new(0x06e006), new(0x33ffcc), new(0xb3ffd9), false),  // Green
+		new(new(0x00ffea), new(0x00a8e0), new(0x99ffff), true),  // Turquoise
+		new(new(0x4a5cfc), new(0x01edfe), new(0xd5e1e1), false),  // Blue
+		new(new(0xa106ef), new(0xff00ff), new(0xffb3ff), false),  // Purple
+		new(new(0xf906e0), new(0x8006f9), new(0xebb4fd), true),  // Magenta
+	};
+
 	public bool TryAddPlayer(Player player, out int playerIndex, out Error error) {
 		lock (this.Players) {
 			if (this.State != GameState.WaitingForPlayers) {
@@ -134,30 +146,25 @@ public class Game {
 	internal void Tick() {
 		if (this.State is GameState.WaitingForPlayers or GameState.ChoosingStage && this.Players.Count >= 2 && this.Players.All(p => p.selectedStageIndex != null)) {
 			// Choose colours.
-			for (int i = 0; i < this.Players.Count; i++) {
-				this.Players[i].Colour = i switch {
-					0 => new(236, 249,   1),
-					1 => new( 74,  92, 252),
-					2 => new(249,   6, 224),
-					_ => new(  6, 249, 148),
+			var random = new Random();
+			if (this.State == GameState.WaitingForPlayers) {
+				var index = random.Next(Colours.Length);
+				var increment = this.Players.Count switch {
+					2 => random.Next(3, 7),
+					3 => random.Next(2, 4),
+					_ => 2
 				};
-				this.Players[i].SpecialColour = i switch {
-					0 => new(250, 158,   0),
-					1 => new(  1, 237, 254),
-					2 => new(128,   6, 249),
-					_ => new(  6, 249,   6),
-				};
-				this.Players[i].SpecialAccentColour = i switch {
-					0 => new(249, 249,  31),
-					1 => new(213, 225, 225),
-					2 => new(235, 180, 253),
-					_ => new(180, 253, 199),
-				};
-				this.Players[i].UIBaseColourIsSpecialColour = i != 1;
+				for (int i = 0; i < this.Players.Count; i++) {
+					var colours = Colours[index];
+					index = (index + increment) % Colours.Length;
+					this.Players[i].Colour = colours.InkColour;
+					this.Players[i].SpecialColour = colours.SpecialColour;
+					this.Players[i].SpecialAccentColour = colours.SpecialAccentColour;
+					this.Players[i].UIBaseColourIsSpecialColour = colours.UIBaseColourIsSpecialColour;
+				}
 			}
 
 			// Choose the stage.
-			var random = new Random();
 			var stageIndex = this.Players[random.Next(this.Players.Count)].selectedStageIndex!.Value;
 			if (stageIndex < 0) stageIndex = random.Next(StageDatabase.Stages.Count);
 			var stage = StageDatabase.Stages[stageIndex];

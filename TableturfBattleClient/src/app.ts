@@ -1,5 +1,13 @@
 declare var baseUrl: string;
 
+const defaultColours = [
+	[ { r: 236, g: 249, b: 1 }, { r: 250, g: 158, b: 0 }, { r: 249, g: 249, b: 31 } ],
+	[ { r: 74, g: 92, b: 252 }, { r: 1, g: 237, b: 254 }, { r: 213, g: 225, b: 225 } ],
+	[ { r: 249, g: 6, b: 224 }, { r: 128, g: 6, b: 249 }, { r: 235, g: 180, b: 253 } ],
+	[ { r: 6, g: 249, b: 148 }, { r: 6, g: 249, b: 6 }, { r: 180, g: 253, b: 199 } ]
+];
+let uiBaseColourIsSpecialColourOutOfGame = true;
+
 const errorDialog = document.getElementById('errorDialog') as HTMLDialogElement;
 const errorMessage = document.getElementById('errorMessage')!;
 const errorDialogForm = document.getElementById('errorDialogForm') as HTMLFormElement;
@@ -259,6 +267,7 @@ function setupWebSocket(gameID: string) {
 						me: payload.playerData,
 						webSocket: webSocket
 					};
+					updateColours();
 
 					lobbyResetSlots();
 					for (let i = 0; i < currentGame.game.players.length; i++)
@@ -393,6 +402,7 @@ function setupWebSocket(gameID: string) {
 	});
 	webSocket.addEventListener('close', webSocket_close);
 }
+
 function webSocket_close() {
 	communicationError();
 }

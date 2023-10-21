@@ -139,7 +139,8 @@ function initReplay() {
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
 	gamePage.dataset.myPlayerIndex = '0';
-	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
+	updateColours();
+	gamePage.dataset.uiBaseColourIsSpecialColour = currentGame!.game.players[0].uiBaseColourIsSpecialColour?.toString();
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
@@ -169,7 +170,7 @@ function initTest(stage: Stage) {
 	testUndoButton.enabled = false;
 	clearChildren(testPlacementList);
 	gamePage.dataset.myPlayerIndex = '0';
-	gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
+	gamePage.dataset.uiBaseColourIsSpecialColour = uiBaseColourIsSpecialColourOutOfGame.toString();
 	gameButtonsContainer.hidden = false;
 	testControls.hidden = false;
 	clearPlayContainers();
@@ -497,16 +498,28 @@ function loadPlayers(players: Player[]) {
 		playerBars[i].name = player.name;
 		playerBars[i].winCounter.wins = players[i].gamesWon;
 		updateStats(i, scores);
-		if (player.colour.r || player.colour.g || player.colour.b) {
-			document.body.style.setProperty(`--primary-colour-${i + 1}`, `rgb(${player.colour.r}, ${player.colour.g}, ${player.colour.b})`);
-			document.body.style.setProperty(`--special-colour-${i + 1}`, `rgb(${player.specialColour.r}, ${player.specialColour.g}, ${player.specialColour.b})`);
-			document.body.style.setProperty(`--special-accent-colour-${i + 1}`, `rgb(${player.specialAccentColour.r}, ${player.specialAccentColour.g}, ${player.specialAccentColour.b})`);
-		}
 	}
 	for (let i = 0; i < playerBars.length; i++) {
 		playerBars[i].visible = i < players.length;
 		playContainers[i].hidden = i >= players.length;
 	}
+	updateColours();
+}
+
+function updateColours() {
+	if (currentGame == null) return;
+	for (let i = 0; i < currentGame.game.players.length; i++) {
+		if (currentGame.game.players[i].colour.r > 0 || currentGame.game.players[i].colour.g > 0 || currentGame.game.players[i].colour.b > 0) {
+			setColour(i, 0, currentGame.game.players[i].colour);
+			setColour(i, 1, currentGame.game.players[i].specialColour);
+			setColour(i, 2, currentGame.game.players[i].specialAccentColour);
+			for (let j = 0; j < 3; j++) {
+				updateHSL(i, j);
+				updateRGB(i, j);
+			}
+		}
+	}
+	uiBaseColourIsSpecialColourOutOfGame = currentGame.game.players[0].uiBaseColourIsSpecialColour ?? true;
 }
 
 function updateStats(playerIndex: number, scores: number[]) {
@@ -587,99 +600,103 @@ async function playInkAnimations(data: {
 	placements: Placement[],
 	specialSpacesActivated: Point[]
 }, abortSignal?: AbortSignal) {
-	if (!currentGame) return;
+	try {
+		if (!currentGame) return;
 
-	const inkPlaced = new Set<number>();
-	const placements = data.placements;
-	board.clearHighlight();
-	board.cardPlaying = null;
-	board.autoHighlight = false;
-	board.specialAttack = false;
-	canPlay = false;
-	timeLabel.faded = true;
+		const inkPlaced = new Set<number>();
+		const placements = data.placements;
+		board.clearHighlight();
+		board.cardPlaying = null;
+		board.autoHighlight = false;
+		board.specialAttack = false;
+		canPlay = false;
+		timeLabel.faded = true;
 
-	// Show the cards that were played.
-	let anySpecialAttacks = false;
-	for (let i = 0; i < currentGame.game.players.length; i++) {
-		const player = currentGame.game.players[i];
-		const move = data.moves[i];
-		if ((move as PlayMove).isSpecialAttack)
-			anySpecialAttacks = true;
+		// Show the cards that were played.
+		let anySpecialAttacks = false;
+		for (let i = 0; i < currentGame.game.players.length; i++) {
+			const player = currentGame.game.players[i];
+			const move = data.moves[i];
+			if ((move as PlayMove).isSpecialAttack)
+				anySpecialAttacks = true;
 
-		function addCardDisplay() {
-			clearChildren(playContainers[i]);
-			const display = new CardDisplay(move.card, 1);
-			playContainers[i].append(display.element);
-			if ((move as PlayMove).isSpecialAttack) {
-				if (currentReplay) player.specialPoints -= (move as PlayMove).card.specialCost;
-				const el = document.createElement('div');
-				el.className = 'specialAttackLabel';
-				el.innerText = 'Special Attack!';
-				playContainers[i].appendChild(el);
-				display.element.classList.add('specialAttack');
-			} else if (move.isPass) {
-				if (currentReplay) {
-					player.passes++;
-					player.specialPoints++;
+			function addCardDisplay() {
+				clearChildren(playContainers[i]);
+				const display = new CardDisplay(move.card, 1);
+				playContainers[i].append(display.element);
+				if ((move as PlayMove).isSpecialAttack) {
+					if (currentReplay) player.specialPoints -= (move as PlayMove).card.specialCost;
+					const el = document.createElement('div');
+					el.className = 'specialAttackLabel';
+					el.innerText = 'Special Attack!';
+					playContainers[i].appendChild(el);
+					display.element.classList.add('specialAttack');
+				} else if (move.isPass) {
+					if (currentReplay) {
+						player.passes++;
+						player.specialPoints++;
+					}
+					const el = document.createElement('div');
+					el.className = 'passLabel';
+					el.innerText = 'Pass';
+					playContainers[i].appendChild(el);
 				}
-				const el = document.createElement('div');
-				el.className = 'passLabel';
-				el.innerText = 'Pass';
-				playContainers[i].appendChild(el);
+			}
+
+			const back = playContainers[i].firstElementChild as HTMLElement;
+			if (back) {
+				back.style.setProperty('animation', '0.1s ease-in forwards flipCardOut');
+				back.addEventListener('animationend', addCardDisplay);
+			} else
+				addCardDisplay();
+		}
+
+		await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
+		for (let i = 0; i < data.game.players.length; i++) {
+			if ((data.moves[i] as PlayMove).isSpecialAttack)
+				playerBars[i].specialPoints -= data.moves[i].card.specialCost;
+			playerBars[i].highlightSpecialPoints = 0;
+		}
+		board.enableInkAnimations();
+		for (const placement of placements) {
+			// Skip the delay when cards don't overlap.
+			if (placement.spacesAffected.find(p => inkPlaced.has(p.space.y * 37 + p.space.x))) {
+				inkPlaced.clear();
+				await delay(500, abortSignal);
+				board.clearInkAnimations();
+				await delay(500, abortSignal);
+				board.enableInkAnimations();
+			}
+
+			for (const p of placement.spacesAffected) {
+				inkPlaced.add(p.space.y * 37 + p.space.x);
+				board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
+				board.showInkAnimation(p.space.x, p.space.y);
 			}
 		}
+		await delay(500, abortSignal);
+		board.clearInkAnimations();
+		await delay(500, abortSignal);
 
-		const back = playContainers[i].firstElementChild as HTMLElement;
-		if (back) {
-			back.style.setProperty('animation', '0.1s ease-in forwards flipCardOut');
-			back.addEventListener('animationend', addCardDisplay);
-		} else
-			addCardDisplay();
-	}
-
-	await delay(anySpecialAttacks ? 3000 : 1000, abortSignal);
-	for (let i = 0; i < data.game.players.length; i++) {
-		if ((data.moves[i] as PlayMove).isSpecialAttack)
-			playerBars[i].specialPoints -= data.moves[i].card.specialCost;
-		playerBars[i].highlightSpecialPoints = 0;
-	}
-	board.enableInkAnimations();
-	for (const placement of placements) {
-		// Skip the delay when cards don't overlap.
-		if (placement.spacesAffected.find(p => inkPlaced.has(p.space.y * 37 + p.space.x))) {
-			inkPlaced.clear();
-			await delay(500, abortSignal);
-			board.clearInkAnimations();
-			await delay(500, abortSignal);
-			board.enableInkAnimations();
+		// Show special spaces.
+		if (data.game.board)
+			board.grid = data.game.board;
+		board.refresh();
+		if (data.specialSpacesActivated.length > 0)
+			await delay(1000, abortSignal);  // Delay if we expect that this changed the board.
+		const scores = board.getScores();
+		for (let i = 0; i < data.game.players.length; i++) {
+			playerBars[i].specialPoints = data.game.players[i].specialPoints;
+			playerBars[i].pointsDelta = scores[i] - playerBars[i].points;
 		}
-
-		for (const p of placement.spacesAffected) {
-			inkPlaced.add(p.space.y * 37 + p.space.x);
-			board.setDisplayedSpace(p.space.x, p.space.y, p.newState);
-			board.showInkAnimation(p.space.x, p.space.y);
+		await delay(1000, abortSignal);
+		for (let i = 0; i < data.game.players.length; i++) {
+			updateStats(i, scores);
 		}
+		await delay(1000, abortSignal);
+	} catch (ex) {
+		if (!(ex instanceof DOMException) || ex.name != 'AbortError') console.error(ex);
 	}
-	await delay(500, abortSignal);
-	board.clearInkAnimations();
-	await delay(500, abortSignal);
-
-	// Show special spaces.
-	if (data.game.board)
-		board.grid = data.game.board;
-	board.refresh();
-	if (data.specialSpacesActivated.length > 0)
-		await delay(1000, abortSignal);  // Delay if we expect that this changed the board.
-	const scores = board.getScores();
-	for (let i = 0; i < data.game.players.length; i++) {
-		playerBars[i].specialPoints = data.game.players[i].specialPoints;
-		playerBars[i].pointsDelta = scores[i] - playerBars[i].points;
-	}
-	await delay(1000, abortSignal);
-	for (let i = 0; i < data.game.players.length; i++) {
-		updateStats(i, scores);
-	}
-	await delay(1000, abortSignal);
 }
 
 function showResult() {
@@ -1206,6 +1223,10 @@ function leaveButton_click(e: MouseEvent) {
 
 leaveButton.addEventListener('click', leaveButton_click);
 
+function showColourDebug() {
+	document.getElementById('debugColour')!.hidden = false;
+}
+
 const colBoxes = [
 	[
 		[ document.getElementById("colH0I") as HTMLInputElement, document.getElementById("colS0I") as HTMLInputElement, document.getElementById("colL0I") as HTMLInputElement, document.getElementById("colRGB0I") as HTMLInputElement ],
@@ -1229,14 +1250,40 @@ const colBoxes = [
 	]
 ];
 function colHSL_change(e: Event) {
-	var p = parseInt((e.target as HTMLInputElement).dataset.player!);
-	var c = parseInt((e.target as HTMLInputElement).dataset.index!);
-	updateRGB(p, c);
+	const box = e.target as HTMLInputElement;
+	const playerIndex = parseInt(box.dataset.player!);
+	const colourIndex = parseInt(box.dataset.index!);
+
+	const h = (parseInt(colBoxes[playerIndex][colourIndex][0].value) % 360 + 360) % 360;  // degrees
+	const s = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][1].value)));  // %
+	const l = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][2].value)));  // %
+
+	const c = (100 - Math.abs(2 * l - 100)) * s;  // × 1/10000
+	const x = c * (60 - Math.abs(h % 120 - 60));  // × 1/600000
+	const min = (l * 100 - c / 2) * 60;  // × 1/600000
+	const rgb1 =
+		h <  60 ? { r: c * 60, g: x, b: 0 } :
+		h < 120 ? { r: x, g: c * 60, b: 0 } :
+		h < 180 ? { r: 0, g: c * 60, b: x } :
+		h < 240 ? { r: 0, g: x, b: c * 60 } :
+		h < 300 ? { r: x, g: 0, b: c * 60 } :
+		{ r: c * 60, g: 0, b: x };  // × 1/600000
+	const rgb = { r: Math.round((rgb1.r + min) * 255 / 600000), g: Math.round((rgb1.g + min) * 255 / 600000), b: Math.round((rgb1.b + min) * 255 / 600000) };
+
+	setColour(playerIndex, colourIndex, rgb);
+	updateRGB(playerIndex, colourIndex);
 }
 function colRGB_change(e: Event) {
-	var p = parseInt((e.target as HTMLInputElement).dataset.player!);
-	var c = parseInt((e.target as HTMLInputElement).dataset.index!);
-	updateHSL(p, c);
+	const box = e.target as HTMLInputElement;
+	const playerIndex = parseInt(box.dataset.player!);
+	const colourIndex = parseInt(box.dataset.index!);
+
+	let colourStr = colBoxes[playerIndex][colourIndex][3].value;
+	if (colourStr.startsWith('#')) colourStr = colourStr.substring(1);
+	if (colourStr.length >= 8) colourStr = colourStr.substring(colourStr.length - 6);
+	const rgb = { r: parseInt(colourStr.substring(0, 2), 16), g: parseInt(colourStr.substring(2, 4), 16), b: parseInt(colourStr.substring(4, 6), 16) };
+	setColour(playerIndex, colourIndex, rgb);
+	updateHSL(playerIndex, colourIndex);
 }
 for (const a of colBoxes) {
 	for (const a2 of a) {
@@ -1255,8 +1302,11 @@ function updateHSL(playerIndex: number, colourIndex: number) {
 	let colourStr = colBoxes[playerIndex][colourIndex][3].value;
 	if (colourStr.startsWith('#')) colourStr = colourStr.substring(1);
 	if (colourStr.length == 8) colourStr = colourStr.substring(2);
-	const colour = { r: parseInt(colourStr.substring(0, 2), 16), g: parseInt(colourStr.substring(2, 4), 16), b: parseInt(colourStr.substring(4, 6), 16) };
-	setColour(playerIndex, colourIndex, colour);
+	const colour = currentGame != null
+		? (colourIndex == 0 ? currentGame!.game.players[playerIndex].colour :
+			colourIndex == 1 ? currentGame!.game.players[playerIndex].specialColour :
+			currentGame!.game.players[playerIndex].specialAccentColour)
+		: defaultColours[playerIndex][colourIndex];
 	const max = Math.max(colour.r, colour.g, colour.b);  // × 1/255
 	const min = Math.min(colour.r, colour.g, colour.b);  // × 1/255
 	const c = max - min;  // × 1/255
@@ -1273,22 +1323,12 @@ function updateHSL(playerIndex: number, colourIndex: number) {
 	colBoxes[playerIndex][colourIndex][2].value = l.toString();
 }
 function updateRGB(playerIndex: number, colourIndex: number) {
-	const h = (parseInt(colBoxes[playerIndex][colourIndex][0].value) % 360 + 360) % 360;  // degrees
-	const s = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][1].value)));  // %
-	const l = Math.min(100, Math.max(0, parseInt(colBoxes[playerIndex][colourIndex][2].value)));  // %
-	const c = (100 - Math.abs(2 * l - 100)) * s;  // × 1/10000
-	const x = c * (60 - Math.abs(h % 120 - 60));  // × 1/600000
-	const min = (l * 100 - c / 2) * 60;  // × 1/600000
-	const rgb1 =
-		h <  60 ? { r: c * 60, g: x, b: 0 } :
-		h < 120 ? { r: x, g: c * 60, b: 0 } :
-		h < 180 ? { r: 0, g: c * 60, b: x } :
-		h < 240 ? { r: 0, g: x, b: c * 60 } :
-		h < 300 ? { r: x, g: 0, b: c * 60 } :
-		{ r: c * 60, g: 0, b: x };  // × 1/600000
-	const rgb = { r: Math.round((rgb1.r + min) * 255 / 600000), g: Math.round((rgb1.g + min) * 255 / 600000), b: Math.round((rgb1.b + min) * 255 / 600000) };
-	colBoxes[playerIndex][colourIndex][3].value = `#${rgb.r.toString(16).padStart(2, '0')}${rgb.g.toString(16).padStart(2, '0')}${rgb.b.toString(16).padStart(2, '0')}`;
-	setColour(playerIndex, colourIndex, rgb);
+	const colour = currentGame != null
+		? (colourIndex == 0 ? currentGame!.game.players[playerIndex].colour :
+			colourIndex == 1 ? currentGame!.game.players[playerIndex].specialColour :
+			currentGame!.game.players[playerIndex].specialAccentColour)
+		: defaultColours[playerIndex][colourIndex];
+	colBoxes[playerIndex][colourIndex][3].value = `#${colour.r.toString(16).padStart(2, '0')}${colour.g.toString(16).padStart(2, '0')}${colour.b.toString(16).padStart(2, '0')}`;
 }
 function setColour(playerIndex: number, colourIndex: number, colour: Colour) {
 	if (!currentGame || playerIndex >= currentGame.game.players.length) return;

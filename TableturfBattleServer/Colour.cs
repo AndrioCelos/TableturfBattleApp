@@ -9,4 +9,10 @@ public struct Colour {
 		this.G = g;
 		this.B = b;
 	}
+
+	public Colour(int packed) {
+		this.R = packed >> 16 & byte.MaxValue;
+		this.G = packed >> 8 & byte.MaxValue;
+		this.B = packed & byte.MaxValue;
+	}
 }
