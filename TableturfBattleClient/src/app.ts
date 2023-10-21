@@ -70,7 +70,7 @@ function showPage(key: string) {
 }
 
 function setClientToken(token: string) {
-	window.localStorage.setItem('clientToken', token);
+	localStorage.setItem('clientToken', token);
 	clientToken = token;
 }
 
@@ -125,7 +125,9 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	}
 	loadPlayers(game.players);
 	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
-	gamePage.dataset.uiBaseColourIsSpecialColour = playerData && game.players[playerData.playerIndex].uiBaseColourIsSpecialColour ? 'true' : 'false';
+	gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock
+		? (playerData?.playerIndex ?? 0) != 1
+		: game.players[playerData?.playerIndex ?? 0].uiBaseColourIsSpecialColour ?? true).toString();
 
 	if (game.state != GameState.WaitingForPlayers)
 		lobbyLockSettings(true);

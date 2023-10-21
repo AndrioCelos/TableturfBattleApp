@@ -140,7 +140,7 @@ function initReplay() {
 	gameButtonsContainer.hidden = false;
 	gamePage.dataset.myPlayerIndex = '0';
 	updateColours();
-	gamePage.dataset.uiBaseColourIsSpecialColour = currentGame!.game.players[0].uiBaseColourIsSpecialColour?.toString();
+	gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock || (currentGame!.game.players[0].uiBaseColourIsSpecialColour ?? true)).toString();
 	canPlay = false;
 	showPage('game');
 	clearPlayContainers();
@@ -395,7 +395,9 @@ flipButton.addEventListener('click', () => {
 		if (currentReplay.watchingPlayer >= currentGame.game.players.length)
 		currentReplay.watchingPlayer = 0;
 		gamePage.dataset.myPlayerIndex = currentReplay.watchingPlayer.toString();
-		gamePage.dataset.uiBaseColourIsSpecialColour = currentGame.game.players[currentReplay.watchingPlayer].uiBaseColourIsSpecialColour?.toString();
+		gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock
+			? currentReplay.watchingPlayer != 1
+			: currentGame.game.players[currentReplay.watchingPlayer].uiBaseColourIsSpecialColour ?? true).toString();
 		board.flip = currentReplay.watchingPlayer % 2 != 0;
 		clearShowDeck();
 		replayUpdateHand();
@@ -1334,12 +1336,15 @@ function setColour(playerIndex: number, colourIndex: number, colour: Colour) {
 	if (!currentGame || playerIndex >= currentGame.game.players.length) return;
 	if (colourIndex == 0) {
 		currentGame.game.players[playerIndex].colour = colour;
-		document.body.style.setProperty(`--primary-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+		if (!userConfig.colourLock)
+			document.body.style.setProperty(`--primary-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	} else if (colourIndex == 1) {
 		currentGame.game.players[playerIndex].specialColour = colour;
-		document.body.style.setProperty(`--special-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+		if (!userConfig.colourLock)
+			document.body.style.setProperty(`--special-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	} else {
 		currentGame.game.players[playerIndex].specialAccentColour = colour;
-		document.body.style.setProperty(`--special-accent-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
+		if (!userConfig.colourLock)
+			document.body.style.setProperty(`--special-accent-colour-${playerIndex + 1}`, `rgb(${colour.r}, ${colour.g}, ${colour.b})`);
 	}
 }

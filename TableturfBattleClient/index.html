@@ -58,6 +58,7 @@
 				<p>
 					<a id="preGameDeckEditorButton" href="deckeditor">Edit decks</a> |
 					<a id="preGameReplayButton" href="replay">Replay</a> |
+					<a id="preGameSettingsButton" href="settings">Settings</a> |
 					<a id="preGameHelpButton" href="help">Help</a>
 				</p>
 				<div id="preGameLoadingSection" class="loadingContainer" hidden>
@@ -654,6 +655,13 @@
 					<button type="submit">OK</button>
 				</form>
 			</footer>
+		</dialog>
+		<dialog id="settingsDialog">
+			<div id="settingsMessage"></div>
+			<form id="settingsDialogForm" method="dialog">
+				<p><label for="optionsColourLock"><input type="checkbox" id="optionsColourLock" checked/> Colour lock</label></p>
+				<button type="submit">Close</button>
+			</form>
 		</dialog>
 		<script src="build/tsbuild.js"></script>
 	</body>

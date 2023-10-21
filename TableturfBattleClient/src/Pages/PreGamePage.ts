@@ -8,14 +8,18 @@ const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton
 const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
 const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
 const preGameReplayButton = document.getElementById('preGameReplayButton') as HTMLLinkElement;
+const preGameSettingsButton = document.getElementById('preGameSettingsButton') as HTMLLinkElement;
 const preGameHelpButton = document.getElementById('preGameHelpButton') as HTMLLinkElement;
 const helpDialog = document.getElementById('helpDialog') as HTMLDialogElement;
+const settingsDialog = document.getElementById('settingsDialog') as HTMLDialogElement;
 
 const gameSetupDialog = document.getElementById('gameSetupDialog') as HTMLDialogElement;
 const gameSetupForm = document.getElementById('gameSetupForm') as HTMLFormElement;
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
 const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
+
+const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
 
 let shownMaxPlayersWarning = false;
 
@@ -46,7 +50,7 @@ preGameForm.addEventListener('submit', e => {
 	e.preventDefault();
 
 	const name = nameBox.value;
-	window.localStorage.setItem('name', name);
+	localStorage.setItem('name', name);
 
 	if (e.submitter?.id == 'newGameButton' || (e.submitter?.id == 'preGameImplicitSubmitButton' && !gameIDBox.value)) {
 		createRoom(false);
@@ -61,7 +65,7 @@ gameSetupForm.addEventListener('submit', e => {
 	if (e.submitter?.id != 'gameSetupSubmitButton')
 		return;
 	const name = nameBox.value;
-	window.localStorage.setItem('name', name);
+	localStorage.setItem('name', name);
 	createRoom(true);
 });
 
@@ -203,6 +207,11 @@ preGameDeckEditorButton.addEventListener('click', e => {
 	setUrl('deckeditor');
 });
 
+preGameSettingsButton.addEventListener('click', e => {
+	e.preventDefault();
+	settingsDialog.showModal();
+});
+
 preGameHelpButton.addEventListener('click', e => {
 	e.preventDefault();
 	helpDialog.showModal();
@@ -235,6 +244,20 @@ preGameReplayButton.addEventListener('click', e => {
 	new ReplayLoader(m[1]).loadReplay();
 });
 
+optionsColourLock.addEventListener('change', () => {
+	userConfig.colourLock = optionsColourLock.checked;
+	saveSettings();
+	if (userConfig.colourLock) {
+		for (let i = 1; i <= 4; i++) {
+			document.body.style.removeProperty(`--primary-colour-${i}`);
+			document.body.style.removeProperty(`--special-colour-${i}`);
+			document.body.style.removeProperty(`--special-accent-colour-${i}`);
+			uiBaseColourIsSpecialColourOutOfGame = true;
+			gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
+		}
+	}
+})
+
 let playerName = localStorage.getItem('name');
 (document.getElementById('nameBox') as HTMLInputElement).value = playerName || '';
 
@@ -243,6 +266,11 @@ window.addEventListener('popstate', () => {
 	if (!settingUrl)
 		processUrl();
 });
+
+// Initialise the settings dialog.
+{
+	optionsColourLock.checked = userConfig.colourLock;
+}
 
 if (!canPushState)
 	preGameDeckEditorButton.href = '#deckeditor';
