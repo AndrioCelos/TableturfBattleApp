@@ -65,7 +65,7 @@ class ReplayLoader {
 						gamesWon: 0
 					};
 					players.push(player);
-					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won: false });
+					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15).fill(1)), initialDrawOrder, drawOrder, won: false });
 				}
 
 				const turns = this.readTurns(numPlayers);
@@ -105,7 +105,7 @@ class ReplayLoader {
 							else
 								drawOrder.push(n >> 4 & 0xF);
 						}
-						playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15)), initialDrawOrder, drawOrder, won });
+						playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15).fill(1)), initialDrawOrder, drawOrder, won });
 					}
 					const turns = this.readTurns(numPlayers);
 					currentReplay.games.push({ stage, playerData, turns });

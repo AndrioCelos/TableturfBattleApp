@@ -91,7 +91,7 @@ deckViewBackButton.addEventListener('click', e => {
 });
 
 function saveDecks() {
-	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards', 'sleeves' ]);
+	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards', 'sleeves', 'upgrades' ]);
 	localStorage.setItem('decks', json);
 }
 
@@ -99,13 +99,13 @@ function saveDecks() {
 	const decksString = localStorage.getItem('decks');
 	if (decksString) {
 		for (const deck of JSON.parse(decksString)) {
-			decks.push(new SavedDeck(deck.name, deck.sleeves ?? 0, deck.cards, deck.upgrades ?? new Array(15), false));
+			decks.push(new SavedDeck(deck.name, deck.sleeves ?? 0, deck.cards, deck.upgrades ?? new Array(15).fill(1), false));
 		}
 	} else {
 		const lastDeckString = localStorage.getItem('lastDeck');
 		const lastDeck = lastDeckString?.split(/\+/)?.map(s => parseInt(s));
 		if (lastDeck && lastDeck.length == 15) {
-			decks.push(new SavedDeck('Custom Deck', 0, lastDeck, new Array(15), false));
+			decks.push(new SavedDeck('Custom Deck', 0, lastDeck, new Array(15).fill(1), false));
 			saveDecks();
 		}
 		localStorage.removeItem('lastDeck');
@@ -132,7 +132,7 @@ function createDeckButton(deck: SavedDeck) {
 		const index = decks.indexOf(deck);
 		draggingDeckButton = buttonElement;
 		e.dataTransfer.effectAllowed = 'copyMove';
-		e.dataTransfer.setData('text/plain', JSON.stringify(deck, [ 'name', 'cards' ]));
+		e.dataTransfer.setData('text/plain', JSON.stringify(deck, [ 'name', 'cards', 'sleeves', 'upgrades' ]));
 		e.dataTransfer.setData('application/tableturf-deck-index', index.toString());
 		buttonElement.classList.add('dragging');
 	});
@@ -212,11 +212,11 @@ function importDecks(decksToImport: (SavedDeck | number[])[]) {
 	for (const el of decksToImport) {
 		let deck;
 		if (el instanceof Array)
-			deck = new SavedDeck(`Imported Deck ${decks.length + 1}`, 0, el, new Array(15), false);
+			deck = new SavedDeck(`Imported Deck ${decks.length + 1}`, 0, el, new Array(15).fill(1), false);
 		else {
 			deck = el;
 			deck.sleeves ??= 0;
-			deck.upgrades ??= new Array(15);
+			deck.upgrades ??= new Array(15).fill(1);
 			deck.isReadOnly = false;
 			if (!deck.name) deck.name = `Imported Deck ${decks.length + 1}`;
 		}
@@ -234,7 +234,7 @@ function importDecks(decksToImport: (SavedDeck | number[])[]) {
 }
 
 newDeckButton.addEventListener('click', () => {
-	selectedDeck = new SavedDeck(`Deck ${decks.length + 1}`, 0, new Array(15), new Array(15), false);
+	selectedDeck = new SavedDeck(`Deck ${decks.length + 1}`, 0, new Array(15).fill(0), new Array(15).fill(1), false);
 	createDeckButton(selectedDeck);
 	decks.push(selectedDeck);
 	editDeck();
@@ -372,7 +372,7 @@ function deselectDeck() {
 
 deckExportButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	const json = JSON.stringify(selectedDeck, [ 'name', 'cards' ]);
+	const json = JSON.stringify(selectedDeck, [ 'name', 'cards', 'sleeves', 'upgrades' ]);
 	deckExportTextBox.value = json;
 	deckExportCopyButton.innerText = 'Copy';
 	deckExportDialog.showModal();
@@ -451,7 +451,7 @@ deckImportFileBox.addEventListener('change', async () => {
 });
 
 deckExportAllButton.addEventListener('click', () => {
-	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards' ]);
+	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards', 'sleeves', 'upgrades' ]);
 	deckExportTextBox.value = json;
 	deckExportCopyButton.innerText = 'Copy';
 	deckExportDialog.showModal();

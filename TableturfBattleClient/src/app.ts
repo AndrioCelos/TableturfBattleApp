@@ -16,7 +16,7 @@ let initialised = false;
 let initialiseCallback: (() => void) | null = null;
 let canPushState = isSecureContext && location.protocol != 'file:';
 
-const decks = [ new SavedDeck('Starter Deck', 0, [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], new Array(15), true) ];
+const decks = [ new SavedDeck('Starter Deck', 0, [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], new Array(15).fill(1), true) ];
 let selectedDeck: SavedDeck | null = null;
 let editingDeck = false;
 let deckModified = false;
