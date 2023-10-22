@@ -228,6 +228,7 @@ function importDecks(decksToImport: (SavedDeck | number[])[]) {
 		selectedDeck = newSelectedDeck;
 		deckButtons.deselect();
 		deckButtons.entries.find(e => e.value == newSelectedDeck)!.button.checked = true;
+		deckButtons.value = newSelectedDeck;
 		selectDeck();
 		saveDecks();
 	}
