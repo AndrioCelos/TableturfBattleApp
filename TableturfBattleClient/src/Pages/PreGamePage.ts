@@ -43,7 +43,10 @@ function setLoadingMessage(message: string | null) {
 }
 
 function preGameInitStageDatabase(stages: Stage[]) {
-	for (const stage of stages) {
+	for (let i = 0; i < stages.length; i++) {
+		const stage = stages[i];
+		const status = userConfig.lastCustomRoomConfig ? userConfig.lastCustomRoomConfig.stageSwitch[i] : 0;
+
 		const button = document.createElement('button');
 
 		const div1 = document.createElement('div');
@@ -53,12 +56,12 @@ function preGameInitStageDatabase(stages: Stage[]) {
 
 		const div2 = document.createElement('div');
 		div2.className = 'stageStatus';
-		div2.innerText = 'Allowed';
+		div2.innerText = [ 'Allowed', 'Counterpick only', 'Banned' ][status];
 		button.appendChild(div2);
 
 		button.type = 'button';
 		button.dataset.index = stageSwitchButtons.length.toString();
-		button.dataset.status = '0';
+		button.dataset.status = status.toString();
 		stageSwitchButtons.push(button);
 		button.addEventListener('click', stageSwitchButton_click);
 		stageSwitch.appendChild(button);
@@ -149,6 +152,19 @@ function createRoom(useOptionsForm: boolean) {
 	data.append('name', name);
 	data.append('clientToken', clientToken);
 	if (useOptionsForm) {
+		const settings = {
+			maxPlayers: parseInt(maxPlayersBox.value),
+			turnTimeLimit: turnTimeLimitBox.value ? turnTimeLimitBox.valueAsNumber : null,
+			goalWinCount: goalWinCountBox.value ? parseInt(goalWinCountBox.value) : null,
+			stageSelectionMethodFirst: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
+			stageSelectionMethodAfterWin: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
+			stageSelectionMethodAfterDraw: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
+			forceSameDecksAfterDraw: gameSetupForceSameDeckAfterDrawBox.checked,
+			stageSwitch: stageSwitchButtons.map(b => parseInt(b.dataset.status!))
+		};
+		userConfig.lastCustomRoomConfig = settings;
+		saveSettings();
+
 		data.append('maxPlayers', maxPlayersBox.value);
 		if (turnTimeLimitBox.value)
 			data.append('turnTimeLimit', turnTimeLimitBox.value);
@@ -156,25 +172,22 @@ function createRoom(useOptionsForm: boolean) {
 			data.append('goalWinCount', goalWinCountBox.value);
 
 		const stageSelectionRuleFirst = {
-			method: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
-			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status != '0'),
-			strikeCounts: [ 1, 2 ],
+			method: settings.stageSelectionMethodFirst,
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i != 0)
 		};
 		const stageSelectionRuleAfterWin = {
-			method: stageSelectionRuleAfterWinBox.value == 'Inherit' ? stageSelectionRuleFirst.method : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
-			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status == '2'),
-			strikeCounts: [ 2 ],
+			method: settings.stageSelectionMethodAfterWin,
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
 		};
 		const stageSelectionRuleAfterDraw = {
-			method: stageSelectionRuleAfterWinBox.value == 'Inherit' ? stageSelectionRuleFirst.method : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
-			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status == '2'),
-			strikeCounts: [ 1, 2 ],
+			method: settings.stageSelectionMethodAfterDraw,
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
 		};
 
 		data.append('stageSelectionRuleFirst', JSON.stringify(stageSelectionRuleFirst));
 		data.append('stageSelectionRuleAfterWin', JSON.stringify(stageSelectionRuleAfterWin));
 		data.append('stageSelectionRuleAfterDraw', JSON.stringify(stageSelectionRuleAfterDraw));
-		data.append('ForceSameDeckAfterDrawBox', gameSetupForceSameDeckAfterDrawBox.checked.toString());
+		data.append('ForceSameDeckAfterDrawBox', settings.forceSameDecksAfterDraw.toString());
 	}
 	request.send(data.toString());
 	setLoadingMessage('Creating a room...');
@@ -339,6 +352,19 @@ window.addEventListener('popstate', () => {
 // Initialise the settings dialog.
 {
 	optionsColourLock.checked = userConfig.colourLock;
+}
+
+// Initialise the room settings dialog.
+{
+	if (userConfig.lastCustomRoomConfig) {
+		maxPlayersBox.value = userConfig.lastCustomRoomConfig.maxPlayers.toString();
+		turnTimeLimitBox.value = userConfig.lastCustomRoomConfig.turnTimeLimit?.toString() ?? '';
+		goalWinCountBox.value = userConfig.lastCustomRoomConfig.goalWinCount?.toString() ?? '';
+		stageSelectionRuleFirstBox.value = StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodFirst]
+		stageSelectionRuleAfterWinBox.value = userConfig.lastCustomRoomConfig.stageSelectionMethodAfterWin != null ? StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodAfterWin] : 'Inherit';
+		stageSelectionRuleAfterDrawBox.value = userConfig.lastCustomRoomConfig.stageSelectionMethodAfterDraw != null ? StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodAfterDraw] : 'Inherit';
+		gameSetupForceSameDeckAfterDrawBox.checked = userConfig.lastCustomRoomConfig.forceSameDecksAfterDraw;
+	}
 }
 
 if (!canPushState)

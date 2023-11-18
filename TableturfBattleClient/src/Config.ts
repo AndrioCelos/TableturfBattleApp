@@ -17,6 +17,18 @@ class Config {
 	colourLock = true;
 	absoluteTurnNumber = false;
 	specialWeaponSorting = SpecialWeaponSorting.First;
+	lastCustomRoomConfig?: CustomRoomConfig;
+}
+
+interface CustomRoomConfig {
+	maxPlayers: number;
+	turnTimeLimit: number | null;
+	goalWinCount: number | null;
+	stageSelectionMethodFirst: StageSelectionMethod;
+	stageSelectionMethodAfterWin: StageSelectionMethod | null;
+	stageSelectionMethodAfterDraw: StageSelectionMethod | null;
+	forceSameDecksAfterDraw: boolean;
+	stageSwitch: number[];
 }
 
 declare var config: AppConfig;
