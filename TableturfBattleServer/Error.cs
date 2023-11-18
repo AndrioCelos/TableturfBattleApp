@@ -1,9 +1,8 @@
 ﻿using System.Net;
-
 using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
-public struct Error {
+public readonly struct Error {
 	[JsonIgnore]
 	public HttpStatusCode HttpStatusCode { get; }
 	public string Code { get; }

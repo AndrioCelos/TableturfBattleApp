@@ -159,8 +159,37 @@ internal class Program {
 						}
 					} else
 						clientToken = Guid.NewGuid();
-					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit };
-					game.Players.Add(new(game, name, clientToken));
+
+					StageSelectionRules? stageSelectionRuleFirst = null, stageSelectionRuleAfterWin = null, stageSelectionRuleAfterDraw = null;
+					if (d.TryGetValue("stageSelectionRuleFirst", out var json1)) {
+						if (!TryParseStageSelectionRule(json1, out stageSelectionRuleFirst) || stageSelectionRuleFirst.Method is StageSelectionMethod.Same or StageSelectionMethod.Counterpick) {
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleFirst was invalid."));
+							return;
+						}
+					} else
+						stageSelectionRuleFirst = StageSelectionRules.Default;
+					if (d.TryGetValue("stageSelectionRuleAfterWin", out var json2)) {
+						if (!TryParseStageSelectionRule(json2, out stageSelectionRuleAfterWin)) {
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleAfterWin was invalid."));
+							return;
+						}
+					} else
+						stageSelectionRuleAfterWin = stageSelectionRuleFirst;
+					if (d.TryGetValue("stageSelectionRuleAfterDraw", out var json3)) {
+						if (!TryParseStageSelectionRule(json3, out stageSelectionRuleAfterDraw) || stageSelectionRuleAfterDraw.Method == StageSelectionMethod.Counterpick) {
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleAfterDraw was invalid."));
+							return;
+						}
+					} else
+						stageSelectionRuleAfterDraw = stageSelectionRuleFirst;
+
+					if (d.TryGetValue("forceSameDeckAfterDraw", out var forceSameDeckAfterDrawString) && !bool.TryParse(forceSameDeckAfterDrawString, out var forceSameDeckAfterDraw))
+						SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "forceSameDeckAfterDraw was invalid."));
+					else
+						forceSameDeckAfterDraw = false;
+
+					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
+					game.TryAddPlayer(new(game, name, clientToken), out _, out _);
 					games.Add(game.ID, game);
 					timer.Start();
 
@@ -318,35 +347,28 @@ internal class Program {
 										SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "NotInGame", "You're not in the game."));
 										return;
 									}
-									if (player.selectedStageIndex != null) {
-										SetErrorResponse(e.Response, new(HttpStatusCode.Conflict, "StageAlreadyChosen", "You've already chosen a stage."));
+									if (!d.TryGetValue("stages", out var stagesString)) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidStage", "Missing stages."));
 										return;
 									}
 
-									if (!d.TryGetValue("stage", out var stageName)) {
-										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidStage", "Missing stage name."));
-										return;
-									}
-
-									if (stageName == "random") {
-										player.selectedStageIndex = -1;
-										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-										game.SendPlayerReadyEvent(playerIndex, false);
-										timer.Start();
-										return;
-									} else {
-										for (var i = 0; i < StageDatabase.Stages.Count; i++) {
-											var stage = StageDatabase.Stages[i];
-											if (stageName == stage.Name) {
-												player.selectedStageIndex = i;
-												e.Response.StatusCode = (int) HttpStatusCode.NoContent;
-												game.SendPlayerReadyEvent(playerIndex, false);
-												timer.Start();
-												return;
-											}
+									var stages = new HashSet<int>();
+									foreach (var field in stagesString.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+										if (!int.TryParse(field, out var i)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidStage", "Invalid stages."));
+											return;
 										}
+										stages.Add(i);
 									}
-									SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "StageNotFound", "No such stage is known."));
+
+									if (!game.TryChooseStages(player, stages, out var error)) {
+										SetErrorResponse(e.Response, error);
+										return;
+									}
+
+									e.Response.StatusCode = (int) HttpStatusCode.NoContent;
+									game.SendPlayerReadyEvent(playerIndex, false);
+									timer.Start();
 								}
 								break;
 							}
@@ -414,15 +436,6 @@ internal class Program {
 												return;
 											}
 											cards[i] = cardNumber;
-										}
-
-										if (d.TryGetValue("stageIndex", out var stageIndexString) && stageIndexString is not ("" or "null" or "undefined")) {
-											if (int.TryParse(stageIndexString, out var stageIndex) && stageIndex >= 0 && stageIndex < StageDatabase.Stages.Count)
-												player.selectedStageIndex = stageIndex;
-											else {
-												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidStage", "Invalid stage index."));
-												return;
-											}
 										}
 
 										player.CurrentGameData.Deck = game.GetDeck(deckName, deckSleeves, cards, upgrades ?? Enumerable.Repeat(0, 15));
@@ -663,5 +676,15 @@ internal class Program {
 			return true;
 		}
 		return false;
+	}
+
+	private static bool TryParseStageSelectionRule(string json, [MaybeNullWhen(false)] out StageSelectionRules stageSelectionRule) {
+		try {
+			stageSelectionRule = JsonUtils.Deserialise<StageSelectionRules>(json);
+			return stageSelectionRule != null;
+		} catch (JsonSerializationException) {
+			stageSelectionRule = null;
+			return false;
+		}
 	}
 }

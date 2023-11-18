@@ -115,6 +115,14 @@ footer {
 	text-align: right;
 }
 
+#stageSwitch button { display: block; }
+#stageSwitch button[data-status='0'] { color: lime; }
+#stageSwitch button[data-status='1'] { color: yellow; }
+#stageSwitch button[data-status='2'] { color: red; }
+#stageSwitch button * { display: inline-block; }
+#stageSwitch button .stageName { width: 12em; text-align: start; }
+#stageSwitch button .stageStatus { width: 8em; text-align: end; }
+
 /* Lobby page */
 
 #lobbyPage:not([hidden]) {
@@ -286,7 +294,7 @@ dialog::backdrop {
 	flex-wrap: wrap;
 }
 
-.stage, .stageRandom {
+.stage, .stageRandom:not([hidden]) {
 	font: inherit;
 	color: currentColor;  /* Override disabled colour */
 	background: black;
@@ -299,6 +307,8 @@ dialog::backdrop {
 	flex-flow: column;
 	margin: 5px;
 }
+.stage.banned { display: none; }
+.stage.struck { opacity: 0.25; }
 
 .stageBody {
 	flex-grow: 1;

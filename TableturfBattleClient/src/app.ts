@@ -51,6 +51,7 @@ function initCardDatabase(cards: Card[]) {
 	deckEditInitCardDatabase(cards);
 }
 function initStageDatabase(stages: Stage[]) {
+	preGameInitStageDatabase(stages);
 	lobbyInitStageDatabase(stages);
 	deckEditInitStageDatabase(stages);
 }
@@ -140,15 +141,15 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 			initLobbyPage(window.location.toString());
 			showPage('lobby');
 			clearConfirmLeavingGame();
+			showStageSelectionForm(playerData?.stageSelectionPrompt ?? null, playerData && game.players[playerData.playerIndex]?.isReady);
 			lobbySelectedStageSection.hidden = true;
-			lobbyStageSection.hidden = !playerData || game.players[playerData.playerIndex]?.isReady;
 			break;
 		case GameState.ChoosingDeck:
 			showPage('lobby');
 			if (currentGame.me) setConfirmLeavingGame();
 			if (selectedStageIndicator)
 				lobbySelectedStageSection.removeChild(selectedStageIndicator.buttonElement);
-			selectedStageIndicator = new StageButton(stageDatabase.stages?.find(s => s.name == game.stage)!);
+			selectedStageIndicator = new StageButton(stageDatabase.stages![game.stage]);
 			selectedStageIndicator.buttonElement.id = 'selectedStageButton';
 			selectedStageIndicator.buttonElement.disabled = true;
 			selectedStageIndicator.setStartSpaces(game.players.length);
@@ -280,8 +281,10 @@ function setupWebSocket(gameID: string) {
 						playerBars[i].visible = i < currentGame.game.maxPlayers;
 					}
 
-					for (const button of stageButtons.buttons)
+					for (const button of stageButtons.buttons) {
+						if (!(button instanceof StageButton)) continue;
 						(button as StageButton).setStartSpaces(currentGame.game.maxPlayers);
+					}
 
 					onGameStateChange(payload.data, payload.playerData);
 
@@ -336,7 +339,6 @@ function setupWebSocket(gameID: string) {
 						lobbySetReady(payload.data.playerIndex);
 
 						if (payload.data.playerIndex == currentGame.me?.playerIndex) {
-							lobbyStageSection.hidden = true;
 							lobbyDeckSection.hidden = true;
 						}
 

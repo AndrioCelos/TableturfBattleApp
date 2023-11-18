@@ -10,6 +10,8 @@ public class Player {
 	public Colour SpecialAccentColour { get; set; }
 	public bool UIBaseColourIsSpecialColour { get; set; }
 
+	public StageSelectionPrompt? StageSelectionPrompt { get; set; }
+
 	[JsonIgnore]
 	private readonly Game game;
 	[JsonIgnore]
@@ -28,6 +30,8 @@ public class Player {
 
 	[JsonIgnore]
 	public SingleGameData CurrentGameData => this.Games[^1];
+	[JsonIgnore]
+	public bool WonLastGame => this.Games.Count > 1 && this.Games[^2].won;
 
 	public int SpecialPoints => this.CurrentGameData.SpecialPoints;
 
@@ -36,13 +40,15 @@ public class Player {
 	public int? Sleeves => this.CurrentGameData.Deck?.Sleeves;
 
 	public bool IsReady => this.game.State switch {
-		GameState.WaitingForPlayers or GameState.ChoosingStage => this.selectedStageIndex != null,
+		GameState.WaitingForPlayers or GameState.ChoosingStage => this.selectedStages != null,
 		GameState.ChoosingDeck => this.CurrentGameData.Deck != null,
 		_ => this.Move != null
 	};
 
 	[JsonIgnore]
-	internal int? selectedStageIndex;
+	internal ICollection<int>? selectedStages;
+
+	internal static readonly int[] RandomStageSelection = new[] { -1 };
 
 	public Player(Game game, string name, Guid token) {
 		this.game = game ?? throw new ArgumentNullException(nameof(game));

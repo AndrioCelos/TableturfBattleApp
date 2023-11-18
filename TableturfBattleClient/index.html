@@ -85,18 +85,25 @@
 				</div>
 			</section>
 			<section id="lobbyStageSection" hidden>
-				<h3>Vote for the stage.</h3>
-				<form id="stageSelectionForm">
-					<div class="submitButtonContainer">
-						<button type="submit" id="submitStageButton">Submit</button>
-						<div class="loadingContainer" hidden>
-							<div class="loadingSpinner"></div>
+				<form id="stageSelectionForm" hidden>
+					<div id="stageSelectionFormHeader">
+						<h3 id="stagePrompt">Vote for the stage.</h3>
+						<div class="submitButtonContainer">
+							<button type="submit" id="submitStageButton" disabled>Submit</button>
+							<div class="loadingContainer" hidden>
+								<div class="loadingSpinner"></div>
+							</div>
 						</div>
 					</div>
 					<div id="stageList">
 						<button type="button" id="stageRandomButton" class="stageRandom">Random</button>
 					</div>
 					<div id="stageListLoadingSection"><div class="loadingSpinner"></div> Loading stages...</div>
+				</form>
+				<form id="strikeOrderSelectionForm" hidden>
+					<h3 id="stagePrompt">Do you want to strike first or second?</h3>
+					<button type="submit" data-strike-index="0">Strike first</button>
+					<button type="submit" data-strike-index="1">Strike second</button>
 				</form>
 			</section>
 			<div id="lobbyDeckSection" hidden>
@@ -602,6 +609,49 @@
 							</select>
 						</label>
 					</p>
+					<p>Stage selection:</p>
+					<table>
+						<tr>
+							<td><label for="stageSelectionRuleFirstBox">First battle:</label></td>
+							<td>
+								<select id="stageSelectionRuleFirstBox">
+									<option value="Vote">Vote</option>
+									<option value="Random">Random/Fixed</option>
+									<option value="Strike">Strike</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="stageSelectionRuleAfterWinBox">After a win:</label></td>
+							<td>
+								<select id="stageSelectionRuleAfterWinBox">
+									<option value="Inherit">Same method as the first battle</option>
+									<option value="Same">Repeat stage of the last battle</option>
+									<option value="Vote">Vote</option>
+									<option value="Random">Random/Fixed</option>
+									<option value="Counterpick">Counterpick</option>
+									<option value="Strike">Strike</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="stageSelectionRuleAfterDrawBox">After a draw:</label></td>
+							<td>
+								<select id="stageSelectionRuleAfterDrawBox">
+									<option value="Inherit">Same method as the first battle</option>
+									<option value="Same">Repeat stage of the last battle</option>
+									<option value="Vote">Vote</option>
+									<option value="Random">Random/Fixed</option>
+									<option value="Strike">Strike</option>
+								</select>
+							</td>
+							<td>
+								<label for="gameSetupForceSameDeckAfterDrawBox"><input type="checkbox" id="gameSetupForceSameDeckAfterDrawBox"/> Force same decks</label>
+							</td>
+						</tr>
+					</table>
+					<p>Stage switch:</p>
+					<div id="stageSwitch"></div>
 					<p>
 						<button type="submit" id="gameSetupSubmitButton">Create room</button>
 						<button type="submit">Back</button>

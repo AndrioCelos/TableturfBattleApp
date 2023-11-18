@@ -18,6 +18,13 @@ const gameSetupForm = document.getElementById('gameSetupForm') as HTMLFormElemen
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
 const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
+const stageSelectionRuleFirstBox = document.getElementById('stageSelectionRuleFirstBox') as HTMLSelectElement;
+const stageSelectionRuleAfterWinBox = document.getElementById('stageSelectionRuleAfterWinBox') as HTMLSelectElement;
+const stageSelectionRuleAfterDrawBox = document.getElementById('stageSelectionRuleAfterDrawBox') as HTMLSelectElement;
+const stageSwitch = document.getElementById('stageSwitch')!;
+const stageSwitchButtons: HTMLButtonElement[] = [ ];
+const gameSetupForceSameDeckAfterDrawBox = document.getElementById('gameSetupForceSameDeckAfterDrawBox') as HTMLInputElement;
+const gameSetupSubmitButton = document.getElementById('gameSetupSubmitButton') as HTMLButtonElement;
 
 const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
 const optionsTurnNumberStyle = document.getElementById('optionsTurnNumberStyle') as HTMLSelectElement;
@@ -33,6 +40,37 @@ function setLoadingMessage(message: string | null) {
 		if (input instanceof HTMLButtonElement || input instanceof HTMLInputElement || input instanceof HTMLSelectElement)
 			input.disabled = message != null;
 	}
+}
+
+function preGameInitStageDatabase(stages: Stage[]) {
+	for (const stage of stages) {
+		const button = document.createElement('button');
+
+		const div1 = document.createElement('div');
+		div1.className = 'stageName';
+		div1.innerText = stage.name;
+		button.appendChild(div1);
+
+		const div2 = document.createElement('div');
+		div2.className = 'stageStatus';
+		div2.innerText = 'Allowed';
+		button.appendChild(div2);
+
+		button.type = 'button';
+		button.dataset.index = stageSwitchButtons.length.toString();
+		button.dataset.status = '0';
+		stageSwitchButtons.push(button);
+		button.addEventListener('click', stageSwitchButton_click);
+		stageSwitch.appendChild(button);
+	}
+}
+
+function stageSwitchButton_click(e: Event) {
+	const button = e.currentTarget as HTMLButtonElement;
+	let status = button.dataset.status == '0' ? 1 : button.dataset.status == '1' ? 2 : 0;
+	button.dataset.status = status.toString();
+	(<HTMLElement>button.getElementsByClassName('stageStatus')[0]).innerText = [ 'Allowed', 'Counterpick only', 'Banned' ][status];
+	gameSetupSubmitButton.disabled = stageSwitchButtons.every(b => b.dataset.status != '0');
 }
 
 maxPlayersBox.addEventListener('change', () => {
@@ -116,6 +154,27 @@ function createRoom(useOptionsForm: boolean) {
 			data.append('turnTimeLimit', turnTimeLimitBox.value);
 		if (goalWinCountBox.value)
 			data.append('goalWinCount', goalWinCountBox.value);
+
+		const stageSelectionRuleFirst = {
+			method: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
+			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status != '0'),
+			strikeCounts: [ 1, 2 ],
+		};
+		const stageSelectionRuleAfterWin = {
+			method: stageSelectionRuleAfterWinBox.value == 'Inherit' ? stageSelectionRuleFirst.method : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
+			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status == '2'),
+			strikeCounts: [ 2 ],
+		};
+		const stageSelectionRuleAfterDraw = {
+			method: stageSelectionRuleAfterWinBox.value == 'Inherit' ? stageSelectionRuleFirst.method : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
+			bannedStages: stageSwitchButtons.map((_, i) => i).filter(i => stageSwitchButtons[i].dataset.status == '2'),
+			strikeCounts: [ 1, 2 ],
+		};
+
+		data.append('stageSelectionRuleFirst', JSON.stringify(stageSelectionRuleFirst));
+		data.append('stageSelectionRuleAfterWin', JSON.stringify(stageSelectionRuleAfterWin));
+		data.append('stageSelectionRuleAfterDraw', JSON.stringify(stageSelectionRuleAfterDraw));
+		data.append('ForceSameDeckAfterDrawBox', gameSetupForceSameDeckAfterDrawBox.checked.toString());
 	}
 	request.send(data.toString());
 	setLoadingMessage('Creating a room...');

@@ -1,17 +1,18 @@
 const lobbyWinCounters: WinCounter[] = [ ];
 
-const stageButtons = new CheckButtonGroup<Stage>(document.getElementById('stageList')!);
+const stageButtons = new CheckButtonGroup<number>(document.getElementById('stageList')!);
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
 const showQrCodeButton = document.getElementById('showQrCodeButton') as HTMLButtonElement;
 const stageSelectionForm = document.getElementById('stageSelectionForm') as HTMLFormElement;
 const stageSelectionFormLoadingSection = stageSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
-const stageSelectionFormSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
 const stageRandomButton = CheckButton.fromId('stageRandomButton');
+const strikeOrderSelectionForm = document.getElementById('strikeOrderSelectionForm') as HTMLFormElement;
 
 const deckSelectionForm = document.getElementById('deckSelectionForm') as HTMLFormElement;
 const deckSelectionFormLoadingSection = deckSelectionForm.getElementsByClassName('loadingContainer')[0] as HTMLElement;
 const lobbySelectedStageSection = document.getElementById('lobbySelectedStageSection')!;
 const lobbyStageSection = document.getElementById('lobbyStageSection')!;
+const stagePrompt = document.getElementById('stagePrompt')!;
 const lobbyStageSubmitButton = document.getElementById('submitStageButton') as HTMLButtonElement;
 const lobbyDeckSection = document.getElementById('lobbyDeckSection')!;
 const lobbyDeckList = document.getElementById('lobbyDeckList')!;
@@ -26,13 +27,17 @@ let qrCode: QRCode | null;
 let lobbyShareData: ShareData | null;
 
 let selectedStageIndicator = null as StageButton | null;
+let stageSelectionPrompt = null as StageSelectionPrompt | null;
 
 function lobbyInitStageDatabase(stages: Stage[]) {
+	stageButtons.add(stageRandomButton, -1);
+	let i = 0;
 	for (const stage of stages) {
 		const button = new StageButton(stage);
-		stageButtons.add(button, stage);
+		stageButtons.add(button, i++);
 		button.buttonElement.addEventListener('click', () => {
 			stageRandomButton.checked = false;
+			lobbyStageSubmitButton.disabled = !stageSelectionPrompt || stageButtons.buttons.filter(b => b.checked).length != (stageSelectionPrompt.promptType == StageSelectionPromptType.Strike ? stageSelectionPrompt.numberOfStagesToStrike : 1);
 		});
 		button.setStartSpaces(2);
 	}
@@ -49,12 +54,72 @@ function initLobbyPage(url: string) {
 	}
 }
 
-function showStageSelectionForm() {
+function showStageSelectionForm(prompt: StageSelectionPrompt | null, isReady: boolean) {
+	stageSelectionPrompt = prompt;
+	if (!prompt) return;
+
 	lobbyStageSection.hidden = false;
 	stageSelectionFormLoadingSection.hidden = true;
 	stageRandomButton.checked = true;
 	stageButtons.deselect();
-	lobbyStageSubmitButton.disabled = false;
+	lobbyStageSubmitButton.disabled = true;
+
+	let i = -1;
+	for (const button of stageButtons.buttons) {
+		const originalClass = i < 0 ? 'stageRandom' : 'stage';
+		if (prompt.bannedStages?.includes(i)) {
+			button.buttonElement.className = `${originalClass} banned`;
+			button.enabled = false;
+		} else if (prompt.struckStages?.includes(i)) {
+			button.buttonElement.className = `${originalClass} struck`;
+			button.enabled = false;
+		} else {
+			button.buttonElement.className = originalClass;
+			button.enabled = prompt.promptType != StageSelectionPromptType.Wait && !isReady;
+		}
+		i++;
+	}
+
+	switch (prompt.promptType) {
+		case StageSelectionPromptType.Vote:
+			stageSelectionForm.hidden = false;
+			stageRandomButton.buttonElement.hidden = false;
+			strikeOrderSelectionForm.hidden = true;
+			stagePrompt.innerText = isReady ? 'Opponent is choosing...' : 'Vote for the stage.';
+			stageButtons.allowMultipleSelections = false;
+			stageButtons.parentElement!.classList.remove('striking');
+			break;
+		case StageSelectionPromptType.VoteOrder:
+			stageSelectionForm.hidden = true;
+			strikeOrderSelectionForm.hidden = false;
+			for (const button of strikeOrderSelectionForm.getElementsByTagName('button'))
+				(<HTMLButtonElement> button).disabled = isReady;
+			break;
+		case StageSelectionPromptType.Strike:
+			stageSelectionForm.hidden = false;
+			stageRandomButton.buttonElement.hidden = true;
+			strikeOrderSelectionForm.hidden = true;
+			stagePrompt.innerText = prompt.numberOfStagesToStrike == 1 ? 'Choose a stage to strike.' : `Choose ${prompt.numberOfStagesToStrike} stages to strike.`;
+			stageButtons.allowMultipleSelections = prompt.numberOfStagesToStrike != 1;
+			stageButtons.parentElement!.classList.add('striking');
+			break;
+		case StageSelectionPromptType.Choose:
+			stageSelectionForm.hidden = false;
+			stageRandomButton.buttonElement.hidden = true;
+			strikeOrderSelectionForm.hidden = true;
+			stagePrompt.innerText = 'Choose the stage for the next battle.';
+			stageButtons.allowMultipleSelections = false;
+			stageButtons.parentElement!.classList.remove('striking');
+			break;
+		case StageSelectionPromptType.Wait:
+			stageSelectionForm.hidden = false;
+			stageRandomButton.buttonElement.hidden = true;
+			strikeOrderSelectionForm.hidden = true;
+			stagePrompt.innerText = currentGame?.game.state == GameState.ChoosingStage ? 'Opponent is choosing...' : 'Possible stages:';
+			stageButtons.allowMultipleSelections = false;
+			stageButtons.parentElement!.classList.remove('striking');
+			break;
+	}
 }
 
 shareLinkButton.addEventListener('click', () => {
@@ -111,7 +176,7 @@ function lobbyLockSettings(lock: boolean) {
 
 function clearReady() {
 	if (!currentGame) throw new Error('No current game');
-	stageSelectionFormSubmitButton.disabled = false;
+	lobbyStageSubmitButton.disabled = false;
 	stageSelectionFormLoadingSection.hidden = true;
 	for (var i = 0; i < currentGame.game.players.length; i++) {
 		currentGame.game.players[i].isReady = false;
@@ -171,6 +236,7 @@ function initDeckSelection() {
 		}
 		lobbyDeckSubmitButton.disabled = selectedDeck == null;
 		deckSelectionFormLoadingSection.hidden = true;
+		lobbyStageSection.hidden = true;
 		lobbyDeckSection.hidden = false;
 	} else {
 		lobbyDeckSection.hidden = true;
@@ -215,6 +281,7 @@ deckSelectionForm.addEventListener('submit', e => {
 stageRandomButton.buttonElement.addEventListener('click', () => {
 	stageRandomButton.checked = true;
 	stageButtons.deselect();
+	lobbyStageSubmitButton.disabled = false;
 });
 
 stageSelectionForm.addEventListener('submit', e => {
@@ -222,20 +289,41 @@ stageSelectionForm.addEventListener('submit', e => {
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseStage`);
 	req.addEventListener('load', () => {
+		stageSelectionFormLoadingSection.hidden = true;
 		if (req.status != 204) {
-			stageSelectionFormLoadingSection.hidden = true;
 			alert(req.responseText);
 			lobbyStageSubmitButton.disabled = false;
 		}
 	});
 	req.addEventListener('error', () => communicationError());
 	let data = new URLSearchParams();
-	const stageName = stageRandomButton.checked ? 'random' : stageButtons.value!.name;
 	data.append('clientToken', clientToken);
-	data.append('stage', stageName);
+	data.append('stages', stageButtons.entries.filter(e => e.button.checked).map(e => e.value).join(','));
 	req.send(data.toString());
 
-	localStorage.setItem('lastStage', stageName);
 	stageSelectionFormLoadingSection.hidden = false;
 	lobbyStageSubmitButton.disabled = true;
+});
+
+strikeOrderSelectionForm.addEventListener('submit', e => {
+	e.preventDefault();
+	for (const button of strikeOrderSelectionForm.getElementsByTagName('button'))
+		(<HTMLButtonElement> button).disabled = true;
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseStage`);
+	req.addEventListener('load', () => {
+		if (req.status != 204) {
+			stageSelectionFormLoadingSection.hidden = true;
+			alert(req.responseText);
+			lobbyStageSubmitButton.disabled = false;
+			for (const button of strikeOrderSelectionForm.getElementsByTagName('button'))
+				(<HTMLButtonElement> button).disabled = false;
+		}
+	});
+	req.addEventListener('error', () => communicationError());
+	let data = new URLSearchParams();
+	const number = e.submitter!.dataset.strikeIndex!;
+	data.append('clientToken', clientToken);
+	data.append('stages', number);
+	req.send(data.toString());
 });

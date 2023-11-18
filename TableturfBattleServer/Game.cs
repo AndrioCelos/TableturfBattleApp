@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text;
-
 using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
@@ -14,7 +13,7 @@ public class Game {
 	public List<Player> Players { get; } = new(4);
 	public int MaxPlayers { get; set; }
 	[JsonProperty("stage")]
-	public string? StageName { get; private set; }
+	public int? StageIndex { get; private set; }
 	public Space[,]? Board { get; private set; }
 	public Point[]? StartSpaces;
 
@@ -25,10 +24,17 @@ public class Game {
 	[JsonIgnore]
 	internal DateTime abandonedSince = DateTime.UtcNow;
 
+	public required StageSelectionRules StageSelectionRuleFirst { get; set; }
+	public required StageSelectionRules StageSelectionRuleAfterWin { get; set; }
+	public required StageSelectionRules StageSelectionRuleAfterDraw { get; set; }
+	public bool ForceSameDeckAfterDraw { get; set; }
+
+	public List<int> StruckStages = new();
+
 	[JsonIgnore]
 	internal List<Deck> deckCache = new();
 	[JsonIgnore]
-	internal List<string> setStages = new();
+	internal List<int> setStages = new();
 
 	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
 
@@ -63,6 +69,13 @@ public class Game {
 			}
 			playerIndex = this.Players.Count;
 			this.Players.Add(player);
+
+			player.StageSelectionPrompt = this.StageSelectionRuleFirst.Method switch {
+				StageSelectionMethod.Vote => new() { PromptType = StageSelectionPromptType.Vote, BannedStages = this.StageSelectionRuleFirst.BannedStages, StruckStages = Array.Empty<int>() },
+				StageSelectionMethod.Strike => new() { PromptType = StageSelectionPromptType.VoteOrder, BannedStages = this.StageSelectionRuleFirst.BannedStages, StruckStages = Array.Empty<int>() },
+				_ => new() { PromptType = StageSelectionPromptType.Wait, BannedStages = this.StageSelectionRuleFirst.BannedStages, StruckStages = Array.Empty<int>() }
+			};
+
 			error = default;
 			return true;
 		}
@@ -80,6 +93,40 @@ public class Game {
 		playerIndex = -1;
 		player = null;
 		return false;
+	}
+
+	public bool TryChooseStages(Player player, ICollection<int> stages, out Error error) {
+		if (player.StageSelectionPrompt == null || player.StageSelectionPrompt.Value.PromptType == StageSelectionPromptType.Wait) {
+			error = new(HttpStatusCode.Conflict, "CannotChooseStage", "You cannot choose stages now.");
+			return false;
+		}
+		if (player.selectedStages != null) {
+			error = new(HttpStatusCode.Conflict, "StageAlreadyChosen", "You've already chosen a stage.");
+			return false;
+		}
+		if (player.StageSelectionPrompt.Value.PromptType == StageSelectionPromptType.VoteOrder) {
+			if (stages.Count != 1) {
+				error = new(HttpStatusCode.BadRequest, "InvalidStage", "Invalid stage selection.");
+				return false;
+			}
+		} else {
+			var rule = this.GetCurrentStageSelectionRule();
+			if (stages.Intersect(rule.BannedStages).Any()) {
+				error = new(HttpStatusCode.UnprocessableEntity, "IllegalStage", "A selected stage is banned.");
+				return false;
+			}
+			if (player.StageSelectionPrompt.Value.StruckStages != null && stages.Intersect(player.StageSelectionPrompt.Value.StruckStages).Any()) {  // Includes stages previously won on when counterpicking.
+				error = new(HttpStatusCode.UnprocessableEntity, "IllegalStage", "A selected stage was struck.");
+				return false;
+			}
+		}
+		if (stages.Any(i => i >= StageDatabase.Stages.Count)) {
+			error = new(HttpStatusCode.UnprocessableEntity, "StageNotFound", "No such stage is known.");
+			return false;
+		}
+		player.selectedStages = stages;
+		error = default;
+		return true;
 	}
 
 	public Deck GetDeck(string name, int sleeves, IEnumerable<int> cardNumbers, IEnumerable<int> cardUpgrades) {
@@ -143,11 +190,18 @@ public class Game {
 		return isAnchored;
 	}
 
+	private StageSelectionRules GetCurrentStageSelectionRule() {
+		return this.Players.Count == 0 || this.Players[0].Games.Count <= 1
+			? this.StageSelectionRuleFirst
+			: this.Players.Any(p => p.Games[^2].won) ? this.StageSelectionRuleAfterWin : this.StageSelectionRuleAfterDraw;
+	}
+
 	internal void Tick() {
-		if (this.State is GameState.WaitingForPlayers or GameState.ChoosingStage && this.Players.Count >= 2 && this.Players.All(p => p.selectedStageIndex != null)) {
+		if (this.State is GameState.WaitingForPlayers or GameState.ChoosingStage && this.Players.Count >= 2 && this.Players.All(p => p.StageSelectionPrompt == null || p.StageSelectionPrompt.Value.PromptType == StageSelectionPromptType.Wait || p.selectedStages != null)) {
 			// Choose colours.
 			var random = new Random();
 			if (this.State == GameState.WaitingForPlayers) {
+				this.State = GameState.ChoosingStage;
 				var index = random.Next(Colours.Length);
 				var increment = this.Players.Count switch {
 					2 => random.Next(3, 7),
@@ -165,29 +219,88 @@ public class Game {
 			}
 
 			// Choose the stage.
-			var stageIndex = this.Players[random.Next(this.Players.Count)].selectedStageIndex!.Value;
-			if (stageIndex < 0) stageIndex = random.Next(StageDatabase.Stages.Count);
-			var stage = StageDatabase.Stages[stageIndex];
-			this.StageName = stage.Name;
-			this.setStages.Add(stage.Name);
-			this.Board = (Space[,]) stage.grid.Clone();
+			var rule = this.GetCurrentStageSelectionRule();
+			switch (rule.Method) {
+				case StageSelectionMethod.Vote: {
+					var stageIndex = this.Players[random.Next(this.Players.Count)].selectedStages!.First();
+					if (stageIndex < 0) stageIndex = random.Next(StageDatabase.Stages.Count);
+					this.LockInStage(stageIndex);
+					this.SendEvent("stateChange", this, true);
+					break;
+				}
+				case StageSelectionMethod.Random: {
+					var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).ToList();
+					var stageIndex = legalStages[random.Next(legalStages.Count)];
+					this.LockInStage(stageIndex);
+					this.SendEvent("stateChange", this, true);
+					break;
+				}
+				case StageSelectionMethod.Counterpick: {
+					var player = this.Players.FirstOrDefault(p => p.StageSelectionPrompt != null && p.StageSelectionPrompt?.PromptType != StageSelectionPromptType.Wait);
+					if (player == null) {
+						var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).ToList();
+						this.LockInStage(legalStages[random.Next(legalStages.Count)]);
+					} else {
+						if (player.selectedStages!.First() >= 0)
+							this.LockInStage(player.selectedStages.First());
+						else {
+							var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).Except(player.StageSelectionPrompt!.Value.StruckStages).ToList();
+							this.LockInStage(legalStages[random.Next(legalStages.Count)]);
+						}
+					}
+					this.SendEvent("stateChange", this, true);
+					break;
+				}
+				case StageSelectionMethod.Strike: {
+					var player = this.Players.FirstOrDefault(p => p.StageSelectionPrompt != null && p.StageSelectionPrompt?.PromptType != StageSelectionPromptType.Wait);
+					switch (player.StageSelectionPrompt!.Value.PromptType) {
+						case StageSelectionPromptType.VoteOrder:
+							// Choose who will strike first.
+							Player? firstPlayer = null;
+							foreach (var player2 in this.Players) {
+								if (player2.selectedStages!.First() == 0) {
+									if (firstPlayer == null || random.Next(2) == 0)
+										firstPlayer = player2;
+								}
+							}
+							firstPlayer ??= this.Players[random.Next(this.Players.Count)];
+							// Present new prompts.
+							foreach (var player2 in this.Players) {
+								player2.StageSelectionPrompt = new() { PromptType = player2 == firstPlayer ? StageSelectionPromptType.Strike : StageSelectionPromptType.Wait, BannedStages = rule.BannedStages, NumberOfStagesToStrike = 1 };
+								player2.selectedStages = null;
+							}
+							break;
+						case StageSelectionPromptType.Strike:
+							this.StruckStages.AddRange(player.selectedStages!);
+							var index = this.Players.IndexOf(player);
+							index = (index + 1) % this.Players.Count;
 
-			// Place starting positions.
-			var list = stage.startSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
-			this.StartSpaces = list;
-			for (int i = 0; i < this.Players.Count; i++)
-				this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;
-
-			this.State = GameState.ChoosingDeck;
-			this.SendEvent("stateChange", this, true);
+							// Present new prompts.
+							for (var i = 0; i < this.Players.Count; i++) {
+								this.Players[i].StageSelectionPrompt = i == index
+									? this.StruckStages.Count == 2 || Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).Except(this.StruckStages).Count() <= 3
+										? new() { PromptType = StageSelectionPromptType.Choose, BannedStages = rule.BannedStages, StruckStages = this.StruckStages }
+										: new() { PromptType = StageSelectionPromptType.Strike, BannedStages = rule.BannedStages, StruckStages = this.StruckStages, NumberOfStagesToStrike = 2 }
+									: new() { PromptType = StageSelectionPromptType.Wait, BannedStages = rule.BannedStages, StruckStages = this.StruckStages };
+							}
+							break;
+						case StageSelectionPromptType.Choose:
+							if (player.selectedStages!.First() >= 0)
+								this.LockInStage(player.selectedStages.First());
+							else {
+								var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).Except(player.StageSelectionPrompt!.Value.StruckStages).ToList();
+								this.LockInStage(legalStages[random.Next(legalStages.Count)]);
+							}
+							break;
+					}
+					this.SendEvent("stateChange", this, true);
+					foreach (var player2 in this.Players)
+						player2.selectedStages = null;
+					break;
+				}
+			}
 		} else if (this.State == GameState.ChoosingDeck && this.Players.All(p => p.CurrentGameData.Deck != null)) {
-			// Draw cards.
-			var random = new Random();
-			foreach (var player in this.Players)
-				player.Shuffle(random);
-
-			this.State = GameState.Redraw;
-			this.TurnTimeLeft = this.TurnTimeLimit;
+			this.StartGame();
 			this.SendEvent("stateChange", this, true);
 		} else if (this.State == GameState.Redraw && this.Players.All(p => p.Move != null)) {
 			var random = new Random();
@@ -368,17 +481,115 @@ public class Game {
 				}
 			}
 		} else if (this.State is GameState.GameEnded or GameState.SetEnded && this.Players.All(p => p.Move != null)) {
-			foreach (var player in this.Players) {
-				player.selectedStageIndex = null;
-				player.Hand = null;
-				player.CardsUsed.Clear();
-				player.Games.Add(new());
-				player.ClearMoves();
-			}
-			this.State = GameState.ChoosingStage;
-			this.TurnTimeLeft = this.TurnTimeLimit;
-			this.SendEvent("stateChange", this, true);
+			SetupNextGame();
 		}
+	}
+
+	private void LockInStage(int stageIndex) {
+		var stage = StageDatabase.Stages[stageIndex];
+		this.StageIndex = stageIndex;
+		this.setStages.Add(stageIndex);
+		this.Board = (Space[,]) stage.grid.Clone();
+
+		// Place starting positions.
+		var list = stage.startSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
+		this.StartSpaces = list;
+		for (int i = 0; i < this.Players.Count; i++)
+			this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;
+
+		foreach (var player in this.Players) {
+			player.StageSelectionPrompt = null;
+			player.selectedStages = null;
+		}
+
+		if (this.ForceSameDeckAfterDraw && this.Players[0].Games.Count > 1 && !this.Players.Any(p => p.WonLastGame)) {
+			foreach (var player in this.Players)
+				player.CurrentGameData.Deck = player.Games[^2].Deck;
+			this.StartGame();
+		} else
+			this.State = GameState.ChoosingDeck;
+	}
+
+	private void StartGame() {
+		// Draw cards.
+		var random = new Random();
+		foreach (var player in this.Players)
+			player.Shuffle(random);
+
+		this.State = GameState.Redraw;
+		this.TurnTimeLeft = this.TurnTimeLimit;
+	}
+
+	private void SetupNextGame() {
+		this.State = GameState.ChoosingStage;
+		this.StruckStages.Clear();
+		this.TurnTimeLeft = this.TurnTimeLimit;
+
+		var winner = this.Players.FirstOrDefault(p => p.CurrentGameData.won);
+
+		foreach (var player in this.Players) {
+			player.selectedStages = null;
+			player.Hand = null;
+			player.CardsUsed.Clear();
+			player.ClearMoves();
+			player.Games.Add(new());
+		}
+
+		var rule = this.GetCurrentStageSelectionRule();
+		var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).ToList();
+		switch (rule.Method) {
+			case StageSelectionMethod.Same:
+				this.LockInStage(this.setStages[^1]);
+				break;
+			case StageSelectionMethod.Vote: {
+				if (legalStages.Count == 1) {
+					this.LockInStage(legalStages[0]);
+					break;
+				}
+				var bannedStages = legalStages.Count == 0 ? Array.Empty<int>() : rule.BannedStages;
+				foreach (var player in this.Players) {
+					player.StageSelectionPrompt = new() { PromptType = StageSelectionPromptType.Vote, BannedStages = bannedStages, StruckStages = Array.Empty<int>() };
+				}
+				break;
+			}
+			case StageSelectionMethod.Random: {
+				var random = new Random();
+				var stage = legalStages.Count switch {
+					0 => random.Next(StageDatabase.Stages.Count),
+					1 => legalStages[0],
+					_ => legalStages[random.Next(legalStages.Count)]
+				};
+				this.LockInStage(stage);
+				break;
+			}
+			case StageSelectionMethod.Counterpick: {
+				var playerPicking = this.Players.FirstOrDefault(p => p != winner) ?? this.Players[0];  // Should never reach the latter case.
+
+				// Prevent picking stages that the player has previously won on if that would leave any legal stages.
+				var struckStages = new HashSet<int>();
+				for (var i = 0; i < playerPicking.Games.Count; i++) {
+					if (playerPicking.Games[i].won && !rule.BannedStages.Contains(this.setStages[i]))
+						struckStages.Add(this.setStages[i]);
+				}
+
+				foreach (var player in this.Players)
+					player.StageSelectionPrompt = new() { PromptType = player == playerPicking ? StageSelectionPromptType.Choose : StageSelectionPromptType.Wait, BannedStages = rule.BannedStages, StruckStages = struckStages };
+				break;
+			}
+			case StageSelectionMethod.Strike: {
+				if (winner == null) {
+					foreach (var player in this.Players)
+						player.StageSelectionPrompt = new() { PromptType = StageSelectionPromptType.VoteOrder, BannedStages = rule.BannedStages, StruckStages = Array.Empty<int>() };
+				} else {
+					// After a win, the winner strikes first.
+					foreach (var player in this.Players)
+						player.StageSelectionPrompt = new() { PromptType = player == winner ? StageSelectionPromptType.Strike : StageSelectionPromptType.Wait, BannedStages = rule.BannedStages, StruckStages = Array.Empty<int>(), NumberOfStagesToStrike = 2 };
+				}
+				break;
+			}
+		}
+
+		this.SendEvent("stateChange", this, true);
 	}
 
 	internal void SendPlayerReadyEvent(int playerIndex, bool isTimeout) => this.SendEvent("playerReady", new { playerIndex, isTimeout }, false);
@@ -446,7 +657,7 @@ public class Game {
 
 		// Games
 		for (int i = 0; i < this.Players[0].Games.Count; i++) {
-			var stageNumber = Enumerable.Range(0, StageDatabase.Stages.Count).First(j => this.setStages[i] == StageDatabase.Stages[j].Name);
+			var stageNumber = this.setStages[i];
 			writer.Write((byte) stageNumber);
 
 			foreach (var player in this.Players) {

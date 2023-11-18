@@ -26,13 +26,15 @@ public class PlayerData {
 	public Deck? Deck;
 	public Move? Move;
 	public List<int>? CardsUsed;
+	public StageSelectionPrompt? StageSelectionPrompt;
 
-	public PlayerData(int playerIndex, Card[]? hand, Deck? deck, Move? move, List<int>? cardsUsed) {
+	public PlayerData(int playerIndex, Card[]? hand, Deck? deck, Move? move, List<int>? cardsUsed, StageSelectionPrompt? stageSelectionPrompt) {
 		this.PlayerIndex = playerIndex;
 		this.Hand = hand;
 		this.Deck = deck;
 		this.Move = move;
 		this.CardsUsed = cardsUsed;
+		this.StageSelectionPrompt = stageSelectionPrompt;
 	}
-	public PlayerData(int playerIndex, Player player) : this(playerIndex, player.Hand, player.CurrentGameData.Deck, player.Move, player.CardsUsed) { }
+	public PlayerData(int playerIndex, Player player) : this(playerIndex, player.Hand, player.CurrentGameData.Deck, player.Move, player.CardsUsed, player.StageSelectionPrompt) { }
 }

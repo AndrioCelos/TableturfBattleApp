@@ -3,6 +3,7 @@ class CheckButtonGroup<TValue> {
 	entries: Array<{ button: CheckButton, value: TValue }> = [ ];
 	parentElement: HTMLElement | null;
 	value: TValue | null = null;
+	allowMultipleSelections = false;
 
 	constructor(parentElement?: HTMLElement | null) {
 		this.parentElement = parentElement ?? null;
@@ -12,7 +13,10 @@ class CheckButtonGroup<TValue> {
 
 	private setupButton(button: CheckButton, value: TValue) {
 		button.buttonElement.addEventListener('click', () => {
-			if (button.enabled && !button.checked) {
+			if (!button.enabled) return;
+			if (this.allowMultipleSelections)
+				button.checked = !button.checked;
+			else if (!button.checked) {
 				for (const el of this.entries) {
 					if (el.button == button) {
 						el.button.checked = true;
