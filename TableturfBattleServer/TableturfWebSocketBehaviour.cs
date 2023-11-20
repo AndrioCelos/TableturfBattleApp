@@ -20,20 +20,23 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 
 		// Send an initial state payload.
 		if (Program.TryGetGame(this.GameID, out var game)) {
-			this.Game = game;
 			DTO.PlayerData? playerData = null;
 			for (int i = 0; i < game.Players.Count; i++) {
 				var player = game.Players[i];
 				if (player.Token == this.ClientToken) {
 					this.Player = player;
 					playerData = new(i, player);
+					game.AddConnection(i, this);
 					break;
 				}
 			}
+			this.Game = game;
 			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData)));
 		} else
 			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
 	}
+
+	protected override void OnClose(WebSocketSharp.CloseEventArgs e) => this.Game?.RemoveConnection(this.Player, this);
 
 	internal void SendInternal(string data) => this.Send(data);
 }

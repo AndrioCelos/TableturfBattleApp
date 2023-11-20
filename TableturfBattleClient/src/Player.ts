@@ -2,6 +2,7 @@ interface Player {
 	name: string;
 	specialPoints: number;
 	isReady: boolean;
+	isOnline: boolean;
 	colour: Colour;
 	specialColour: Colour;
 	specialAccentColour: Colour;

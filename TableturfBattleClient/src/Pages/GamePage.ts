@@ -498,6 +498,7 @@ function loadPlayers(players: Player[]) {
 		const player = players[i];
 		currentGame!.game.players[i] = players[i];
 		playerBars[i].name = player.name;
+		playerBars[i].setOnline(player.isOnline);
 		playerBars[i].winCounter.wins = players[i].gamesWon;
 		updateStats(i, scores);
 	}
@@ -509,7 +510,7 @@ function loadPlayers(players: Player[]) {
 }
 
 function updateColours() {
-	if (currentGame == null) return;
+	if (currentGame == null || currentGame.game.players.length == 0) return;
 	for (let i = 0; i < currentGame.game.players.length; i++) {
 		if (currentGame.game.players[i].colour.r > 0 || currentGame.game.players[i].colour.g > 0 || currentGame.game.players[i].colour.b > 0) {
 			setColour(i, 0, currentGame.game.players[i].colour);

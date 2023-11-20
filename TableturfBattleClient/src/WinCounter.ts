@@ -2,7 +2,7 @@ class WinCounter {
 	readonly parent: HTMLElement;
 	private _wins: number = 0;
 
-	constructor(element: HTMLDivElement) {
+	constructor(element: HTMLElement) {
 		this.parent = element;
 	}
 

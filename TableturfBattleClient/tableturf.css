@@ -153,18 +153,35 @@ footer {
 }
 
 #playerList li {
-	width: calc(100% - 3em);
+	width: calc(100% - 2em);
 	margin: 0.5em 1em;
-	background: #111;
-	border-radius: 0.5em;
+	position: relative;
+}
+
+#playerList li > div {
 	padding: 0.5em;
+	border-radius: 0.5em;
+	background: #111;
 	text-shadow: 1px 1px black;
+	box-sizing: border-box;
+}
+
+#playerList li .placeholder {
+	user-select: none;
 }
 
 #playerList .filled {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	bottom: 0;
 	background: var(--theme-colour);
-	position: relative;
-	animation: 0.33s linear playerListFlyIn;
+	animation: 0.33s linear forwards playerListFlyIn;
+}
+
+#playerList .removed {
+	animation: 0.33s linear forwards playerListFlyOut;
 }
 
 #playerList .ready::after {
@@ -176,9 +193,29 @@ footer {
 	font-size: x-large;
 }
 
+#playerList .disconnected {
+	color: darkgrey;
+}
+
 @keyframes playerListFlyIn {
-	from { left: -100%; }
+	from { left: -120%; }
 	to { left: 0; }
+}
+
+@keyframes playerListFlyOut {
+	from { left: 0%; }
+	to { left: -120%; }
+}
+
+.disconnectedIcon {
+	display: none;
+	height: 1.5rem;
+	margin-left: 0.5em;
+	vertical-align: middle;
+}
+
+.disconnected .disconnectedIcon {
+	display: inline;
 }
 
 .wins {
@@ -1165,6 +1202,10 @@ rect.special, g.specialCost rect {
 	font-size: 150%;
 	font-weight: 599;
 	margin: 0.5em 0;
+}
+
+.disconnected .name {
+	color: darkgrey;
 }
 
 .specialPoints div {

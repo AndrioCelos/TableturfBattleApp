@@ -128,7 +128,7 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
 	gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock
 		? (playerData?.playerIndex ?? 0) != 1
-		: game.players[playerData?.playerIndex ?? 0].uiBaseColourIsSpecialColour ?? true).toString();
+		: game.players[playerData?.playerIndex ?? 0]?.uiBaseColourIsSpecialColour ?? true).toString();
 
 	if (game.state != GameState.WaitingForPlayers)
 		lobbyLockSettings(true);
@@ -274,7 +274,7 @@ function setupWebSocket(gameID: string) {
 
 					lobbyResetSlots();
 					for (let i = 0; i < currentGame.game.players.length; i++)
-						lobbyAddPlayer(i);
+						lobbyAddPlayer();
 					onGameSettingsChange();
 
 					for (let i = 0; i < playerBars.length; i++) {
@@ -318,7 +318,7 @@ function setupWebSocket(gameID: string) {
 				}
 			} else {
 				if (currentGame == null) {
-					communicationError();
+					if (payload.event != 'playerOnline') communicationError();
 					return;
 				}
 				switch (payload.event) {
@@ -329,7 +329,14 @@ function setupWebSocket(gameID: string) {
 					case 'join':
 						if (payload.data.playerIndex == currentGame.game.players.length) {
 							currentGame.game.players.push(payload.data.player);
-							lobbyAddPlayer(payload.data.playerIndex);
+							lobbyAddPlayer();
+						} else
+							communicationError();
+						break;
+					case 'leave':
+						if (payload.data.playerIndex < currentGame.game.players.length) {
+							currentGame.game.players.splice(payload.data.playerIndex, 1);
+							lobbyRemovePlayer(payload.data.playerIndex);
 						}
 						else
 							communicationError();
@@ -343,6 +350,11 @@ function setupWebSocket(gameID: string) {
 						}
 
 						showReady(payload.data.playerIndex);
+						break;
+					case 'playerOnline':
+						currentGame.game.players[payload.data.playerIndex].isOnline = payload.data.isOnline;
+						lobbySetOnline(payload.data.playerIndex, payload.data.isOnline);
+						playerBars[payload.data.playerIndex].setOnline(payload.data.isOnline);
 						break;
 					case 'stateChange':
 						clearReady();

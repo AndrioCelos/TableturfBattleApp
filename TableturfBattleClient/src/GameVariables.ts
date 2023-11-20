@@ -45,8 +45,5 @@ let currentReplay: {
 	watchingPlayer: number
 } | null = null;
 
-const playerList = document.getElementById('playerList')!;
-const playerListItems: HTMLElement[] = [ ];
-
 const canPlayCard = [ false, false, false, false ];
 const canPlayCardAsSpecialAttack = [ false, false, false, false ];

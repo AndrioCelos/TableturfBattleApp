@@ -10,6 +10,12 @@ public class Player {
 	public Colour SpecialAccentColour { get; set; }
 	public bool UIBaseColourIsSpecialColour { get; set; }
 
+	[JsonIgnore]
+	internal List<TableturfWebSocketBehaviour> Connections { get; } = new();
+	[JsonIgnore]
+	public DateTime? DisconnectedAt { get; set; }
+	public bool IsOnline => this.DisconnectedAt == null;
+
 	public StageSelectionPrompt? StageSelectionPrompt { get; set; }
 
 	[JsonIgnore]
@@ -84,5 +90,17 @@ public class Player {
 			}
 		}
 		return -1;
+	}
+
+	internal void AddConnection(TableturfWebSocketBehaviour connection) {
+		lock (this.Connections) {
+			this.Connections.Add(connection);
+		}
+	}
+
+	internal void RemoveConnection(TableturfWebSocketBehaviour connection) {
+		lock (this.Connections) {
+			this.Connections.Remove(connection);
+		}
 	}
 }

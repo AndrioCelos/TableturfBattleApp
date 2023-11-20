@@ -48,7 +48,15 @@ class PlayerBar {
 	}
 
 	get name() { return this.nameElement.innerText; }
-	set name(value: string) { this.nameElement.innerText = value; }
+	set name(value: string) {
+		this.nameElement.innerText = value;
+
+		const el2 = document.createElement('img');
+		el2.src = 'assets/wifi-off.svg';
+		el2.className = 'disconnectedIcon';
+		el2.title = 'Disconnected';
+		this.nameElement.appendChild(el2);
+	}
 
 	get points() { return parseInt(this.pointsElement.innerText); }
 	set points(value: number) { this.pointsElement.innerText = value.toString(); }
@@ -115,5 +123,10 @@ class PlayerBar {
 	set visible(value: boolean) {
 		this.element.hidden = !value;
 		this.pointsContainer.hidden = !value;
+	}
+
+	setOnline(value: boolean) {
+		if (value) this.element.classList.remove('disconnected');
+		else this.element.classList.add('disconnected');
 	}
 }

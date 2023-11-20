@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using WebSocketSharp.Server;
 
 namespace TableturfBattleServer;
 public class Game {
@@ -460,7 +461,7 @@ public class Game {
 			}
 		} else if (this.TurnTimeLeft != null) {
 			--this.TurnTimeLeft;
-			if (this.TurnTimeLeft <= -3) {  // Add a small grace period to account for network lag.
+			if (this.TurnTimeLeft <= -3 || (this.TurnTimeLeft <= 0 && this.Players.All(p => p.IsReady || !p.IsOnline))) {  // Add a small grace period to account for network lag for online players.
 				for (var i = 0; i < this.Players.Count; i++) {
 					var player = this.Players[i];
 					if (player.Move == null) {
@@ -593,6 +594,28 @@ public class Game {
 	}
 
 	internal void SendPlayerReadyEvent(int playerIndex, bool isTimeout) => this.SendEvent("playerReady", new { playerIndex, isTimeout }, false);
+
+	internal void AddConnection(int playerIndex, TableturfWebSocketBehaviour connection) {
+		var player = this.Players[playerIndex];
+		player.AddConnection(connection);
+		if (!player.IsOnline) {
+			player.DisconnectedAt = null;
+			this.SendEvent("playerOnline", new { playerIndex, player.IsOnline }, false);
+		}
+	}
+	internal void RemoveConnection(Player player, TableturfWebSocketBehaviour connection) {
+		var playerIndex = this.Players.IndexOf(player);
+		player.RemoveConnection(connection);
+		if (player.IsOnline && player.Connections.Count == 0) {
+			if (this.State == GameState.WaitingForPlayers) {
+				this.Players.RemoveAt(playerIndex);
+				this.SendEvent("leave", new { playerIndex }, false);
+			} else {
+				player.DisconnectedAt = DateTime.UtcNow;
+				this.SendEvent("playerOnline", new { playerIndex, player.IsOnline }, false);
+			}
+		}
+	}
 
 	internal void SendEvent<T>(string eventType, T data, bool includePlayerData) {
 		foreach (var session in Program.httpServer!.WebSocketServices.Hosts.First().Sessions.Sessions) {

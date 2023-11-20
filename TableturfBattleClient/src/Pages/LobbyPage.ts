@@ -1,4 +1,9 @@
+const playerList = document.getElementById('playerList')!;
+const playerListSlots: HTMLElement[] = [ ];
+const playerListNames: HTMLElement[] = [ ];
 const lobbyWinCounters: WinCounter[] = [ ];
+const playerListItemsToRemove: HTMLElement[] = [ ];
+let playerListItemToRemove: HTMLElement | null = null;
 
 const stageButtons = new CheckButtonGroup<number>(document.getElementById('stageList')!);
 const shareLinkButton = document.getElementById('shareLinkButton') as HTMLButtonElement;
@@ -153,18 +158,20 @@ qrCodeDialog.addEventListener('click', e => {
 });
 
 function lobbyResetSlots() {
-	if (!currentGame) throw new Error('No current game');
-	for (const li of playerListItems)
-		playerList.removeChild(li);
-	playerListItems.splice(0);
+	if (!currentGame) throw new TypeError('No current game');
+	playerListSlots.splice(0);
+	playerListNames.splice(0);
 	lobbyWinCounters.splice(0);
+	clearChildren(playerList);
 
 	for (let i = 0; i < currentGame.game.maxPlayers; i++) {
-		var el = document.createElement('li');
-		el.className = 'empty';
-		el.innerText = 'Waiting...';
-		playerListItems.push(el);
+		const el = document.createElement('li');
+		const placeholder = document.createElement('div');
+		placeholder.className = 'placeholder';
+		placeholder.innerText = 'Waiting...';
 		playerList.appendChild(el);
+		el.appendChild(placeholder);
+		playerListSlots.push(el);
 	}
 
 	lobbyLockSettings(currentGame.me?.playerIndex != 0);
@@ -175,33 +182,92 @@ function lobbyLockSettings(lock: boolean) {
 }
 
 function clearReady() {
-	if (!currentGame) throw new Error('No current game');
+	if (!currentGame) throw new TypeError('No current game');
 	lobbyStageSubmitButton.disabled = false;
 	stageSelectionFormLoadingSection.hidden = true;
 	for (var i = 0; i < currentGame.game.players.length; i++) {
 		currentGame.game.players[i].isReady = false;
-		playerListItems[i].className = 'filled';
+		playerListNames[i].classList.remove('ready');
 	}
 }
 
-function lobbyAddPlayer(playerIndex: number) {
-	if (!currentGame) throw new Error('No current game');
-	const listItem = playerListItems[playerIndex];
+function lobbyAddPlayer() {
+	if (!currentGame) throw new TypeError('No current game');
+
+	if (playerListItemToRemove) {
+		playerListItemToRemove.removeEventListener('animationend', playerListItem_animationEnd);
+		playerListItem_animationEnd();
+	}
+
+	const playerIndex = playerListNames.length;
+	const slot = playerListSlots[playerIndex];
 	const player = currentGame.game.players[playerIndex];
-	listItem.innerText = player.name;
-	listItem.className = player.isReady ? 'filled ready' : 'filled';
 
 	const el = document.createElement('div');
-	el.className = 'wins';
-	el.title = 'Battles won';
-	listItem.appendChild(el);
-	const winCounter = new WinCounter(el);
-	winCounter.wins = currentGame.game.players[playerIndex].gamesWon;
+	el.classList.add('filled');
+	if (player.isReady) el.classList.add('ready');
+	if (!player.isOnline) el.classList.add('disconnected');
+	el.innerText = player.name;
+	slot.appendChild(el);
+	playerListNames.push(el);
+
+	const el2 = document.createElement('img');
+	el2.src = 'assets/wifi-off.svg';
+	el2.className = 'disconnectedIcon';
+	el2.title = 'Disconnected';
+	el.appendChild(el2);
+
+	const el3 = document.createElement('div');
+	el3.className = 'wins';
+	el3.title = 'Battles won';
+	el.appendChild(el3);
+
+	const winCounter = new WinCounter(el3);
+	winCounter.wins = player.gamesWon;
 	lobbyWinCounters.push(winCounter);
 }
 
+function lobbyRemovePlayer(playerIndex: number) {
+	if (!currentGame) throw new TypeError('No current game');
+
+	// Animate the leaving player and all entries below them to mimic the original game.
+	for (let i = playerIndex; i < playerListNames.length; i++)
+		(<HTMLElement>playerListSlots[i].lastElementChild).classList.add('removed');
+
+	const el = <HTMLElement>playerListSlots[playerIndex].lastElementChild;
+	el.classList.add('removed');
+	playerListItemsToRemove.push(el);
+
+	if (playerListItemToRemove)
+		playerListItemToRemove.removeEventListener('animationend', playerListItem_animationEnd);
+
+	playerListItemToRemove = el;
+	el.addEventListener('animationend', playerListItem_animationEnd);
+	playerListNames.splice(playerIndex, 1);
+}
+
+function playerListItem_animationEnd() {
+	for (const el of playerListItemsToRemove)
+		el.parentElement!.removeChild(el);
+	playerListItemsToRemove.splice(0);
+	playerListItemToRemove = null;
+
+	for (let i = 0; i < playerListNames.length; i++) {
+		playerListNames[i].classList.remove('removed');
+		if (playerListNames[i].parentElement != playerListSlots[i]) {
+			playerListNames[i].parentElement!.removeChild(playerListNames[i]);
+			playerListSlots[i].appendChild(playerListNames[i]);
+		}
+	}
+}
+
 function lobbySetReady(playerIndex: number) {
-	playerListItems[playerIndex].className = 'filled ready';
+	playerListNames[playerIndex].classList.add('ready');
+}
+
+function lobbySetOnline(playerIndex: number, isOnline: boolean) {
+	if (isOnline) playerListNames[playerIndex].classList.remove('disconnected');
+	else playerListNames[playerIndex].classList.add('disconnected');
 }
 
 function initDeckSelection() {
