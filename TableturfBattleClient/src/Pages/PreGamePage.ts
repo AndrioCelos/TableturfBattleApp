@@ -24,6 +24,7 @@ const stageSelectionRuleAfterDrawBox = document.getElementById('stageSelectionRu
 const stageSwitch = document.getElementById('stageSwitch')!;
 const stageSwitchButtons: HTMLButtonElement[] = [ ];
 const gameSetupForceSameDeckAfterDrawBox = document.getElementById('gameSetupForceSameDeckAfterDrawBox') as HTMLInputElement;
+const gameSetupSpectateBox = document.getElementById('gameSetupSpectateBox') as HTMLInputElement;
 const gameSetupSubmitButton = document.getElementById('gameSetupSubmitButton') as HTMLButtonElement;
 
 const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
@@ -160,7 +161,8 @@ function createRoom(useOptionsForm: boolean) {
 			stageSelectionMethodAfterWin: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterDraw: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
 			forceSameDecksAfterDraw: gameSetupForceSameDeckAfterDrawBox.checked,
-			stageSwitch: stageSwitchButtons.map(b => parseInt(b.dataset.status!))
+			stageSwitch: stageSwitchButtons.map(b => parseInt(b.dataset.status!)),
+			spectate: gameSetupSpectateBox.checked
 		};
 		userConfig.lastCustomRoomConfig = settings;
 		saveSettings();
@@ -187,7 +189,8 @@ function createRoom(useOptionsForm: boolean) {
 		data.append('stageSelectionRuleFirst', JSON.stringify(stageSelectionRuleFirst));
 		data.append('stageSelectionRuleAfterWin', JSON.stringify(stageSelectionRuleAfterWin));
 		data.append('stageSelectionRuleAfterDraw', JSON.stringify(stageSelectionRuleAfterDraw));
-		data.append('ForceSameDeckAfterDrawBox', settings.forceSameDecksAfterDraw.toString());
+		data.append('forceSameDeckAfterDraw', settings.forceSameDecksAfterDraw.toString());
+		data.append('spectate', settings.forceSameDecksAfterDraw.toString());
 	}
 	request.send(data.toString());
 	setLoadingMessage('Creating a room...');

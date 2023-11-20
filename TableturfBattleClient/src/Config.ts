@@ -29,6 +29,7 @@ interface CustomRoomConfig {
 	stageSelectionMethodAfterDraw: StageSelectionMethod | null;
 	forceSameDecksAfterDraw: boolean;
 	stageSwitch: number[];
+	spectate: boolean;
 }
 
 declare var config: AppConfig;

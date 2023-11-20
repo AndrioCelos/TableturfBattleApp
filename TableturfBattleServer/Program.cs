@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Reflection;
@@ -183,13 +183,23 @@ internal class Program {
 					} else
 						stageSelectionRuleAfterDraw = stageSelectionRuleFirst;
 
-					if (d.TryGetValue("forceSameDeckAfterDraw", out var forceSameDeckAfterDrawString) && !bool.TryParse(forceSameDeckAfterDrawString, out var forceSameDeckAfterDraw))
-						SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "forceSameDeckAfterDraw was invalid."));
-					else
+					var forceSameDeckAfterDraw = false;
+					if (d.TryGetValue("forceSameDeckAfterDraw", out var forceSameDeckAfterDrawString)) {
+						if (!bool.TryParse(forceSameDeckAfterDrawString, out forceSameDeckAfterDraw))
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "forceSameDeckAfterDraw was invalid."));
+					} else
 						forceSameDeckAfterDraw = false;
 
+					var spectate = false;
+					if (d.TryGetValue("spectate", out var spectateString)) {
+						if (!bool.TryParse(spectateString, out spectate))
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "spectate was invalid."));
+					} else
+						spectate = false;
+
 					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
-					game.TryAddPlayer(new(game, name, clientToken), out _, out _);
+					if (!spectate)
+						game.TryAddPlayer(new(game, name, clientToken), out _, out _);
 					games.Add(game.ID, game);
 					timer.Start();
 
