@@ -122,6 +122,7 @@ function initSpectator() {
 	spectatorRow.hidden = false;
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
+	board.autoHighlight = false;
 	showPage('game');
 }
 
@@ -795,13 +796,12 @@ function populateShowDeck(deck: Deck) {
 
 /** Handles an update to the player's hand and/or deck during a game. */
 function updateHandAndDeck(playerData: PlayerData) {
-	handButtons.clear();
-
+	const hand = playerData.hand!;
 	populateShowDeck(playerData.deck!);
 
 	for (const button of showDeckButtons) {
 		const li = button.buttonElement.parentElement!;
-		if (playerData.hand!.find(c => c.number == button.card.number))
+		if (hand.find(c => c.number == button.card.number))
 			li.className = 'inHand';
 		else if (playerData.cardsUsed.includes(button.card.number))
 			li.className = 'used';
@@ -810,7 +810,20 @@ function updateHandAndDeck(playerData: PlayerData) {
 	}
 
 	if (!currentGame?.me) return;
-	currentGame.me.hand = playerData.hand!.map(Card.fromJson);
+
+	if (handButtons.entries.length == 4 && hand.length == 4) {
+		let handIsSame = true;
+		for (let i = 0; i < 4; i++) {
+			if ((<CardButton> handButtons.entries[i].button).card.number != hand[i].number) {
+				handIsSame = false;
+				break;
+			}
+		}
+		if (handIsSame) return;  // The player's hand has not changed after reconnecting to the game.
+	}
+	currentGame.me.hand = hand.map(Card.fromJson);
+	handButtons.clear();
+	board.autoHighlight = false;
 	for (let i = 0; i < currentGame.me.hand.length; i++) {
 		const card = currentGame.me.hand[i];
 		const button = new CardButton(card);

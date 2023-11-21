@@ -340,6 +340,9 @@ class Board {
 	resize(grid?: Space[][]) {
 		if (grid) this.grid = grid;
 
+		if (this.cells.length == this.grid.length && this.cells[0].length == this.grid[0].length)
+			return;  // Reconnected and board size did not change.
+
 		clearChildren(this.table);
 		this.cells.splice(0);
 		this.highlightedCells.splice(0);
@@ -422,7 +425,6 @@ class Board {
 	}
 
 	refresh() {
-		this.clearHighlight();
 		this.clearInkAnimations();
 		for (let x = 0; x < this.grid.length; x++) {
 			for (let y = 0; y < this.grid[x].length; y++) {

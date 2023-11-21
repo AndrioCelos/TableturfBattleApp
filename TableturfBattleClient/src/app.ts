@@ -113,7 +113,10 @@ function onGameSettingsChange() {
 function onGameStateChange(game: any, playerData: PlayerData | null) {
 	if (currentGame == null)
 		throw new Error('currentGame is null');
-	clearPlayContainers();
+
+	const isSameTurnReconnect = currentGame.game.state == GameState.Ongoing && currentGame.game.turnNumber == turnNumberLabel.turnNumber;
+
+	if (!isSameTurnReconnect) clearPlayContainers();
 	currentGame.game.state = game.state;
 
 	if (game.board) {
@@ -122,9 +125,10 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		else gamePage.classList.remove('boardFlipped');
 		board.resize(game.board);
 		board.startSpaces = game.startSpaces;
-		board.refresh();
+		if (!isSameTurnReconnect) board.refresh();
 	}
-	loadPlayers(game.players);
+	if (currentGame.game.state != GameState.Ongoing || currentGame.game.turnNumber != turnNumberLabel.turnNumber)
+		loadPlayers(game.players);
 	gamePage.dataset.myPlayerIndex = playerData ? playerData.playerIndex.toString() : '';
 	gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock
 		? (playerData?.playerIndex ?? 0) != 1
@@ -162,7 +166,6 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		case GameState.Ongoing:
 		case GameState.GameEnded:
 		case GameState.SetEnded:
-			board.autoHighlight = false;
 			redrawModal.hidden = true;
 			if (playerData) {
 				updateHandAndDeck(playerData);
@@ -183,15 +186,17 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 					timeLabel.paused = false;
 					break;
 				case GameState.Ongoing:
-					for (let i = 0; i < currentGame.game.players.length; i++)
-						showWaiting(i);
 					if (currentGame.me) setConfirmLeavingGame();
 					turnNumberLabel.turnNumber = game.turnNumber;
 					board.autoHighlight = true;
 					canPlay = currentGame.me != null && !currentGame.game.players[currentGame.me.playerIndex].isReady;
 					timeLabel.faded = !canPlay;
 					timeLabel.paused = false;
-					resetPlayControls();
+					if (!isSameTurnReconnect) {
+						for (let i = 0; i < currentGame.game.players.length; i++)
+							showWaiting(i);
+						resetPlayControls();
+					}
 					break;
 				case GameState.GameEnded:
 				case GameState.SetEnded:
@@ -268,7 +273,8 @@ function setupWebSocket(gameID: string) {
 							goalWinCount: payload.data.goalWinCount,
 						},
 						me: payload.playerData,
-						webSocket: webSocket
+						webSocket: webSocket,
+						reconnecting: false
 					};
 					updateColours();
 
@@ -419,8 +425,12 @@ function setupWebSocket(gameID: string) {
 	webSocket.addEventListener('close', webSocket_close);
 }
 
-function webSocket_close() {
-	communicationError();
+function webSocket_close(e: CloseEvent) {
+	if (currentGame == null || currentGame.reconnecting || (e.code != 1005 && e.code != 1006))
+		communicationError();
+	else
+		// Try to automatically reconnect.
+		setupWebSocket(currentGame.id);
 }
 
 function setConfirmLeavingGame() {
