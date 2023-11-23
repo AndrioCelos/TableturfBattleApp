@@ -159,7 +159,7 @@ function createRoom(useOptionsForm: boolean) {
 			goalWinCount: goalWinCountBox.value ? parseInt(goalWinCountBox.value) : null,
 			stageSelectionMethodFirst: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterWin: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
-			stageSelectionMethodAfterDraw: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
+			stageSelectionMethodAfterDraw: stageSelectionRuleAfterDrawBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
 			forceSameDecksAfterDraw: gameSetupForceSameDeckAfterDrawBox.checked,
 			stageSwitch: stageSwitchButtons.map(b => parseInt(b.dataset.status!)),
 			spectate: gameSetupSpectateBox.checked
@@ -178,11 +178,11 @@ function createRoom(useOptionsForm: boolean) {
 			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i != 0)
 		};
 		const stageSelectionRuleAfterWin = {
-			method: settings.stageSelectionMethodAfterWin,
+			method: settings.stageSelectionMethodAfterWin ?? settings.stageSelectionMethodFirst,
 			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
 		};
 		const stageSelectionRuleAfterDraw = {
-			method: settings.stageSelectionMethodAfterDraw,
+			method: settings.stageSelectionMethodAfterDraw ?? settings.stageSelectionMethodFirst,
 			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
 		};
 
