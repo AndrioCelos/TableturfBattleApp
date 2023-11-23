@@ -5,6 +5,9 @@ const deckEditSize = document.getElementById('deckEditSize')!;
 const deckCardListEdit = document.getElementById('deckCardListEdit')!;
 const cardList = CardList.fromId('cardList', 'cardListSortBox', 'cardListFilterBox');
 const cardListButtonGroup = new CheckButtonGroup<Card>();
+
+const deckEditMenu = document.getElementById('deckEditMenu')!;
+const deckEditMenuButton = document.getElementById('deckEditMenuButton') as HTMLButtonElement;
 const deckSortButton = document.getElementById('deckSortButton') as HTMLButtonElement;
 const deckTestButton = document.getElementById('deckTestButton') as HTMLButtonElement;
 const deckSaveButton = document.getElementById('deckSaveButton') as HTMLButtonElement;
@@ -38,7 +41,7 @@ function deckEditInitCardDatabase(cards: Card[]) {
 			const oldCardNumber = oldEntry.value;
 
 			if (oldCardNumber != 0)
-				cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber)!.button.enabled = true;
+				cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber || e.value.altNumber == oldCardNumber)!.button.enabled = true;
 			cardListButtonGroup.entries.find(e => e.value.number == card.number)!.button.enabled = false;
 
 			const button3 = createDeckEditCardButton(card.number);
@@ -237,8 +240,17 @@ function deckSortCompare(reverse: boolean, numberA: number, numberB: number) {
 		else if (cardB.isSpecialWeapon && !cardA.isSpecialWeapon)
 			return ((userConfig.specialWeaponSorting == SpecialWeaponSorting.Last) != reverse) ? -1 : 1;
 	}
-	return CardList.cardSortOrders['size'](cardA, cardB);
+	const result = CardList.cardSortOrders['size'](cardA, cardB);
+	return reverse ? -result : result;
 }
+
+deckEditMenuButton.addEventListener('click', () => {
+	deckEditMenu.classList.toggle('showing');
+});
+
+deckEditMenu.addEventListener('click', () => {
+	deckEditMenu.classList.remove('showing');
+});
 
 deckSortButton.addEventListener('click', _ => {
 	// Check whether the deck is already sorted so that the order will be reversed if so.

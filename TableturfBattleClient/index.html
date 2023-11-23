@@ -434,7 +434,12 @@
 			<section id="deckEditorDeckViewSection">
 				<a id="deckViewBackButton" href="#">Back</a>
 				<h3 id="deckName">&nbsp;</h3>
-				<div id="deckListToolbar">
+				<button id="deckViewMenuButton" class="menuButton">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+					</svg>
+				</button>
+				<div id="deckViewMenu" class="menu">
 					<button type="button" id="deckListTestButton" disabled>Test</button>
 					<button type="button" id="deckExportButton" disabled>Export</button>
 					<button type="button" id="deckCopyButton" disabled>Copy</button>
@@ -443,7 +448,7 @@
 					<button type="button" id="deckRenameButton" disabled>Rename</button>
 					<button type="button" id="deckDeleteButton" class="danger" disabled>Delete</button>
 				</div>
-				<div class="deckSizeContainer">Total <div id="deckViewSize">0</div></div>
+				<div class="deckSizeContainer"><div class="sizeLabel">Total</div> <div id="deckViewSize">0</div></div>
 				<div id="deckCardListView">
 				</div>
 			</section>
@@ -546,13 +551,18 @@
 		<div id="deckEditPage" hidden>
 			<section id="deckEditorDeckEditPage">
 				<h3 id="deckName2">Deck</h3>
-				<div id="deckEditToolbar">
+				<button id="deckEditMenuButton" class="menuButton">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+					</svg>
+				</button>
+				<div id="deckEditMenu" class="menu">
 					<button type="button" id="deckSortButton">Sort</button>
 					<button type="button" id="deckTestButton">Test</button>
 					<button type="button" id="deckSaveButton">Save</button>
 					<button type="button" id="deckCancelButton">Cancel</button>
 				</div>
-				<div class="deckSizeContainer">Total <div id="deckEditSize">0</div></div>
+				<div class="deckSizeContainer"><div class="sizeLabel">Total</div> <div id="deckEditSize">0</div></div>
 				<div id="deckCardListEdit">
 				</div>
 			</section>

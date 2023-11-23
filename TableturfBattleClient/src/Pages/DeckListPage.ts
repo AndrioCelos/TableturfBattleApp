@@ -9,6 +9,9 @@ const deckCardListView = document.getElementById('deckCardListView')!;
 const addDeckControls = document.getElementById('addDeckControls')!;
 const newDeckButton = document.getElementById('newDeckButton') as HTMLButtonElement;
 const importDeckButton = document.getElementById('importDeckButton') as HTMLButtonElement;
+
+const deckViewMenu = document.getElementById('deckViewMenu')!;
+const deckViewMenuButton = document.getElementById('deckViewMenuButton') as HTMLButtonElement;
 const deckSleevesButton = document.getElementById('deckSleevesButton') as HTMLButtonElement;
 const deckEditButton = document.getElementById('deckEditButton') as HTMLButtonElement;
 const deckListTestButton = document.getElementById('deckListTestButton') as HTMLButtonElement;
@@ -88,6 +91,7 @@ deckViewBackButton.addEventListener('click', e => {
 	clearChildren(deckCardListView);
 	deselectDeck();
 	deckListPage.classList.remove('showingDeck');
+	deckViewMenu.classList.remove('showing');
 });
 
 function saveDecks() {
@@ -298,6 +302,14 @@ function parseDecksForImport(s: string) {
 		throw new SyntaxError('Invalid JSON deck');
 	// TODO: add support for tblturf.ink
 }
+
+deckViewMenuButton.addEventListener('click', () => {
+	deckViewMenu.classList.toggle('showing');
+});
+
+deckViewMenu.addEventListener('click', () => {
+	deckViewMenu.classList.remove('showing');
+});
 
 deckSleevesButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
