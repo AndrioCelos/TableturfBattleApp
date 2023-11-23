@@ -2,9 +2,9 @@
 
 namespace TableturfBattleServer;
 public class Placement {
-	public List<int> Players { get; } = new();
+	public List<int> Players { get; } = [];
 	[JsonConverter(typeof(SpacesAffectedDictionaryConverter))]
-	public Dictionary<Point, Space> SpacesAffected { get; } = new();
+	public Dictionary<Point, Space> SpacesAffected { get; } = [];
 
 	internal class SpacesAffectedDictionaryConverter : JsonConverter<Dictionary<Point, Space>> {
 		public override Dictionary<Point, Space>? ReadJson(JsonReader reader, Type objectType, Dictionary<Point, Space>? existingValue, bool hasExistingValue, JsonSerializer serializer) {
@@ -12,8 +12,7 @@ public class Placement {
 			return list?.ToDictionary(o => o.space, o => o.newState);
 		}
 
-		public override void WriteJson(JsonWriter writer, Dictionary<Point, Space>? value, JsonSerializer serializer) {
-			serializer.Serialize(writer, value?.Select(e => new { space = e.Key, newState = e.Value }));
-		}
+		public override void WriteJson(JsonWriter writer, Dictionary<Point, Space>? value, JsonSerializer serializer)
+			=> serializer.Serialize(writer, value?.Select(e => new { space = e.Key, newState = e.Value }));
 	}
 }

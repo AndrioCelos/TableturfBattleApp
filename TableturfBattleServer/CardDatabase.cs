@@ -1,13 +1,11 @@
 using System.Collections.ObjectModel;
 
-using Newtonsoft.Json;
-
 namespace TableturfBattleServer;
 public static class CardDatabase {
 	private const Space I = Space.Ink1;
 	private const Space S = Space.SpecialInactive1;
 
-	private static readonly Card[] cards = new Card[] {
+	private static readonly Card[] cards = [
 		new(  1, "Hero Shot", Rarity.Fresh, 1f, "HeroShooter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -2218,7 +2216,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
-	};
+	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 

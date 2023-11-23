@@ -18,8 +18,8 @@ namespace TableturfBattleServer;
 internal class Program {
 	internal static HttpServer? httpServer;
 
-	internal static Dictionary<Guid, Game> games = new();
-	internal static Dictionary<Guid, Game> inactiveGames = new();
+	internal static Dictionary<Guid, Game> games = [];
+	internal static Dictionary<Guid, Game> inactiveGames = [];
 	internal static readonly Timer timer = new(1000);
 	private static bool lockdown;
 
@@ -417,7 +417,7 @@ internal class Program {
 											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidDeckCards", "Missing deck cards."));
 											return;
 										}
-										var array = deckString.Split(new[] { ',', '+', ' ' }, 15);
+										var array = deckString.Split([',', '+', ' '], 15);
 										if (array.Length != 15) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
 											return;
@@ -425,7 +425,7 @@ internal class Program {
 										int[]? upgrades = null;
 										if (d.TryGetValue("deckUpgrades", out var deckUpgradesString)) {
 											upgrades = new int[15];
-											var array2 = deckUpgradesString.Split(new[] { ',', '+', ' ' }, 15);
+											var array2 = deckUpgradesString.Split([',', '+', ' '], 15);
 											for (var i = 0; i < 15; i++) {
 												if (int.TryParse(array2[i], out var j) && i is >= 0 and <= 2)
 													upgrades[i] = j;
@@ -644,9 +644,9 @@ internal class Program {
 		using var reader = new StreamReader(stream);
 		var s = reader.ReadToEnd();
 		return s != ""
-			? s.Split(new[] { '&' }).Select(s => s.Split('=')).Select(a => a.Length == 2 ? a : throw new ArgumentException("Invalid form data"))
+			? s.Split(['&']).Select(s => s.Split('=')).Select(a => a.Length == 2 ? a : throw new ArgumentException("Invalid form data"))
 				.ToDictionary(a => HttpUtility.UrlDecode(a[0]), a => HttpUtility.UrlDecode(a[1]))
-			: new();
+			: [];
 	}
 
 	private static void SetStaticResponse(HttpListenerRequest request, HttpListenerResponse response, string jsonContent, string eTag, DateTime lastModified) {

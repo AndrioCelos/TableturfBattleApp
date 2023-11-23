@@ -1,5 +1,4 @@
 ﻿using System.Web;
-using Newtonsoft.Json;
 using WebSocketSharp.Server;
 
 namespace TableturfBattleServer;
@@ -36,7 +35,9 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
 	}
 
-	protected override void OnClose(WebSocketSharp.CloseEventArgs e) => this.Game?.RemoveConnection(this.Player, this);
+	protected override void OnClose(WebSocketSharp.CloseEventArgs e) {
+		if (this.Player != null) this.Game?.RemoveConnection(this.Player, this);
+	}
 
 	internal void SendInternal(string data) => this.Send(data);
 }

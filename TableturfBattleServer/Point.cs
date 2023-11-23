@@ -1,10 +1,5 @@
 ﻿namespace TableturfBattleServer;
-public struct Point {
-	public int X;
-	public int Y;
-
-	public Point(int x, int y) {
-		this.X = x;
-		this.Y = y;
-	}
+public struct Point(int x, int y) {
+	public int X = x;
+	public int Y = y;
 }

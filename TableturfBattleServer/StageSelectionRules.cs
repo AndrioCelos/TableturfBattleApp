@@ -1,13 +1,8 @@
 ﻿namespace TableturfBattleServer;
 
-public class StageSelectionRules {
-	public StageSelectionMethod Method { get; set; }
-	public int[] BannedStages { get; set; }
-
-	public StageSelectionRules(StageSelectionMethod method, int[]? bannedStages) {
-		this.Method = method;
-		this.BannedStages = bannedStages ?? Array.Empty<int>();
-	}
+public class StageSelectionRules(StageSelectionMethod method, int[]? bannedStages) {
+	public StageSelectionMethod Method { get; set; } = method;
+	public int[] BannedStages { get; set; } = bannedStages ?? Array.Empty<int>();
 
 	public static StageSelectionRules Default { get; } = new(StageSelectionMethod.Vote, Array.Empty<int>());
 }

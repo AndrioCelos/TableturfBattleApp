@@ -1,17 +1,17 @@
 ﻿using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
-public class Player {
-	public string Name { get; }
+public class Player(Game game, string name, Guid token) {
+	public string Name { get; } = name ?? throw new ArgumentNullException(nameof(name));
 	[JsonIgnore]
-	public Guid Token { get; }
+	public Guid Token { get; } = token;
 	public Colour Colour { get; set; }
 	public Colour SpecialColour { get; set; }
 	public Colour SpecialAccentColour { get; set; }
 	public bool UIBaseColourIsSpecialColour { get; set; }
 
 	[JsonIgnore]
-	internal List<TableturfWebSocketBehaviour> Connections { get; } = new();
+	internal List<TableturfWebSocketBehaviour> Connections { get; } = [];
 	[JsonIgnore]
 	public DateTime? DisconnectedAt { get; set; }
 	public bool IsOnline => this.DisconnectedAt == null;
@@ -19,7 +19,7 @@ public class Player {
 	public StageSelectionPrompt? StageSelectionPrompt { get; set; }
 
 	[JsonIgnore]
-	private readonly Game game;
+	private readonly Game game = game ?? throw new ArgumentNullException(nameof(game));
 	[JsonIgnore]
 	internal readonly List<int> CardsUsed = new(12);
 	[JsonIgnore]
@@ -32,7 +32,7 @@ public class Player {
 	public int GamesWon { get; set; }
 
 	[JsonIgnore]
-	internal List<SingleGameData> Games { get; } = new() { new() };
+	internal List<SingleGameData> Games { get; } = [new()];
 
 	[JsonIgnore]
 	public SingleGameData CurrentGameData => this.Games[^1];
@@ -54,13 +54,7 @@ public class Player {
 	[JsonIgnore]
 	internal ICollection<int>? selectedStages;
 
-	internal static readonly int[] RandomStageSelection = new[] { -1 };
-
-	public Player(Game game, string name, Guid token) {
-		this.game = game ?? throw new ArgumentNullException(nameof(game));
-		this.Name = name ?? throw new ArgumentNullException(nameof(name));
-		this.Token = token;
-	}
+	internal static readonly int[] RandomStageSelection = [-1];
 
 	public void ClearMoves() {
 		this.Move = null;

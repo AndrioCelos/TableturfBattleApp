@@ -1,22 +1,15 @@
 ﻿using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
-public class Deck : IEquatable<Deck> {
+public class Deck(string name, int sleeves, Card[] cards, int[] levels) : IEquatable<Deck> {
 	[JsonProperty]
-	internal string Name;
+	internal string Name = name ?? throw new ArgumentNullException(nameof(name));
 	[JsonProperty]
-	internal int Sleeves;
+	internal int Sleeves = sleeves;
 	[JsonProperty]
-	internal Card[] Cards;
+	internal Card[] Cards = cards ?? throw new ArgumentNullException(nameof(cards));
 	[JsonProperty]
-	internal int[] Upgrades;
-
-	public Deck(string name, int sleeves, Card[] cards, int[] levels) {
-		this.Name = name ?? throw new ArgumentNullException(nameof(name));
-		this.Sleeves = sleeves;
-		this.Cards = cards ?? throw new ArgumentNullException(nameof(cards));
-		this.Upgrades = levels ?? throw new ArgumentNullException(nameof(levels));
-	}
+	internal int[] Upgrades = levels ?? throw new ArgumentNullException(nameof(levels));
 
 	public bool Equals(Deck? other)
 		=> other is not null && this.Name == other.Name && this.Sleeves == other.Sleeves && this.Cards.SequenceEqual(other.Cards) && this.Upgrades.SequenceEqual(other.Upgrades);

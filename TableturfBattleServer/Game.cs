@@ -2,17 +2,16 @@
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using WebSocketSharp.Server;
 
 namespace TableturfBattleServer;
-public class Game {
+public class Game(int maxPlayers) {
 	[JsonIgnore]
 	public Guid ID { get; } = Guid.NewGuid();
 
 	public GameState State { get; set; }
 	public int TurnNumber { get; set; }
 	public List<Player> Players { get; } = new(4);
-	public int MaxPlayers { get; set; }
+	public int MaxPlayers { get; set; } = maxPlayers;
 	[JsonProperty("stage")]
 	public int? StageIndex { get; private set; }
 	public Space[,]? Board { get; private set; }
@@ -30,16 +29,14 @@ public class Game {
 	public required StageSelectionRules StageSelectionRuleAfterDraw { get; set; }
 	public bool ForceSameDeckAfterDraw { get; set; }
 
-	public List<int> StruckStages = new();
+	public List<int> StruckStages = [];
 
 	[JsonIgnore]
-	internal List<Deck> deckCache = new();
+	internal List<Deck> deckCache = [];
 	[JsonIgnore]
-	internal List<int> setStages = new();
+	internal List<int> setStages = [];
 
-	public Game(int maxPlayers) => this.MaxPlayers = maxPlayers;
-
-	private static readonly PlayerColours[] Colours = new PlayerColours[] {
+	private static readonly PlayerColours[] Colours = [
 		new(new(0xf2200d), new(0xff8c1a), new(0xffd5cc), false),  // Red
 		new(new(0xf2740d), new(0xff4000), new(0xffcc99), true),  // Orange
 		new(new(0xecf901), new(0xfa9e00), new(0xf9f91f), true),  // Yellow
@@ -49,7 +46,7 @@ public class Game {
 		new(new(0x4a5cfc), new(0x01edfe), new(0xd5e1e1), false),  // Blue
 		new(new(0xa106ef), new(0xff00ff), new(0xffb3ff), false),  // Purple
 		new(new(0xf906e0), new(0x8006f9), new(0xebb4fd), true),  // Magenta
-	};
+	];
 
 	public bool TryAddPlayer(Player player, out int playerIndex, out Error error) {
 		lock (this.Players) {
@@ -140,7 +137,7 @@ public class Game {
 	}
 
 	public bool CanPlay(int playerIndex, Card card, int x, int y, int rotation, bool isSpecialAttack) {
-		if (card is null) throw new ArgumentNullException(nameof(card));
+		ArgumentNullException.ThrowIfNull(card);
 		if (this.Board is null || this.Players[playerIndex].CurrentGameData is not SingleGameData gameData) return false;
 
 		if (isSpecialAttack && (gameData.SpecialPoints < card.SpecialCost))
@@ -157,7 +154,8 @@ public class Game {
 					|| y2 < 0 || y2 > this.Board.GetUpperBound(1))
 					return false;  // Out of bounds.
 				switch (this.Board[x2, y2]) {
-					case Space.Wall: case Space.OutOfBounds:
+					case Space.Wall:
+					case Space.OutOfBounds:
 						return false;
 					case >= Space.SpecialInactive1:
 						return false;  // Can't overlap special spaces ever.
@@ -243,7 +241,7 @@ public class Game {
 						this.LockInStage(legalStages[random.Next(legalStages.Count)]);
 					} else {
 						if (player.selectedStages!.First() >= 0)
-							this.LockInStage(player.selectedStages.First());
+							this.LockInStage(player.selectedStages!.First());
 						else {
 							var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).Except(player.StageSelectionPrompt!.Value.StruckStages).ToList();
 							this.LockInStage(legalStages[random.Next(legalStages.Count)]);
@@ -253,7 +251,7 @@ public class Game {
 					break;
 				}
 				case StageSelectionMethod.Strike: {
-					var player = this.Players.FirstOrDefault(p => p.StageSelectionPrompt != null && p.StageSelectionPrompt?.PromptType != StageSelectionPromptType.Wait);
+					var player = this.Players.FirstOrDefault(p => p.StageSelectionPrompt != null && p.StageSelectionPrompt?.PromptType != StageSelectionPromptType.Wait) ?? throw new InvalidOperationException("Couldn't find striking player?!");
 					switch (player.StageSelectionPrompt!.Value.PromptType) {
 						case StageSelectionPromptType.VoteOrder:
 							// Choose who will strike first.
@@ -287,7 +285,7 @@ public class Game {
 							break;
 						case StageSelectionPromptType.Choose:
 							if (player.selectedStages!.First() >= 0)
-								this.LockInStage(player.selectedStages.First());
+								this.LockInStage(player.selectedStages!.First());
 							else {
 								var legalStages = Enumerable.Range(0, StageDatabase.Stages.Count).Except(rule.BannedStages).Except(player.StageSelectionPrompt!.Value.StruckStages).ToList();
 								this.LockInStage(legalStages[random.Next(legalStages.Count)]);
@@ -482,7 +480,7 @@ public class Game {
 				}
 			}
 		} else if (this.State is GameState.GameEnded or GameState.SetEnded && this.Players.All(p => p.Move != null)) {
-			SetupNextGame();
+			this.SetupNextGame();
 		}
 	}
 
@@ -547,9 +545,9 @@ public class Game {
 					this.LockInStage(legalStages[0]);
 					break;
 				}
-				var bannedStages = legalStages.Count == 0 ? Array.Empty<int>() : rule.BannedStages;
+				var bannedStages = legalStages.Count == 0 ? [] : rule.BannedStages;
 				foreach (var player in this.Players) {
-					player.StageSelectionPrompt = new() { PromptType = StageSelectionPromptType.Vote, BannedStages = bannedStages, StruckStages = Array.Empty<int>() };
+					player.StageSelectionPrompt = new() { PromptType = StageSelectionPromptType.Vote, BannedStages = bannedStages, StruckStages = [] };
 				}
 				break;
 			}

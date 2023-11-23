@@ -2,15 +2,9 @@
 using Newtonsoft.Json;
 
 namespace TableturfBattleServer;
-public readonly struct Error {
+public readonly struct Error(HttpStatusCode httpStatusCode, string code, string description) {
 	[JsonIgnore]
-	public HttpStatusCode HttpStatusCode { get; }
-	public string Code { get; }
-	public string Description { get; }
-
-	public Error(HttpStatusCode httpStatusCode, string code, string description) {
-		this.HttpStatusCode = httpStatusCode;
-		this.Code = code ?? throw new ArgumentNullException(nameof(code));
-		this.Description = description ?? throw new ArgumentNullException(nameof(description));
-	}
+	public HttpStatusCode HttpStatusCode { get; } = httpStatusCode;
+	public string Code { get; } = code ?? throw new ArgumentNullException(nameof(code));
+	public string Description { get; } = description ?? throw new ArgumentNullException(nameof(description));
 }
