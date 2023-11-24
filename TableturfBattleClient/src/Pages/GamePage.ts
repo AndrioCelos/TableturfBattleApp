@@ -237,7 +237,9 @@ replayNextButton.buttonElement.addEventListener('click', _ => {
 
 		replayAnimationAbortController = new AbortController();
 		(async () => {
-			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.game.turnNumber, players: currentGame.game.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, replayAnimationAbortController.signal);
+			const abortSignal = replayAnimationAbortController.signal;
+			await playInkAnimations({ game: { state: GameState.Ongoing, board: null, turnNumber: currentGame.game.turnNumber, players: currentGame.game.players }, moves, placements: result.placements, specialSpacesActivated: result.specialSpacesActivated }, abortSignal);
+			if (abortSignal.aborted) return;
 			turnNumberLabel.turnNumber = currentGame.game.turnNumber;
 			clearPlayContainers();
 			if (currentGame.game.turnNumber > 12) {
