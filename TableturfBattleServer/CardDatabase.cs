@@ -2216,14 +2216,94 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		new(-13, "Foil Squeezer", Rarity.Common, 0.95f, "ShooterFlash01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, S, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-14, "Snipewriter 5B", Rarity.Common, 0.86f, "ChargerPencil01", new Space[,] {
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, S, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-15, "Enperry\nSplat Dualies", Rarity.Common, 0.97f, "ManeuverNormal01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, S, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-16, "Undercover\nSorella Brella", Rarity.Common, 0.96f, "ShelterCompact01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, S, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, I, 0, I, 0, I, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-17, "Custom Blaster", Rarity.Common, 0.8f, "BlasterMiddle01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-18, "New S-BLAST", Rarity.Common, 0.97f, "BlasterPrecision01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-19, "Painbrush\nNouveau", Rarity.Common, 1f, "BrushHeavy01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, I, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, I, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-20, "Splatana Stamper\nNouveau", Rarity.Common, 0.69f, "SaberNormal01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, S, I, I, I, I, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(5, 0, 2, 0);
-	public static DateTime LastModified { get; } = new(2023, 10, 9, 22, 30, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(5, 1, 0, 0);
+	public static DateTime LastModified { get; } = new(2023, 11, 24, 0, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 

@@ -75,10 +75,14 @@
 				<p>Other players can join using a link to this page.<br/>
 					<button type="button" id="shareLinkButton">Share link</button><button type="button" id="showQrCodeButton">Show QR code</button></p>
 				<ul id="playerList"></ul>
+				<h3>Game rules</h3>
 				<label for="lobbyTimeLimitBox">
 					Turn time limit:
 					<input type="number" id="lobbyTimeLimitBox" min="10" max="120" step="10" placeholder="None"/>
 					<span id="lobbyTimeLimitUnit">seconds</span>
+				</label>
+				<label for="lobbyAllowUpcomingCardsBox">
+					<input type="checkbox" id="lobbyAllowUpcomingCardsBox"/> Allow upcoming cards
 				</label>
 			</section>
 			<section id="lobbySelectedStageSection">
@@ -618,6 +622,9 @@
 								<option value="4">First to 4</option>
 							</select>
 						</label>
+					</p>
+					<p>
+						<label for="gameSetupAllowUpcomingCardsBox"><input type="checkbox" id="gameSetupAllowUpcomingCardsBox" checked/> Allow upcoming cards</label>
 					</p>
 					<p>Stage selection:</p>
 					<table>

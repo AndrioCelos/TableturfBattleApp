@@ -183,7 +183,8 @@ class ReplayLoader {
 				turnNumber: 0,
 				turnTimeLimit: null,
 				turnTimeLeft: null,
-				goalWinCount: goalWinCount
+				goalWinCount: goalWinCount,
+				allowUpcomingCards: true
 			},
 			me: null,
 			webSocket: null

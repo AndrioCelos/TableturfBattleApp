@@ -18,6 +18,7 @@ const gameSetupForm = document.getElementById('gameSetupForm') as HTMLFormElemen
 const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElement;
 const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
 const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
+const gameSetupAllowUpcomingCardsBox = document.getElementById('gameSetupAllowUpcomingCardsBox') as HTMLInputElement;
 const stageSelectionRuleFirstBox = document.getElementById('stageSelectionRuleFirstBox') as HTMLSelectElement;
 const stageSelectionRuleAfterWinBox = document.getElementById('stageSelectionRuleAfterWinBox') as HTMLSelectElement;
 const stageSelectionRuleAfterDrawBox = document.getElementById('stageSelectionRuleAfterDrawBox') as HTMLSelectElement;
@@ -153,10 +154,11 @@ function createRoom(useOptionsForm: boolean) {
 	data.append('name', name);
 	data.append('clientToken', clientToken);
 	if (useOptionsForm) {
-		const settings = {
+		const settings = <CustomRoomConfig> {
 			maxPlayers: parseInt(maxPlayersBox.value),
 			turnTimeLimit: turnTimeLimitBox.value ? turnTimeLimitBox.valueAsNumber : null,
 			goalWinCount: goalWinCountBox.value ? parseInt(goalWinCountBox.value) : null,
+			allowUpcomingCards: gameSetupAllowUpcomingCardsBox.checked,
 			stageSelectionMethodFirst: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterWin: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterDraw: stageSelectionRuleAfterDrawBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
@@ -172,6 +174,7 @@ function createRoom(useOptionsForm: boolean) {
 			data.append('turnTimeLimit', turnTimeLimitBox.value);
 		if (goalWinCountBox.value)
 			data.append('goalWinCount', goalWinCountBox.value);
+		data.append('allowUpcomingCards', settings.allowUpcomingCards.toString());
 
 		const stageSelectionRuleFirst = {
 			method: settings.stageSelectionMethodFirst,
@@ -363,6 +366,7 @@ window.addEventListener('popstate', () => {
 		maxPlayersBox.value = userConfig.lastCustomRoomConfig.maxPlayers.toString();
 		turnTimeLimitBox.value = userConfig.lastCustomRoomConfig.turnTimeLimit?.toString() ?? '';
 		goalWinCountBox.value = userConfig.lastCustomRoomConfig.goalWinCount?.toString() ?? '';
+		gameSetupAllowUpcomingCardsBox.checked = userConfig.lastCustomRoomConfig.allowUpcomingCards ?? true;
 		stageSelectionRuleFirstBox.value = StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodFirst]
 		stageSelectionRuleAfterWinBox.value = userConfig.lastCustomRoomConfig.stageSelectionMethodAfterWin != null ? StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodAfterWin] : 'Inherit';
 		stageSelectionRuleAfterDrawBox.value = userConfig.lastCustomRoomConfig.stageSelectionMethodAfterDraw != null ? StageSelectionMethod[userConfig.lastCustomRoomConfig.stageSelectionMethodAfterDraw] : 'Inherit';

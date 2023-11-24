@@ -49,6 +49,8 @@ function onInitialise(callback: () => void) {
 
 function initCardDatabase(cards: Card[]) {
 	deckEditInitCardDatabase(cards);
+	if (!cards.find(c => c.number < 0))
+		gameSetupAllowUpcomingCardsBox.parentElement!.hidden = true;
 }
 function initStageDatabase(stages: Stage[]) {
 	preGameInitStageDatabase(stages);
@@ -108,6 +110,7 @@ function onGameSettingsChange() {
 	if (currentGame == null) return;
 	if (lobbyTimeLimitBox.value != currentGame.game.turnTimeLimit?.toString() ?? '')
 		lobbyTimeLimitBox.value = currentGame.game.turnTimeLimit?.toString() ?? '';
+	lobbyAllowUpcomingCardsBox.checked = currentGame.game.allowUpcomingCards;
 }
 
 function onGameStateChange(game: any, playerData: PlayerData | null) {
@@ -271,6 +274,7 @@ function setupWebSocket(gameID: string) {
 							turnTimeLimit: payload.data.turnTimeLimit,
 							turnTimeLeft: payload.data.turnTimeLeft,
 							goalWinCount: payload.data.goalWinCount,
+							allowUpcomingCards: payload.data.allowUpcomingCards
 						},
 						me: payload.playerData,
 						webSocket: webSocket,
@@ -330,6 +334,7 @@ function setupWebSocket(gameID: string) {
 				switch (payload.event) {
 					case 'settingsChange':
 						currentGame.game.turnTimeLimit = payload.data.turnTimeLimit;
+						currentGame.game.allowUpcomingCards = payload.data.allowUpcomingCards;
 						onGameSettingsChange();
 						break;
 					case 'join':

@@ -24,6 +24,7 @@ interface CustomRoomConfig {
 	maxPlayers: number;
 	turnTimeLimit: number | null;
 	goalWinCount: number | null;
+	allowUpcomingCards: boolean;
 	stageSelectionMethodFirst: StageSelectionMethod;
 	stageSelectionMethodAfterWin: StageSelectionMethod | null;
 	stageSelectionMethodAfterDraw: StageSelectionMethod | null;

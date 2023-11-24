@@ -12,6 +12,8 @@ interface Game {
 	turnTimeLeft: number | null,
 	/** The number of game wins needed to win the set, or null if no goal win count is set. */
 	goalWinCount: number | null,
+	/** Whether upcoming cards may be used. */
+	allowUpcomingCards: boolean
 }
 
 /** A UUID used to identify the client. */

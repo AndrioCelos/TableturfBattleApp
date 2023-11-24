@@ -15,7 +15,7 @@ using Timer = System.Timers.Timer;
 
 namespace TableturfBattleServer;
 
-internal class Program {
+internal partial class Program {
 	internal static HttpServer? httpServer;
 
 	internal static Dictionary<Guid, Game> games = [];
@@ -25,6 +25,7 @@ internal class Program {
 
 	private const int InactiveGameLimit = 1000;
 	private static readonly TimeSpan InactiveGameTimeout = TimeSpan.FromMinutes(5);
+	internal static readonly char[] DELIMITERS = new[] { ',', ' ' };
 
 	private static string? GetClientRootPath() {
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -160,6 +161,13 @@ internal class Program {
 					} else
 						clientToken = Guid.NewGuid();
 
+					var allowUpcomingCards = false;
+					if (d.TryGetValue("allowUpcomingCards", out var allowUpcomingCardsString)) {
+						if (!bool.TryParse(allowUpcomingCardsString, out allowUpcomingCards))
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "allowUpcomingCards was invalid."));
+					} else
+						allowUpcomingCards = true;
+
 					StageSelectionRules? stageSelectionRuleFirst = null, stageSelectionRuleAfterWin = null, stageSelectionRuleAfterDraw = null;
 					if (d.TryGetValue("stageSelectionRuleFirst", out var json1)) {
 						if (!TryParseStageSelectionRule(json1, out stageSelectionRuleFirst) || stageSelectionRuleFirst.Method is StageSelectionMethod.Same or StageSelectionMethod.Counterpick) {
@@ -197,7 +205,7 @@ internal class Program {
 					} else
 						spectate = false;
 
-					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
+					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, AllowUpcomingCards = allowUpcomingCards, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
 					if (!spectate)
 						game.TryAddPlayer(new(game, name, clientToken), out _, out _);
 					games.Add(game.ID, game);
@@ -214,7 +222,7 @@ internal class Program {
 		} else if (e.Request.RawUrl == "/api/stages") {
 			SetStaticResponse(e.Request, e.Response, StageDatabase.JSON, StageDatabase.Version.ToString(), StageDatabase.LastModified);
 		} else {
-			var m = Regex.Match(e.Request.RawUrl, @"^/api/games/([\w-]+)(?:/(\w+)(?:\?clientToken=([\w-]+))?)?$", RegexOptions.Compiled);
+			var m = GamePathRegex().Match(e.Request.RawUrl);
 			if (m.Success) {
 				if (!Guid.TryParse(m.Groups[1].Value, out var gameID)) {
 					SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidGameID", "Invalid game ID."));
@@ -304,7 +312,7 @@ internal class Program {
 								}
 								break;
 							}
-							case "setTurnTimeLimit": {
+							case "setGameSettings": {
 								if (e.Request.HttpMethod != "POST") {
 									e.Response.AddHeader("Allow", "POST");
 									SetErrorResponse(e.Response, new(HttpStatusCode.MethodNotAllowed, "MethodNotAllowed", "Invalid request method for this endpoint."));
@@ -324,17 +332,23 @@ internal class Program {
 										SetErrorResponse(e.Response, new(HttpStatusCode.Forbidden, "AccessDenied", "Only the host can do that."));
 										return;
 									}
+
 									if (d.TryGetValue("turnTimeLimit", out var turnTimeLimitString)) {
 										if (turnTimeLimitString == "")
 											game.TurnTimeLimit = null;
 										else if (!int.TryParse(turnTimeLimitString, out var turnTimeLimit2) || turnTimeLimit2 < 10) {
-											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
+											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "Invalid turn time limit."));
 											return;
 										} else
 											game.TurnTimeLimit = turnTimeLimit2;
-									} else {
-										SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidTurnTimeLimit", "Invalid turn time limit."));
-										return;
+									}
+
+									if (d.TryGetValue("allowUpcomingCards", out var allowUpcomingCardsString)) {
+										if (!bool.TryParse(allowUpcomingCardsString, out var allowUpcomingCards)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "Invalid allowUpcomingCards."));
+											return;
+										} else
+											game.AllowUpcomingCards = allowUpcomingCards;
 									}
 
 									game.SendEvent("settingsChange", game, false);
@@ -363,7 +377,7 @@ internal class Program {
 									}
 
 									var stages = new HashSet<int>();
-									foreach (var field in stagesString.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+									foreach (var field in stagesString.Split(DELIMITERS, StringSplitOptions.RemoveEmptyEntries)) {
 										if (!int.TryParse(field, out var i)) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidStage", "Invalid stages."));
 											return;
@@ -443,6 +457,10 @@ internal class Program {
 											}
 											if (Array.IndexOf(cards, cardNumber, 0, i) >= 0) {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Deck cannot have duplicates."));
+												return;
+											}
+											if (!game.AllowUpcomingCards && cardNumber < 0 && CardDatabase.GetCard(cardNumber).Number < 0) {
+												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "ForbiddenDeck", "Upcoming cards cannot be used in this game."));
 												return;
 											}
 											cards[i] = cardNumber;
@@ -697,4 +715,7 @@ internal class Program {
 			return false;
 		}
 	}
+
+	[GeneratedRegex(@"^/api/games/([\w-]+)(?:/(\w+)(?:\?clientToken=([\w-]+))?)?$", RegexOptions.Compiled)]
+	private static partial Regex GamePathRegex();
 }

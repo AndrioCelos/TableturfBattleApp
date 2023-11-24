@@ -155,7 +155,7 @@ function initTest(stage: Stage) {
 	clear();
 	testMode = true;
 	gamePage.classList.add('deckTest');
-	currentGame = { id: 'test', game: { state: GameState.Ongoing, maxPlayers: 2, players: [ ], turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null }, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ], stageSelectionPrompt: null }, webSocket: null };
+	currentGame = { id: 'test', game: { state: GameState.Ongoing, maxPlayers: 2, players: [ ], turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null, allowUpcomingCards: true }, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ], stageSelectionPrompt: null }, webSocket: null };
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
 	board.startSpaces = startSpaces;

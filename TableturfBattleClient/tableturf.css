@@ -497,7 +497,7 @@ dialog::backdrop {
 	flex-grow: 1;
 }
 .cardButton:is([data-card-number="163"], [data-card-number="166"], [data-card-number="196"], [data-card-number="197"], [data-card-number="199"],
-	[data-card-number="202"], [data-card-number="216"]) .cardName {
+	[data-card-number="202"], [data-card-number="216"], [data-card-number="-20"]) .cardName {
 	position: absolute;
 	left: -1em;
 	right: -1em;

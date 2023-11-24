@@ -24,6 +24,8 @@ public class Game(int maxPlayers) {
 	[JsonIgnore]
 	internal DateTime abandonedSince = DateTime.UtcNow;
 
+	public bool AllowUpcomingCards { get; set; } = true;
+
 	public required StageSelectionRules StageSelectionRuleFirst { get; set; }
 	public required StageSelectionRules StageSelectionRuleAfterWin { get; set; }
 	public required StageSelectionRules StageSelectionRuleAfterDraw { get; set; }

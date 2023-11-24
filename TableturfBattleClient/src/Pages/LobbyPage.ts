@@ -25,6 +25,7 @@ const lobbyDeckButtons = new CheckButtonGroup<SavedDeck>(lobbyDeckList);
 const lobbyDeckSubmitButton = document.getElementById('submitDeckButton') as HTMLButtonElement;
 
 const lobbyTimeLimitBox = document.getElementById('lobbyTimeLimitBox') as HTMLInputElement;
+const lobbyAllowUpcomingCardsBox = document.getElementById('lobbyAllowUpcomingCardsBox') as HTMLInputElement;
 const lobbyTimeLimitUnit = document.getElementById('lobbyTimeLimitUnit')!;
 
 const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElement;
@@ -57,6 +58,7 @@ function initLobbyPage(url: string) {
 		lobbyShareData = null;
 		shareLinkButton.innerText = 'Copy link';
 	}
+	lobbyDeckSection.hidden = true;
 }
 
 function showStageSelectionForm(prompt: StageSelectionPrompt | null, isReady: boolean) {
@@ -179,6 +181,7 @@ function lobbyResetSlots() {
 
 function lobbyLockSettings(lock: boolean) {
 	lobbyTimeLimitBox.readOnly = lock;
+	lobbyAllowUpcomingCardsBox.disabled = lock;
 }
 
 function clearReady() {
@@ -289,11 +292,13 @@ function initDeckSelection() {
 			lobbyDeckButtons.add(button, deck);
 
 			buttonElement.addEventListener('click', () => {
-				selectedDeck = deck;
-				lobbyDeckSubmitButton.disabled = false;
+				if (button.enabled) {
+					selectedDeck = deck;
+					lobbyDeckSubmitButton.disabled = false;
+				}
 			});
 
-			if (!deck.isValid) {
+			if (!deck.isValid || (!currentGame.game.allowUpcomingCards && deck.cards.find(n => cardDatabase.get(n).number < 0))) {
 				button.enabled = false;
 			} else if (deck.name == lastDeckName) {
 				selectedDeck = deck;
@@ -311,10 +316,19 @@ function initDeckSelection() {
 
 lobbyTimeLimitBox.addEventListener('change', () => {
 	let req = new XMLHttpRequest();
-	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/setTurnTimeLimit`);
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/setGameSettings`);
 	let data = new URLSearchParams();
 	data.append('clientToken', clientToken);
 	data.append('turnTimeLimit', lobbyTimeLimitBox.value || '');
+	req.send(data.toString());
+});
+
+lobbyAllowUpcomingCardsBox.addEventListener('change', () => {
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/setGameSettings`);
+	let data = new URLSearchParams();
+	data.append('clientToken', clientToken);
+	data.append('allowUpcomingCards', lobbyAllowUpcomingCardsBox.checked.toString());
 	req.send(data.toString());
 });
 
