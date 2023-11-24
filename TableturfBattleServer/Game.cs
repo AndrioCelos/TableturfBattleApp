@@ -11,6 +11,8 @@ public class Game(int maxPlayers) {
 	public GameState State { get; set; }
 	public int TurnNumber { get; set; }
 	public List<Player> Players { get; } = new(4);
+	[JsonIgnore]
+	internal Guid HostClientToken { get; set; }
 	public int MaxPlayers { get; set; } = maxPlayers;
 	[JsonProperty("stage")]
 	public int? StageIndex { get; private set; }
@@ -629,7 +631,7 @@ public class Game(int maxPlayers) {
 							break;
 						}
 					}
-					behaviour.SendInternal(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<T>(eventType, data, playerData)));
+					behaviour.SendInternal(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<T>(eventType, data, playerData, behaviour.ClientToken == this.HostClientToken)));
 				} else {
 					behaviour.SendInternal(JsonUtils.Serialise(new DTO.WebSocketPayload<T>(eventType, data)));
 				}

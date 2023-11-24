@@ -244,7 +244,7 @@ function setupWebSocket(gameID: string) {
 	const webSocket = new WebSocket(`${config.apiBaseUrl.replace(/(http)(s)?\:\/\//, 'ws$2://')}/websocket?gameID=${gameID}&clientToken=${clientToken}`);
 	webSocket.addEventListener('open', _ => {
 		enterGameTimeout = setTimeout(() => {
-			webSocket.close(1002, 'Timeout waiting for a sync message');
+			webSocket.close(1000, 'Timeout waiting for a sync message');
 			enterGameTimeout = null;
 			communicationError();
 		}, 30000);
@@ -277,6 +277,7 @@ function setupWebSocket(gameID: string) {
 							allowUpcomingCards: payload.data.allowUpcomingCards
 						},
 						me: payload.playerData,
+						isHost: payload.isHost,
 						webSocket: webSocket,
 						reconnecting: false
 					};

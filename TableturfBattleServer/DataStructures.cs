@@ -8,8 +8,9 @@ internal class WebSocketPayload<T>(string eventName, T payload) {
 	[JsonProperty("data")]
 	public T Payload = payload;
 }
-internal class WebSocketPayloadWithPlayerData<T>(string eventName, T payload, PlayerData? playerData) : WebSocketPayload<T>(eventName, payload) {
+internal class WebSocketPayloadWithPlayerData<T>(string eventName, T payload, PlayerData? playerData, bool isHost) : WebSocketPayload<T>(eventName, payload) {
 	public PlayerData? PlayerData = playerData;
+	public bool IsHost = isHost;
 }
 
 public class PlayerData(int playerIndex, Card[]? hand, Deck? deck, Move? move, List<int>? cardsUsed, StageSelectionPrompt? stageSelectionPrompt) {

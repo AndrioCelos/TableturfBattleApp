@@ -24,6 +24,7 @@ let currentGame: {
 	game: Game,
 	/** The user's player data, or null if they are spectating. */
 	me: PlayerData | null,
+	isHost: boolean,
 	/** The WebSocket used for receiving game events, or null if not yet connected. */
 	webSocket: WebSocket | null,
 	reconnecting?: boolean

@@ -25,7 +25,7 @@ internal partial class Program {
 
 	private const int InactiveGameLimit = 1000;
 	private static readonly TimeSpan InactiveGameTimeout = TimeSpan.FromMinutes(5);
-	internal static readonly char[] DELIMITERS = new[] { ',', ' ' };
+	internal static readonly char[] DELIMITERS = [',', ' '];
 
 	private static string? GetClientRootPath() {
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -205,7 +205,7 @@ internal partial class Program {
 					} else
 						spectate = false;
 
-					var game = new Game(maxPlayers) { GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, AllowUpcomingCards = allowUpcomingCards, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
+					var game = new Game(maxPlayers) { HostClientToken = clientToken, GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, AllowUpcomingCards = allowUpcomingCards, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
 					if (!spectate)
 						game.TryAddPlayer(new(game, name, clientToken), out _, out _);
 					games.Add(game.ID, game);
@@ -324,12 +324,12 @@ internal partial class Program {
 										SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidClientToken", "Invalid client token."));
 										return;
 									}
-									if (game.State != GameState.WaitingForPlayers) {
-										SetErrorResponse(e.Response, new(HttpStatusCode.Gone, "GameAlreadyStarted", "The game has already started."));
+									if (clientToken != game.HostClientToken) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Forbidden, "AccessDenied", "Only the host can do that."));
 										return;
 									}
-									if (!game.GetPlayer(clientToken, out var playerIndex, out var player) || playerIndex != 0) {
-										SetErrorResponse(e.Response, new(HttpStatusCode.Forbidden, "AccessDenied", "Only the host can do that."));
+									if (game.State != GameState.WaitingForPlayers) {
+										SetErrorResponse(e.Response, new(HttpStatusCode.Gone, "GameAlreadyStarted", "The game has already started."));
 										return;
 									}
 

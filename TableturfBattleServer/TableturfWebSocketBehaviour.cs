@@ -30,9 +30,9 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 				}
 			}
 			this.Game = game;
-			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData)));
+			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", game, playerData, this.ClientToken == game.HostClientToken)));
 		} else
-			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null)));
+			this.Send(JsonUtils.Serialise(new DTO.WebSocketPayloadWithPlayerData<Game?>("sync", null, null, false)));
 	}
 
 	protected override void OnClose(WebSocketSharp.CloseEventArgs e) {

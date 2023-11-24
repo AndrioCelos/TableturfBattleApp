@@ -187,6 +187,7 @@ class ReplayLoader {
 				allowUpcomingCards: true
 			},
 			me: null,
+			isHost: false,
 			webSocket: null
 		};
 

@@ -193,7 +193,7 @@ function createRoom(useOptionsForm: boolean) {
 		data.append('stageSelectionRuleAfterWin', JSON.stringify(stageSelectionRuleAfterWin));
 		data.append('stageSelectionRuleAfterDraw', JSON.stringify(stageSelectionRuleAfterDraw));
 		data.append('forceSameDeckAfterDraw', settings.forceSameDecksAfterDraw.toString());
-		data.append('spectate', settings.forceSameDecksAfterDraw.toString());
+		data.append('spectate', settings.spectate.toString());
 	}
 	request.send(data.toString());
 	setLoadingMessage('Creating a room...');

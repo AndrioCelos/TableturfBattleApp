@@ -176,7 +176,7 @@ function lobbyResetSlots() {
 		playerListSlots.push(el);
 	}
 
-	lobbyLockSettings(currentGame.me?.playerIndex != 0);
+	lobbyLockSettings(!currentGame.isHost);
 }
 
 function lobbyLockSettings(lock: boolean) {
