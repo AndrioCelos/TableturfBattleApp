@@ -178,15 +178,15 @@ function createRoom(useOptionsForm: boolean) {
 
 		const stageSelectionRuleFirst = {
 			method: settings.stageSelectionMethodFirst,
-			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i != 0)
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => settings.stageSwitch[i] != 0)
 		};
 		const stageSelectionRuleAfterWin = {
 			method: settings.stageSelectionMethodAfterWin ?? settings.stageSelectionMethodFirst,
-			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => settings.stageSwitch[i] == 2)
 		};
 		const stageSelectionRuleAfterDraw = {
 			method: settings.stageSelectionMethodAfterDraw ?? settings.stageSelectionMethodFirst,
-			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => i == 2)
+			bannedStages: settings.stageSwitch.map((_, i) => i).filter(i => settings.stageSwitch[i] == 2)
 		};
 
 		data.append('stageSelectionRuleFirst', JSON.stringify(stageSelectionRuleFirst));
