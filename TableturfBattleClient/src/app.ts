@@ -49,8 +49,10 @@ function onInitialise(callback: () => void) {
 
 function initCardDatabase(cards: Card[]) {
 	deckEditInitCardDatabase(cards);
-	if (!cards.find(c => c.number < 0))
+	if (!cards.find(c => c.number < 0)) {
 		gameSetupAllowUpcomingCardsBox.parentElement!.hidden = true;
+		lobbyAllowUpcomingCardsBox.parentElement!.hidden = true;
+	}
 }
 function initStageDatabase(stages: Stage[]) {
 	preGameInitStageDatabase(stages);
@@ -260,7 +262,7 @@ function setupWebSocket(gameID: string) {
 					enterGameTimeout = null;
 				}
 				setLoadingMessage(null);
-				if (!e.data) {
+				if (!payload.data) {
 					webSocket.close();
 					alert('The game was not found.');
 				} else {
