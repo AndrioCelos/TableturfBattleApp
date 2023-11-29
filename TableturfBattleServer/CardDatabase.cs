@@ -2266,7 +2266,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(-18, "New S-BLAST", Rarity.Common, 0.97f, "BlasterPrecision01", new Space[,] {
+		new(-18, "S-BLAST '91", Rarity.Common, 0.97f, "BlasterPrecision01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, I, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -2286,7 +2286,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(-20, "Splatana Stamper\nNouveau", Rarity.Common, 0.69f, "SaberNormal01", new Space[,] {
+		new(-20, "Neo Splatana\nStamper", Rarity.Common, 0.9f, "SaberNormal01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2296,14 +2296,44 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
+		new(-21, "REEF-LUX\n450 Deco", Rarity.Common, 1f, "StringerShort01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, 0, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-22, "Splattercolor\nScreen", Rarity.Rare, 3, 0.95f, "", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, I, I, 0 },
+			{ 0, 0, 0, I, 0, I, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, I, 0, I, 0, 0, 0, 0 },
+			{ 0, I, I, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-23, "Triple\nSplashdown", Rarity.Rare, 3, 1f, "", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, I, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(5, 1, 0, 0);
-	public static DateTime LastModified { get; } = new(2023, 11, 24, 0, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(5, 1, 1, 0);
+	public static DateTime LastModified { get; } = new(2023, 11, 29, 1, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
