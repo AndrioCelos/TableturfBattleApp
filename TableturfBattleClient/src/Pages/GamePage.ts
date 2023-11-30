@@ -124,6 +124,7 @@ function initSpectator() {
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
 	board.autoHighlight = false;
+	board.flip = false;
 	showPage('game');
 }
 
@@ -141,6 +142,7 @@ function initReplay() {
 	flipButton.hidden = false;
 	gameButtonsContainer.hidden = false;
 	gamePage.dataset.myPlayerIndex = '0';
+	board.flip = false;
 	updateColours();
 	gamePage.dataset.uiBaseColourIsSpecialColour = (userConfig.colourLock || (currentGame!.game.players[0].uiBaseColourIsSpecialColour ?? true)).toString();
 	canPlay = false;
@@ -157,6 +159,7 @@ function initTest(stage: Stage) {
 	testMode = true;
 	gamePage.classList.add('deckTest');
 	currentGame = { id: 'test', game: { state: GameState.Ongoing, maxPlayers: 2, players: [ ], turnNumber: 1, turnTimeLimit: null, turnTimeLeft: null, goalWinCount: null, allowUpcomingCards: true }, me: { playerIndex: 0, move: null, deck: null, hand: null, cardsUsed: [ ], stageSelectionPrompt: null }, isHost: false, webSocket: null };
+	board.flip = false;
 	board.resize(stage.copyGrid());
 	const startSpaces = stage.getStartSpaces(2);
 	board.startSpaces = startSpaces;

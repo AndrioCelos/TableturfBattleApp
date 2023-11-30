@@ -354,9 +354,6 @@ class Board {
 	resize(grid?: Space[][]) {
 		if (grid) this.grid = grid;
 
-		if (this.cells.length == this.grid.length && this.cells[0].length == this.grid[0].length)
-			return;  // Reconnected and board size did not change.
-
 		clearChildren(this.table);
 		this.cells.splice(0);
 		this.highlightedCells.splice(0);
@@ -387,8 +384,8 @@ class Board {
 					if (e.pointerType != 'touch') {
 						if (this.autoHighlight && this.cardPlaying != null) {
 							const offset = this.rotatedMouseOffset;
-							const x = parseInt((e.target as HTMLTableCellElement).dataset.x!) - (this.flip ? Math.ceil(offset.x) : Math.floor(offset.x));
-							const y = parseInt((e.target as HTMLTableCellElement).dataset.y!) - (this.flip ? Math.ceil(offset.y) : Math.floor(offset.y));
+							const x = parseInt((e.currentTarget as HTMLTableCellElement).dataset.x!) - (this.flip ? Math.ceil(offset.x) : Math.floor(offset.x));
+							const y = parseInt((e.currentTarget as HTMLTableCellElement).dataset.y!) - (this.flip ? Math.ceil(offset.y) : Math.floor(offset.y));
 							if (x != this.highlightX || y != this.highlightY) {
 								this.highlightX = x;
 								this.highlightY = y;
