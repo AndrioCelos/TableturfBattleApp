@@ -743,6 +743,16 @@ rect.special, g.specialCost rect {
 	position: relative;
 }
 
+#gameBoard td.testHighlight::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: radial-gradient(#ffffff40, #ffffffc0 75%);
+}
+
 #gameBoard td.hover::after {
 	content: '';
 	position: absolute;
@@ -765,14 +775,14 @@ rect.special, g.specialCost rect {
 	transform: rotate(-20deg);
 }
 
-#gameBoard td.hover1:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-1); }
-#gameBoard td.hover2:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-2); }
-#gameBoard td.hover3:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-3); }
-#gameBoard td.hover4:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-4); }
-#gameBoard td.hoverspecial.hover1:not(.hoverillegal)::after { --hover-colour: var(--special-colour-1); }
-#gameBoard td.hoverspecial.hover2:not(.hoverillegal)::after { --hover-colour: var(--special-colour-2); }
-#gameBoard td.hoverspecial.hover3:not(.hoverillegal)::after { --hover-colour: var(--special-colour-3); }
-#gameBoard td.hoverspecial.hover4:not(.hoverillegal)::after { --hover-colour: var(--special-colour-4); }
+#gamePage[data-my-player-index="0"] #gameBoard td.hover:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-1); }
+#gamePage[data-my-player-index="1"] #gameBoard td.hover:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-2); }
+#gamePage[data-my-player-index="2"] #gameBoard td.hover:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-3); }
+#gamePage[data-my-player-index="3"] #gameBoard td.hover:not(.hoverillegal)::after { --hover-colour: var(--primary-colour-4); }
+#gamePage[data-my-player-index="0"] #gameBoard td.hoverspecial:not(.hoverillegal)::after { --hover-colour: var(--special-colour-1); }
+#gamePage[data-my-player-index="1"] #gameBoard td.hoverspecial:not(.hoverillegal)::after { --hover-colour: var(--special-colour-2); }
+#gamePage[data-my-player-index="2"] #gameBoard td.hoverspecial:not(.hoverillegal)::after { --hover-colour: var(--special-colour-3); }
+#gamePage[data-my-player-index="3"] #gameBoard td.hoverspecial:not(.hoverillegal)::after { --hover-colour: var(--special-colour-4); }
 #gameBoard td.hoverillegal::after { --hover-colour: grey; }
 
 /* Card list */
@@ -1157,12 +1167,27 @@ rect.special, g.specialCost rect {
 	margin: 1em;
 	gap: 1em;
 }
-#testPlacementList div {
+#testPlacementList button {
 	background: #222;
 	padding: 0.5em;
+	border: none;
+	font: inherit;
+	text-align: initial;
 }
-#testPlacementList div.deckCard {
+#testPlacementList button:hover {
+	background: #444;
+}
+#testPlacementList button.testHighlight {
+	background: #555;
+}
+#testPlacementList button.deckCard {
 	background: #246;
+}
+#testPlacementList button.deckCard:hover {
+	background: #468;
+}
+#testPlacementList button.deckCard.testHighlight {
+	background: #579;
 }
 
 #gameButtonsContainer {
@@ -1856,7 +1881,7 @@ button.dragging {
 		grid-column: 1 / -1;
 		grid-row: 2;
 	}
-	
+
 	#lobbySelectedStageSection {
 		grid-row: 1;
 		grid-column: 2;

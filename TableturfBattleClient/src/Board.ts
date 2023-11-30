@@ -247,7 +247,6 @@ class Board {
 						}
 						const cell = this.cells[x2][y2];
 						cell.classList.add('hover');
-						cell.classList.add(`hover${this.playerIndex + 1}`);
 						if (!legal)
 							cell.classList.add('hoverillegal');
 						if (space == Space.SpecialInactive1)
@@ -269,9 +268,24 @@ class Board {
 
 	private internalClearHighlight() {
 		for (const s of this.highlightedCells) {
-			this.cells[s.x][s.y].setAttribute('class', Space[this.grid[s.x][s.y]] );
+			this.cells[s.x][s.y].classList.remove('hover', 'hoverillegal', 'hoverspecial');
 		}
 		this.highlightedCells.splice(0);
+	}
+
+	setTestHighlight(x: number, y: number, highlight: boolean) {
+		if (highlight)
+			this.cells[x][y].classList.add('testHighlight');
+		else
+			this.cells[x][y].classList.remove('testHighlight');
+	}
+
+	clearTestHighlight() {
+		for (let x = 0; x < this.grid.length; x++) {
+			for (let y = 0; y < this.grid[x].length; y++) {
+				this.cells[x][y].classList.remove('testHighlight');
+			}
+		}
 	}
 
 	enableInkAnimations() {
@@ -434,7 +448,9 @@ class Board {
 	}
 
 	setDisplayedSpace(x: number, y: number, newState: Space) {
+		const isTestHighlight = this.cells[x][y].classList.contains('testHighlight');
 		this.cells[x][y].setAttribute('class', Space[newState]);
+		if (isTestHighlight) this.cells[x][y].classList.add('testHighlight');
 		if (this.cells[x][y].childNodes.length > 0) {
 			if ((newState & Space.SpecialActive1) != Space.SpecialActive1)
 				this.clearSpecialAnimation(x, y);

@@ -59,6 +59,7 @@ const testCardButtonGroup = new CheckButtonGroup<Card>();
 const testDeckCardButtons: CardButton[] = [ ];
 const testPlacements: { card: Card, placementResults: PlacementResults }[] = [ ];
 const testCardListBackdrop = document.getElementById('testCardListBackdrop')!;
+let testPlacementButtonClicked = false;
 
 let playHintHtml: string | null = null;
 
@@ -454,6 +455,27 @@ function testCardButton_click(button: CardButton) {
 	board.table.focus();
 }
 
+function testPlacementListItem_click(button: HTMLButtonElement, placement: Placement) {
+	testPlacementButtonClicked = true;
+	const highlight = button.classList.toggle('testHighlight');
+	for (const p of placement.spacesAffected)
+		board.setTestHighlight(p.space.x, p.space.y, highlight);
+}
+
+function testPlacementListItem_pointerenter(button: HTMLButtonElement, placement: Placement) {
+	testPlacementButtonClicked = false;
+	if (button.classList.contains('testHighlight')) return;
+	for (const p of placement.spacesAffected)
+		board.setTestHighlight(p.space.x, p.space.y, true);
+}
+
+function testPlacementListItem_pointerleave(button: HTMLButtonElement, placement: Placement) {
+	if (testPlacementButtonClicked) return;
+	if (button.classList.contains('testHighlight')) return;
+	for (const p of placement.spacesAffected)
+		board.setTestHighlight(p.space.x, p.space.y, false);
+}
+
 testUndoButton.buttonElement.addEventListener('click', () => {
 	const turn = testPlacements.pop();
 	if (turn) {
@@ -471,6 +493,7 @@ testUndoButton.buttonElement.addEventListener('click', () => {
 
 testBackButton.addEventListener('click', _ => {
 	showPage(editingDeck ? 'deckEdit' : 'deckList');
+	board.clearTestHighlight();
 });
 
 testDeckButton.buttonElement.addEventListener('click', _ => {
@@ -1047,12 +1070,12 @@ board.onsubmit = (x, y) => {
 		if (result.specialSpacesActivated.length > 0)
 			setTimeout(() => board.refresh(), 333);
 
-		var li = document.createElement('div');
+		var li = document.createElement('button');
 		li.innerText = board.cardPlaying.name;
-		if (testDeckCardButtons.find(b => b.card.number == board.cardPlaying!.number))
-			li.classList.add('deckCard');
-		else
-			li.classList.add('externalCard');
+		li.classList.add(testDeckCardButtons.find(b => b.card.number == board.cardPlaying!.number) ? 'deckCard' : 'externalCard');
+		li.addEventListener('click', () => testPlacementListItem_click(li, result.placements[0]));
+		li.addEventListener('pointerenter', () => testPlacementListItem_pointerenter(li, result.placements[0]));
+		li.addEventListener('pointerleave', () => testPlacementListItem_pointerleave(li, result.placements[0]));
 		testPlacementList.insertBefore(li, testPlacementList.firstChild);
 
 		for (const button of testDeckCardButtons.concat(testAllCardsList.cardButtons)) {
