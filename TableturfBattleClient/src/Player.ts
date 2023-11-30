@@ -6,7 +6,7 @@ interface Player {
 	colour: Colour;
 	specialColour: Colour;
 	specialAccentColour: Colour;
-	uiBaseColourIsSpecialColour?: boolean;
+	uiBaseColourIsSpecialColour: boolean;
 	sleeves: number;
 	totalSpecialPoints: number;
 	passes: number;

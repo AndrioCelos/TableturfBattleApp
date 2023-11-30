@@ -7,6 +7,7 @@ const defaultColours = [
 	[ { r: 6, g: 249, b: 148 }, { r: 6, g: 249, b: 6 }, { r: 180, g: 253, b: 199 } ]
 ];
 let uiBaseColourIsSpecialColourOutOfGame = true;
+let uiBaseColourIsSpecialColourPerPlayer = [ true, false, true, true ];
 
 const errorDialog = document.getElementById('errorDialog') as HTMLDialogElement;
 const errorMessage = document.getElementById('errorMessage')!;
@@ -477,6 +478,7 @@ function processUrl() {
 			return false;
 		}
 	}
+	swapColours();
 	stopEditingDeck();
 	errorDialog.close();
 	clearGame();

@@ -335,6 +335,7 @@ optionsColourLock.addEventListener('change', () => {
 			document.body.style.removeProperty(`--special-colour-${i}`);
 			document.body.style.removeProperty(`--special-accent-colour-${i}`);
 			uiBaseColourIsSpecialColourOutOfGame = true;
+			uiBaseColourIsSpecialColourPerPlayer = [ true, false, true, true ];
 			gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
 		}
 	}

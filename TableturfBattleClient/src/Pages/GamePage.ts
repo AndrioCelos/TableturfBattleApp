@@ -174,8 +174,7 @@ function initTest(stage: Stage) {
 	testPlacements.splice(0);
 	testUndoButton.enabled = false;
 	clearChildren(testPlacementList);
-	gamePage.dataset.myPlayerIndex = '0';
-	gamePage.dataset.uiBaseColourIsSpecialColour = uiBaseColourIsSpecialColourOutOfGame.toString();
+
 	gameButtonsContainer.hidden = false;
 	testControls.hidden = false;
 	clearPlayContainers();
@@ -189,6 +188,27 @@ function initTest(stage: Stage) {
 	testAllCardsList.clearFilter();
 	for (const button of testDeckCardButtons.concat(testAllCardsList.cardButtons))
 		button.enabled = true;
+}
+
+function swapColours() {
+	// Swap colours to preserve the player's ink colour.
+	const oldPlayerIndex = parseInt(gamePage.dataset.myPlayerIndex ?? '0');
+	if (oldPlayerIndex) {
+		swapColour('primary', oldPlayerIndex);
+		swapColour('special', oldPlayerIndex);
+		swapColour('special-accent', oldPlayerIndex);
+		const temp = uiBaseColourIsSpecialColourPerPlayer[0];
+		uiBaseColourIsSpecialColourPerPlayer[0] = uiBaseColourIsSpecialColourPerPlayer[oldPlayerIndex];
+		uiBaseColourIsSpecialColourPerPlayer[oldPlayerIndex] = temp;
+	}
+	gamePage.dataset.myPlayerIndex = '0';
+	uiBaseColourIsSpecialColourOutOfGame = uiBaseColourIsSpecialColourPerPlayer[0];
+	gamePage.dataset.uiBaseColourIsSpecialColour = uiBaseColourIsSpecialColourOutOfGame.toString();
+}
+function swapColour(prefix: string, oldPlayerIndex: number) {
+	const temp = document.body.style.getPropertyValue(`--${prefix}-colour-1`);
+	document.body.style.setProperty(`--${prefix}-colour-1`, document.body.style.getPropertyValue(`--${prefix}-colour-${oldPlayerIndex + 1}`));
+	document.body.style.setProperty(`--${prefix}-colour-${oldPlayerIndex + 1}`, temp);
 }
 
 replayNextButton.buttonElement.addEventListener('click', _ => {
@@ -549,9 +569,10 @@ function updateColours() {
 				updateHSL(i, j);
 				updateRGB(i, j);
 			}
+			uiBaseColourIsSpecialColourPerPlayer[i] = currentGame.game.players[i].uiBaseColourIsSpecialColour;
 		}
 	}
-	uiBaseColourIsSpecialColourOutOfGame = currentGame.game.players[0].uiBaseColourIsSpecialColour ?? true;
+	uiBaseColourIsSpecialColourOutOfGame = uiBaseColourIsSpecialColourPerPlayer[currentGame?.me?.playerIndex ?? 0];
 }
 
 function updateStats(playerIndex: number, scores: number[]) {
