@@ -9,3 +9,9 @@ _Splatoon_ is © Nintendo. This is a fan project and is not affiliated with Nint
 ## Screenshots
 
 ![Game page screenshot](images/screenshot1.png)
+
+![Game page screenshot](images/screenshot2.png)
+
+![Replay screenshot](images/screenshot3.png)
+
+![Deck test screenshot](images/screenshot4.png)
