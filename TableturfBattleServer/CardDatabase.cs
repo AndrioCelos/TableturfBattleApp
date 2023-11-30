@@ -2306,7 +2306,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(-22, "Splattercolor\nScreen", Rarity.Rare, 3, 0.95f, "", new Space[,] {
+		new(-22, "Splattercolor\nScreen", Rarity.Rare, 3, 0.95f, "SpChimney", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, I, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
@@ -2316,7 +2316,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(-23, "Triple\nSplashdown", Rarity.Rare, 3, 1f, "", new Space[,] {
+		new(-23, "Triple\nSplashdown", Rarity.Rare, 3, 1f, "SpPogo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
