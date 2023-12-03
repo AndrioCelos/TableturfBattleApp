@@ -502,6 +502,11 @@ function testPlacementListItem_pointerleave(button: HTMLButtonElement, placement
 testUndoButton.buttonElement.addEventListener('click', () => {
 	const turn = testPlacements.pop();
 	if (turn) {
+		// Remove the highlight if needed.
+		for (const p of turn.placementResults.placements[0].spacesAffected)
+			board.setTestHighlight(p.space.x, p.space.y, false);
+
+		// Undo the placement.
 		undoTurn(turn.placementResults);
 		testPlacementList.removeChild(testPlacementList.firstChild!);
 
