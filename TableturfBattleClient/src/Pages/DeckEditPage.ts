@@ -240,7 +240,7 @@ function deckSortCompare(reverse: boolean, numberA: number, numberB: number) {
 		else if (cardB.isSpecialWeapon && !cardA.isSpecialWeapon)
 			return ((userConfig.specialWeaponSorting == SpecialWeaponSorting.Last) != reverse) ? -1 : 1;
 	}
-	const result = CardList.cardSortOrders['size'](cardA, cardB);
+	const result = CardList.compareBySize(cardA, cardB);
 	return reverse ? -result : result;
 }
 

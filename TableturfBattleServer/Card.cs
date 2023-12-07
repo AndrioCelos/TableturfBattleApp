@@ -9,6 +9,7 @@ public class Card {
 	public int SpecialCost { get; }
 	[JsonIgnore]
 	public int Size { get; }
+	public int? IsVariantOf { get; init; }
 
 	public string? Line1 { get; init; }
 	public string? Line2 { get; init; }

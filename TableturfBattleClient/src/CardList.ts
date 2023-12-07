@@ -5,11 +5,32 @@ class CardList {
 	readonly cardButtons: CardButton[] = [ ];
 
 	static readonly cardSortOrders: { [key: string]: (a: Card, b: Card) => number } = {
-		'number': (a, b) => compareCardNumbers(a.number, b.number),
-		'name': (a, b) => a.name.localeCompare(b.name),
-		'size': (a, b) => a.size != b.size ? a.size - b.size : compareCardNumbers(a.number, b.number),
-		'rarity': (a, b) => a.rarity != b.rarity ? b.rarity - a.rarity : compareCardNumbers(a.number, b.number),
+		'number': (a, b) => CardList.compareByNumber(a, b),
+		'name': (a, b) => CardList.compareByName(a, b),
+		'size': (a, b) => CardList.compareBySize(a, b),
+		'rarity': (a, b) => CardList.compareByRarity(a, b),
 	}
+
+	static compareCardNumbers(a: number, b: number) {
+		// Sort upcoming cards after released cards.
+		return a >= 0 ? (b >= 0 ? a - b : -1) : (b >= 0 ? 1 : b - a);
+	}
+
+	static compareByInGameSecondaryOrder(a: Card, b: Card) {
+		// Keep variants and special weapons together.
+		// TODO: There may be a better way to do this than hard-coding the first special weapon card number.
+		const baseA = a.isVariantOf ?? (a.isSpecialWeapon ? 70 : a.number);
+		const baseB = b.isVariantOf ?? (b.isSpecialWeapon ? 70 : b.number);
+		if (baseA != baseB) return CardList.compareCardNumbers(baseA, baseB);
+
+		// Sort by card number within each category.
+		return CardList.compareCardNumbers(a.number, b.number);
+	}
+
+	static compareByNumber(a: Card, b: Card) { return CardList.compareCardNumbers(a.number, b.number); }
+	static compareByName(a: Card, b: Card) { return a.name.localeCompare(b.name); }
+	static compareBySize(a: Card, b: Card) { return a.size != b.size ? a.size - b.size : CardList.compareByInGameSecondaryOrder(a, b); }
+	static compareByRarity(a: Card, b: Card) { return a.rarity != b.rarity ? b.rarity - a.rarity : CardList.compareByInGameSecondaryOrder(a, b); }
 
 	constructor(listElement: HTMLElement, sortBox: HTMLSelectElement, filterBox: HTMLInputElement) {
 		this.listElement = listElement;
@@ -61,9 +82,4 @@ class CardList {
 		for (const button of this.cardButtons)
 			button.buttonElement.hidden = false;
 	}
-}
-
-function compareCardNumbers(a: number, b: number) {
-	// Sort upcoming cards after released cards.
-	return a >= 0 ? (b >= 0 ? a - b : -1) : (b >= 0 ? 1 : b - a);
 }

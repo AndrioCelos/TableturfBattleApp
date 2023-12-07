@@ -1,10 +1,10 @@
 class Card {
 	number: number;
-	altNumber: number | null;
+	altNumber?: number | null;
 	name: string;
-	line1: string | null;
-	line2: string | null;
-	artFileName: string | null;
+	line1?: string | null;
+	line2?: string | null;
+	artFileName?: string | null;
 	imageUrl?: string;
 	textScale: number;
 	inkColour1: Colour;
@@ -13,6 +13,7 @@ class Card {
 	specialCost: number;
 	grid: readonly (readonly Space[])[];
 	size: number;
+	isVariantOf?: number | null;
 
 	private minX: number;
 	private minY: number;
@@ -21,14 +22,9 @@ class Card {
 
 	private static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
 	private static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
-
-	constructor(number: number, altNumber: number | null, name: string, line1: string | null, line2: string | null, artFileName: string | null, textScale: number, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
+	constructor(number: number, name: string, textScale: number, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
 		this.number = number;
-		this.altNumber = altNumber;
 		this.name = name;
-		this.line1 = line1;
-		this.line2 = line2;
-		this.artFileName = artFileName;
 		this.textScale = textScale;
 		this.inkColour1 = inkColour1;
 		this.inkColour2 = inkColour2;
@@ -56,9 +52,15 @@ class Card {
 	}
 
 	static fromJson(obj: any) {
-		return cardDatabase.cards && cardDatabase.isValidCardNumber(obj.number)
-			? cardDatabase.get(obj.number)
-			: new Card(obj.number, obj.altNumber ?? null, obj.name, obj.line1 ?? null, obj.line2 ?? null, obj.artFileName ?? null, obj.textScale ?? 1, obj.inkColour1 ?? this.DEFAULT_INK_COLOUR_1, obj.inkColour2 ?? this.DEFAULT_INK_COLOUR_2, obj.rarity, obj.specialCost, obj.grid);
+		if (cardDatabase.cards && cardDatabase.isValidCardNumber(obj.number)) return cardDatabase.get(obj.number);
+		const card = new Card(obj.number, obj.name, obj.textScale ?? 1, obj.inkColour1 ?? this.DEFAULT_INK_COLOUR_1, obj.inkColour2 ?? this.DEFAULT_INK_COLOUR_2, obj.rarity, obj.specialCost, obj.grid);
+		card.altNumber = obj.altNumber ?? null;
+		card.line1 = obj.line1 ?? null;
+		card.line2 = obj.line2 ?? null;
+		card.artFileName = obj.artFileName ?? null;
+		card.imageUrl = obj.imageUrl ?? null;
+		card.isVariantOf = obj.isVariantOf ?? null;
+		return card;
 	}
 
 	get isUpcoming() { return this.number < 0; }
