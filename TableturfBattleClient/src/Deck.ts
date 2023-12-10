@@ -13,6 +13,10 @@ class SavedDeck {
 		this.isReadOnly = isReadOnly;
 	}
 
+	static fromJson(obj: any) {
+		return new SavedDeck(obj.name, obj.sleeves ?? 0, obj.cards, obj.upgrades ?? new Array(15).fill(1), false);
+	}
+
 	get isValid() {
 		if (!cardDatabase.cards) throw new Error('Card database must be loaded to validate decks.');
 		if (this.cards.length != 15) return false;

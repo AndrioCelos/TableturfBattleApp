@@ -103,7 +103,7 @@ function saveDecks() {
 	const decksString = localStorage.getItem('decks');
 	if (decksString) {
 		for (const deck of JSON.parse(decksString)) {
-			decks.push(new SavedDeck(deck.name, deck.sleeves ?? 0, deck.cards, deck.upgrades ?? new Array(15).fill(1), false));
+			decks.push(SavedDeck.fromJson(deck));
 		}
 	} else {
 		const lastDeckString = localStorage.getItem('lastDeck');
@@ -271,7 +271,7 @@ deckImportForm.addEventListener('submit', e => {
 	}
 });
 
-function parseDecksForImport(s: string) {
+function parseDecksForImport(s: string) : (SavedDeck | number[])[] {
 	let isKoishiShareUrl = false;
 	const pos = s.indexOf('deck=');
 	if (pos >= 0) {
@@ -292,15 +292,14 @@ function parseDecksForImport(s: string) {
 				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length > 15 || (deck.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
 					throw new SyntaxError('Invalid JSON deck');
 			}
-			return data;  // Our export data
+			return data.map(SavedDeck.fromJson);  // Our export data
 		}
 	} else if (typeof(data) == 'object') {
 		if (!Array.isArray(data.cards) || data.cards.length > 15 || (data.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
 			throw new SyntaxError('Invalid JSON deck');
-		return [ data ];  // Our old export data
+		return [ SavedDeck.fromJson(data) ];  // Our old export data
 	} else
 		throw new SyntaxError('Invalid JSON deck');
-	// TODO: add support for tblturf.ink
 }
 
 deckViewMenuButton.addEventListener('click', () => {
