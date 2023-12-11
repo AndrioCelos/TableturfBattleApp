@@ -15,6 +15,8 @@ enum SpecialWeaponSorting {
 class Config {
 	name: string | null = null;
 	colourLock = true;
+	goodColour?: string;
+	badColour?: string;
 	absoluteTurnNumber = false;
 	specialWeaponSorting = SpecialWeaponSorting.First;
 	lastCustomRoomConfig?: CustomRoomConfig;

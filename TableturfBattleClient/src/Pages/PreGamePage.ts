@@ -29,8 +29,22 @@ const gameSetupSpectateBox = document.getElementById('gameSetupSpectateBox') as 
 const gameSetupSubmitButton = document.getElementById('gameSetupSubmitButton') as HTMLButtonElement;
 
 const optionsColourLock = document.getElementById('optionsColourLock') as HTMLInputElement;
+const optionsColourGoodBox = document.getElementById('optionsColourGoodBox') as HTMLSelectElement;
+const optionsColourBadBox = document.getElementById('optionsColourBadBox') as HTMLSelectElement;
 const optionsTurnNumberStyle = document.getElementById('optionsTurnNumberStyle') as HTMLSelectElement;
 const optionsSpecialWeaponSorting = document.getElementById('optionsSpecialWeaponSorting') as HTMLSelectElement;
+
+const colours = {
+	red: { colour: { r: 0xf2, g: 0x20, b: 0x0d }, specialColour: { r: 0xff, g: 0x8c, b: 0x1a }, specialAccentColour: { r: 0xff, g: 0xd5, b: 0xcc }, uiBaseColourIsSpecialColour: false },
+	orange: { colour: { r: 0xf2, g: 0x74, b: 0x0d }, specialColour: { r: 0xff, g: 0x40, b: 0x00 }, specialAccentColour: { r: 0xff, g: 0xcc, b: 0x99 }, uiBaseColourIsSpecialColour: true },
+	yellow: { colour: { r: 0xec, g: 0xf9, b: 0x01 }, specialColour: { r: 0xfa, g: 0x9e, b: 0x00 }, specialAccentColour: { r: 0xf9, g: 0xf9, b: 0x1f }, uiBaseColourIsSpecialColour: true },
+	limegreen: { colour: { r: 0xc0, g: 0xf9, b: 0x15 }, specialColour: { r: 0x6a, g: 0xff, b: 0x00 }, specialAccentColour: { r: 0xe6, g: 0xff, b: 0x99 }, uiBaseColourIsSpecialColour: true },
+	green: { colour: { r: 0x06, g: 0xe0, b: 0x06 }, specialColour: { r: 0x33, g: 0xff, b: 0xcc }, specialAccentColour: { r: 0xb3, g: 0xff, b: 0xd9 }, uiBaseColourIsSpecialColour: false },
+	turquoise: { colour: { r: 0x00, g: 0xff, b: 0xea }, specialColour: { r: 0x00, g: 0xa8, b: 0xe0 }, specialAccentColour: { r: 0x99, g: 0xff, b: 0xff }, uiBaseColourIsSpecialColour: true },
+	blue: { colour: { r: 0x4a, g: 0x5c, b: 0xfc }, specialColour: { r: 0x01, g: 0xed, b: 0xfe }, specialAccentColour: { r: 0xd5, g: 0xe1, b: 0xe1 }, uiBaseColourIsSpecialColour: false },
+	purple: { colour: { r: 0xa1, g: 0x06, b: 0xef }, specialColour: { r: 0xff, g: 0x00, b: 0xff }, specialAccentColour: { r: 0xff, g: 0xb3, b: 0xff }, uiBaseColourIsSpecialColour: false },
+	magenta: { colour: { r: 0xf9, g: 0x06, b: 0xe0 }, specialColour: { r: 0x80, g: 0x06, b: 0xf9 }, specialAccentColour: { r: 0xeb, g: 0xb4, b: 0xfd }, uiBaseColourIsSpecialColour: true },
+};
 
 let shownMaxPlayersWarning = false;
 
@@ -289,6 +303,8 @@ preGameDeckEditorButton.addEventListener('click', e => {
 
 preGameSettingsButton.addEventListener('click', e => {
 	e.preventDefault();
+	optionsColourGoodBox.value = userConfig.goodColour ?? 'yellow';
+	optionsColourBadBox.value = userConfig.badColour ?? 'blue';
 	optionsTurnNumberStyle.value = turnNumberLabel.absoluteMode ? 'absolute' : 'remaining';
 	optionsSpecialWeaponSorting.value = SpecialWeaponSorting[userConfig.specialWeaponSorting];
 	settingsDialog.showModal();
@@ -326,20 +342,45 @@ preGameReplayButton.addEventListener('click', e => {
 	new ReplayLoader(m[1]).loadReplay();
 });
 
+function setPreferredColours() {
+	const colour1 = colours[(userConfig.goodColour ?? 'yellow') as keyof typeof colours];
+	document.body.style.setProperty('--primary-colour-1', `rgb(${colour1.colour.r}, ${colour1.colour.g}, ${colour1.colour.b})`);
+	document.body.style.setProperty('--special-colour-1', `rgb(${colour1.specialColour.r}, ${colour1.specialColour.g}, ${colour1.specialColour.b})`);
+	document.body.style.setProperty('--special-accent-colour-1', `rgb(${colour1.specialAccentColour.r}, ${colour1.specialAccentColour.g}, ${colour1.specialAccentColour.b})`);
+	uiBaseColourIsSpecialColourPerPlayer[0] = colour1.uiBaseColourIsSpecialColour;
+	uiBaseColourIsSpecialColourOutOfGame = colour1.uiBaseColourIsSpecialColour;
+	gamePage.dataset.uiBaseColourIsSpecialColour = uiBaseColourIsSpecialColourOutOfGame.toString();
+
+	const colour2 = colours[(userConfig.badColour ?? 'blue') as keyof typeof colours];
+	document.body.style.setProperty('--primary-colour-2', `rgb(${colour2.colour.r}, ${colour2.colour.g}, ${colour2.colour.b})`);
+	document.body.style.setProperty('--special-colour-2', `rgb(${colour2.specialColour.r}, ${colour2.specialColour.g}, ${colour2.specialColour.b})`);
+	document.body.style.setProperty('--special-accent-colour-2', `rgb(${colour2.specialAccentColour.r}, ${colour2.specialAccentColour.g}, ${colour2.specialAccentColour.b})`);
+	uiBaseColourIsSpecialColourPerPlayer[1] = colour2.uiBaseColourIsSpecialColour;
+
+	for (let i = 3; i <= 4; i++) {
+		document.body.style.removeProperty(`--primary-colour-${i}`);
+		document.body.style.removeProperty(`--special-colour-${i}`);
+		document.body.style.removeProperty(`--special-accent-colour-${i}`);
+		uiBaseColourIsSpecialColourPerPlayer[i] = true;
+	}
+}
+
 optionsColourLock.addEventListener('change', () => {
 	userConfig.colourLock = optionsColourLock.checked;
 	saveSettings();
-	if (userConfig.colourLock) {
-		for (let i = 1; i <= 4; i++) {
-			document.body.style.removeProperty(`--primary-colour-${i}`);
-			document.body.style.removeProperty(`--special-colour-${i}`);
-			document.body.style.removeProperty(`--special-accent-colour-${i}`);
-			uiBaseColourIsSpecialColourOutOfGame = true;
-			uiBaseColourIsSpecialColourPerPlayer = [ true, false, true, true ];
-			gamePage.dataset.uiBaseColourIsSpecialColour = 'true';
-		}
-	}
-})
+	setPreferredColours();
+});
+
+optionsColourGoodBox.addEventListener('change', () => {
+	userConfig.goodColour = optionsColourGoodBox.value;
+	saveSettings();
+	setPreferredColours();
+});
+optionsColourBadBox.addEventListener('change', () => {
+	userConfig.badColour = optionsColourBadBox.value;
+	saveSettings();
+	setPreferredColours();
+});
 
 optionsTurnNumberStyle.addEventListener('change', () => turnNumberLabel.absoluteMode = optionsTurnNumberStyle.value == 'absolute');
 optionsSpecialWeaponSorting.addEventListener('change', () => {
@@ -359,6 +400,9 @@ window.addEventListener('popstate', () => {
 // Initialise the settings dialog.
 {
 	optionsColourLock.checked = userConfig.colourLock;
+	optionsColourGoodBox.value = userConfig.goodColour ?? 'yellow';
+	optionsColourBadBox.value = userConfig.badColour ?? 'blue';
+	setPreferredColours();
 }
 
 // Initialise the room settings dialog.

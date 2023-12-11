@@ -123,6 +123,16 @@ footer {
 #stageSwitch button .stageName { width: 12em; text-align: start; }
 #stageSwitch button .stageStatus { width: 8em; text-align: end; }
 
+option[value='red'] { color: #f2200d; }
+option[value='orange'] { color: #f2740d; }
+option[value='yellow'] { color: #ecf901; }
+option[value='limegreen'] { color: #c0f915; }
+option[value='green'] { color: #06e006; }
+option[value='turquoise'] { color: #00ffea; }
+option[value='blue'] { color: #4a5cfc; }
+option[value='purple'] { color: #a106ef; }
+option[value='magenta'] { color: #f906e0; }
+
 /* Lobby page */
 
 #lobbyPage:not([hidden]) {
