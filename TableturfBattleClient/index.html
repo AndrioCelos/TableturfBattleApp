@@ -57,6 +57,7 @@
 				</div>
 				<p>
 					<a id="preGameDeckEditorButton" href="deckeditor">Edit decks</a> |
+					<a id="preGameGalleryButton" href="cardlist">Card list</a> |
 					<a id="preGameReplayButton" href="replay">Replay</a> |
 					<a id="preGameSettingsButton" href="settings">Settings</a> |
 					<a id="preGameHelpButton" href="help">Help</a>
@@ -583,6 +584,35 @@
 				<div id="cardList" class="cardListGrid"></div>
 			</section>
 			<div id="deckEditorCardListBackdrop"></div>
+		</div>
+		<div id="galleryPage" hidden>
+			<header>
+				<a id="galleryBackButton" href=".">Back</a>
+				<label for="gallerySortBox">
+					Sort by
+					<select id="gallerySortBox" autocomplete="off"></select>
+				</label>
+				<input type="text" id="galleryFilterBox" placeholder="Filter"/>
+				<button id="galleryNewCustomCardButton">New custom card</button>
+				<label for="galleryChecklistBox"><input type="checkbox" id="galleryChecklistBox" autocomplete="off"/>Checklist</label>
+				Bits to complete: <span id="bitsToCompleteField"></span>
+			</header>
+			<main id="galleryCardList">
+			</main>
+			<dialog id="galleryCardDialog">
+				<div id="galleryCardEditor" hidden>
+					<textarea type="text" id="galleryCardEditorName" placeholder="Card name"></textarea>
+					<div id="galleryCardEditorGrid"></div>
+					<div id="galleryCardEditorSpecialCost">
+						<label for="galleryCardEditorSpecialCostDefaultBox"><input type="checkbox" id="galleryCardEditorSpecialCostDefaultBox" checked/> Default</label>
+					</div>
+				</div>
+				<form method="dialog">
+					<button type="button" id="galleryCardEditorEditButton">Edit</button>
+					<button type="submit" id="galleryCardEditorSubmitButton">Save</button>
+					<button type="submit" id="galleryCardEditorCancelButton">Cancel</button>
+				</form>
+			</dialog>
 		</div>
 		<dialog id="testStageSelectionDialog">
 			<h3>Select a stage.</h3>

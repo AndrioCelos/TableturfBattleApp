@@ -47,7 +47,7 @@ playContainers.sort((a, b) => parseInt(a.dataset.index || '0') - parseInt(b.data
 
 const testControls = document.getElementById('testControls')!;
 const testDeckList = document.getElementById('testDeckList')!;
-const testAllCardsList = CardList.fromId('testAllCardsList', 'testAllCardsListSortBox', 'testAllCardsListFilterBox');
+const testAllCardsList = CardList.fromId<CardButton>('testAllCardsList', 'testAllCardsListSortBox', 'testAllCardsListFilterBox');
 const testPlacementList = document.getElementById('testPlacementList')!;
 const testDeckButton = CheckButton.fromId('testDeckButton');
 const testDeckContainer = document.getElementById('testDeckContainer')!;

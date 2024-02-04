@@ -52,3 +52,7 @@ let userConfig = new Config();
 function saveSettings() {
 	localStorage.setItem('settings', JSON.stringify(userConfig));
 }
+
+function saveChecklist() {
+	localStorage.setItem('checklist', JSON.stringify(ownedCards));
+}

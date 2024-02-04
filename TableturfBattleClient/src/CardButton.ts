@@ -1,6 +1,7 @@
 /// <reference path="CheckButton.ts"/>
 
-class CardButton extends CheckButton {
+class CardButton extends CheckButton implements ICardElement {
+	readonly element: HTMLButtonElement;
 	private static idNumber = 0;
 
 	readonly card: Card;
@@ -13,6 +14,7 @@ class CardButton extends CheckButton {
 		if (card.number < 0) button.classList.add('upcoming');
 		button.dataset.cardNumber = card.number.toString();
 		super(button);
+		this.element = button;
 
 		this.card = card;
 

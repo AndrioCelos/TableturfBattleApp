@@ -501,10 +501,6 @@ dialog::backdrop {
 
 .cardNumber {
 	display: none;
-}
-
-.cardListGrid .cardButton:hover .cardNumber {
-	display: block;
 	position: absolute;
 	background: grey;
 	border: 1px solid black;
@@ -513,6 +509,10 @@ dialog::backdrop {
 	padding: 0 1em;
 	transform: rotate(-10deg);
 	z-index: 1;
+}
+
+.cardListGrid .cardButton:hover .cardNumber {
+	display: block;
 }
 
 .cardName {
@@ -605,6 +605,7 @@ dialog::backdrop {
 }
 .playContainer .card {
 	animation: 0.1s ease-out forwards flipCardIn;
+	height: 100%;
 }
 .playContainer .card.preview {
 	animation: none;
@@ -1809,6 +1810,142 @@ button.dragging {
 #deckSleevesList label:nth-of-type(23) { background-position: -600% -200%; }
 #deckSleevesList label:nth-of-type(24) { background-position: -700% -200%; }
 #deckSleevesList label:nth-of-type(25) { background-position: 0% -300%; }
+
+/* Card list */
+
+#galleryPage:not([hidden]) {
+	height: 100vh;
+	display: flex;
+	flex-flow: column;
+}
+
+#galleryCardList {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 10em);
+	grid-auto-rows: auto;
+	gap: 0.5em;
+	justify-content: space-evenly;
+}
+
+#galleryCardList .card {
+	height: 14rem;
+	border: none;
+	background: none;
+	padding: 0;
+	transition: transform 0.25s ease;
+}
+
+#galleryCardList .card.unowned svg {
+	opacity: 0.333;
+}
+
+#galleryCardList .card:hover {
+	transform: scale(1.1);
+}
+
+#galleryCardList .card:hover .cardNumber {
+	display: block;
+	font-size: 1rem;
+	top: -0.5em;
+}
+
+#galleryCardDialog > .card {
+	height: min(75vh, 100vw);
+}
+
+#galleryCardEditor {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	font-size: calc(min(75vh, 100vw) * 0.08);
+}
+
+#galleryCardEditorName {
+	position: absolute;
+	left: 5%;
+	top: 8%;
+	width: 90%;
+	height: 20%;
+	color: black;
+	background: none;
+	border: none;
+	font: inherit;
+	line-height: 1.25em;
+	text-align: center;
+}
+
+.card.editing :is(.cardDisplayName, .cardGrid) {
+	display: none;
+}
+
+#galleryCardEditorGrid {
+	position: absolute;
+	left: 20%;
+	right: 20%;
+	top: 30%;
+	bottom: 30%;
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	grid-template-rows: repeat(8, 1fr);
+}
+
+#galleryCardEditorGrid button {
+	position: relative;
+	border: none;
+}
+:is(#galleryCardEditorGrid, #galleryCardEditorSpecialCost) button:is(:hover, :focus)::before  {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: #ffffff80;
+	content: '';
+}
+
+#galleryCardEditorGrid button[data-state="0"] {
+	border: 1px solid grey;
+	background: #00000080;
+}
+#galleryCardEditorGrid button[data-state="4"] {
+	border: 1px solid grey;
+	background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-1);
+}
+#galleryCardEditorGrid button[data-state="8"] {
+	border: 1px solid grey;
+	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1);
+}
+
+#galleryCardEditorSpecialCost {
+	display: none;
+	position: absolute;
+	grid-template-columns: repeat(5, 1fr);
+	left: 26.8%;
+	top: 86.8%;
+	gap: 0.072em;
+}
+
+#galleryCardEditorSpecialCost button {
+	width: 1.7em;
+	height: 1.7em;
+	border: none;
+	background: #00000080;
+	position: relative;
+}
+#galleryCardEditorSpecialCost button.active {
+	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1);
+}
+
+#galleryCardEditorSpecialCost label {
+	position: absolute;
+	left: 0;
+	top: 105%;
+	font: 33% 'Splatoon 2', sans-serif;
+	background: grey;
+	padding: 0 1em;
+}
 
 /* Help */
 

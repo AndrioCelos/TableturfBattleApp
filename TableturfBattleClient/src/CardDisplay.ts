@@ -1,15 +1,26 @@
-class CardDisplay {
+class CardDisplay implements ICardElement {
 	readonly card: Card;
-	readonly element: SVGSVGElement;
+	readonly element: HTMLElement;
+	readonly svg: SVGSVGElement;
+	private readonly sizeElement: SVGTextElement;
+	private readonly specialCostGroup: SVGGElement;
+	private level: number;
 
-	constructor(card: Card, level: number) {
-		let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	constructor(card: Card, level: number, elementType: string = 'div') {
+		this.card = card;
+		this.level = level;
+
+		const element = document.createElement(elementType);
+		element.classList.add('card');
+		element.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
+		this.element = element;
+
+		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		svg.setAttribute('viewBox', '0 0 635 885');
 		svg.setAttribute('alt', card.name);
-		this.element = svg;
+		this.svg = svg;
+		element.appendChild(svg);
 
-		svg.classList.add('card');
-		svg.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
 		if (card.number < 0) svg.classList.add('upcoming');
 		svg.dataset.cardNumber = card.number.toString();
 		svg.style.setProperty("--number", card.number.toString());
@@ -44,6 +55,7 @@ class CardDisplay {
 
 		// Grid
 		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		g.setAttribute('class', 'cardGrid');
 		g.setAttribute('transform', 'translate(380 604) rotate(6.5) scale(0.283)');
 		svg.appendChild(g);
 
@@ -54,6 +66,7 @@ class CardDisplay {
 		text1.setAttribute('class', 'cardDisplayName');
 		text1.setAttribute('x', '50%');
 		text1.setAttribute('y', '168');
+		text1.setAttribute('text-anchor', 'middle');
 		text1.setAttribute('font-size', '76');
 		text1.setAttribute('font-weight', 'bold');
 		text1.setAttribute('stroke', 'black');
@@ -108,28 +121,17 @@ class CardDisplay {
 
 		// Size
 		svg.insertAdjacentHTML('beforeend', `<image href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='80' height='80' transform='translate(12 798) rotate(-45) scale(1.33)'/>`);
-		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87'>${card.size}</text>`);
+		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87' text-anchor='middle'>${card.size}</text>`);
+		this.sizeElement = svg.lastElementChild as SVGTextElement;
 
 		// Special cost
 		const g2 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+		this.specialCostGroup = g2;
 		g2.setAttribute('class', 'specialCost');
 		g2.setAttribute('transform', 'translate(170 806) scale(0.32)');
 		svg.appendChild(g2);
 
-		for (let i = 0; i < card.specialCost; i++) {
-			let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-			image.setAttribute('href', 'assets/SpecialOverlay.png');
-			for (const el of [ rect, image ]) {
-				el.setAttribute('x', (110 * (i % 5)).toString());
-				el.setAttribute('y', (-125 * Math.floor(i / 5)).toString());
-				el.setAttribute('width', '95');
-				el.setAttribute('height', '95');
-				g2.appendChild(el);
-			}
-		}
-
-		this.card = card;
+		this.setSpecialCost(card.specialCost);
 	}
 
 	static CreateSvgCardGrid(card: Card, parent: SVGElement) {
@@ -161,5 +163,25 @@ class CardDisplay {
 				}
 			}
 		}
+	}
+
+	setSpecialCost(value: number) {
+		clearChildren(this.specialCostGroup);
+		for (let i = 0; i < value; i++) {
+			let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+			image.setAttribute('href', 'assets/SpecialOverlay.png');
+			for (const el of [ rect, image ]) {
+				el.setAttribute('x', (110 * (i % 5)).toString());
+				el.setAttribute('y', (-125 * Math.floor(i / 5)).toString());
+				el.setAttribute('width', '95');
+				el.setAttribute('height', '95');
+				this.specialCostGroup.appendChild(el);
+			}
+		}
+	}
+
+	setSize(value: number) {
+		this.sizeElement.innerHTML = value.toString();
 	}
 }

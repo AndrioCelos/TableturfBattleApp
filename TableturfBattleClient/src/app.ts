@@ -18,6 +18,7 @@ let initialiseCallback: (() => void) | null = null;
 let canPushState = isSecureContext && location.protocol != 'file:';
 
 const decks = [ new SavedDeck('Starter Deck', 0, [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], new Array(15).fill(1), true) ];
+const customCards: Card[] = [ ];
 let selectedDeck: SavedDeck | null = null;
 let editingDeck = false;
 let deckModified = false;
@@ -50,6 +51,7 @@ function onInitialise(callback: () => void) {
 
 function initCardDatabase(cards: Card[]) {
 	deckEditInitCardDatabase(cards);
+	galleryInitCardDatabase(cards);
 	if (!cards.find(c => c.number < 0)) {
 		gameSetupAllowUpcomingCardsBox.parentElement!.hidden = true;
 		lobbyAllowUpcomingCardsBox.parentElement!.hidden = true;
@@ -63,7 +65,7 @@ function initStageDatabase(stages: Stage[]) {
 
 // Pages
 const pages = new Map<string, HTMLDivElement>();
-for (var id of [ 'noJS', 'preGame', 'lobby', 'game', 'deckList', 'deckEdit' ]) {
+for (var id of [ 'noJS', 'preGame', 'lobby', 'game', 'deckList', 'deckEdit', 'gallery' ]) {
 	let el = document.getElementById(`${id}Page`) as HTMLDivElement;
 	if (!el) throw new EvalError(`Element not found: ${id}Page`);
 	pages.set(id, el);
@@ -484,6 +486,8 @@ function processUrl() {
 	clearGame();
 	if (location.pathname.endsWith('/deckeditor') || location.hash == '#deckeditor')
 		onInitialise(showDeckList);
+	else if (location.pathname.endsWith('/cardlist') || location.hash == '#cardlist')
+		onInitialise(showCardList);
 	else {
 		showPage('preGame');
 		if (location.pathname.endsWith('/help') || location.hash == '#help')

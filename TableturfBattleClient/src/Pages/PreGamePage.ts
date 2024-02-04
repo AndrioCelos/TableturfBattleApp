@@ -5,6 +5,7 @@ const joinGameButton = document.getElementById('joinGameButton')!;
 const nameBox = document.getElementById('nameBox') as HTMLInputElement;
 const gameIDBox = document.getElementById('gameIDBox') as HTMLInputElement;
 const preGameDeckEditorButton = document.getElementById('preGameDeckEditorButton') as HTMLLinkElement;
+const preGameGalleryButton = document.getElementById('preGameGalleryButton') as HTMLLinkElement;
 const preGameLoadingSection = document.getElementById('preGameLoadingSection')!;
 const preGameLoadingLabel = document.getElementById('preGameLoadingLabel')!;
 const preGameReplayButton = document.getElementById('preGameReplayButton') as HTMLLinkElement;
@@ -301,6 +302,12 @@ preGameDeckEditorButton.addEventListener('click', e => {
 	setUrl('deckeditor');
 });
 
+preGameGalleryButton.addEventListener('click', e => {
+	e.preventDefault();
+	showCardList();
+	setUrl('cardlist');
+});
+
 preGameSettingsButton.addEventListener('click', e => {
 	e.preventDefault();
 	optionsColourGoodBox.value = userConfig.goodColour ?? 'yellow';
@@ -419,6 +426,8 @@ window.addEventListener('popstate', () => {
 	}
 }
 
-if (!canPushState)
+if (!canPushState) {
 	preGameDeckEditorButton.href = '#deckeditor';
+	preGameGalleryButton.href = '#cardlist';
+}
 setLoadingMessage('Loading game data...');

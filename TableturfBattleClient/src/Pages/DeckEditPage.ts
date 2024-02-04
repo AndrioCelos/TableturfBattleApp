@@ -3,7 +3,7 @@
 const deckNameLabel2 = document.getElementById('deckName2')!;
 const deckEditSize = document.getElementById('deckEditSize')!;
 const deckCardListEdit = document.getElementById('deckCardListEdit')!;
-const cardList = CardList.fromId('cardList', 'cardListSortBox', 'cardListFilterBox');
+const cardList = CardList.fromId<CardButton>('cardList', 'cardListSortBox', 'cardListFilterBox');
 const cardListButtonGroup = new CheckButtonGroup<Card>();
 
 const deckEditMenu = document.getElementById('deckEditMenu')!;

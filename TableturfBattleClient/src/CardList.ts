@@ -1,8 +1,8 @@
-class CardList {
+class CardList<T extends ICardElement> {
 	readonly listElement: HTMLElement;
 	readonly sortBox: HTMLSelectElement;
 	readonly filterBox: HTMLInputElement;
-	readonly cardButtons: CardButton[] = [ ];
+	readonly cardButtons: T[] = [ ];
 
 	static readonly cardSortOrders: { [key: string]: (a: Card, b: Card) => number } = {
 		'number': (a, b) => CardList.compareByNumber(a, b),
@@ -42,7 +42,7 @@ class CardList {
 		filterBox.addEventListener('input', () => {
 			const s = filterBox.value.toLowerCase();
 			for (const button of this.cardButtons)
-				button.buttonElement.hidden = s != '' && !button.card.name.toLowerCase().includes(s);
+				button.element.hidden = s != '' && !button.card.name.toLowerCase().includes(s);
 		});
 
 		for (const label in CardList.cardSortOrders) {
@@ -59,17 +59,17 @@ class CardList {
 			clearChildren(this.listElement);
 			this.cardButtons.sort((a, b) => sortOrder(a.card, b.card));
 			for (const button of this.cardButtons)
-				this.listElement.appendChild(button.buttonElement);
+				this.listElement.appendChild(button.element);
 		}
 	}
 
-	static fromId(id: string, sortBoxId: string, filterBoxId: string) {
-		return new CardList(document.getElementById(id)!, document.getElementById(sortBoxId) as HTMLSelectElement, document.getElementById(filterBoxId) as HTMLInputElement);
+	static fromId<T extends ICardElement>(id: string, sortBoxId: string, filterBoxId: string) {
+		return new CardList<T>(document.getElementById(id)!, document.getElementById(sortBoxId) as HTMLSelectElement, document.getElementById(filterBoxId) as HTMLInputElement);
 	}
 
-	add(button: CardButton) {
+	add(button: T) {
 		this.cardButtons.push(button);
-		this.listElement.appendChild(button.buttonElement);
+		this.listElement.appendChild(button.element);
 	}
 
 	setSortOrder(sortOrder: string) {
@@ -80,6 +80,6 @@ class CardList {
 	clearFilter() {
 		this.filterBox.value = '';
 		for (const button of this.cardButtons)
-			button.buttonElement.hidden = false;
+			button.element.hidden = false;
 	}
 }
