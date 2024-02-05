@@ -1876,6 +1876,10 @@ button.dragging {
 	text-align: center;
 }
 
+.card.common #galleryCardEditorName { color: rgb(89, 49, 255); }
+.card.rare #galleryCardEditorName { color: rgb(231, 180, 39); }
+.card.fresh #galleryCardEditorName { color: white; }
+
 .card.editing :is(.cardDisplayName, .cardGrid) {
 	display: none;
 }

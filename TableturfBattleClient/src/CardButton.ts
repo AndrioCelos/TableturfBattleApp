@@ -11,7 +11,8 @@ class CardButton extends CheckButton implements ICardElement {
 		button.type = 'button';
 		button.classList.add('cardButton');
 		button.classList.add([ 'common', 'rare', 'fresh' ][card.rarity]);
-		if (card.number < 0) button.classList.add('upcoming');
+		if (card.number <= CUSTOM_CARD_START) button.classList.add('custom');
+		else if (card.number < 0) button.classList.add('upcoming');
 		button.dataset.cardNumber = card.number.toString();
 		super(button);
 		this.element = button;
@@ -36,7 +37,7 @@ class CardButton extends CheckButton implements ICardElement {
 
 		let el2 = document.createElement('div');
 		el2.classList.add('cardNumber');
-		el2.innerText = card.number >= 0 ? `No. ${card.number}` : 'Upcoming';
+		el2.innerText = card.number >= 0 ? `No. ${card.number}` : card.number <= CUSTOM_CARD_START ? 'Custom' : 'Upcoming';
 		row.appendChild(el2);
 
 		el2 = document.createElement('div');

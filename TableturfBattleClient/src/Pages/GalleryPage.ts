@@ -1,23 +1,29 @@
 const galleryCardList = CardList.fromId<CardDisplay>('galleryCardList', 'gallerySortBox', 'galleryFilterBox');
 const galleryBackButton = document.getElementById('galleryBackButton') as HTMLLinkElement;
 const galleryCardDialog = document.getElementById('galleryCardDialog') as HTMLDialogElement;
+const galleryCardDeleteDialog = document.getElementById('galleryCardDeleteDialog') as HTMLDialogElement;
 
 const galleryNewCustomCardButton = document.getElementById('galleryNewCustomCardButton') as HTMLButtonElement;
 const galleryChecklistBox = document.getElementById('galleryChecklistBox') as HTMLInputElement;
 const bitsToCompleteField = document.getElementById('bitsToCompleteField') as HTMLElement;
 
 let galleryCardDisplay: CardDisplay | null = null;
+let gallerySelectedCardDisplay: CardDisplay | null = null;
 const galleryCardEditor = document.getElementById('galleryCardEditor') as HTMLButtonElement;
+const galleryCardEditorName = document.getElementById('galleryCardEditorName') as HTMLTextAreaElement;
 const galleryCardEditorGridButtons: HTMLButtonElement[][] = [ ];
 const galleryCardEditorSpecialCostButtons: HTMLButtonElement[] = [ ];
 const galleryCardEditorSpecialCost = document.getElementById('galleryCardEditorSpecialCost') as HTMLElement;
 const galleryCardEditorSpecialCostDefaultBox = document.getElementById('galleryCardEditorSpecialCostDefaultBox') as HTMLInputElement;
 const galleryCardEditorEditButton = document.getElementById('galleryCardEditorEditButton') as HTMLButtonElement;
 const galleryCardEditorSubmitButton = document.getElementById('galleryCardEditorSubmitButton') as HTMLButtonElement;
+const galleryCardEditorDeleteButton = document.getElementById('galleryCardEditorDeleteButton') as HTMLButtonElement;
 const galleryCardEditorCancelButton = document.getElementById('galleryCardEditorCancelButton') as HTMLButtonElement;
+const galleryCardEditorDeleteYesButton = document.getElementById('galleryCardEditorDeleteYesButton') as HTMLButtonElement;
 
 const ownedCards: {[key: number]: number} = { 6: 0, 34: 0, 159: 0, 13: 0, 45: 0, 137: 0, 22: 0, 52: 0, 141: 0, 28: 0, 55: 0, 103: 0, 40: 0, 56: 0, 92: 0 };
 let lastGridButton: HTMLButtonElement | null = null;
+let customCardSize = 0;
 let customCardSpecialCost = 0;
 
 function showCardList() {
@@ -26,47 +32,84 @@ function showCardList() {
 
 function galleryInitCardDatabase(cards: Card[]) {
 	for (const card of cards.concat(customCards)) {
-		const display = new CardDisplay(card, 1, 'button');
-
-		const cardNumber = document.createElement('div');
-		cardNumber.className = 'cardNumber';
-		cardNumber.innerText = card.number >= 0 ? `No. ${card.number}` : 'Upcoming';
-		display.element.insertBefore(cardNumber, display.element.firstChild);
-
-		galleryCardList.add(display);
-
-		display.element.addEventListener('click', () => {
-			if (galleryChecklistBox.checked) {
-				if (card.number in ownedCards) {
-					delete ownedCards[card.number];
-					display.element.classList.add('unowned');
-				} else {
-					ownedCards[card.number] = 0;
-					display.element.classList.remove('unowned');
-				}
-				updateBitsToComplete();
-				saveChecklist();
-			} else {
-				const existingEl = galleryCardDialog.firstElementChild;
-				if (existingEl && existingEl.tagName != 'FORM')
-					galleryCardDialog.removeChild(existingEl);
-				const display = new CardDisplay(card, 1);
-				galleryCardDisplay = display;
-				galleryCardDialog.insertBefore(display.element, galleryCardDialog.firstChild);
-
-				galleryCardEditor.parentElement?.removeChild(galleryCardEditor);
-				display.element.appendChild(galleryCardEditor);
-				galleryCardEditor.hidden = true;
-				display.element.classList.remove('editing');
-				galleryCardEditorEditButton.hidden = false;
-				galleryCardEditorSubmitButton.hidden = true;
-				galleryCardEditorCancelButton.innerText = 'Close';
-
-				galleryCardDialog.showModal();
-			}
-		});
+		addCardToGallery(card);
 	}
 	updateBitsToComplete();
+}
+
+function addCardToGallery(card: Card) {
+	const display = createGalleryCardDisplay(card);
+	galleryCardList.add(display);
+}
+
+function createGalleryCardDisplay(card: Card) {
+	const display = new CardDisplay(card, 1, 'button');
+
+	const cardNumber = document.createElement('div');
+	cardNumber.className = 'cardNumber';
+	cardNumber.innerText = card.number >= 0 ? `No. ${card.number}` : card.number <= CUSTOM_CARD_START ? 'Custom' : 'Upcoming';
+	display.element.insertBefore(cardNumber, display.element.firstChild);
+
+	display.element.addEventListener('click', () => {
+		if (galleryChecklistBox.checked) {
+			if (card.number <= 0) return;
+			if (card.number in ownedCards) {
+				delete ownedCards[card.number];
+				display.element.classList.add('unowned');
+			} else {
+				ownedCards[card.number] = 0;
+				display.element.classList.remove('unowned');
+			}
+			updateBitsToComplete();
+			saveChecklist();
+		} else {
+			gallerySelectedCardDisplay = display;
+			openGalleryCardView(card);
+		}
+	});
+
+	return display;
+}
+
+function updateCardInGallery(card: Card) {
+	const display = createGalleryCardDisplay(card);
+	galleryCardList.update(display, card);
+}
+
+function openGalleryCardView(card: Card) {
+	const existingEl = galleryCardDialog.firstElementChild;
+	if (existingEl && existingEl.tagName != 'FORM')
+		galleryCardDialog.removeChild(existingEl);
+	const display = new CardDisplay(card, 1);
+	galleryCardDisplay = display;
+	galleryCardDialog.insertBefore(display.element, galleryCardDialog.firstChild);
+
+	galleryCardEditor.parentElement?.removeChild(galleryCardEditor);
+	display.element.appendChild(galleryCardEditor);
+	galleryCardEditor.hidden = true;
+	display.element.classList.remove('editing');
+	galleryCardEditorEditButton.hidden = card.number > CUSTOM_CARD_START;
+	galleryCardEditorDeleteButton.hidden = card.number > CUSTOM_CARD_START;
+	galleryCardEditorSubmitButton.hidden = true;
+	galleryCardEditorCancelButton.innerText = 'Close';
+
+	for (let y = 0; y < 8; y++) {
+		for (let x = 0; x < 8; x++) {
+			galleryCardEditorGridButtons[y][x].dataset.state = card.grid[y][x].toString();
+		}
+	}
+	updateCustomCardSize();
+
+	galleryCardDialog.showModal();
+}
+
+function startEditingCustomCard() {
+	galleryCardEditor.hidden = false;
+	galleryCardDisplay?.element.classList.add('editing');
+	galleryCardEditorEditButton.hidden = true;
+	galleryCardEditorDeleteButton.hidden = true;
+	galleryCardEditorSubmitButton.hidden = false;
+	galleryCardEditorCancelButton.innerText = 'Cancel';
 }
 
 galleryBackButton.addEventListener('click', e => {
@@ -113,13 +156,6 @@ function updateBitsToComplete() {
 }
 
 {
-	const customCardsString = localStorage.getItem('customCards');
-	if (customCardsString) {
-		for (const card of JSON.parse(customCardsString)) {
-			customCards.push(Card.fromJson(card));
-		}
-	}
-
 	for (let x = 0; x < 8; x++) {
 		const row = [ ];
 		for (let y = 0; y < 8; y++) {
@@ -168,11 +204,19 @@ function updateBitsToComplete() {
 		}
 	}
 
-	// Load the saved checklist.
+	// Load the saved checklist and custom cards.
 	const checklistString = localStorage.getItem('checklist');
 	if (checklistString) {
 		const cards = JSON.parse(checklistString);
 		Object.assign(ownedCards, cards);
+	}
+
+	const customCardsString = localStorage.getItem('customCards');
+	if (customCardsString) {
+		for (const cardJson of JSON.parse(customCardsString)) {
+			customCards.push(Card.fromJson(cardJson));
+		}
+		customCardsModified = customCards.length > 0;
 	}
 }
 
@@ -205,6 +249,7 @@ function updateCustomCardSize() {
 		}
 	}
 
+	customCardSize = size;
 	galleryCardDisplay!.setSize(size);
 	if (galleryCardEditorSpecialCostDefaultBox.checked) {
 		customCardSpecialCost =
@@ -236,10 +281,41 @@ galleryCardEditorSpecialCostDefaultBox.addEventListener('change', () => {
 		updateCustomCardSize();
 });
 
-galleryCardEditorEditButton.addEventListener('click', () => {
-	galleryCardEditor.hidden = false;
-	galleryCardDisplay?.element.classList.add('editing');
-	galleryCardEditorEditButton.hidden = true;
-	galleryCardEditorSubmitButton.hidden = false;
-	galleryCardEditorCancelButton.innerText = 'Cancel';
+galleryCardEditorEditButton.addEventListener('click', () => startEditingCustomCard());
+
+galleryNewCustomCardButton.addEventListener('click', () => {
+	const card = new Card(UNSAVED_CUSTOM_CARD_INDEX, 'New card', 1, Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2, Rarity.Common, 1, Array.from({ length: 8 }, () => [ 0, 0, 0, 0, 0, 0, 0, 0]) );
+	openGalleryCardView(card);
+	startEditingCustomCard();
+});
+
+galleryCardEditorSubmitButton.addEventListener('click', () => {
+	const card = galleryCardDisplay!.card;
+	card.grid = Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!)));
+	card.name = galleryCardEditorName.value;
+	card.size = customCardSize;
+	card.specialCost = customCardSpecialCost;
+	if (card.number == UNSAVED_CUSTOM_CARD_INDEX) {
+		card.number = CUSTOM_CARD_START - customCards.length;
+		customCards.push(card);
+		addCardToGallery(card);
+	} else {
+		updateCardInGallery(card);
+	}
+	customCardsModified = true;
+	saveCustomCards();
+});
+
+galleryCardEditorDeleteButton.addEventListener('click', () => {
+	const label = galleryCardDeleteDialog.firstElementChild as HTMLElement;
+	label.innerText = `Are you sure you want to delete the custom card ${galleryCardDisplay!.card.name}?\nThis cannot be undone!`;
+	galleryCardDeleteDialog.showModal();
+});
+
+galleryCardEditorDeleteYesButton.addEventListener('click', () => {
+	const card = galleryCardDisplay!.card;
+	galleryCardList.remove(card);
+	galleryCardDialog.close();
+	customCards.splice(customCards.indexOf(card), 1);
+	saveCustomCards();
 });

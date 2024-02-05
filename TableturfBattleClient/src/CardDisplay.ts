@@ -21,7 +21,8 @@ class CardDisplay implements ICardElement {
 		this.svg = svg;
 		element.appendChild(svg);
 
-		if (card.number < 0) svg.classList.add('upcoming');
+		if (card.number <= CUSTOM_CARD_START) svg.classList.add('custom');
+		else if (card.number < 0) svg.classList.add('upcoming');
 		svg.dataset.cardNumber = card.number.toString();
 		svg.style.setProperty("--number", card.number.toString());
 

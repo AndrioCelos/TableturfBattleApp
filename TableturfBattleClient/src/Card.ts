@@ -11,7 +11,7 @@ class Card {
 	inkColour2: Colour;
 	rarity: Rarity;
 	specialCost: number;
-	grid: readonly (readonly Space[])[];
+	grid: Space[][];
 	size: number;
 	isVariantOf?: number | null;
 
@@ -20,8 +20,8 @@ class Card {
 	private maxX: number;
 	private maxY: number;
 
-	private static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
-	private static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
+	static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
+	static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
 	constructor(number: number, name: string, textScale: number, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
 		this.number = number;
 		this.name = name;

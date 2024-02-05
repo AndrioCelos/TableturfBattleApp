@@ -72,6 +72,31 @@ class CardList<T extends ICardElement> {
 		this.listElement.appendChild(button.element);
 	}
 
+	update(button: T, card: Card) {
+		const i = this.cardButtons.findIndex(c => c.card.number == card.number);
+		if (i < 0) throw new Error('The card to update was not found in the list.');
+		const existingButton = this.cardButtons[i];
+		this.cardButtons.splice(i, 1, button);
+		this.listElement.replaceChild(button.element, existingButton.element);
+	}
+
+	remove(card: Card) {
+		const i = this.cardButtons.findIndex(b => b.card.number == card.number);
+		if (i < 0) return;
+		this.listElement.removeChild(this.cardButtons[i].element);
+		this.cardButtons.splice(i, 1);
+	}
+
+	removeAllCustomCards() {
+		for (let i = this.cardButtons.length - 1; i >= 0; i--) {
+			const button = this.cardButtons[i];
+			if (button.card.number <= CUSTOM_CARD_START) {
+				this.listElement.removeChild(button.element);
+				this.cardButtons.splice(i, 1);
+			}
+		}
+	}
+
 	setSortOrder(sortOrder: string) {
 		this.sortBox.value = sortOrder;
 		this.updateSort();

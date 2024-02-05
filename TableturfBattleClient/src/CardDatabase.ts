@@ -10,6 +10,9 @@ const cardDatabase = {
 		if (number > 0) {
 			number--;
 			if (number < cardDatabase.lastOfficialCardNumber) return cardDatabase.cards[number];
+		} else if (number <= CUSTOM_CARD_START) {
+			const card = customCards[CUSTOM_CARD_START - number];
+			if (card) return card;
 		} else if (number < 0) {
 			const card = cardDatabase._byAltNumber[-number];
 			if (card) return card;

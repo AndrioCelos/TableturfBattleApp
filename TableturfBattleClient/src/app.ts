@@ -1,5 +1,7 @@
 declare var baseUrl: string;
 
+const CUSTOM_CARD_START = -1000;  // TODO: Card numbers in replays shall be expanded to 2 bytes.
+const UNSAVED_CUSTOM_CARD_INDEX = CUSTOM_CARD_START + 1;
 const defaultColours = [
 	[ { r: 236, g: 249, b: 1 }, { r: 250, g: 158, b: 0 }, { r: 249, g: 249, b: 31 } ],
 	[ { r: 74, g: 92, b: 252 }, { r: 1, g: 237, b: 254 }, { r: 213, g: 225, b: 225 } ],
@@ -19,6 +21,7 @@ let canPushState = isSecureContext && location.protocol != 'file:';
 
 const decks = [ new SavedDeck('Starter Deck', 0, [ 6, 34, 159, 13, 45, 137, 22, 52, 141, 28, 55, 103, 40, 56, 92 ], new Array(15).fill(1), true) ];
 const customCards: Card[] = [ ];
+let customCardsModified = false;
 let selectedDeck: SavedDeck | null = null;
 let editingDeck = false;
 let deckModified = false;

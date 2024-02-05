@@ -24,43 +24,47 @@ let draggingCardButton: Element | null = null;
 
 function deckEditInitCardDatabase(cards: Card[]) {
 	for (const card of cards) {
-		const button = new CardButton(card);
-		cardList.add(button);
-		cardListButtonGroup.add(button, card);
-		button.buttonElement.addEventListener('click', () => {
-			if (!button.enabled) return;
-
-			for (const button2 of cardList.cardButtons) {
-				if (button2 != button)
-					button2.checked = false;
-			}
-
-			const index = deckEditCardButtons.entries.findIndex(el => el.button.checked);
-			if (index < 0) return;
-			const oldEntry = deckEditCardButtons.entries[index];
-			const oldCardNumber = oldEntry.value;
-
-			if (oldCardNumber != 0)
-				cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber || e.value.altNumber == oldCardNumber)!.button.enabled = true;
-			cardListButtonGroup.entries.find(e => e.value.number == card.number)!.button.enabled = false;
-
-			const button3 = createDeckEditCardButton(card.number);
-			button3.checked = true;
-
-			deckEditCardButtons.replace(index, button3, card.number);
-			deckEditUpdateSize();
-
-			cardList.listElement.parentElement!.classList.remove('selecting');
-			if (!deckModified) {
-				deckModified = true;
-				window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
-			}
-			selectFirstEmptySlot();
-		});
+		addCardToDeckEditor(card);
 		addTestCard(card);
 	}
 	cardList.setSortOrder('size');
 	testAllCardsList.setSortOrder('size');
+}
+
+function addCardToDeckEditor(card: Card) {
+	const button = new CardButton(card);
+	cardList.add(button);
+	cardListButtonGroup.add(button, card);
+	button.buttonElement.addEventListener('click', () => {
+		if (!button.enabled) return;
+
+		for (const button2 of cardList.cardButtons) {
+			if (button2 != button)
+				button2.checked = false;
+		}
+
+		const index = deckEditCardButtons.entries.findIndex(el => el.button.checked);
+		if (index < 0) return;
+		const oldEntry = deckEditCardButtons.entries[index];
+		const oldCardNumber = oldEntry.value;
+
+		if (oldCardNumber != 0)
+			cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber || e.value.altNumber == oldCardNumber)!.button.enabled = true;
+		cardListButtonGroup.entries.find(e => e.value.number == card.number)!.button.enabled = false;
+
+		const button3 = createDeckEditCardButton(card.number);
+		button3.checked = true;
+
+		deckEditCardButtons.replace(index, button3, card.number);
+		deckEditUpdateSize();
+
+		cardList.listElement.parentElement!.classList.remove('selecting');
+		if (!deckModified) {
+			deckModified = true;
+			window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
+		}
+		selectFirstEmptySlot();
+	});
 }
 
 function deckEditInitStageDatabase(stages: Stage[]) {
@@ -111,11 +115,22 @@ function editDeck() {
 	for (const entry of cardListButtonGroup.entries)
 		entry.button.enabled = !selectedDeck.cards.includes(entry.value.number);
 
+	reloadCustomCards();
 	deckEditUpdateSize();
 	cardList.clearFilter();
 	editingDeck = true;
 	showPage('deckEdit');
 	selectFirstEmptySlot();
+}
+
+function reloadCustomCards() {
+	if (!customCardsModified) return;
+	cardList.removeAllCustomCards();
+	testAllCardsList.removeAllCustomCards();
+	for (const card of customCards) {
+		addCardToDeckEditor(card);
+		addTestCard(card);
+	}
 }
 
 function selectFirstEmptySlot() {
