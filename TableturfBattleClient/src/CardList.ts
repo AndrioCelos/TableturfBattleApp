@@ -90,7 +90,7 @@ class CardList<T extends ICardElement> {
 	removeAllCustomCards() {
 		for (let i = this.cardButtons.length - 1; i >= 0; i--) {
 			const button = this.cardButtons[i];
-			if (button.card.number <= CUSTOM_CARD_START) {
+			if (button.card.isCustom) {
 				this.listElement.removeChild(button.element);
 				this.cardButtons.splice(i, 1);
 			}

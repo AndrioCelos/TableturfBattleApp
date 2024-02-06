@@ -1,6 +1,14 @@
 const cardDatabase = {
+	/** The list of official cards, or null if the database has not yet been loaded. */
 	cards: null as Card[] | null,
+	/** The list of custom cards added by the user. */
+	customCards: [ ] as Card[],
+	/** The list of custom cards used in the current game that were not added by the user. */
+	receivedCustomCards: [ ] as Card[],
+	customCardsModified: false,
+	/** The number of official cards, and the highest card number among official cards. */
 	lastOfficialCardNumber: 0,
+
 	_byAltNumber: [ ] as Card[],
 
 	// Upcoming cards are identified with a negative number, as their actual numbers aren't known until their release.
@@ -10,8 +18,11 @@ const cardDatabase = {
 		if (number > 0) {
 			number--;
 			if (number < cardDatabase.lastOfficialCardNumber) return cardDatabase.cards[number];
+		} else if (number <= RECEIVED_CUSTOM_CARD_START) {
+			const card = cardDatabase.receivedCustomCards[RECEIVED_CUSTOM_CARD_START - number];
+			if (card) return card;
 		} else if (number <= CUSTOM_CARD_START) {
-			const card = customCards[CUSTOM_CARD_START - number];
+			const card = cardDatabase.customCards[CUSTOM_CARD_START - number];
 			if (card) return card;
 		} else if (number < 0) {
 			const card = cardDatabase._byAltNumber[-number];
@@ -19,8 +30,14 @@ const cardDatabase = {
 		}
 		throw new RangeError(`No card with number ${number}`);
 	},
-	isValidCardNumber(number: number) {
+	isValidOfficialCardNumber(number: number) {
 		return number > 0 ? number <= cardDatabase.lastOfficialCardNumber : cardDatabase._byAltNumber[-number] != undefined;
+	},
+	isValidCardNumber(number: number) {
+		return number > 0 ? number <= cardDatabase.lastOfficialCardNumber
+			: number <= RECEIVED_CUSTOM_CARD_START ? RECEIVED_CUSTOM_CARD_START - number < cardDatabase.receivedCustomCards.length
+			: number <= CUSTOM_CARD_START ? CUSTOM_CARD_START - number < cardDatabase.customCards.length
+			: cardDatabase._byAltNumber[-number] != undefined;
 	},
 	loadAsync() {
 		return new Promise<Card[]>((resolve, reject) => {

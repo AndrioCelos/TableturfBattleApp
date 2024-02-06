@@ -124,10 +124,10 @@ function editDeck() {
 }
 
 function reloadCustomCards() {
-	if (!customCardsModified) return;
+	if (!cardDatabase.customCardsModified) return;
 	cardList.removeAllCustomCards();
 	testAllCardsList.removeAllCustomCards();
-	for (const card of customCards) {
+	for (const card of cardDatabase.customCards) {
 		addCardToDeckEditor(card);
 		addTestCard(card);
 	}

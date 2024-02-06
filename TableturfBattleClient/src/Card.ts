@@ -63,7 +63,8 @@ class Card {
 		return card;
 	}
 
-	get isUpcoming() { return this.number < 0; }
+	get isCustom() { return this.number <= CUSTOM_CARD_START; }
+	get isUpcoming() { return this.number < 0 && !this.isCustom; }
 	get isSpecialWeapon() { return this.specialCost == 3 && this.size == 12 };
 
 	getSpace(x: number, y: number, rotation: number) {

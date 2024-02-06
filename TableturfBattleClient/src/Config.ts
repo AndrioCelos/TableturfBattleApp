@@ -58,5 +58,5 @@ function saveChecklist() {
 }
 
 function saveCustomCards() {
-	localStorage.setItem('customCards', JSON.stringify(customCards));
+	localStorage.setItem('customCards', JSON.stringify(cardDatabase.customCards));
 }

@@ -31,7 +31,7 @@ function showCardList() {
 }
 
 function galleryInitCardDatabase(cards: Card[]) {
-	for (const card of cards.concat(customCards)) {
+	for (const card of cards.concat(cardDatabase.customCards)) {
 		addCardToGallery(card);
 	}
 	updateBitsToComplete();
@@ -47,7 +47,7 @@ function createGalleryCardDisplay(card: Card) {
 
 	const cardNumber = document.createElement('div');
 	cardNumber.className = 'cardNumber';
-	cardNumber.innerText = card.number >= 0 ? `No. ${card.number}` : card.number <= CUSTOM_CARD_START ? 'Custom' : 'Upcoming';
+	cardNumber.innerText = card.number >= 0 ? `No. ${card.number}` : card.isCustom ? 'Custom' : 'Upcoming';
 	display.element.insertBefore(cardNumber, display.element.firstChild);
 
 	display.element.addEventListener('click', () => {
@@ -88,8 +88,8 @@ function openGalleryCardView(card: Card) {
 	display.element.appendChild(galleryCardEditor);
 	galleryCardEditor.hidden = true;
 	display.element.classList.remove('editing');
-	galleryCardEditorEditButton.hidden = card.number > CUSTOM_CARD_START;
-	galleryCardEditorDeleteButton.hidden = card.number > CUSTOM_CARD_START;
+	galleryCardEditorEditButton.hidden = !card.isCustom;
+	galleryCardEditorDeleteButton.hidden = !card.isCustom;
 	galleryCardEditorSubmitButton.hidden = true;
 	galleryCardEditorCancelButton.innerText = 'Close';
 
@@ -214,9 +214,9 @@ function updateBitsToComplete() {
 	const customCardsString = localStorage.getItem('customCards');
 	if (customCardsString) {
 		for (const cardJson of JSON.parse(customCardsString)) {
-			customCards.push(Card.fromJson(cardJson));
+			cardDatabase.customCards.push(Card.fromJson(cardJson));
 		}
-		customCardsModified = customCards.length > 0;
+		cardDatabase.customCardsModified = cardDatabase.customCards.length > 0;
 	}
 }
 
@@ -296,13 +296,13 @@ galleryCardEditorSubmitButton.addEventListener('click', () => {
 	card.size = customCardSize;
 	card.specialCost = customCardSpecialCost;
 	if (card.number == UNSAVED_CUSTOM_CARD_INDEX) {
-		card.number = CUSTOM_CARD_START - customCards.length;
-		customCards.push(card);
+		card.number = CUSTOM_CARD_START - cardDatabase.customCards.length;
+		cardDatabase.customCards.push(card);
 		addCardToGallery(card);
 	} else {
 		updateCardInGallery(card);
 	}
-	customCardsModified = true;
+	cardDatabase.customCardsModified = true;
 	saveCustomCards();
 });
 
@@ -316,6 +316,25 @@ galleryCardEditorDeleteYesButton.addEventListener('click', () => {
 	const card = galleryCardDisplay!.card;
 	galleryCardList.remove(card);
 	galleryCardDialog.close();
-	customCards.splice(customCards.indexOf(card), 1);
+
+	let i = cardDatabase.customCards.indexOf(card);
+	if (i < 0) return;
+
+	// Remove the card from decks and update other custom card numbers.
+	for (const deck of decks) {
+		for (let i = 0; i < deck.cards.length; i++) {
+			if (deck.cards[i] == card.number)
+				deck.cards[i] = 0;
+			else if (deck.cards[i] < card.number)
+				deck.cards[i]++;
+		}
+	}
+
+	// Update the custom cards list.
+	cardDatabase.customCards.splice(i, 1);
+	for (; i < cardDatabase.customCards.length; i++)
+		cardDatabase.customCards[i].number++;
+
 	saveCustomCards();
+	saveDecks();
 });
