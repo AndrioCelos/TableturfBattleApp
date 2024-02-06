@@ -32,7 +32,7 @@ class Card {
 		this.specialCost = specialCost;
 		this.grid = grid;
 
-		let size = 0, minX = 3, minY = 3, maxX = 3, maxY = 3;
+		let size = 0, minX = 3, minY = 3, maxX = 3, maxY = 3, hasSpecialSpace = false;
 		for (let y = 0; y < 8; y++) {
 			for (let x = 0; x < 8; x++) {
 				if (grid[x][y] != Space.Empty) {
@@ -41,6 +41,8 @@ class Card {
 					minY = Math.min(minY, y);
 					maxX = Math.max(maxX, x);
 					maxY = Math.max(maxY, y);
+					if (grid[x][y] == Space.SpecialInactive1)
+						hasSpecialSpace = true;
 				}
 			}
 		}
@@ -49,6 +51,17 @@ class Card {
 		this.minY = minY;
 		this.maxX = maxX;
 		this.maxY = maxY;
+		if (!specialCost) {
+			this.specialCost =
+				size <= 3 ? 1
+					: size <= 5 ? 2
+						: size <= 8 ? 3
+							: size <= 11 ? 4
+								: size <= 15 ? 5
+									: 6;
+			if (!hasSpecialSpace && this.specialCost > 3)
+				this.specialCost = 3;
+		}
 	}
 
 	static fromJson(obj: any) {
@@ -61,6 +74,16 @@ class Card {
 		card.imageUrl = obj.imageUrl ?? null;
 		card.isVariantOf = obj.isVariantOf ?? null;
 		return card;
+	}
+
+	isTheSameAs(jsonCard: Card) {
+		if (this.name != jsonCard.name) return false;
+		for (let x = 0; x < 8; x++) {
+			for (let y = 0; y < 8; y++) {
+				if (this.grid[x][y] != jsonCard.grid[x][y]) return false;
+			}
+		}
+		return true;
 	}
 
 	get isCustom() { return this.number <= CUSTOM_CARD_START; }

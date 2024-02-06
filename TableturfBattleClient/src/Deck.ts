@@ -28,6 +28,11 @@ class SavedDeck {
 	}
 }
 
+interface DeckFullExport {
+	decks: SavedDeck[] | number[][];
+	customCards?: {[key: number]: Card};
+}
+
 class Deck {
 	name: string;
 	sleeves: number;

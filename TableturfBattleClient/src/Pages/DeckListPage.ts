@@ -136,7 +136,7 @@ function createDeckButton(deck: SavedDeck) {
 		const index = decks.indexOf(deck);
 		draggingDeckButton = buttonElement;
 		e.dataTransfer.effectAllowed = 'copyMove';
-		e.dataTransfer.setData('text/plain', JSON.stringify(deck, [ 'name', 'cards', 'sleeves', 'upgrades' ]));
+		e.dataTransfer.setData('text/plain', serialiseDecks([ deck ]));
 		e.dataTransfer.setData('application/tableturf-deck-index', index.toString());
 		buttonElement.classList.add('dragging');
 	});
@@ -211,11 +211,37 @@ function deckButton_drop(e: DragEvent) {
 	}
 }
 
-function importDecks(decksToImport: (SavedDeck | number[])[]) {
+function importDecks(decksToImport: DeckFullExport) {
 	let newSelectedDeck: SavedDeck | null = null;
-	for (const el of decksToImport) {
+
+	// Merge custom cards.
+	const customCardNumbers: {[key: number]: number} = { };
+	if (decksToImport.customCards) {
+		console.log('Merging custom cards...');
+		for (const key in decksToImport.customCards) {
+			const incomingCard = Card.fromJson(decksToImport.customCards[key]);
+			const existingCard = cardDatabase.customCards.find(c => c.isTheSameAs(incomingCard));
+			if (existingCard) {
+				console.log(`Incoming card (${key}) ${incomingCard.name} matches existing (${existingCard.number}).`);
+				customCardNumbers[key] = existingCard.number;
+			} else {
+				const newNumber = CUSTOM_CARD_START - cardDatabase.customCards.length;
+				console.log(`Adding incoming card (${key}) ${incomingCard.name} as (${newNumber}).`);
+				incomingCard.number = newNumber;
+				cardDatabase.customCards.push(incomingCard);
+				addCardToGallery(incomingCard);
+				cardDatabase.customCardsModified = true;
+				customCardNumbers[key] = incomingCard.number;
+			}
+		}
+		console.log('Done merging custom cards.');
+		saveCustomCards();
+	}
+
+	// Import decks.
+	for (const el of decksToImport.decks) {
 		let deck;
-		if (el instanceof Array)
+		if (Array.isArray(el))
 			deck = new SavedDeck(`Imported Deck ${decks.length + 1}`, 0, el, new Array(15).fill(1), false);
 		else {
 			deck = el;
@@ -223,6 +249,10 @@ function importDecks(decksToImport: (SavedDeck | number[])[]) {
 			deck.upgrades ??= new Array(15).fill(1);
 			deck.isReadOnly = false;
 			if (!deck.name) deck.name = `Imported Deck ${decks.length + 1}`;
+		}
+		for (let i = 0; i < deck.cards.length; i++) {
+			if (deck.cards[i] <= CUSTOM_CARD_START)
+				deck.cards[i] = customCardNumbers[deck.cards[i]];
 		}
 		createDeckButton(deck);
 		decks.push(deck);
@@ -271,7 +301,7 @@ deckImportForm.addEventListener('submit', e => {
 	}
 });
 
-function parseDecksForImport(s: string) : (SavedDeck | number[])[] {
+function parseDecksForImport(s: string) : DeckFullExport {
 	let isKoishiShareUrl = false;
 	const pos = s.indexOf('deck=');
 	if (pos >= 0) {
@@ -284,20 +314,28 @@ function parseDecksForImport(s: string) : (SavedDeck | number[])[] {
 			if (data.length > 15 || data.find(i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(isKoishiShareUrl ? i : i + 1)))
 				throw new SyntaxError('Invalid deck data');
 			if (isKoishiShareUrl)
-				return [ data ];  // tableturf.koishi.top share URL
+				return { decks: [ data ] };  // tableturf.koishi.top share URL
 			else
-				return [ data.map(n => n + 1) ];  // Tooltip export data
+				return { decks: [ data.map(n => n + 1) ] };  // Tooltip export data
 		} else {
 			for (const deck of data) {
 				if (typeof(deck) != 'object' || !Array.isArray(deck.cards) || deck.cards.length > 15 || (deck.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
 					throw new SyntaxError('Invalid JSON deck');
 			}
-			return data.map(SavedDeck.fromJson);  // Our export data
+			return { decks: data.map(SavedDeck.fromJson) };  // Our export data without custom cards
 		}
 	} else if (typeof(data) == 'object') {
-		if (!Array.isArray(data.cards) || data.cards.length > 15 || (data.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidCardNumber(i))))
-			throw new SyntaxError('Invalid JSON deck');
-		return [ SavedDeck.fromJson(data) ];  // Our old export data
+		if ('decks' in data) {
+			// Our export data with custom cards
+			const fullExport = data as DeckFullExport;
+			fullExport.decks = fullExport.decks.map(SavedDeck.fromJson);
+			return fullExport;
+		} else {
+			// Our old export data
+			if (!Array.isArray(data.cards) || data.cards.length > 15 || (data.cards as any[]).find((i => typeof(i) != 'number' || !cardDatabase.isValidOfficialCardNumber(i))))
+				throw new SyntaxError('Invalid JSON deck');
+			return { decks: [ SavedDeck.fromJson(data) ] };
+		}
 	} else
 		throw new SyntaxError('Invalid JSON deck');
 }
@@ -382,9 +420,42 @@ function deselectDeck() {
 	deckListPage.classList.remove('showingDeck');
 }
 
+function deckExportJsonReplacer(key: string, value: any) {
+	switch (key) {
+		case 'isReadOnly':
+		case 'number':
+		case 'altNumber':
+		case 'artFileName':
+		case 'imageUrl':
+		case 'specialCost':
+		case 'size':
+		case 'isVariantOf':
+		case 'minX':
+		case 'minY':
+		case 'maxX':
+		case 'maxY':
+			return undefined;
+		default:
+			return value;
+	}
+}
+
+function serialiseDecks(decks: SavedDeck[]) {
+	let customCards: {[key: number]: Card} | null = null;
+	for (const deck of decks) {
+		for (const number of deck.cards) {
+			if (number <= CUSTOM_CARD_START) {
+				customCards ??= { };
+				customCards[number] = cardDatabase.customCards[CUSTOM_CARD_START - number];
+			}
+		}
+	}
+	return JSON.stringify(customCards != null ? { decks, customCards } : decks, deckExportJsonReplacer);
+}
+
 deckExportButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	const json = JSON.stringify(selectedDeck, [ 'name', 'cards', 'sleeves', 'upgrades' ]);
+	const json = serialiseDecks([ selectedDeck ]);
 	deckExportTextBox.value = json;
 	deckExportCopyButton.innerText = 'Copy';
 	deckExportDialog.showModal();
@@ -407,7 +478,7 @@ deckRenameButton.addEventListener('click', () => {
 
 deckCopyButton.addEventListener('click', () => {
 	if (selectedDeck == null) return;
-	importDecks([ new SavedDeck(`${selectedDeck.name} - Copy`, selectedDeck.sleeves, Array.from(selectedDeck.cards), Array.from(selectedDeck.upgrades), false) ]);
+	importDecks({ decks: [ new SavedDeck(`${selectedDeck.name} - Copy`, selectedDeck.sleeves, Array.from(selectedDeck.cards), Array.from(selectedDeck.upgrades), false) ] });
 });
 
 deckDeleteButton.addEventListener('click', () => {
@@ -452,7 +523,7 @@ deckImportFileBox.addEventListener('change', async () => {
 	if (deckImportFileBox.files && deckImportFileBox.files.length > 0) {
 		try {
 			const bitmaps = await Promise.all(Array.from(deckImportFileBox.files, f => createImageBitmap(f)));
-			importDecks(bitmaps.map(getCardListFromImageBitmap));
+			importDecks({ decks: bitmaps.map(getCardListFromImageBitmap) });
 			deckImportDialog.close();
 		} catch (ex: any) {
 			deckImportErrorBox.innerText = ex.message;
@@ -463,7 +534,7 @@ deckImportFileBox.addEventListener('change', async () => {
 });
 
 deckExportAllButton.addEventListener('click', () => {
-	const json = JSON.stringify(decks.filter(d => !d.isReadOnly), [ 'name', 'cards', 'sleeves', 'upgrades' ]);
+	const json = serialiseDecks(decks.filter(d => !d.isReadOnly));
 	deckExportTextBox.value = json;
 	deckExportCopyButton.innerText = 'Copy';
 	deckExportDialog.showModal();
