@@ -20,6 +20,7 @@ const maxPlayersBox = document.getElementById('maxPlayersBox') as HTMLSelectElem
 const turnTimeLimitBox = document.getElementById('turnTimeLimitBox') as HTMLInputElement;
 const goalWinCountBox = document.getElementById('goalWinCountBox') as HTMLSelectElement;
 const gameSetupAllowUpcomingCardsBox = document.getElementById('gameSetupAllowUpcomingCardsBox') as HTMLInputElement;
+const gameSetupAllowCustomCardsBox = document.getElementById('gameSetupAllowCustomCardsBox') as HTMLInputElement;
 const stageSelectionRuleFirstBox = document.getElementById('stageSelectionRuleFirstBox') as HTMLSelectElement;
 const stageSelectionRuleAfterWinBox = document.getElementById('stageSelectionRuleAfterWinBox') as HTMLSelectElement;
 const stageSelectionRuleAfterDrawBox = document.getElementById('stageSelectionRuleAfterDrawBox') as HTMLSelectElement;
@@ -174,6 +175,7 @@ function createRoom(useOptionsForm: boolean) {
 			turnTimeLimit: turnTimeLimitBox.value ? turnTimeLimitBox.valueAsNumber : null,
 			goalWinCount: goalWinCountBox.value ? parseInt(goalWinCountBox.value) : null,
 			allowUpcomingCards: gameSetupAllowUpcomingCardsBox.checked,
+			allowCustomCards: gameSetupAllowCustomCardsBox.checked,
 			stageSelectionMethodFirst: StageSelectionMethod[stageSelectionRuleFirstBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterWin: stageSelectionRuleAfterWinBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterWinBox.value as keyof typeof StageSelectionMethod],
 			stageSelectionMethodAfterDraw: stageSelectionRuleAfterDrawBox.value == 'Inherit' ? null : StageSelectionMethod[stageSelectionRuleAfterDrawBox.value as keyof typeof StageSelectionMethod],
@@ -190,6 +192,7 @@ function createRoom(useOptionsForm: boolean) {
 		if (goalWinCountBox.value)
 			data.append('goalWinCount', goalWinCountBox.value);
 		data.append('allowUpcomingCards', settings.allowUpcomingCards.toString());
+		data.append('allowCustomCards', settings.allowCustomCards.toString());
 
 		const stageSelectionRuleFirst = {
 			method: settings.stageSelectionMethodFirst,

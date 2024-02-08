@@ -26,6 +26,7 @@ const lobbyDeckSubmitButton = document.getElementById('submitDeckButton') as HTM
 
 const lobbyTimeLimitBox = document.getElementById('lobbyTimeLimitBox') as HTMLInputElement;
 const lobbyAllowUpcomingCardsBox = document.getElementById('lobbyAllowUpcomingCardsBox') as HTMLInputElement;
+const lobbyAllowCustomCardsBox = document.getElementById('lobbyAllowCustomCardsBox') as HTMLInputElement;
 const lobbyTimeLimitUnit = document.getElementById('lobbyTimeLimitUnit')!;
 
 const qrCodeDialog = document.getElementById('qrCodeDialog') as HTMLDialogElement;
@@ -182,6 +183,7 @@ function lobbyResetSlots() {
 function lobbyLockSettings(lock: boolean) {
 	lobbyTimeLimitBox.readOnly = lock;
 	lobbyAllowUpcomingCardsBox.disabled = lock;
+	lobbyAllowCustomCardsBox.disabled = lock;
 }
 
 function clearReady() {
@@ -298,7 +300,9 @@ function initDeckSelection() {
 				}
 			});
 
-			if (!deck.isValid || (!currentGame.game.allowUpcomingCards && deck.cards.find(n => cardDatabase.get(n).number < 0))) {
+			if (!deck.isValid
+			|| (!currentGame.game.allowUpcomingCards && deck.cards.find(n => cardDatabase.get(n).isUpcoming))
+			|| (!currentGame.game.allowCustomCards && deck.cards.find(n => n <= CUSTOM_CARD_START))) {
 				button.enabled = false;
 			} else if (deck.name == lastDeckName) {
 				selectedDeck = deck;
@@ -332,9 +336,27 @@ lobbyAllowUpcomingCardsBox.addEventListener('change', () => {
 	req.send(data.toString());
 });
 
+lobbyAllowCustomCardsBox.addEventListener('change', () => {
+	let req = new XMLHttpRequest();
+	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/setGameSettings`);
+	let data = new URLSearchParams();
+	data.append('clientToken', clientToken);
+	data.append('allowCustomCards', lobbyAllowCustomCardsBox.checked.toString());
+	req.send(data.toString());
+});
+
 deckSelectionForm.addEventListener('submit', e => {
 	e.preventDefault();
 	if (selectedDeck == null) return;
+
+	const customCards: {[key: number]: Card} = { };
+	let anyCustomCards = false;
+	for (const number of selectedDeck.cards) {
+		if (number <= CUSTOM_CARD_START) {
+			customCards[number] = cardDatabase.get(number);
+			anyCustomCards = true;
+		}
+	}
 
 	let req = new XMLHttpRequest();
 	req.open('POST', `${config.apiBaseUrl}/games/${currentGame!.id}/chooseDeck`);
@@ -351,6 +373,8 @@ deckSelectionForm.addEventListener('submit', e => {
 	data.append('deckName', selectedDeck.name);
 	data.append('deckCards', selectedDeck.cards.join('+'));
 	data.append('deckSleeves', selectedDeck.sleeves.toString());
+	if (anyCustomCards)
+		data.append('customCards', JSON.stringify(customCards, deckExportJsonReplacer));
 	req.send(data.toString());
 
 	localStorage.setItem('lastDeckName', selectedDeck.name);

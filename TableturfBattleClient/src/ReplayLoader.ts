@@ -184,7 +184,8 @@ class ReplayLoader {
 				turnTimeLimit: null,
 				turnTimeLeft: null,
 				goalWinCount: goalWinCount,
-				allowUpcomingCards: true
+				allowUpcomingCards: true,
+				allowCustomCards: true
 			},
 			me: null,
 			isHost: false,

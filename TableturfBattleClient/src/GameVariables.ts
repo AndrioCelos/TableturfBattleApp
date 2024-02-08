@@ -13,7 +13,9 @@ interface Game {
 	/** The number of game wins needed to win the set, or null if no goal win count is set. */
 	goalWinCount: number | null,
 	/** Whether upcoming cards may be used. */
-	allowUpcomingCards: boolean
+	allowUpcomingCards: boolean,
+	/** Whether custom cards may be used. */
+	allowCustomCards: boolean
 }
 
 /** A UUID used to identify the client. */

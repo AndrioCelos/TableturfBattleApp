@@ -28,6 +28,8 @@ public class Player(Game game, string name, Guid token) {
 	internal Move? Move;
 	[JsonIgnore]
 	internal Move? ProvisionalMove;
+	[JsonIgnore]
+	internal readonly Dictionary<int, int> customCardMap = new();
 
 	public int GamesWon { get; set; }
 

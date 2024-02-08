@@ -26,6 +26,8 @@ internal partial class Program {
 	private const int InactiveGameLimit = 1000;
 	private static readonly TimeSpan InactiveGameTimeout = TimeSpan.FromMinutes(5);
 	internal static readonly char[] DELIMITERS = [',', ' '];
+	internal const int CUSTOM_CARD_START = -10000;
+	internal const int RECEIVED_CUSTOM_CARD_START = -20000;
 
 	private static string? GetClientRootPath() {
 		var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -161,12 +163,19 @@ internal partial class Program {
 					} else
 						clientToken = Guid.NewGuid();
 
-					var allowUpcomingCards = false;
+					bool allowUpcomingCards;
 					if (d.TryGetValue("allowUpcomingCards", out var allowUpcomingCardsString)) {
 						if (!bool.TryParse(allowUpcomingCardsString, out allowUpcomingCards))
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "allowUpcomingCards was invalid."));
 					} else
 						allowUpcomingCards = true;
+
+					bool allowCustomCards;
+					if (d.TryGetValue("allowCustomCards", out var allowCustomCardsString)) {
+						if (!bool.TryParse(allowCustomCardsString, out allowCustomCards))
+							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "allowCustomCards was invalid."));
+					} else
+						allowCustomCards = false;
 
 					StageSelectionRules? stageSelectionRuleFirst = null, stageSelectionRuleAfterWin = null, stageSelectionRuleAfterDraw = null;
 					if (d.TryGetValue("stageSelectionRuleFirst", out var json1)) {
@@ -205,7 +214,7 @@ internal partial class Program {
 					} else
 						spectate = false;
 
-					var game = new Game(maxPlayers) { HostClientToken = clientToken, GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, AllowUpcomingCards = allowUpcomingCards, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
+					var game = new Game(maxPlayers) { HostClientToken = clientToken, GoalWinCount = goalWinCount, TurnTimeLimit = turnTimeLimit, AllowUpcomingCards = allowUpcomingCards, AllowCustomCards = allowCustomCards, StageSelectionRuleFirst = stageSelectionRuleFirst, StageSelectionRuleAfterWin = stageSelectionRuleAfterWin, StageSelectionRuleAfterDraw = stageSelectionRuleAfterDraw, ForceSameDeckAfterDraw = forceSameDeckAfterDraw };
 					if (!spectate)
 						game.TryAddPlayer(new(game, name, clientToken), out _, out _);
 					games.Add(game.ID, game);
@@ -351,6 +360,14 @@ internal partial class Program {
 											game.AllowUpcomingCards = allowUpcomingCards;
 									}
 
+									if (d.TryGetValue("allowCustomCards", out var allowCustomCardsString)) {
+										if (!bool.TryParse(allowCustomCardsString, out var allowCustomCards)) {
+											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "Invalid allowCustomCards."));
+											return;
+										} else
+											game.AllowCustomCards = allowCustomCards;
+									}
+
 									game.SendEvent("settingsChange", game, false);
 								}
 								break;
@@ -431,6 +448,42 @@ internal partial class Program {
 											SetErrorResponse(e.Response, new(HttpStatusCode.BadRequest, "InvalidDeckCards", "Missing deck cards."));
 											return;
 										}
+
+										Dictionary<int, UserCustomCard>? userCustomCards = null;
+										List<KeyValuePair<int, Card>>? customCardsToAdd = null;
+										if (d.TryGetValue("customCards", out var customCardsString)) {
+											if (!game.AllowCustomCards) {
+												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "CustomCardsNotAllowed", "Custom cards cannot be used in this game."));
+												return;
+											}
+											userCustomCards = JsonUtils.Deserialise<Dictionary<int, UserCustomCard>>(customCardsString);
+
+											// Validate custom cards.
+											if (userCustomCards is null || userCustomCards.Count > 15 || userCustomCards.Keys.Any(k => k is not (<= -10000 and >= short.MinValue))) {
+												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidCustomCards", "Invalid custom cards."));
+												return;
+											}
+
+											customCardsToAdd = new(userCustomCards.Count);
+											foreach (var (k, v) in userCustomCards) {
+												if (!v.CheckGrid(out var hasSpecialSpace, out var size)) {
+													SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidCustomCards", $"Custom card {k} is invalid."));
+													return;
+												}
+												// Allow resending the same custom card, but not a different custom card with the same key.
+												if (player.customCardMap.TryGetValue(k, out var existingCustomCardNumber)) {
+													if (!v.Equals(game.customCards[RECEIVED_CUSTOM_CARD_START - existingCustomCardNumber])) {
+														SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidCustomCards", $"Cannot reuse custom card number {k}."));
+														return;
+													}
+												} else {
+													// TODO: Consolidate identical custom cards brought by different players.
+													var card = v.ToCard(RECEIVED_CUSTOM_CARD_START - (game.customCards.Count + customCardsToAdd.Count), k, hasSpecialSpace && size >= 8 ? 3 : null);
+													customCardsToAdd.Add(new(k, card));
+												}
+											}
+										}
+
 										var array = deckString.Split([',', '+', ' '], 15);
 										if (array.Length != 15) {
 											SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
@@ -451,7 +504,7 @@ internal partial class Program {
 										}
 										var cards = new int[15];
 										for (var i = 0; i < 15; i++) {
-											if (!int.TryParse(array[i], out var cardNumber) || !CardDatabase.IsValidCardNumber(cardNumber)) {
+											if (!int.TryParse(array[i], out var cardNumber) || (!CardDatabase.IsValidCardNumber(cardNumber) && (userCustomCards == null || !userCustomCards.ContainsKey(cardNumber)))) {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Invalid deck list."));
 												return;
 											}
@@ -459,13 +512,20 @@ internal partial class Program {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidDeckCards", "Deck cannot have duplicates."));
 												return;
 											}
-											if (!game.AllowUpcomingCards && cardNumber < 0 && CardDatabase.GetCard(cardNumber).Number < 0) {
+											if (!game.AllowUpcomingCards && cardNumber is < 0 and > CUSTOM_CARD_START && CardDatabase.GetCard(cardNumber).Number < 0) {
 												SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "ForbiddenDeck", "Upcoming cards cannot be used in this game."));
 												return;
 											}
-											cards[i] = cardNumber;
+											// Translate custom card numbers from the player to game-scoped card numbers.
+											cards[i] = player.customCardMap.TryGetValue(cardNumber, out var n) ? n : cardNumber <= CUSTOM_CARD_START && customCardsToAdd?.FirstOrDefault(e => e.Key == cardNumber).Value is Card customCard ? customCard.Number : cardNumber;
 										}
 
+										if (customCardsToAdd != null) {
+											foreach (var (userKey, card) in customCardsToAdd) {
+												player.customCardMap.Add(userKey, card.Number);
+												game.customCards.Add(card);
+											}
+										}
 										player.CurrentGameData.Deck = game.GetDeck(deckName, deckSleeves, cards, upgrades ?? Enumerable.Repeat(0, 15));
 										e.Response.StatusCode = (int) HttpStatusCode.NoContent;
 										game.SendPlayerReadyEvent(playerIndex, false);

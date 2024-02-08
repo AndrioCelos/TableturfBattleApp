@@ -118,6 +118,7 @@ function onGameSettingsChange() {
 	if (lobbyTimeLimitBox.value != currentGame.game.turnTimeLimit?.toString() ?? '')
 		lobbyTimeLimitBox.value = currentGame.game.turnTimeLimit?.toString() ?? '';
 	lobbyAllowUpcomingCardsBox.checked = currentGame.game.allowUpcomingCards;
+	lobbyAllowCustomCardsBox.checked = currentGame.game.allowCustomCards;
 }
 
 function onGameStateChange(game: any, playerData: PlayerData | null) {
@@ -281,7 +282,8 @@ function setupWebSocket(gameID: string) {
 							turnTimeLimit: payload.data.turnTimeLimit,
 							turnTimeLeft: payload.data.turnTimeLeft,
 							goalWinCount: payload.data.goalWinCount,
-							allowUpcomingCards: payload.data.allowUpcomingCards
+							allowUpcomingCards: payload.data.allowUpcomingCards,
+							allowCustomCards: payload.data.allowCustomCards
 						},
 						me: payload.playerData,
 						isHost: payload.isHost,
