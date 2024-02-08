@@ -16,6 +16,7 @@ class ReplayLoader {
 
 		const version = this.readUint8();
 		const players: Player[] = [ ];
+		const customCards: Card[] = [ ];
 		let goalWinCount = null;
 		switch (version) {
 			case 1: {
@@ -35,7 +36,7 @@ class ReplayLoader {
 					const initialDrawOrder = [ ];
 					const drawOrder = [ ];
 					for (let j = 0; j < 15; j++) {
-						cards.push(this.readCard());
+						cards.push(this.readCard(version, customCards));
 					}
 					for (let j = 0; j < 2; j++) {
 						const n = this.readUint8();
@@ -69,7 +70,7 @@ class ReplayLoader {
 					playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15).fill(1)), initialDrawOrder, drawOrder, won: false });
 				}
 
-				const turns = this.readTurns(numPlayers);
+				const turns = this.readTurns(numPlayers, version, customCards);
 				currentReplay.games.push({ stage, playerData, turns });
 				break;
 			}
@@ -91,7 +92,7 @@ class ReplayLoader {
 						const drawOrder = [ ];
 						let won = false;
 						for (let j = 0; j < 15; j++) {
-							cards.push(this.readCard());
+							cards.push(this.readCard(version, customCards));
 						}
 						for (let j = 0; j < 2; j++) {
 							const n = this.readUint8();
@@ -108,12 +109,12 @@ class ReplayLoader {
 						}
 						playerData.push({ deck: new Deck("Deck", 0, cards, new Array(15).fill(1)), initialDrawOrder, drawOrder, won });
 					}
-					const turns = this.readTurns(numPlayers);
+					const turns = this.readTurns(numPlayers, version, customCards);
 					currentReplay.games.push({ stage, playerData, turns });
 				}
 				break;
 			}
-			case 3: {
+			case 3: case 4: {
 				const n = this.readUint8();
 				const numPlayers = n & 0x0F;
 				goalWinCount = n >> 4;
@@ -122,6 +123,33 @@ class ReplayLoader {
 				currentReplay = { gameNumber: 0, decks: [ ], games: [ ], turns: [ ], placements: [ ], watchingPlayer: 0 };
 				this.readPlayers(numPlayers, players);
 
+				// Custom cards
+				if (version >= 4) {
+					const numCustomCards = this.read7BitEncodedInt();
+					for (let i = 0; i < numCustomCards; i++) {
+						const name = this.readString();
+						const rarity = <Rarity> this.readUint8();
+						const specialCost = this.readUint8();
+						const textScale = this.readFloat();
+						const inkColour1 = this.readColour();
+						const inkColour2 = this.readColour();
+						const grid = [ ];
+						for (let x = 0; x < 8; x++) {
+							const row = [ ];
+							for (let y = 0; y < 8; y += 4) {
+								const b = this.readUint8();
+								row.push(<Space> ((b & 0x03) << 2));
+								row.push(<Space> (b & 0x0c));
+								row.push(<Space> ((b & 0x30) >> 2));
+								row.push(<Space> ((b & 0xc0) >> 4));
+							}
+							grid.push(row);
+						}
+						const card = new Card(RECEIVED_CUSTOM_CARD_START - i, name, textScale, inkColour1, inkColour2, rarity, specialCost, grid);
+						customCards.push(card);
+					}
+				}
+
 				// Decks
 				const decks = [ ];
 				const numDecks = this.read7BitEncodedInt();
@@ -129,7 +157,7 @@ class ReplayLoader {
 					const name = this.readString();
 					const sleeves = this.readUint8();
 					const cards = [ ];
-					for (let i = 0; i < 15; i++) cards.push(this.readCard());
+					for (let i = 0; i < 15; i++) cards.push(this.readCard(version, customCards));
 					const upgrades = [ ];
 					for (let i = 0; i < 4; i++) {
 						const b = this.readUint8();
@@ -165,7 +193,7 @@ class ReplayLoader {
 						}
 						playerData.push({ deck, initialDrawOrder, drawOrder, won });
 					}
-					const turns = this.readTurns(numPlayers);
+					const turns = this.readTurns(numPlayers, version, customCards);
 					currentReplay.games.push({ stage, playerData, turns });
 				}
 				break;
@@ -199,6 +227,16 @@ class ReplayLoader {
 
 	private readUint8() { return this.dataView.getUint8(this.pos++); }
 	private readInt8() { return this.dataView.getInt8(this.pos++); }
+	private readInt16() {
+		const v = this.dataView.getInt16(this.pos, true);
+		this.pos += 2;
+		return v;
+	}
+	private readFloat() {
+		const v = this.dataView.getFloat32(this.pos, true);
+		this.pos += 4;
+		return v;
+	}
 	private readColour(): Colour { return { r: this.readUint8(), g: this.readUint8(), b: this.readUint8() }; }
 	private readString(length?: number) {
 		length ??= this.read7BitEncodedInt();
@@ -244,12 +282,12 @@ class ReplayLoader {
 		}
 	}
 
-	private readTurns(numPlayers: number) {
+	private readTurns(numPlayers: number, version: number, customCards: Card[]) {
 		const turns = [ ];
 		for (let i = 0; i < 12; i++) {
 			const turn = [ ];
 			for (let j = 0; j < numPlayers; j++) {
-				const card = this.readCard();
+				const card = this.readCard(version, customCards);
 				const b = this.readUint8();
 				const x = this.readInt8();
 				const y = this.readInt8();
@@ -265,8 +303,13 @@ class ReplayLoader {
 		return turns;
 	}
 
-	private readCard() {
-		const num = this.readUint8();
-		return cardDatabase.get(num > cardDatabase.lastOfficialCardNumber ? num - 256 : num);
+	private readCard(version: number, customCards: Card[]) {
+		if (version >= 4) {
+			const num = this.readInt16();
+			return num <= RECEIVED_CUSTOM_CARD_START ? customCards[RECEIVED_CUSTOM_CARD_START - num] : cardDatabase.get(num);
+		} else {
+			const num = this.readUint8();
+			return cardDatabase.get(num > cardDatabase.lastOfficialCardNumber ? num - 256 : num);
+		}
 	}
 }

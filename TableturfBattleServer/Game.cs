@@ -643,7 +643,7 @@ public class Game(int maxPlayers) {
 	}
 
 	public void WriteReplayData(Stream stream) {
-		const int VERSION = 3;
+		const int VERSION = 4;
 
 		if (this.State < GameState.SetEnded)
 			throw new InvalidOperationException("Can't save a replay until the set has ended.");
@@ -669,13 +669,32 @@ public class Game(int maxPlayers) {
 			writer.Write(nameBytes);
 		}
 
+		// Custom cards
+		writer.Write7BitEncodedInt(this.customCards.Count);
+		foreach (var card in this.customCards) {
+			writer.Write(card.Name);
+			writer.Write((byte) card.Rarity);
+			writer.Write((byte) card.SpecialCost);
+			writer.Write(card.TextScale);
+			writer.Write((byte) card.InkColour1.GetValueOrDefault().R);
+			writer.Write((byte) card.InkColour1.GetValueOrDefault().G);
+			writer.Write((byte) card.InkColour1.GetValueOrDefault().B);
+			writer.Write((byte) card.InkColour2.GetValueOrDefault().R);
+			writer.Write((byte) card.InkColour2.GetValueOrDefault().G);
+			writer.Write((byte) card.InkColour2.GetValueOrDefault().B);
+			for (var x = 0; x < 8; x++) {
+				for (var y = 0; y < 8; y += 4)
+					writer.Write((byte) ((int) card.GetSpace(x, y, 0) >> 2 | (int) card.GetSpace(x, y + 1, 0) | (int) card.GetSpace(x, y + 2, 0) << 2 | (int) card.GetSpace(x, y + 3, 0) << 4));
+			}
+		}
+
 		// Deck cache
 		writer.Write7BitEncodedInt(this.deckCache.Count);
 		foreach (var deck in this.deckCache) {
 			writer.Write(deck.Name);
 			writer.Write((byte) deck.Sleeves);
 			foreach (var card in deck.Cards)
-				writer.Write((byte) card.Number);
+				writer.Write((short) card.Number);
 
 			int upgradesPacked = 0;
 			for (var i = 0; i < 15; i++)
@@ -699,7 +718,7 @@ public class Game(int maxPlayers) {
 			for (int j = 0; j < 12; j++) {
 				foreach (var player in this.Players) {
 					var move = player.Games[i].turns[j];
-					writer.Write((byte) move.CardNumber);
+					writer.Write((short) move.CardNumber);
 					writer.Write((byte) ((move.Rotation & 3) | (move.IsPass ? 0x80 : 0) | (move.IsSpecialAttack ? 0x40 : 0) | (move.IsTimeout ? 0x20 : 0)));
 					writer.Write((sbyte) move.X);
 					writer.Write((sbyte) move.Y);
