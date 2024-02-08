@@ -478,7 +478,7 @@ internal partial class Program {
 													}
 												} else {
 													// TODO: Consolidate identical custom cards brought by different players.
-													var card = v.ToCard(RECEIVED_CUSTOM_CARD_START - (game.customCards.Count + customCardsToAdd.Count), k, hasSpecialSpace && size >= 8 ? 3 : null);
+													var card = v.ToCard(RECEIVED_CUSTOM_CARD_START - (game.customCards.Count + customCardsToAdd.Count), k, !hasSpecialSpace && size >= 8 ? 3 : null);
 													customCardsToAdd.Add(new(k, card));
 												}
 											}
