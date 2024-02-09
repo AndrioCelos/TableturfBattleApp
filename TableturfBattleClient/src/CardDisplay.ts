@@ -104,7 +104,7 @@ class CardDisplay implements ICardElement {
 				text1.setAttribute('fill', 'url("#freshGradient")');
 				break;
 		}
-		if (card.line1 && card.line2) {
+		if (card.line1 != null && card.line2 != null) {
 			const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 			tspan1.setAttribute('y', '122');
 			tspan1.appendChild(document.createTextNode(card.line1));

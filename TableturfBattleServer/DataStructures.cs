@@ -24,7 +24,7 @@ public class PlayerData(int playerIndex, Card[]? hand, Deck? deck, Move? move, L
 	public PlayerData(int playerIndex, Player player) : this(playerIndex, player.Hand, player.CurrentGameData.Deck, player.Move, player.CardsUsed, player.StageSelectionPrompt) { }
 }
 
-public record UserCustomCard(string Name, string? Line1, string? Line2, float TextScale, Colour InkColour1, Colour InkColour2, Rarity Rarity, Space[,] Grid) {
+public record UserCustomCard(string Name, string? Line1, string? Line2, Colour InkColour1, Colour InkColour2, Rarity Rarity, Space[,] Grid) {
 	public bool CheckGrid(out bool hasSpecialSpace, out int size) {
 		size = 0;
 		hasSpecialSpace = false;
@@ -61,5 +61,5 @@ public record UserCustomCard(string Name, string? Line1, string? Line2, float Te
 		return true;
 	}
 
-	public Card ToCard(int number, int altNumber, int? specialCost) => new(number, altNumber, this.Name, this.Rarity, specialCost, this.TextScale, null, this.Grid) { InkColour1 = this.InkColour1, InkColour2 = this.InkColour2 };
+	public Card ToCard(int number, int altNumber, int? specialCost) => new(number, altNumber, this.Line2 != null ? $"{this.Line1}\n{this.Line2}" : this.Name, this.Rarity, specialCost, null, this.Grid) { InkColour1 = this.InkColour1, InkColour2 = this.InkColour2 };
 }

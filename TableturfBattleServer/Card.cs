@@ -11,31 +11,30 @@ public class Card {
 	public int Size { get; }
 	public int? IsVariantOf { get; init; }
 
-	public string? Line1 { get; init; }
+	public string Line1 { get; init; }
 	public string? Line2 { get; init; }
 	public string? ArtFileName { get; init; }
-	public float TextScale { get; init; }
 	public Colour? InkColour1 { get; init; }
 	public Colour? InkColour2 { get; init; }
 
 	[JsonProperty]
 	private readonly Space[,] grid;
 
-	internal Card(int number, string name, Rarity rarity, float textScale, string? artFileName, Space[,] grid) : this(number, null, name, rarity, null, textScale, artFileName, grid) { }
-	internal Card(int number, int? altNumber, string name, Rarity rarity, float textScale, string? artFileName, Space[,] grid) : this(number, altNumber, name, rarity, null, textScale, artFileName, grid) { }
-	internal Card(int number, string name, Rarity rarity, int? specialCost, float textScale, string? artFileName, Space[,] grid) : this(number, null, name, rarity, specialCost, textScale, artFileName, grid) { }
-	internal Card(int number, int? altNumber, string name, Rarity rarity, int? specialCost, float textScale, string? artFileName, Space[,] grid) {
+	internal Card(int number, string name, Rarity rarity, string? artFileName, Space[,] grid) : this(number, null, name, rarity, null, artFileName, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, string? artFileName, Space[,] grid) : this(number, altNumber, name, rarity, null, artFileName, grid) { }
+	internal Card(int number, string name, Rarity rarity, int? specialCost, string? artFileName, Space[,] grid) : this(number, null, name, rarity, specialCost, artFileName, grid) { }
+	internal Card(int number, int? altNumber, string name, Rarity rarity, int? specialCost, string? artFileName, Space[,] grid) {
 		this.Number = number;
 		this.AltNumber = altNumber;
 		this.Rarity = rarity;
-		this.TextScale = textScale;
 		this.ArtFileName = artFileName;
 		this.grid = grid ?? throw new ArgumentNullException(nameof(grid));
 
 		var pos = (name ?? throw new ArgumentNullException(nameof(name))).IndexOf('\n');
-		if (pos < 0)
+		if (pos < 0) {
 			this.Name = name;
-		else {
+			this.Line1 = name;
+		} else {
 			this.Name = name[pos - 1] == '-' ? name.Remove(pos, 1) : name.Replace('\n', ' ');
 			this.Line1 = name[0..pos];
 			this.Line2 = name[(pos + 1)..];

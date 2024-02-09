@@ -672,10 +672,10 @@ public class Game(int maxPlayers) {
 		// Custom cards
 		writer.Write7BitEncodedInt(this.customCards.Count);
 		foreach (var card in this.customCards) {
-			writer.Write(card.Name);
+			writer.Write(card.Line1 ?? card.Name);
+			writer.Write(card.Line2 ?? "");
 			writer.Write((byte) card.Rarity);
 			writer.Write((byte) card.SpecialCost);
-			writer.Write(card.TextScale);
 			writer.Write((byte) card.InkColour1.GetValueOrDefault().R);
 			writer.Write((byte) card.InkColour1.GetValueOrDefault().G);
 			writer.Write((byte) card.InkColour1.GetValueOrDefault().B);

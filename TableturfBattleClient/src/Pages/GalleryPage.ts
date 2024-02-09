@@ -93,6 +93,7 @@ function openGalleryCardView(card: Card) {
 	galleryCardEditorSubmitButton.hidden = true;
 	galleryCardEditorCancelButton.innerText = 'Close';
 
+	galleryCardEditorName.value = card.line2 == null ? card.name : `${card.line1}\n${card.line2}`;
 	for (let y = 0; y < 8; y++) {
 		for (let x = 0; x < 8; x++) {
 			galleryCardEditorGridButtons[y][x].dataset.state = card.grid[y][x].toString();
@@ -284,22 +285,22 @@ galleryCardEditorSpecialCostDefaultBox.addEventListener('change', () => {
 galleryCardEditorEditButton.addEventListener('click', () => startEditingCustomCard());
 
 galleryNewCustomCardButton.addEventListener('click', () => {
-	const card = new Card(UNSAVED_CUSTOM_CARD_INDEX, 'New card', 1, Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2, Rarity.Common, 1, Array.from({ length: 8 }, () => [ 0, 0, 0, 0, 0, 0, 0, 0]) );
+	const card = new Card(UNSAVED_CUSTOM_CARD_INDEX, 'New card', 'New card', null, Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2, Rarity.Common, 1, Array.from({ length: 8 }, () => [ 0, 0, 0, 0, 0, 0, 0, 0]) );
 	openGalleryCardView(card);
 	startEditingCustomCard();
 });
 
 galleryCardEditorSubmitButton.addEventListener('click', () => {
-	const card = galleryCardDisplay!.card;
-	card.grid = Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!)));
-	card.name = galleryCardEditorName.value;
-	card.size = customCardSize;
-	card.specialCost = customCardSpecialCost;
-	if (card.number == UNSAVED_CUSTOM_CARD_INDEX) {
-		card.number = CUSTOM_CARD_START - cardDatabase.customCards.length;
+	const isNew = galleryCardDisplay!.card.number == UNSAVED_CUSTOM_CARD_INDEX;
+	const number = isNew ? CUSTOM_CARD_START - cardDatabase.customCards.length : galleryCardDisplay!.card.number;
+	const lines = Card.wrapName(galleryCardEditorName.value);
+	const card = new Card(number, galleryCardEditorName.value.replaceAll('\n', ' '), lines[0], lines[1], Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2,
+		Rarity.Common, customCardSpecialCost, Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!))));
+	if (isNew) {
 		cardDatabase.customCards.push(card);
 		addCardToGallery(card);
 	} else {
+		cardDatabase.customCards[CUSTOM_CARD_START - number] = card;
 		updateCardInGallery(card);
 	}
 	cardDatabase.customCardsModified = true;

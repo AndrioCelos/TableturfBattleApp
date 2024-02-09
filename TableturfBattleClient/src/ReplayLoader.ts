@@ -127,10 +127,13 @@ class ReplayLoader {
 				if (version >= 4) {
 					const numCustomCards = this.read7BitEncodedInt();
 					for (let i = 0; i < numCustomCards; i++) {
-						const name = this.readString();
-						const rarity = <Rarity> this.readUint8();
+						const line1 = this.readString();
+						const line2 = this.readString();
+						const name = line2 != '' ? `${line1} ${line2}` : line1;
+						const b = this.readUint8();
+						const rarity = <Rarity> b & 0x7F;
+						const wordWrap = (b & 0x80) != 0;
 						const specialCost = this.readUint8();
-						const textScale = this.readFloat();
 						const inkColour1 = this.readColour();
 						const inkColour2 = this.readColour();
 						const grid = [ ];
@@ -145,7 +148,7 @@ class ReplayLoader {
 							}
 							grid.push(row);
 						}
-						const card = new Card(RECEIVED_CUSTOM_CARD_START - i, name, textScale, inkColour1, inkColour2, rarity, specialCost, grid);
+						const card = new Card(RECEIVED_CUSTOM_CARD_START - i, name, line1, line2 == '' ? null : line2, inkColour1, inkColour2, rarity, specialCost, grid);
 						customCards.push(card);
 					}
 				}
@@ -230,11 +233,6 @@ class ReplayLoader {
 	private readInt16() {
 		const v = this.dataView.getInt16(this.pos, true);
 		this.pos += 2;
-		return v;
-	}
-	private readFloat() {
-		const v = this.dataView.getFloat32(this.pos, true);
-		this.pos += 4;
 		return v;
 	}
 	private readColour(): Colour { return { r: this.readUint8(), g: this.readUint8(), b: this.readUint8() }; }

@@ -429,12 +429,16 @@ function deckExportJsonReplacer(key: string, value: any) {
 		case 'imageUrl':
 		case 'specialCost':
 		case 'size':
+		case 'textScale':
 		case 'isVariantOf':
 		case 'minX':
 		case 'minY':
 		case 'maxX':
 		case 'maxY':
 			return undefined;
+		case 'line1':
+		case 'line2':
+			return value ?? undefined;  // Omit null values.
 		default:
 			return value;
 	}

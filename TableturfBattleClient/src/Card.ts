@@ -1,9 +1,9 @@
 class Card {
 	number: number;
 	altNumber?: number | null;
-	name: string;
-	line1?: string | null;
-	line2?: string | null;
+	readonly name: string;
+	readonly line1: string | null;
+	readonly line2: string | null;
 	artFileName?: string | null;
 	imageUrl?: string;
 	textScale: number;
@@ -22,10 +22,49 @@ class Card {
 
 	static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
 	static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
-	constructor(number: number, name: string, textScale: number, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
+	private static textScaleCalculationContext: OffscreenCanvasRenderingContext2D | null = null;
+
+	private static getTextScaleCalculationContext() {
+		if (this.textScaleCalculationContext == null) {
+			const canvas = new OffscreenCanvas(256, 256);
+			this.textScaleCalculationContext = canvas.getContext("2d")!;
+			this.textScaleCalculationContext.font = 'bold 72pt "Splatoon 1"';
+		}
+		return this.textScaleCalculationContext;
+	}
+
+	static wrapName(name: string): [line1: string | null, line2: string | null] {
+		// If the user has entered manual line breaks, use those instead of auto-wrapping.
+		const pos = name.indexOf('\n');
+		if (pos >= 0)
+			return [ name.substring(0, pos), name.substring(pos + 1) ];
+
+		const ctx = Card.getTextScaleCalculationContext();
+		const line1Width = ctx.measureText(name).width;
+		if (line1Width <= 700)
+			return [ null, null ];
+
+		// We're going to break the line.
+		let bestPos = 0; let bestWidth = Infinity;
+		for (const m of name.matchAll(/[-\s]/g)) {
+			const pos = m.index! + 1;
+			const width = Math.max(ctx.measureText(name.substring(0, m[0] == ' ' ? pos - 1 : pos)).width, ctx.measureText(name.substring(pos)).width);
+			if (width < bestWidth) {
+				bestPos = pos;
+				bestWidth = width;
+			}
+		}
+
+		return bestPos > 0
+			? [ name.substring(0, bestPos).trimEnd(), name.substring(bestPos) ]
+			: [ null, null ];
+	}
+
+	constructor(number: number, name: string, line1: string | null, line2: string | null, inkColour1: Colour, inkColour2: Colour, rarity: Rarity, specialCost: number, grid: Space[][]) {
 		this.number = number;
 		this.name = name;
-		this.textScale = textScale;
+		this.line1 = line1;
+		this.line2 = line2;
 		this.inkColour1 = inkColour1;
 		this.inkColour2 = inkColour2;
 		this.rarity = rarity;
@@ -62,14 +101,18 @@ class Card {
 			if (!hasSpecialSpace && this.specialCost > 3)
 				this.specialCost = 3;
 		}
+
+		const ctx = Card.getTextScaleCalculationContext();
+		const line1Width = ctx.measureText(line1 ?? name).width;
+		const line2Width = line2 != null ? ctx.measureText(line2).width : 0;
+		const width = Math.max(line1Width, line2Width);
+		this.textScale = width <= 700 ? 1 : 700 / width;
 	}
 
 	static fromJson(obj: any) {
 		if (cardDatabase.cards && cardDatabase.isValidCardNumber(obj.number)) return cardDatabase.get(obj.number);
-		const card = new Card(obj.number, obj.name, obj.textScale ?? 1, obj.inkColour1 ?? this.DEFAULT_INK_COLOUR_1, obj.inkColour2 ?? this.DEFAULT_INK_COLOUR_2, obj.rarity, obj.specialCost, obj.grid);
+		const card = new Card(obj.number, obj.name, obj.line1, obj.line2, obj.inkColour1 ?? this.DEFAULT_INK_COLOUR_1, obj.inkColour2 ?? this.DEFAULT_INK_COLOUR_2, obj.rarity, obj.specialCost, obj.grid);
 		card.altNumber = obj.altNumber ?? null;
-		card.line1 = obj.line1 ?? null;
-		card.line2 = obj.line2 ?? null;
 		card.artFileName = obj.artFileName ?? null;
 		card.imageUrl = obj.imageUrl ?? null;
 		card.isVariantOf = obj.isVariantOf ?? null;
