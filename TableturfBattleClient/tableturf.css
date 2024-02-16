@@ -1862,6 +1862,15 @@ button.dragging {
 	font-size: calc(min(75vh, 100vw) * 0.08);
 }
 
+#galleryCardEditorProperties {
+	position: absolute;
+	left: 5%;
+	top: 3%;
+	font: 33% 'Splatoon 2', sans-serif;
+	background: grey;
+	padding: 0 1em;
+}
+
 #galleryCardEditorName {
 	position: absolute;
 	left: 5%;

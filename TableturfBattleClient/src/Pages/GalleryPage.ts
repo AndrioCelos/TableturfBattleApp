@@ -10,6 +10,10 @@ const bitsToCompleteField = document.getElementById('bitsToCompleteField') as HT
 let galleryCardDisplay: CardDisplay | null = null;
 let gallerySelectedCardDisplay: CardDisplay | null = null;
 const galleryCardEditor = document.getElementById('galleryCardEditor') as HTMLButtonElement;
+const galleryCardEditorRarityBox = document.getElementById('galleryCardEditorRarityBox') as HTMLSelectElement;
+const galleryCardEditorColour1 = document.getElementById('galleryCardEditorColour1') as HTMLInputElement;
+const galleryCardEditorColour2 = document.getElementById('galleryCardEditorColour2') as HTMLInputElement;
+const galleryCardEditorColourPresetBox = document.getElementById('galleryCardEditorColourPresetBox') as HTMLSelectElement;
 const galleryCardEditorName = document.getElementById('galleryCardEditorName') as HTMLTextAreaElement;
 const galleryCardEditorGridButtons: HTMLButtonElement[][] = [ ];
 const galleryCardEditorSpecialCostButtons: HTMLButtonElement[] = [ ];
@@ -20,6 +24,12 @@ const galleryCardEditorSubmitButton = document.getElementById('galleryCardEditor
 const galleryCardEditorDeleteButton = document.getElementById('galleryCardEditorDeleteButton') as HTMLButtonElement;
 const galleryCardEditorCancelButton = document.getElementById('galleryCardEditorCancelButton') as HTMLButtonElement;
 const galleryCardEditorDeleteYesButton = document.getElementById('galleryCardEditorDeleteYesButton') as HTMLButtonElement;
+
+const colourPresets: {[key: string]: [ Colour, Colour ]} = {
+	"Default": [ Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2 ],
+	"Octarian": [ { r: 166, g: 105, b: 169 }, { r: 121, g: 111, b: 174 } ],
+	"Salmonid": [ { r: 84, g: 142, b: 122 }, { r: 193, g: 111, b: 98 } ],
+};
 
 const ownedCards: {[key: number]: number} = { 6: 0, 34: 0, 159: 0, 13: 0, 45: 0, 137: 0, 22: 0, 52: 0, 141: 0, 28: 0, 55: 0, 103: 0, 40: 0, 56: 0, 92: 0 };
 let lastGridButton: HTMLButtonElement | null = null;
@@ -93,6 +103,11 @@ function openGalleryCardView(card: Card) {
 	galleryCardEditorSubmitButton.hidden = true;
 	galleryCardEditorCancelButton.innerText = 'Close';
 
+	galleryCardEditorRarityBox.value = card.rarity.toString();
+	galleryCardEditorColour1.value = `#${card.inkColour1.r.toString(16).padStart(2, '0')}${card.inkColour1.g.toString(16).padStart(2, '0')}${card.inkColour1.b.toString(16).padStart(2, '0')}`;
+	galleryCardEditorColour2.value = `#${card.inkColour2.r.toString(16).padStart(2, '0')}${card.inkColour2.g.toString(16).padStart(2, '0')}${card.inkColour2.b.toString(16).padStart(2, '0')}`;
+	updateSelectedPreset([card.inkColour1, card.inkColour2]);
+
 	galleryCardEditorName.value = card.line2 == null ? card.name : `${card.line1}\n${card.line2}`;
 	for (let y = 0; y < 8; y++) {
 		for (let x = 0; x < 8; x++) {
@@ -102,6 +117,18 @@ function openGalleryCardView(card: Card) {
 	updateCustomCardSize();
 
 	galleryCardDialog.showModal();
+}
+
+function updateSelectedPreset(selectedColours: Colour[]) {
+	for (const key in colourPresets) {
+		const colours = colourPresets[key];
+		if (selectedColours[0].r == colours[0].r && selectedColours[0].g == colours[0].g && selectedColours[0].b == colours[0].b
+			&& selectedColours[1].r == colours[1].r && selectedColours[1].g == colours[1].g && selectedColours[1].b == colours[1].b) {
+			galleryCardEditorColourPresetBox.value = key;
+			return;
+		}
+	}
+	galleryCardEditorColourPresetBox.value = 'Custom';
 }
 
 function startEditingCustomCard() {
@@ -157,6 +184,23 @@ function updateBitsToComplete() {
 }
 
 {
+	for (var i = 0; ; i++) {
+		if (!(i in Rarity)) break;
+		const option = document.createElement('option');
+		option.value = i.toString();
+		option.innerText = Rarity[i];
+		galleryCardEditorRarityBox.appendChild(option);
+	}
+
+	for (const k in colourPresets) {
+		const option = document.createElement('option');
+		option.innerText = k;
+		galleryCardEditorColourPresetBox.appendChild(option);
+	}
+	const optionCustom = document.createElement('option');
+	optionCustom.innerText = 'Custom';
+	galleryCardEditorColourPresetBox.appendChild(optionCustom);
+
 	for (let x = 0; x < 8; x++) {
 		const row = [ ];
 		for (let y = 0; y < 8; y++) {
@@ -277,6 +321,46 @@ function updateCustomCardSpecialCost() {
 	}
 }
 
+galleryCardEditorRarityBox.addEventListener('change', () => {
+	const display = galleryCardDisplay!;
+	display.element.classList.remove('common');
+	display.element.classList.remove('rare');
+	display.element.classList.remove('fresh');
+	display.element.classList.add(Rarity[parseInt(galleryCardEditorRarityBox.value)].toLowerCase());
+
+	const sizeImage = <SVGImageElement> display.svg.getElementsByClassName('cardSizeBackground')[0];
+	sizeImage.setAttribute('href', `assets/external/Game Assets/CardCost_0${galleryCardEditorRarityBox.value}.png`);
+
+	const backgroundImage = <SVGImageElement> display.svg.getElementsByClassName('cardDisplayBackground')[0];
+	backgroundImage.setAttribute('href', `assets/CardBackground-${galleryCardEditorRarityBox.value}-1.webp`);
+});
+
+galleryCardEditorColour1.addEventListener('change', galleryCardEditorColour_change);
+galleryCardEditorColour2.addEventListener('change', galleryCardEditorColour_change);
+
+function galleryCardEditorColour_change() {
+	const display = galleryCardDisplay!;
+	const filters = display.svg.getElementsByClassName('inkFilter');
+	const selectedColours = [];
+
+	for (let i = 0; i < 2; i++) {
+		const value = [galleryCardEditorColour1, galleryCardEditorColour2][i].value;
+		const colour = { r: parseInt(value.substring(1, 3), 16), g: parseInt(value.substring(3, 5), 16), b: parseInt(value.substring(5, 7), 16) };
+		selectedColours.push(colour);
+		filters[i].getElementsByTagName('feColorMatrix')[0].setAttribute('values', `${colour.r / 255} 0 0 0 0 0 ${colour.g / 255} 0 0 0 0 0 ${colour.b / 255} 0 0 0 0 0 0.88 0`)
+	}
+	updateSelectedPreset(selectedColours);
+}
+
+galleryCardEditorColourPresetBox.addEventListener('change', () => {
+	const preset = colourPresets[galleryCardEditorColourPresetBox.value];
+	if (!preset) return;
+
+	galleryCardEditorColour1.value = `#${preset[0].r.toString(16).padStart(2, '0')}${preset[0].g.toString(16).padStart(2, '0')}${preset[0].b.toString(16).padStart(2, '0')}`;
+	galleryCardEditorColour2.value = `#${preset[1].r.toString(16).padStart(2, '0')}${preset[1].g.toString(16).padStart(2, '0')}${preset[1].b.toString(16).padStart(2, '0')}`;
+	galleryCardEditorColour_change();
+});
+
 galleryCardEditorSpecialCostDefaultBox.addEventListener('change', () => {
 	if (galleryCardEditorSpecialCostDefaultBox.checked)
 		updateCustomCardSize();
@@ -291,11 +375,13 @@ galleryNewCustomCardButton.addEventListener('click', () => {
 });
 
 galleryCardEditorSubmitButton.addEventListener('click', () => {
+	function parseColour(value: string) { return { r: parseInt(value.substring(1, 3), 16), g: parseInt(value.substring(3, 5), 16), b: parseInt(value.substring(5, 7), 16) }; }
+
 	const isNew = galleryCardDisplay!.card.number == UNSAVED_CUSTOM_CARD_INDEX;
 	const number = isNew ? CUSTOM_CARD_START - cardDatabase.customCards.length : galleryCardDisplay!.card.number;
 	const lines = Card.wrapName(galleryCardEditorName.value);
-	const card = new Card(number, galleryCardEditorName.value.replaceAll('\n', ' '), lines[0], lines[1], Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2,
-		Rarity.Common, customCardSpecialCost, Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!))));
+	const card = new Card(number, galleryCardEditorName.value.replaceAll('\n', ' '), lines[0], lines[1], parseColour(galleryCardEditorColour1.value), parseColour(galleryCardEditorColour2.value),
+		<Rarity> parseInt(galleryCardEditorRarityBox.value), customCardSpecialCost, Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!))));
 	if (isNew) {
 		cardDatabase.customCards.push(card);
 		addCardToGallery(card);

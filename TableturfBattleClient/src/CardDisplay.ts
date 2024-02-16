@@ -1,12 +1,16 @@
 class CardDisplay implements ICardElement {
 	readonly card: Card;
+	level: number;
 	readonly element: HTMLElement;
 	readonly svg: SVGSVGElement;
 	private readonly sizeElement: SVGTextElement;
 	private readonly specialCostGroup: SVGGElement;
-	private level: number;
+	private idNumber: number;
+
+	private static nextIdNumber = 0;
 
 	constructor(card: Card, level: number, elementType: string = 'div') {
+		this.idNumber = CardDisplay.nextIdNumber++;
 		this.card = card;
 		this.level = level;
 
@@ -28,6 +32,7 @@ class CardDisplay implements ICardElement {
 
 		// Background
 		const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+		image.setAttribute('class', 'cardDisplayBackground');
 		image.setAttribute('href', `assets/CardBackground-${card.rarity}-${level > 0 ? '1' : '0'}.webp`);
 		image.setAttribute('width', '100%');
 		image.setAttribute('height', '100%');
@@ -37,10 +42,10 @@ class CardDisplay implements ICardElement {
 			svg.insertAdjacentHTML('beforeend', `<image href="assets/external/CardInk.webp" width="635" height="885" clip-path="url(#myClip)"/>`);
 		} else {
 			svg.insertAdjacentHTML('beforeend', `
-				<filter id="ink1-${card.number}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour1.r / 255} 0 0 0 0 0 ${card.inkColour1.g / 255} 0 0 0 0 0 ${card.inkColour1.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-1.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink1-${card.number})"/>
-				<filter id="ink2-${card.number}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour2.r / 255} 0 0 0 0 0 ${card.inkColour2.g / 255} 0 0 0 0 0 ${card.inkColour2.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-2.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink2-${card.number})"/>
+				<filter id="ink1-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour1.r / 255} 0 0 0 0 0 ${card.inkColour1.g / 255} 0 0 0 0 0 ${card.inkColour1.b / 255} 0 0 0 0 0 0.88 0"/></filter>
+				<image href="assets/external/CardInk-1.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink1-${this.idNumber})"/>
+				<filter id="ink2-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour2.r / 255} 0 0 0 0 0 ${card.inkColour2.g / 255} 0 0 0 0 0 ${card.inkColour2.b / 255} 0 0 0 0 0 0.88 0"/></filter>
+				<image href="assets/external/CardInk-2.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink2-${this.idNumber})"/>
 			`);
 		}
 
@@ -121,7 +126,7 @@ class CardDisplay implements ICardElement {
 		svg.appendChild(text1);
 
 		// Size
-		svg.insertAdjacentHTML('beforeend', `<image href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='80' height='80' transform='translate(12 798) rotate(-45) scale(1.33)'/>`);
+		svg.insertAdjacentHTML('beforeend', `<image class='cardSizeBackground' href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='80' height='80' transform='translate(12 798) rotate(-45) scale(1.33)'/>`);
 		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87' text-anchor='middle'>${card.size}</text>`);
 		this.sizeElement = svg.lastElementChild as SVGTextElement;
 
