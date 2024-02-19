@@ -115,6 +115,15 @@ class CardDisplay implements ICardElement {
 			tspan1.appendChild(document.createTextNode(card.line1));
 			text1.appendChild(tspan1);
 
+			if (!card.line1.endsWith('-') && !card.line2.startsWith('-')) {
+				// Add a space in the middle, to be included when copying the card name.
+				const tspanBr = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+				tspanBr.setAttribute('x', '50%');
+				tspanBr.setAttribute('y', '169');
+				tspanBr.appendChild(document.createTextNode(' '));
+				text1.appendChild(tspanBr);
+			}
+
 			const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 			tspan2.setAttribute('x', '50%');
 			tspan2.setAttribute('y', '216');
