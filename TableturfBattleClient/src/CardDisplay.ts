@@ -33,7 +33,7 @@ class CardDisplay implements ICardElement {
 		// Background
 		const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
 		image.setAttribute('class', 'cardDisplayBackground');
-		image.setAttribute('href', `assets/CardBackground-${card.rarity}-${level > 0 ? '1' : '0'}.webp`);
+		image.setAttribute('href', `assets/external/CardBackground${card.isCustom ? '-custom' : ''}-${card.rarity}-${level > 0 ? '1' : '0'}.webp`);
 		image.setAttribute('width', '100%');
 		image.setAttribute('height', '100%');
 		svg.appendChild(image);
