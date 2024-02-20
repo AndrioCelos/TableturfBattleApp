@@ -1897,8 +1897,8 @@ button.dragging {
 	position: absolute;
 	left: 20%;
 	right: 20%;
-	top: 30%;
-	bottom: 30%;
+	top: 25%;
+	aspect-ratio: 1;
 	display: grid;
 	grid-template-columns: repeat(8, 1fr);
 	grid-template-rows: repeat(8, 1fr);
@@ -1929,6 +1929,32 @@ button.dragging {
 #galleryCardEditorGrid button[data-state="8"] {
 	border: 1px solid grey;
 	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1);
+}
+
+.galleryCardEditorToolbar {
+	position: absolute;
+	right: 5%;
+	font: 33% 'Splatoon 2', sans-serif;
+	background: grey;
+	padding: 0 0.25em;
+}
+
+.galleryCardEditorToolbar footer {
+	font-size: 60%;
+}
+
+.galleryCardEditorToolbar:nth-last-child(3) { bottom: 18%; }
+.galleryCardEditorToolbar:nth-last-child(2) { bottom: 12%; }
+.galleryCardEditorToolbar:nth-last-child(1) { bottom: 6%; }
+
+#galleryCardEditorImageFile { display: none; }
+
+#galleryCardEditorImageToolbar2 input {
+  width: 3em;	
+}
+
+#galleryCardEditorColourPresetBox {
+	width: 1.8em;
 }
 
 #galleryCardEditorSpecialCost {

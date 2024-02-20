@@ -129,7 +129,7 @@ class Card {
 		return true;
 	}
 
-	get isCustom() { return this.number <= CUSTOM_CARD_START; }
+	get isCustom() { return this.number <= UNSAVED_CUSTOM_CARD_INDEX; }
 	get isUpcoming() { return this.number < 0 && !this.isCustom; }
 	get isSpecialWeapon() { return this.specialCost == 3 && this.size == 12 };
 

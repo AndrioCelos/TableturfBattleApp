@@ -604,17 +604,25 @@
 			</main>
 			<dialog id="galleryCardDialog">
 				<div id="galleryCardEditor" hidden>
-					<div id="galleryCardEditorProperties">
-						<label for="galleryCardEditorRarityBox">Rarity: <select id="galleryCardEditorRarityBox"></select></label>
+					<textarea type="text" id="galleryCardEditorName" placeholder="Card name"></textarea>
+					<div id="galleryCardEditorGrid"></div>
+					<div id="galleryCardEditorSpecialCost">
+						<label for="galleryCardEditorSpecialCostDefaultBox"><input type="checkbox" id="galleryCardEditorSpecialCostDefaultBox" checked/> Default</label>
+					</div>
+					<div id="galleryCardEditorImageToolbar" class="galleryCardEditorToolbar">
+						<input type="file" id="galleryCardEditorImageFile" accept="image/*" autocomplete="off"/>
+						<button id="galleryCardEditorImageSelectButton">Choose image</button>
+						<button id="galleryCardEditorImageClearButton">Clear</button>
+						<footer>(The image will not be seen by other players.)</footer>
+					</div>
+					<div id="galleryCardEditorImageToolbar2" class="galleryCardEditorToolbar">
 						Colours:
 						<input type="color" id="galleryCardEditorColour2"/>
 						<input type="color" id="galleryCardEditorColour1"/>
 						<select id="galleryCardEditorColourPresetBox"></select>
 					</div>
-					<textarea type="text" id="galleryCardEditorName" placeholder="Card name"></textarea>
-					<div id="galleryCardEditorGrid"></div>
-					<div id="galleryCardEditorSpecialCost">
-						<label for="galleryCardEditorSpecialCostDefaultBox"><input type="checkbox" id="galleryCardEditorSpecialCostDefaultBox" checked/> Default</label>
+					<div id="galleryCardEditorImageToolbar3" class="galleryCardEditorToolbar">
+						<label for="galleryCardEditorRarityBox">Rarity: <select id="galleryCardEditorRarityBox"></select></label>
 					</div>
 				</div>
 				<form method="dialog">

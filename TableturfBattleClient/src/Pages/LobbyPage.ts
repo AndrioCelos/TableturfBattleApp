@@ -374,13 +374,17 @@ deckSelectionForm.addEventListener('submit', e => {
 	data.append('deckCards', selectedDeck.cards.join('+'));
 	data.append('deckSleeves', selectedDeck.sleeves.toString());
 	if (anyCustomCards)
-		data.append('customCards', JSON.stringify(customCards, deckExportJsonReplacer));
+		data.append('customCards', JSON.stringify(customCards, submitCustomCardsJsonReplacer));
 	req.send(data.toString());
 
 	localStorage.setItem('lastDeckName', selectedDeck.name);
 	deckSelectionFormLoadingSection.hidden = false;
 	lobbyDeckSubmitButton.disabled = true;
 });
+
+function submitCustomCardsJsonReplacer(key: string, value: any) {
+	return key == 'imageUrl' ? undefined : deckExportJsonReplacer(key, value);
+}
 
 stageRandomButton.buttonElement.addEventListener('click', () => {
 	stageRandomButton.checked = true;

@@ -426,7 +426,6 @@ function deckExportJsonReplacer(key: string, value: any) {
 		case 'number':
 		case 'altNumber':
 		case 'artFileName':
-		case 'imageUrl':
 		case 'specialCost':
 		case 'size':
 		case 'textScale':
@@ -439,6 +438,9 @@ function deckExportJsonReplacer(key: string, value: any) {
 		case 'line1':
 		case 'line2':
 			return value ?? undefined;  // Omit null values.
+		case 'imageUrl':
+			// Custom cards store image data here, so include it if it is a data URI.
+			return (<string> value).startsWith('data:') ? value : undefined;
 		default:
 			return value;
 	}

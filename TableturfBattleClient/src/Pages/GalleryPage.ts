@@ -10,6 +10,9 @@ const bitsToCompleteField = document.getElementById('bitsToCompleteField') as HT
 let galleryCardDisplay: CardDisplay | null = null;
 let gallerySelectedCardDisplay: CardDisplay | null = null;
 const galleryCardEditor = document.getElementById('galleryCardEditor') as HTMLButtonElement;
+const galleryCardEditorImageFile = document.getElementById('galleryCardEditorImageFile') as HTMLInputElement;
+const galleryCardEditorImageSelectButton = document.getElementById('galleryCardEditorImageSelectButton') as HTMLButtonElement;
+const galleryCardEditorImageClearButton = document.getElementById('galleryCardEditorImageClearButton') as HTMLButtonElement;
 const galleryCardEditorRarityBox = document.getElementById('galleryCardEditorRarityBox') as HTMLSelectElement;
 const galleryCardEditorColour1 = document.getElementById('galleryCardEditorColour1') as HTMLInputElement;
 const galleryCardEditorColour2 = document.getElementById('galleryCardEditorColour2') as HTMLInputElement;
@@ -321,6 +324,57 @@ function updateCustomCardSpecialCost() {
 	}
 }
 
+galleryCardEditorImageSelectButton.addEventListener('click', () => galleryCardEditorImageFile.click());
+
+galleryCardEditorImageFile.addEventListener('change', async () => {
+	if (galleryCardEditorImageFile.files?.length != 1) return;
+	const originalImage = await createImageBitmap(galleryCardEditorImageFile.files[0]);
+	var blob = <Blob> galleryCardEditorImageFile.files[0];
+	if (originalImage.width > 635 || originalImage.height > 885) {
+		// The entire image will be stored in local storage as a data URI, so downscale larger images.
+		var width = originalImage.width, height = originalImage.height;
+		const ratio1 = 635 / width, ratio2 = 885 / height;
+		if (ratio1 < ratio2) {
+			width = 635;
+			height *= ratio1;
+		} else {
+			height = 885;
+			width *= ratio2;
+		}
+		const canvas = new OffscreenCanvas(width, height);
+		const ctx = canvas.getContext('2d')!;
+		ctx.drawImage(originalImage, 0, 0, width, height);
+		blob = await canvas.convertToBlob({ type: 'image/webp' });
+	}
+
+	// Load image data from the original file or rescaled blob and store it in a data URI.
+	const url = await new Promise<string>((resolve, _) => {
+		const reader = new FileReader();
+		reader.onloadend = () => resolve(<string> reader.result);
+		reader.readAsDataURL(blob);
+	});
+
+	const display = galleryCardDisplay!;
+	var image = (<SVGImageElement | undefined> display.element.getElementsByClassName('cardArt')[0]);
+	if (!image) {
+		const grid = display.svg.getElementsByClassName('cardGrid')[0];
+
+		image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+		image.setAttribute('class', 'cardArt');
+		image.setAttribute('width', '100%');
+		image.setAttribute('height', '100%');
+		display.svg.insertBefore(image, grid);
+	}
+	image.setAttribute('href', url);
+});
+
+galleryCardEditorImageClearButton.addEventListener('click', async () => {
+	const display = galleryCardDisplay!;
+	const image = <SVGImageElement | undefined> display.svg.getElementsByClassName('cardArt')[0];
+	if (image) display.svg.removeChild(image);
+});
+
+
 galleryCardEditorRarityBox.addEventListener('change', () => {
 	const display = galleryCardDisplay!;
 	display.element.classList.remove('common');
@@ -332,7 +386,7 @@ galleryCardEditorRarityBox.addEventListener('change', () => {
 	sizeImage.setAttribute('href', `assets/external/Game Assets/CardCost_0${galleryCardEditorRarityBox.value}.png`);
 
 	const backgroundImage = <SVGImageElement> display.svg.getElementsByClassName('cardDisplayBackground')[0];
-	backgroundImage.setAttribute('href', `assets/CardBackground-${galleryCardEditorRarityBox.value}-1.webp`);
+	backgroundImage.setAttribute('href', `assets/external/CardBackground-custom-${galleryCardEditorRarityBox.value}-1.webp`);
 });
 
 galleryCardEditorColour1.addEventListener('change', galleryCardEditorColour_change);
@@ -382,6 +436,10 @@ galleryCardEditorSubmitButton.addEventListener('click', () => {
 	const lines = Card.wrapName(galleryCardEditorName.value);
 	const card = new Card(number, galleryCardEditorName.value.replaceAll('\n', ' '), lines[0], lines[1], parseColour(galleryCardEditorColour1.value), parseColour(galleryCardEditorColour2.value),
 		<Rarity> parseInt(galleryCardEditorRarityBox.value), customCardSpecialCost, Array.from(galleryCardEditorGridButtons, r => Array.from(r, b => parseInt(b.dataset.state!))));
+
+	const image = <SVGImageElement | undefined> galleryCardDisplay!.svg.getElementsByClassName('cardArt')[0];
+	if (image) card.imageUrl = image.href.baseVal;
+
 	if (isNew) {
 		cardDatabase.customCards.push(card);
 		addCardToGallery(card);
