@@ -1819,12 +1819,18 @@ button.dragging {
 	flex-flow: column;
 }
 
+#galleryPage > header {
+	padding: 0.5em;
+}
+
 #galleryCardList {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, 10em);
 	grid-auto-rows: auto;
 	gap: 0.5em;
 	justify-content: space-evenly;
+	overflow-y: scroll;
+	padding-top: 0.5em;
 }
 
 #galleryCardList .card {
