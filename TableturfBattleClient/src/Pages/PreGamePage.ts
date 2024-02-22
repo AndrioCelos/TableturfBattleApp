@@ -63,7 +63,9 @@ function setLoadingMessage(message: string | null) {
 function preGameInitStageDatabase(stages: Stage[]) {
 	for (let i = 0; i < stages.length; i++) {
 		const stage = stages[i];
-		const status = userConfig.lastCustomRoomConfig ? userConfig.lastCustomRoomConfig.stageSwitch[i] : 0;
+		const status = userConfig.lastCustomRoomConfig && userConfig.lastCustomRoomConfig.stageSwitch.length > i
+			? userConfig.lastCustomRoomConfig.stageSwitch[i]
+			: (stages[i].name.startsWith('Upcoming') ? 2 : 0);
 
 		const button = document.createElement('button');
 

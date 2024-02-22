@@ -2326,14 +2326,215 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
+
+		new(-24, "Order Dualies", Rarity.Fresh, 2, "UpcomingOrderDualies", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, S, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-25, "Marina", Rarity.Fresh, "UpcomingMarina", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, I, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, I, 0, 0, I, I, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, I, 0, 0 },
+			{ 0, S, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(242, 159, 104), InkColour2 = new(27, 27, 186) },
+		new(-26, "Pearl", Rarity.Fresh, "UpcomingPearl", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, I, 0, 0, I, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, I, I, 0, 0, I, I, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, S, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(232, 232, 232), InkColour2 = new(248, 177, 213) },
+		new(-27, "Pearl Drone", Rarity.Fresh, 2, "UpcomingPearlDrone", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, S, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(248, 177, 213), InkColour2 = new(232, 232, 232) },
+		new(-28, "Acht", Rarity.Rare, "UpcomingAcht", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, I, 0, 0 },
+			{ 0, I, 0, I, I, 0, 0, 0 },
+			{ 0, I, I, 0, I, S, 0, 0 },
+			{ 0, I, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(237, 61, 65), InkColour2 = new(80, 80, 239) },
+		new(-29, "Cipher", Rarity.Rare, "UpcomingCipher", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, I, 0, S, I, I, 0 },
+			{ 0, I, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(221, 183, 172), InkColour2 = new(182, 187, 219) },
+		new(-30, "Flow", Rarity.Rare, "UpcomingFlow", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, I, 0, I, 0, I, 0, 0 },
+			{ 0, 0, S, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, I, 0, I, 0, I, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(r: 159, 104, 242), InkColour2 = new(240, 111, 96) },
+		new(-31, "Jelfonzo", Rarity.Rare, "UpcomingJelfonzo", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, I, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, S, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(149, 119, 220), InkColour2 = new(106, 178, 215) },
+		new(-32, "Bisk", Rarity.Rare, "UpcomingBisk", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, S, 0, I, 0, 0 },
+			{ 0, 0, I, 0, I, 0, I, 0 },
+			{ 0, 0, 0, I, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}) { InkColour1 = new(228, 94, 69), InkColour2 = new(240, 225, 96) },
+		new(-33, "Douser\nDualies FF", Rarity.Common, "UpcomingDouserDualiesFF", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, S, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-34, "Recycled Brella\n24 Mk I", Rarity.Common, "UpcomingRecycledBrellaMkI", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, I, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-35, ".52 Gal Deco", Rarity.Common, "Upcoming52GalDeco", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-36, "Foil\nFlingza Roller", Rarity.Common, "UpcomingFoilFlingzaRoller", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, S, I, I, I, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-37, "New Squiffer", Rarity.Common, "UpcomingNewSquiffer", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, S, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-38, "Custom E-Liter 4K", Rarity.Common, "UpcomingCustomELiter4K", new Space[,] {
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, S, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-39, "Custom E-Liter\n4K Scope", Rarity.Common, "UpcomingCustomELiter4KScope", new Space[,] {
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-40, "Custom Explosher", Rarity.Common, "UpcomingCustomExplosher", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, S, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-41, "Dread Wringer D", Rarity.Common, "UpcomingDreadWringerD", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, S, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-42, "Nautilus 79", Rarity.Common, "UpcomingNautilus79", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, S, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(-43, "Glooga Dualies\nDeco", Rarity.Common, "UpcomingGloogaDualiesDeco", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, S, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, I, I, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(6, 1, 0, 0);
-	public static DateTime LastModified { get; } = new(2024, 2, 9, 6, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(7, 0, 0, 0);
+	public static DateTime LastModified { get; } = new(2024, 2, 21, 1, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 

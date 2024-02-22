@@ -389,10 +389,14 @@ dialog::backdrop {
 	box-sizing: border-box;
 }
 
-.stageGrid rect.start1 { fill: var(--special-colour-1); }
-.stageGrid rect.start2 { fill: var(--special-colour-2); }
-.stageGrid rect.start3 { fill: var(--special-colour-3); }
-.stageGrid rect.start4 { fill: var(--special-colour-4); }
+.stageGrid rect.Ink1 { fill: var(--primary-colour-1); }
+.stageGrid rect.Ink2 { fill: var(--primary-colour-2); }
+.stageGrid rect.Ink3 { fill: var(--primary-colour-3); }
+.stageGrid rect.Ink4 { fill: var(--primary-colour-4); }
+.stageGrid rect.SpecialInactive1 { fill: var(--special-colour-1); }
+.stageGrid rect.SpecialInactive2 { fill: var(--special-colour-2); }
+.stageGrid rect.SpecialInactive3 { fill: var(--special-colour-3); }
+.stageGrid rect.SpecialInactive4 { fill: var(--special-colour-4); }
 
 :is(.stage, .stageRandom):is(:hover, :focus-within):not(.checked, .disabled)::before {
 	content: '';
@@ -632,15 +636,16 @@ svg.card text.cardDisplayName {
 	transform: scaleX(var(--scale));
 }
 
-rect.empty {
+rect.Empty, rect.empty {
 	fill: #00000080;
 	stroke: #60606080;
 	stroke-width: 6;
 }
-.stageGrid rect.empty {
+.stageGrid rect.Empty {
 	stroke: grey;
 	stroke-width: 12;
 }
+rect.Wall { fill: grey; }
 
 rect.ink {
 	fill: var(--player-primary-colour);
@@ -1956,7 +1961,7 @@ button.dragging {
 #galleryCardEditorImageFile { display: none; }
 
 #galleryCardEditorImageToolbar2 input {
-  width: 3em;	
+	width: 3em;
 }
 
 #galleryCardEditorColourPresetBox {

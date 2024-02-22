@@ -106,18 +106,20 @@ function openGalleryCardView(card: Card) {
 	galleryCardEditorSubmitButton.hidden = true;
 	galleryCardEditorCancelButton.innerText = 'Close';
 
-	galleryCardEditorRarityBox.value = card.rarity.toString();
-	galleryCardEditorColour1.value = `#${card.inkColour1.r.toString(16).padStart(2, '0')}${card.inkColour1.g.toString(16).padStart(2, '0')}${card.inkColour1.b.toString(16).padStart(2, '0')}`;
-	galleryCardEditorColour2.value = `#${card.inkColour2.r.toString(16).padStart(2, '0')}${card.inkColour2.g.toString(16).padStart(2, '0')}${card.inkColour2.b.toString(16).padStart(2, '0')}`;
-	updateSelectedPreset([card.inkColour1, card.inkColour2]);
+	if (card.isCustom) {
+		galleryCardEditorRarityBox.value = card.rarity.toString();
+		galleryCardEditorColour1.value = `#${card.inkColour1.r.toString(16).padStart(2, '0')}${card.inkColour1.g.toString(16).padStart(2, '0')}${card.inkColour1.b.toString(16).padStart(2, '0')}`;
+		galleryCardEditorColour2.value = `#${card.inkColour2.r.toString(16).padStart(2, '0')}${card.inkColour2.g.toString(16).padStart(2, '0')}${card.inkColour2.b.toString(16).padStart(2, '0')}`;
+		updateSelectedPreset([card.inkColour1, card.inkColour2]);
 
-	galleryCardEditorName.value = card.line2 == null ? card.name : `${card.line1}\n${card.line2}`;
-	for (let y = 0; y < 8; y++) {
-		for (let x = 0; x < 8; x++) {
-			galleryCardEditorGridButtons[y][x].dataset.state = card.grid[y][x].toString();
+		galleryCardEditorName.value = card.line2 == null ? card.name : `${card.line1}\n${card.line2}`;
+		for (let y = 0; y < 8; y++) {
+			for (let x = 0; x < 8; x++) {
+				galleryCardEditorGridButtons[y][x].dataset.state = card.grid[y][x].toString();
+			}
 		}
+		updateCustomCardSize();
 	}
-	updateCustomCardSize();
 
 	galleryCardDialog.showModal();
 }
@@ -176,7 +178,7 @@ function updateBitsToComplete() {
 	if (!cardDatabase.cards) throw new Error('Card database not loaded');
 	let bitsRequired = 0;
 	for (const card of cardDatabase.cards) {
-		if (card.number in ownedCards) continue;
+		if (card.isUpcoming || card.number in ownedCards) continue;
 		switch (card.rarity) {
 			case Rarity.Fresh: bitsRequired += 40; break;
 			case Rarity.Rare: bitsRequired += 15; break;

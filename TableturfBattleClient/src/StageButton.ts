@@ -23,17 +23,36 @@ class StageButton extends CheckButton {
 		for (var x = 0; x < stage.grid.length; x++) {
 			let col = [ ];
 			for (var y = 0; y < stage.grid[x].length; y++) {
-				if (stage.grid[x][y] == Space.Empty) {
+				if (stage.grid[x][y] == Space.OutOfBounds)
+					col.push(null);
+				else {
 					const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-					rect.classList.add('empty');
+					rect.classList.add(Space[stage.grid[x][y]].toString());
 					rect.setAttribute('x', (100 * x).toString());
 					rect.setAttribute('y', (100 * y + offset).toString());
 					rect.setAttribute('width', '100');
 					rect.setAttribute('height', '100');
 					gridSvg.appendChild(rect);
 					col.push(rect);
-				} else
-					col.push(null);
+
+					if (stage.grid[x][y] & Space.SpecialInactive1) {
+						const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+						image.setAttribute('href', 'assets/SpecialOverlay.png');
+						image.setAttribute('x', rect.getAttribute('x')!);
+						image.setAttribute('y', rect.getAttribute('y')!);
+						image.setAttribute('width', rect.getAttribute('width')!);
+						image.setAttribute('height', rect.getAttribute('height')!);
+						gridSvg.appendChild(image);
+					} else if (stage.grid[x][y] & Space.Ink1) {
+						const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+						image.setAttribute('href', 'assets/InkOverlay.png');
+						image.setAttribute('x', rect.getAttribute('x')!);
+						image.setAttribute('y', rect.getAttribute('y')!);
+						image.setAttribute('width', rect.getAttribute('width')!);
+						image.setAttribute('height', rect.getAttribute('height')!);
+						gridSvg.appendChild(image);
+					}
+				}
 			}
 			cols.push(col);
 		}
@@ -50,7 +69,7 @@ class StageButton extends CheckButton {
 
 	setStartSpaces(numPlayers: number) {
 		for (const el of this.startCells) {
-			el[0].setAttribute('class', 'empty');
+			el[0].setAttribute('class', 'Empty');
 			el[1].parentElement!.removeChild(el[1]);
 		}
 		this.startCells.splice(0);
@@ -59,7 +78,7 @@ class StageButton extends CheckButton {
 		for (let i = 0; i < numPlayers; i++) {
 			const space = startSpaces[i];
 			const cell = this.cells[space.x][space.y]!;
-			cell.classList.add(`start${i + 1}`);
+			cell.setAttribute('class', `SpecialInactive${i + 1}`);
 
 			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
 			image.setAttribute('href', 'assets/SpecialOverlay.png');
