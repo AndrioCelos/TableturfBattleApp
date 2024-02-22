@@ -121,7 +121,7 @@ internal class StageDatabase {
 			[new(3, 21), new(13, 3), new(8, 16), new(8, 8)]
 		]),
 		new("Box Seats", new Space[10, 10], [[new(2, 7), new(7, 2), new(7, 7), new(2, 2)]]),
-		new("Upcoming: Bases", new Space[,] {
+		new("Girder for Battle", new Space[,] {
 			{ E, E, E, E, E, E, o, o, o, o, o, o, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, o, o, o, o, o, o, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, o, o, o, o, o, o, E, E, E, E, E, E },
@@ -143,7 +143,7 @@ internal class StageDatabase {
 			[new(8, 17), new(8, 0), new(8, 9)],
 			[new(2, 17), new(14, 0), new(14, 17), new(2, 0)]
 		]),
-		new("Upcoming: Walls", new Space[,] {
+		new("Mask Mansion", new Space[,] {
 			{ o, o, o, E, E, E, E, E, E, E, E, E, E, E, o, o, o },
 			{ o, o, o, E, E, E, E, E, E, E, E, E, E, E, o, o, o },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -165,7 +165,7 @@ internal class StageDatabase {
 			[new(8, 15), new(8, 1), new(8, 8)],
 			[new(3, 15), new(13, 1), new(13, 15), new(3, 1)]
 		]),
-		new("Upcoming: Pillars", new Space[,] {
+		new("Sticky Thicket", new Space[,] {
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, W, E, E, E, W, E, E, E, W, E, E, E, W, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -180,7 +180,7 @@ internal class StageDatabase {
 		}, [
 			[new(3, 20), new(3, 4)]
 		]),
-		new("Upcoming: River", new Space[,] {
+		new("Cracker Snap", new Space[,] {
 			{ o, o, o, o, o, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ o, o, o, o, o, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, o, o, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -199,7 +199,7 @@ internal class StageDatabase {
 			[new(2, 17), new(11, 2), new(7, 11)],
 			[new(9, 17), new(4, 2), new(11, 10), new(2, 9)]
 		]),
-		new("Upcoming: Dual Streets", new Space[,] {
+		new("Two-Lane Splattop", new Space[,] {
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -219,7 +219,7 @@ internal class StageDatabase {
 		}, [
 			[new(3, 14), new(3, 2)]
 		]),
-		new("Upcoming: Super", new Space[,] {
+		new("Pedal to the Metal", new Space[,] {
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
@@ -233,7 +233,7 @@ internal class StageDatabase {
 		}, [
 			[new(4, 19), new(4, 3)]
 		]),
-		new("Upcoming: Back-to-Back", new Space[,] {
+		new("Over the Line", new Space[,] {
 			{ E, E, E, E, E, E, E, E, E, E, b, a, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, b, A, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, b, A, E, E, E, E, E, E, E, E, E, E },
