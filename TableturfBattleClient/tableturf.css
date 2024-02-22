@@ -1747,7 +1747,7 @@ button.dragging {
 }
 
 #testStageSelectionList {
-	max-width: 52em;
+	max-width: 72em;
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: center;
