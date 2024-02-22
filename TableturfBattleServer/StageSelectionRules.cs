@@ -5,6 +5,17 @@ public class StageSelectionRules(StageSelectionMethod method, int[]? bannedStage
 	public int[] BannedStages { get; set; } = bannedStages ?? Array.Empty<int>();
 
 	public static StageSelectionRules Default { get; } = new(StageSelectionMethod.Vote, Array.Empty<int>());
+
+	public void AddUnavailableStages(int maxPlayers) {
+		if (maxPlayers == 2) return;
+
+		var list = new List<int>(this.BannedStages);
+		for (var i = 0; i < StageDatabase.Stages.Count; i++) {
+			if (maxPlayers > StageDatabase.Stages[i].MaxPlayers)
+				list.Add(i);
+		}
+		this.BannedStages = list.ToArray();
+	}
 }
 
 public enum StageSelectionMethod {

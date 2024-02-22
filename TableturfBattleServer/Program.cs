@@ -179,21 +179,21 @@ internal partial class Program {
 
 					StageSelectionRules? stageSelectionRuleFirst = null, stageSelectionRuleAfterWin = null, stageSelectionRuleAfterDraw = null;
 					if (d.TryGetValue("stageSelectionRuleFirst", out var json1)) {
-						if (!TryParseStageSelectionRule(json1, out stageSelectionRuleFirst) || stageSelectionRuleFirst.Method is StageSelectionMethod.Same or StageSelectionMethod.Counterpick) {
+						if (!TryParseStageSelectionRule(json1, maxPlayers, out stageSelectionRuleFirst) || stageSelectionRuleFirst.Method is StageSelectionMethod.Same or StageSelectionMethod.Counterpick) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleFirst was invalid."));
 							return;
 						}
 					} else
 						stageSelectionRuleFirst = StageSelectionRules.Default;
 					if (d.TryGetValue("stageSelectionRuleAfterWin", out var json2)) {
-						if (!TryParseStageSelectionRule(json2, out stageSelectionRuleAfterWin)) {
+						if (!TryParseStageSelectionRule(json2, maxPlayers, out stageSelectionRuleAfterWin)) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleAfterWin was invalid."));
 							return;
 						}
 					} else
 						stageSelectionRuleAfterWin = stageSelectionRuleFirst;
 					if (d.TryGetValue("stageSelectionRuleAfterDraw", out var json3)) {
-						if (!TryParseStageSelectionRule(json3, out stageSelectionRuleAfterDraw) || stageSelectionRuleAfterDraw.Method == StageSelectionMethod.Counterpick) {
+						if (!TryParseStageSelectionRule(json3, maxPlayers, out stageSelectionRuleAfterDraw) || stageSelectionRuleAfterDraw.Method == StageSelectionMethod.Counterpick) {
 							SetErrorResponse(e.Response, new(HttpStatusCode.UnprocessableEntity, "InvalidGameSettings", "stageSelectionRuleAfterDraw was invalid."));
 							return;
 						}
@@ -766,10 +766,16 @@ internal partial class Program {
 		return false;
 	}
 
-	private static bool TryParseStageSelectionRule(string json, [MaybeNullWhen(false)] out StageSelectionRules stageSelectionRule) {
+	private static bool TryParseStageSelectionRule(string json, int maxPlayers, [MaybeNullWhen(false)] out StageSelectionRules stageSelectionRule) {
 		try {
 			stageSelectionRule = JsonUtils.Deserialise<StageSelectionRules>(json);
-			return stageSelectionRule != null;
+			if (stageSelectionRule == null) return false;
+			stageSelectionRule.AddUnavailableStages(maxPlayers);
+			// Check that at least one stage is allowed.
+			for (var i = 0; i < StageDatabase.Stages.Count; i++) {
+				if (!stageSelectionRule.BannedStages.Contains(i)) return true;
+			}
+			return false;
 		} catch (JsonSerializationException) {
 			stageSelectionRule = null;
 			return false;

@@ -75,7 +75,7 @@ function showStageSelectionForm(prompt: StageSelectionPrompt | null, isReady: bo
 	let i = -1;
 	for (const button of stageButtons.buttons) {
 		const originalClass = i < 0 ? 'stageRandom' : 'stage';
-		if (prompt.bannedStages?.includes(i)) {
+		if (i >= 0 && (currentGame!.game.maxPlayers > stageDatabase.stages![i].maxPlayers || prompt.bannedStages?.includes(i))) {
 			button.buttonElement.className = `${originalClass} banned`;
 			button.enabled = false;
 		} else if (prompt.struckStages?.includes(i)) {

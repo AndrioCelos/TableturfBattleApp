@@ -13,6 +13,8 @@ class Stage {
 		return new Stage(obj.name, obj.grid, obj.startSpaces);
 	}
 
+	get maxPlayers() { return Math.max(...this.startSpaces.map(a => a.length)); }
+
 	getStartSpaces(numPlayers: number) {
 		let list = null as Point[] | null;
 		for (const list2 of this.startSpaces) {

@@ -115,6 +115,10 @@ public class Game(int maxPlayers) {
 				return false;
 			}
 		} else {
+			if (stages.Any(i => i >= StageDatabase.Stages.Count)) {
+				error = new(HttpStatusCode.UnprocessableEntity, "InvalidStage", "Invalid stage selection.");
+				return false;
+			}
 			var rule = this.GetCurrentStageSelectionRule();
 			if (stages.Intersect(rule.BannedStages).Any()) {
 				error = new(HttpStatusCode.UnprocessableEntity, "IllegalStage", "A selected stage is banned.");
@@ -124,10 +128,6 @@ public class Game(int maxPlayers) {
 				error = new(HttpStatusCode.UnprocessableEntity, "IllegalStage", "A selected stage was struck.");
 				return false;
 			}
-		}
-		if (stages.Any(i => i >= StageDatabase.Stages.Count)) {
-			error = new(HttpStatusCode.UnprocessableEntity, "StageNotFound", "No such stage is known.");
-			return false;
 		}
 		player.selectedStages = stages;
 		error = default;
@@ -495,10 +495,10 @@ public class Game(int maxPlayers) {
 		var stage = StageDatabase.Stages[stageIndex];
 		this.StageIndex = stageIndex;
 		this.setStages.Add(stageIndex);
-		this.Board = (Space[,]) stage.grid.Clone();
+		this.Board = (Space[,]) stage.Grid.Clone();
 
 		// Place starting positions.
-		var list = stage.startSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
+		var list = stage.StartSpaces.Where(s => s.Length >= this.Players.Count).MinBy(s => s.Length) ?? throw new InvalidOperationException("Couldn't find start spaces");
 		this.StartSpaces = list;
 		for (int i = 0; i < this.Players.Count; i++)
 			this.Board[list[i].X, list[i].Y] = Space.SpecialInactive1 | (Space) i;

@@ -93,7 +93,7 @@ function stageSwitchButton_click(e: Event) {
 	let status = button.dataset.status == '0' ? 1 : button.dataset.status == '1' ? 2 : 0;
 	button.dataset.status = status.toString();
 	(<HTMLElement>button.getElementsByClassName('stageStatus')[0]).innerText = [ 'Allowed', 'Counterpick only', 'Banned' ][status];
-	gameSetupSubmitButton.disabled = stageSwitchButtons.every(b => b.dataset.status != '0');
+	updateCreateRoomButton();
 }
 
 maxPlayersBox.addEventListener('change', () => {
@@ -103,7 +103,17 @@ maxPlayersBox.addEventListener('change', () => {
 		else
 		maxPlayersBox.value = '2';
 	}
+	const maxPlayers = parseInt(maxPlayersBox.value);
+	for (let i = 0; i < stageDatabase.stages!.length; i++) {
+		stageSwitchButtons[i].disabled = maxPlayers > stageDatabase.stages![i].maxPlayers;
+	}
+	updateCreateRoomButton();
 });
+
+function updateCreateRoomButton() {
+	const maxPlayers = parseInt(maxPlayersBox.value);
+	gameSetupSubmitButton.disabled = stageSwitchButtons.every((b, i) => b.dataset.status != '0' || maxPlayers > stageDatabase.stages![i].maxPlayers);
+}
 
 newGameSetupButton.addEventListener('click', _ => {
 	gameSetupDialog.showModal();
@@ -172,8 +182,9 @@ function createRoom(useOptionsForm: boolean) {
 	data.append('name', name);
 	data.append('clientToken', clientToken);
 	if (useOptionsForm) {
+		const maxPlayers = parseInt(maxPlayersBox.value);
 		const settings = <CustomRoomConfig> {
-			maxPlayers: parseInt(maxPlayersBox.value),
+			maxPlayers,
 			turnTimeLimit: turnTimeLimitBox.value ? turnTimeLimitBox.valueAsNumber : null,
 			goalWinCount: goalWinCountBox.value ? parseInt(goalWinCountBox.value) : null,
 			allowUpcomingCards: gameSetupAllowUpcomingCardsBox.checked,

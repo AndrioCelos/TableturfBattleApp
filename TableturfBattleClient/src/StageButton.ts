@@ -75,6 +75,7 @@ class StageButton extends CheckButton {
 		this.startCells.splice(0);
 
 		const startSpaces = this.stage.getStartSpaces(numPlayers);
+		if (startSpaces == null) return;
 		for (let i = 0; i < numPlayers; i++) {
 			const space = startSpaces[i];
 			const cell = this.cells[space.x][space.y]!;
