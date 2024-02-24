@@ -203,33 +203,32 @@ internal class StageDatabase {
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, B, E, E, E, E, E, E, E, E, E, E, E, A, E, E, E },
+			{ E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, A, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o },
-			{ o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o, o },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, B, E, E, E, E, E, E, E, E, E, E, E, A, E, E, E },
+			{ E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, A, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 		}, [
-			[new(3, 14), new(3, 2)]
+			[new(11, 15), new(11, 2)]
 		]),
 		new("Pedal to the Metal", new Space[,] {
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, B, B, B, E, E, E, E, E, E, E, E, E, E, E, E, A, A, A, E, E, E },
-			{ E, E, E, B, B, B, E, E, E, E, E, E, E, E, E, E, E, E, A, A, A, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
-			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, B, B, B, E, E, E, E, E, E, E, E, E, E, E, E, E, A, A, A, E, E, E },
+			{ E, E, E, B, B, B, E, E, E, E, E, E, E, E, E, E, E, E, E, A, A, A, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
+			{ E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E },
 		}, [
 			[new(4, 19), new(4, 3)]
 		]),
@@ -250,8 +249,8 @@ internal class StageDatabase {
 		]),
 	];
 
-	public static Version Version { get; } = new(2, 0, 0, 0);
-	public static DateTime LastModified { get; } = new(2024, 2, 21, 1, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(2, 0, 1, 0);
+	public static DateTime LastModified { get; } = new(2024, 2, 24, 10, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Stage> Stages { get; }
 
