@@ -18,7 +18,7 @@ internal class TableturfWebSocketBehaviour : WebSocketBehavior {
 			this.ClientToken = clientToken;
 
 		// Send an initial state payload.
-		if (Program.TryGetGame(this.GameID, out var game)) {
+		if (Server.Instance.TryGetGame(this.GameID, out var game)) {
 			DTO.PlayerData? playerData = null;
 			for (int i = 0; i < game.Players.Count; i++) {
 				var player = game.Players[i];

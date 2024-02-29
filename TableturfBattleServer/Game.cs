@@ -137,7 +137,7 @@ public class Game(int maxPlayers) {
 	public Deck GetDeck(string name, int sleeves, IEnumerable<int> cardNumbers, IEnumerable<int> cardUpgrades) {
 		var deck = this.deckCache.FirstOrDefault(d => d.Name == name && d.Sleeves == sleeves && cardNumbers.SequenceEqual(from c in d.Cards select c.Number) && cardUpgrades.SequenceEqual(d.Upgrades));
 		if (deck == null) {
-			deck = new(name, sleeves, (from i in cardNumbers select i <= Program.RECEIVED_CUSTOM_CARD_START ? customCards[Program.RECEIVED_CUSTOM_CARD_START - i] : CardDatabase.GetCard(i)).ToArray(), cardUpgrades.ToArray());
+			deck = new(name, sleeves, (from i in cardNumbers select i <= ApiEndpoints.RECEIVED_CUSTOM_CARD_START ? customCards[ApiEndpoints.RECEIVED_CUSTOM_CARD_START - i] : CardDatabase.GetCard(i)).ToArray(), cardUpgrades.ToArray());
 			this.deckCache.Add(deck);
 		}
 		return deck;
