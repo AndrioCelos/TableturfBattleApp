@@ -334,6 +334,12 @@ dialog::backdrop {
 .deckButton[data-sleeves="22"] { background-position: 85.7% 63%; }
 .deckButton[data-sleeves="23"] { background-position: 100% 63%; }
 .deckButton[data-sleeves="24"] { background-position: 0 89%; }
+.deckButton[data-sleeves="25"] { background-position: 14.3% 89%; }
+.deckButton[data-sleeves="26"] { background-position: 28.6% 89%; }
+.deckButton[data-sleeves="27"] { background-position: 42.9% 89%; }
+.deckButton[data-sleeves="28"] { background-position: 57.1% 89%; }
+.deckButton[data-sleeves="29"] { background-position: 71.4% 89%; }
+.deckButton[data-sleeves="30"] { background-position: 85.7% 89%; }
 
 .deckButton:is(:active, .checked) {
 	outline-color: lightgrey;
@@ -450,7 +456,13 @@ dialog::backdrop {
 .cardBack[data-sleeves="21"] { background-position: 71.4% 66.7% }
 .cardBack[data-sleeves="22"] { background-position: 85.7% 66.7% }
 .cardBack[data-sleeves="23"] { background-position: 100% 66.7% }
-.cardBack[data-sleeves="24"] { background-position: 0% 100%; }
+.cardBack[data-sleeves="24"] { background-position: 0% 66.7% }
+.cardBack[data-sleeves="25"] { background-position: 14.3% 100% }
+.cardBack[data-sleeves="26"] { background-position: 28.6% 100% }
+.cardBack[data-sleeves="27"] { background-position: 42.9% 100% }
+.cardBack[data-sleeves="28"] { background-position: 57.1% 100% }
+.cardBack[data-sleeves="29"] { background-position: 71.4% 100% }
+.cardBack[data-sleeves="30"] { background-position: 85.7% 100% }
 
 @keyframes cardBackFadeIn {
 	from {
@@ -1775,7 +1787,7 @@ button.dragging {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: center;
-	max-width: 80em;
+	max-width: 88em;
 	gap: 1em;
 }
 
@@ -1824,6 +1836,12 @@ button.dragging {
 #deckSleevesList label:nth-of-type(23) { background-position: -600% -200%; }
 #deckSleevesList label:nth-of-type(24) { background-position: -700% -200%; }
 #deckSleevesList label:nth-of-type(25) { background-position: 0% -300%; }
+#deckSleevesList label:nth-of-type(26) { background-position: -100% -300%; }
+#deckSleevesList label:nth-of-type(27) { background-position: -200% -300%; }
+#deckSleevesList label:nth-of-type(28) { background-position: -300% -300%; }
+#deckSleevesList label:nth-of-type(29) { background-position: -400% -300%; }
+#deckSleevesList label:nth-of-type(30) { background-position: -500% -300%; }
+#deckSleevesList label:nth-of-type(31) { background-position: -600% -300%; }
 
 /* Card list */
 
