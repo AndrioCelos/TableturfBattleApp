@@ -806,6 +806,7 @@ rect.special, g.specialCost rect {
 #cardList {
 	grid-row: 2;
 	grid-column: 1 / -1;
+	padding-bottom: 4rem;
 }
 .cardListControl {
 	display: grid;
@@ -817,6 +818,14 @@ rect.special, g.specialCost rect {
 	overflow-y: auto;
 	justify-items: center;
 	grid-auto-rows: max-content;
+}
+
+#deckEditorRemoveButton {
+	position: absolute;
+	right: 1em;
+	bottom: 1em;
+	font-size: 100%;
+	padding: 0.5em;
 }
 
 /* Game page */

@@ -13,6 +13,7 @@ const deckTestButton = document.getElementById('deckTestButton') as HTMLButtonEl
 const deckSaveButton = document.getElementById('deckSaveButton') as HTMLButtonElement;
 const deckCancelButton = document.getElementById('deckCancelButton') as HTMLButtonElement;
 const deckCardListBackButton = document.getElementById('deckCardListBackButton') as HTMLLinkElement;
+const deckEditorRemoveButton = document.getElementById('deckEditorRemoveButton') as HTMLButtonElement;
 const cardListFilterBox = document.getElementById('cardListFilterBox') as HTMLSelectElement;
 const testStageSelectionList = document.getElementById('testStageSelectionList')!;
 const testStageButtons = new CheckButtonGroup<Stage>(testStageSelectionList);
@@ -66,6 +67,28 @@ function addCardToDeckEditor(card: Card) {
 		selectFirstEmptySlot();
 	});
 }
+
+deckEditorRemoveButton.addEventListener('click', () => {
+	const index = deckEditCardButtons.entries.findIndex(el => el.button.checked);
+	if (index < 0) return;
+	const oldEntry = deckEditCardButtons.entries[index];
+	const oldCardNumber = oldEntry.value;
+
+	if (oldCardNumber != 0)
+		cardListButtonGroup.entries.find(e => e.value.number == oldCardNumber || e.value.altNumber == oldCardNumber)!.button.enabled = true;
+
+	const button3 = createDeckEditEmptySlotButton();
+	button3.checked = true;
+
+	deckEditCardButtons.replace(index, button3, 0);
+	deckEditUpdateSize();
+
+	cardList.listElement.parentElement!.classList.remove('selecting');
+	if (!deckModified) {
+		deckModified = true;
+		window.addEventListener('beforeunload', onBeforeUnload_deckEditor);
+	}
+});
 
 function deckEditInitStageDatabase(stages: Stage[]) {
 	for (const stage of stages) {
@@ -156,6 +179,7 @@ function createDeckEditCardButton(cardNumber: number) {
 			button2.checked = button2.card.number == cardNumber;
 		}
 		cardList.listElement.parentElement!.classList.add('selecting');
+		deckEditorRemoveButton.hidden = false;
 	});
 	button.buttonElement.addEventListener('dragstart', e => {
 		if (e.dataTransfer == null) return;
@@ -235,6 +259,7 @@ function createDeckEditEmptySlotButton() {
 		for (const button2 of cardList.cardButtons)
 			button2.checked = false;
 		cardList.listElement.parentElement!.classList.add('selecting');
+		deckEditorRemoveButton.hidden = true;
 	});
 	buttonElement.addEventListener('dragenter', e => e.preventDefault());
 	buttonElement.addEventListener('dragover', deckEditCardButton_dragover);
