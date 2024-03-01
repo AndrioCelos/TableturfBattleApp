@@ -440,7 +440,7 @@ function deckExportJsonReplacer(key: string, value: any) {
 			return value ?? undefined;  // Omit null values.
 		case 'imageUrl':
 			// Custom cards store image data here, so include it if it is a data URI.
-			return (<string> value).startsWith('data:') ? value : undefined;
+			return value && (<string> value).startsWith('data:') ? value : undefined;
 		default:
 			return value;
 	}
