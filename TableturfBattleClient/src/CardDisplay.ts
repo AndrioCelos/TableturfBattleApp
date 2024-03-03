@@ -87,25 +87,9 @@ class CardDisplay implements ICardElement {
 				text1.setAttribute('fill', '#6038FF');
 				break;
 			case Rarity.Rare:
-				svg.insertAdjacentHTML('beforeend', `
-					<linearGradient id='rareGradient' y1='25%' spreadMethod='reflect'>
-						<stop offset='0%' stop-color='#FEF9C6'/>
-						<stop offset='50%' stop-color='#DFAF17'/>
-						<stop offset='100%' stop-color='#FEF9C6'/>
-					</linearGradient>
-				`);
 				text1.setAttribute('fill', 'url("#rareGradient")');
 				break;
 			case Rarity.Fresh:
-				svg.insertAdjacentHTML('beforeend', `
-					<linearGradient id='freshGradient' y2='25%'>
-						<stop offset='0%' stop-color='#FF8EDD'/>
-						<stop offset='25%' stop-color='#FFEC9F'/>
-						<stop offset='50%' stop-color='#B84386'/>
-						<stop offset='75%' stop-color='#2BEFC8'/>
-						<stop offset='100%' stop-color='#FF8EDD'/>
-					</linearGradient>
-				`);
 				text1.setAttribute('fill', 'url("#freshGradient")');
 				break;
 		}
