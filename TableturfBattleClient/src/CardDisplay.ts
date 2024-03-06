@@ -9,6 +9,25 @@ class CardDisplay implements ICardElement {
 
 	private static nextIdNumber = 0;
 
+	private static getGradientId(baseId: string, scale: number) {
+		if (scale >= 20) return baseId;
+
+		const roundedScale = Math.round(scale * 20);
+		if (roundedScale >= 20) return baseId;
+
+		const id = `${baseId}${roundedScale}`;
+		if (document.getElementById(id)) return id;
+
+		const baseElement = document.getElementById(baseId);
+		if (!baseElement)
+			throw new Error(`Base gradient element '${baseId}' not found.`);
+		const el = <Element> baseElement!.cloneNode(true);
+		baseElement.insertAdjacentElement('afterend', el);
+		el.setAttribute('id', id);
+		el.setAttribute('gradientTransform', `translate(${-6350 / roundedScale + 317.5} 0) scale(${20 / roundedScale} 1)`);
+		return id;
+	}
+
 	constructor(card: Card, level: number, elementType: string = 'div') {
 		this.idNumber = CardDisplay.nextIdNumber++;
 		this.card = card;
@@ -87,10 +106,10 @@ class CardDisplay implements ICardElement {
 				text1.setAttribute('fill', '#6038FF');
 				break;
 			case Rarity.Rare:
-				text1.setAttribute('fill', 'url("#rareGradient")');
+				text1.setAttribute('fill', `url("#${CardDisplay.getGradientId('rareGradient', card.textScale)}")`);
 				break;
 			case Rarity.Fresh:
-				text1.setAttribute('fill', 'url("#freshGradient")');
+				text1.setAttribute('fill', `url("#${CardDisplay.getGradientId('freshGradient', card.textScale)}")`);
 				break;
 		}
 		if (card.line1 != null && card.line2 != null) {
