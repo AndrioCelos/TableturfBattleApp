@@ -855,7 +855,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(125, 157, 60), InkColour2 = new(181, 115, 85) },
+		}) { InkColour1 = new(181, 115, 85), InkColour2 = new(125, 157, 60) },
 		new( 86, "Gnarly Eddy", Rarity.Rare, "Omura", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -865,7 +865,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(205, 113, 74), InkColour2 = new(169, 113, 230) },
+		}) { InkColour1 = new(169, 113, 230), InkColour2 = new(205, 113, 74) },
 		new( 87, "Jel La Fleur", Rarity.Rare, "Hanagasa", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -875,7 +875,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(129, 106, 219), InkColour2 = new(130, 154, 233) },
+		}) { InkColour1 = new(130, 154, 233), InkColour2 = new(129, 106, 219) },
 		new( 88, "Mr. Coco", Rarity.Rare, "Yashiganisan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, S, 0, 0 },
@@ -885,7 +885,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(124, 159, 234), InkColour2 = new(218, 101, 63) },
+		}) { InkColour1 = new(218, 101, 63), InkColour2 = new(124, 159, 234) },
 		new( 89, "Harmony", Rarity.Rare, "Paruko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
@@ -895,7 +895,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(239, 160, 194), InkColour2 = new(107, 217, 175) },
+		}) { InkColour1 = new(107, 217, 175), InkColour2 = new(239, 160, 194) },
 		new( 90, "Murch", Rarity.Rare, "Spiky", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -905,7 +905,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(131, 110, 211), InkColour2 = new(177, 121, 190) },
+		}) { InkColour1 = new(177, 121, 190), InkColour2 = new(131, 110, 211) },
 		new( 91, "Mr. Grizz", Rarity.Rare, "Kumasan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -915,7 +915,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(98, 145, 107), InkColour2 = new(196, 106, 52) },
+		}) { InkColour1 = new(196, 106, 52), InkColour2 = new(98, 145, 107) },
 		new( 92, "Marigold", Rarity.Rare, "Mother", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -925,7 +925,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(230, 139, 122), InkColour2 = new(190, 136, 200) },
+		}) { InkColour1 = new(190, 136, 200), InkColour2 = new(230, 139, 122) },
 		new( 93, "Smallfry", Rarity.Fresh, "Kojake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -935,7 +935,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(98, 140, 146), InkColour2 = new(203, 99, 123) },
+		}) { InkColour1 = new(203, 99, 123), InkColour2 = new(98, 140, 146) },
 		new( 94, "Cuttlefish", Rarity.Fresh, "Atarime", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
@@ -945,7 +945,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(198, 126, 148), InkColour2 = new(113, 190, 218) },
+		}) { InkColour1 = new(113, 190, 218), InkColour2 = new(198, 126, 148) },
 		new( 95, "Captain", Rarity.Fresh, "Shirei", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
@@ -955,7 +955,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(244, 231, 129), InkColour2 = new(249, 172, 127) },
+		}) { InkColour1 = new(249, 172, 127), InkColour2 = new(244, 231, 129) },
 		new( 96, "Callie", Rarity.Fresh, "Aori", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, I, 0, 0, I, 0, 0 },
@@ -965,7 +965,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(188, 89, 252), InkColour2 = new(246, 78, 171) },
+		}) { InkColour1 = new(246, 78, 171), InkColour2 = new(188, 89, 252) },
 		new( 97, "Marie", Rarity.Fresh, "Hotaru", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -975,7 +975,7 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(222, 242, 122), InkColour2 = new(181, 214, 121) },
+		}) { InkColour1 = new(181, 214, 121), InkColour2 = new(222, 242, 122) },
 		new( 98, "Shiver", Rarity.Fresh, "Fuka", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, I, 0, 0, 0 },
@@ -985,7 +985,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(116, 112, 250), InkColour2 = new(146, 95, 251) },
+		}) { InkColour1 = new(146, 95, 251), InkColour2 = new(116, 112, 250) },
 		new( 99, "Frye", Rarity.Fresh, "Utsuho", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -995,7 +995,7 @@ public static class CardDatabase {
 			{ 0, 0, S, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(245, 229, 130), InkColour2 = new(246, 165, 119) },
+		}) { InkColour1 = new(246, 165, 119), InkColour2 = new(245, 229, 130) },
 		new(100, "Big Man", Rarity.Fresh, "Mantaro", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
@@ -1005,7 +1005,7 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, S, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(220, 241, 141), InkColour2 = new(124, 231, 161) },
+		}) { InkColour1 = new(124, 231, 161), InkColour2 = new(220, 241, 141) },
 		new(101, "Judd", Rarity.Fresh, "Judgekun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1015,7 +1015,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(228, 241, 130), InkColour2 = new(219, 185, 137) },
+		}) { InkColour1 = new(219, 185, 137), InkColour2 = new(228, 241, 130) },
 		new(102, "Li'l Judd", Rarity.Fresh, "KoJudgekun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1025,7 +1025,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(130, 103, 253), InkColour2 = new(168, 76, 253) },
+		}) { InkColour1 = new(168, 76, 253), InkColour2 = new(130, 103, 253) },
 		new(103, "SquidForce", Rarity.Rare, "Batoroika", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1035,7 +1035,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(228, 117, 56), InkColour2 = new(230, 247, 75) },
+		}) { InkColour1 = new(230, 247, 75), InkColour2 = new(228, 117, 56) },
 		new(104, "Zink", Rarity.Rare, "Ironic", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1045,7 +1045,7 @@ public static class CardDatabase {
 			{ 0, I, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(244, 124, 130), InkColour2 = new(122, 192, 195) },
+		}) { InkColour1 = new(122, 192, 195), InkColour2 = new(244, 124, 130) },
 		new(105, "Krak-On", Rarity.Rare, "Kuraagesu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1055,7 +1055,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(97, 125, 234), InkColour2 = new(245, 149, 68) },
+		}) { InkColour1 = new(245, 149, 68), InkColour2 = new(97, 125, 234) },
 		new(106, "Rockenberg", Rarity.Rare, "Rokkenberugu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1065,7 +1065,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(171, 98, 57), InkColour2 = new(229, 124, 59) },
+		}) { InkColour1 = new(229, 124, 59), InkColour2 = new(171, 98, 57) },
 		new(107, "Zekko", Rarity.Rare, "Ezokko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1075,7 +1075,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(98, 95, 224), InkColour2 = new(229, 123, 74) },
+		}) { InkColour1 = new(229, 123, 74), InkColour2 = new(98, 95, 224) },
 		new(108, "Forge", Rarity.Rare, "Forima", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1085,7 +1085,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(238, 189, 60), InkColour2 = new(103, 101, 58) },
+		}) { InkColour1 = new(103, 101, 58), InkColour2 = new(238, 189, 60) },
 		new(109, "Firefin", Rarity.Rare, "Hokkorii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1095,7 +1095,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(183, 93, 73), InkColour2 = new(225, 113, 64) },
+		}) { InkColour1 = new(225, 113, 64), InkColour2 = new(183, 93, 73) },
 		new(110, "Skalop", Rarity.Rare, "Hotakkusu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1105,7 +1105,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(128, 200, 165), InkColour2 = new(180, 102, 190) },
+		}) { InkColour1 = new(180, 102, 190), InkColour2 = new(128, 200, 165) },
 		new(111, "Splash Mob", Rarity.Rare, "Jimon", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1115,7 +1115,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(105, 143, 62), InkColour2 = new(180, 102, 190) },
+		}) { InkColour1 = new(180, 102, 190), InkColour2 = new(105, 143, 62) },
 		new(112, "Inkline", Rarity.Rare, "Shigureni", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -1125,7 +1125,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(214, 96, 188), InkColour2 = new(115, 130, 234) },
+		}) { InkColour1 = new(115, 130, 234), InkColour2 = new(214, 96, 188) },
 		new(113, "Tentatek", Rarity.Rare, "Arome", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1135,7 +1135,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(222, 98, 119), InkColour2 = new(88, 187, 167) },
+		}) { InkColour1 = new(88, 187, 167), InkColour2 = new(222, 98, 119) },
 		new(114, "Takoroka", Rarity.Rare, "Yako", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -1145,7 +1145,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(221, 123, 65), InkColour2 = new(154, 208, 48) },
+		}) { InkColour1 = new(154, 208, 48), InkColour2 = new(221, 123, 65) },
 		new(115, "Annaki", Rarity.Rare, "Anaaki", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1155,7 +1155,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(176, 92, 77), InkColour2 = new(110, 106, 105) },
+		}) { InkColour1 = new(110, 106, 105), InkColour2 = new(176, 92, 77) },
 		new(116, "Enperry", Rarity.Rare, "Enperii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
@@ -1165,7 +1165,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(98, 98, 200), InkColour2 = new(204, 102, 56) },
+		}) { InkColour1 = new(204, 102, 56), InkColour2 = new(98, 98, 200) },
 		new(117, "Toni Kensa", Rarity.Rare, "Tatakikensaki", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1175,7 +1175,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(246, 92, 57), InkColour2 = new(103, 101, 58) },
+		}) { InkColour1 = new(103, 101, 58), InkColour2 = new(246, 92, 57) },
 		new(118, "Barazushi", Rarity.Rare, "Barazushi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1185,7 +1185,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, S, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(244, 243, 232), InkColour2 = new(113, 112, 76) },
+		}) { InkColour1 = new(113, 112, 76), InkColour2 = new(244, 243, 232) },
 		new(119, "Emberz", Rarity.Rare, "Shichirin", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1195,7 +1195,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(97, 187, 234), InkColour2 = new(239, 106, 55) },
+		}) { InkColour1 = new(239, 106, 55), InkColour2 = new(97, 187, 234) },
 		new(120, "Octotrooper", Rarity.Common, "TakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1205,7 +1205,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(121, "Shielded\nOctotrooper", Rarity.Common, "TateTakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1215,7 +1215,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(122, "Twintacle\nOctotrooper", Rarity.Common, "BaiTakoTrooper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1225,7 +1225,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(123, "Octohopper", Rarity.Common, "TakoHopper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1235,7 +1235,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(124, "Octocopter", Rarity.Common, "Takopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1245,7 +1245,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(125, "Octobomber", Rarity.Common, "BombTakopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1255,7 +1255,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, S, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(126, "Octodisco", Rarity.Common, "BarrierTakopter", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, S, I, 0, 0 },
@@ -1265,7 +1265,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(127, "Octopod", Rarity.Common, "TakoPod", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1275,7 +1275,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(128, "Oversized\nOctopod", Rarity.Rare, "TakopodDEV", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1285,7 +1285,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(129, "Tentakook", Rarity.Common, "Sutakoraa", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1295,7 +1295,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(130, "Octosniper", Rarity.Rare, "TakoSniper", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1305,7 +1305,7 @@ public static class CardDatabase {
 			{ 0, I, 0, S, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(131, "Octocommander", Rarity.Rare, "TakoCommander", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1315,7 +1315,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(132, "Octomissile", Rarity.Common, "TakoMissile", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1325,7 +1325,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(133, "Octozeppelin", Rarity.Rare, "TakopperinGo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1335,7 +1335,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(134, "Squee-G", Rarity.Common, "Incleaner", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1345,7 +1345,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(135, "Octostamp", Rarity.Common, "TakoStamp", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1355,7 +1355,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(136, "Amped\nOctostamp", Rarity.Rare, "StampWave", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1365,7 +1365,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(137, "Flooder", Rarity.Common, "TakoDozer", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, I, 0, 0 },
@@ -1375,7 +1375,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(138, "Octoballer", Rarity.Common, "TakoStrike", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1385,7 +1385,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(139, "Octoling", Rarity.Rare, "TakoZonesu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1395,7 +1395,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(140, "DJ Octavio", Rarity.Fresh, "TakowasaShogun", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1405,7 +1405,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, I, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(166, 105, 169), InkColour2 = new(121, 111, 174) },
+		}) { InkColour1 = new(121, 111, 174), InkColour2 = new(166, 105, 169) },
 		new(141, "Chum", Rarity.Common, "Shake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1415,7 +1415,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(142, "Cohock", Rarity.Common, "Dosukoi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1425,7 +1425,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(143, "Snatcher", Rarity.Common, "Tamahiroi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1435,7 +1435,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(144, "Steelhead", Rarity.Common, "Bakudan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1445,7 +1445,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(145, "Steel Eel", Rarity.Common, "Hebi", new Space[,] {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, S, I, 0, 0, 0 },
@@ -1455,7 +1455,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(146, "Scrapper", Rarity.Common, "Teppan", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1465,7 +1465,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(147, "Stinger", Rarity.Common, "Tower", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1475,7 +1475,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(148, "Maws", Rarity.Common, "Mogura", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -1485,7 +1485,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, S, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(149, "Drizzler", Rarity.Common, "Koumori", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, I, 0, 0 },
@@ -1495,7 +1495,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(150, "Flyfish", Rarity.Common, "Katapaddo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -1505,7 +1505,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(151, "Fish Stick", Rarity.Common, "Buranko", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
@@ -1515,7 +1515,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(152, "Flipper-Flopper", Rarity.Common, "Iruka", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1525,7 +1525,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(153, "Slammin' Lid", Rarity.Common, "Nabebuta", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1535,7 +1535,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(154, "Big Shot", Rarity.Common, "Taihou", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, I, 0, 0 },
@@ -1545,7 +1545,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(155, "Goldie", Rarity.Rare, "Kinshake", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, I, 0, 0, 0 },
@@ -1555,7 +1555,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(156, "Griller", Rarity.Rare, "Grill", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
@@ -1565,7 +1565,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(157, "Mothership", Rarity.Rare, "Hakobiya", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
@@ -1575,7 +1575,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(158, "Mudmouth", Rarity.Rare, "Tamaire", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1585,7 +1585,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(159, "Zapfish", Rarity.Common, "Denchinamazu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1905,7 +1905,7 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(235, 244, 120), InkColour2 = new(205, 244, 126) },
+		}) { InkColour1 = new(205, 244, 126), InkColour2 = new(235, 244, 120) },
 		new(191, "Annie", Rarity.Rare, "Anemo", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -1915,7 +1915,7 @@ public static class CardDatabase {
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(245, 171, 233), InkColour2 = new(203, 168, 230) },
+		}) { InkColour1 = new(203, 168, 230), InkColour2 = new(245, 171, 233) },
 		new(192, "Jelonzo", Rarity.Rare, "Echizen", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -1925,7 +1925,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(106, 178, 215), InkColour2 = new(149, 119, 220) },
+		}) { InkColour1 = new(149, 119, 220), InkColour2 = new(106, 178, 215) },
 		new(193, "Fred Crumbs", Rarity.Rare, "Ajio", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -1935,7 +1935,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(107, 130, 225), InkColour2 = new(235, 218, 71) },
+		}) { InkColour1 = new(235, 218, 71), InkColour2 = new(107, 130, 225) },
 		new(194, "Spyke", Rarity.Rare, "Daunii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, I, 0, I, 0, 0 },
@@ -1945,7 +1945,7 @@ public static class CardDatabase {
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(154, 100, 234), InkColour2 = new(204, 139, 67) },
+		}) { InkColour1 = new(204, 139, 67), InkColour2 = new(154, 100, 234) },
 		new(195, "The Eel\nDeal - Frye", Rarity.Fresh, "Utsuho1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1955,7 +1955,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(146, 95, 251), InkColour2 = new(116, 112, 250) },
+		}) { InkColour1 = new(245, 229, 130), InkColour2 = new(246, 165, 119) },
 		new(196, "The Cold-Blooded\nBandit - Shiver", Rarity.Fresh, "Fuka1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -1965,7 +1965,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, I, 0, 0 }
-		}) { InkColour1 = new(246, 165, 119), InkColour2 = new(245, 229, 130) },
+		}) { InkColour1 = new(116, 112, 250), InkColour2 = new(146, 95, 251) },
 		new(197, "The Hype Manta\nStorm - Big Man", Rarity.Fresh, "Mantaro1", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -1975,7 +1975,7 @@ public static class CardDatabase {
 			{ 0, I, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(124, 231, 161), InkColour2 = new(220, 241, 141) },
+		}) { InkColour1 = new(220, 241, 141), InkColour2 = new(124, 231, 161) },
 		new(198, "Z+F", Rarity.Rare, "Ezokkorii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1985,7 +1985,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(100, 103, 157), InkColour2 = new(246, 243, 219) },
+		}) { InkColour1 = new(246, 243, 219), InkColour2 = new(100, 103, 157) },
 		new(199, "Annaki\nSplattershot Nova", Rarity.Common, "ShooterQuickLong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, S, 0, 0, 0, 0 },
@@ -2205,7 +2205,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(221,  -9, "Horrorboros", Rarity.Fresh, "Tatsu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, 0, 0, 0, 0, 0 },
@@ -2215,7 +2215,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, I, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(84, 142, 122), InkColour2 = new(193, 111, 98) },
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(222, -17, "Custom Blaster", Rarity.Common, "BlasterMiddle01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, S, I, 0, 0, 0, 0 },
@@ -2335,7 +2335,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { InkColour1 = new(255, 219, 219), InkColour2 = new(216, 154, 167) },
 		new(234, -35, ".52 Gal Deco", Rarity.Common, "ShooterGravity01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2455,7 +2455,7 @@ public static class CardDatabase {
 			{ 0, I, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(r: 159, 104, 242), InkColour2 = new(240, 111, 96) },
+		}) { InkColour1 = new(199, 97, 147), InkColour2 = new(218, 75, 58) },
 		new(246, -31, "Jelfonzo", Rarity.Rare, "Bizen", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
@@ -2465,7 +2465,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(149, 119, 220), InkColour2 = new(106, 178, 215) },
+		}) { InkColour1 = new(114, 223, 158), InkColour2 = new(167, 123, 198) },
 		new(247, -32, "Bisk", Rarity.Rare, "Shiganii", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2475,7 +2475,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(228, 94, 69), InkColour2 = new(240, 225, 96) },
+		}) { InkColour1 = new(236, 105, 37), InkColour2 = new(224, 136, 30) },
 		new(248, -28, "Acht", Rarity.Rare, "Mizuta", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -2485,7 +2485,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(237, 61, 65), InkColour2 = new(80, 80, 239) },
+		}) { InkColour1 = new(103, 90, 206), InkColour2 = new(201, 62, 95) },
 		new(249, -29, "Cipher", Rarity.Rare, "Yumeebi", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, I, 0, 0, 0, 0, 0, 0 },
@@ -2495,7 +2495,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, I, I, 0, 0 },
 			{ 0, 0, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(221, 183, 172), InkColour2 = new(182, 187, 219) },
+		}) { InkColour1 = new(145, 147, 198), InkColour2 = new(195, 102, 85) },
 		new(250, -27, "Pearl Drone", Rarity.Fresh, 2, "HimeDrone", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2505,7 +2505,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(248, 177, 213), InkColour2 = new(232, 232, 232) },
+		}) { InkColour1 = new(243, 139, 176), InkColour2 = new(243, 201, 223) },
 		new(251, -26, "Pearl", Rarity.Fresh, "Hime", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2515,7 +2515,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, S, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(232, 232, 232), InkColour2 = new(248, 177, 213) },
+		}) { InkColour1 = new(238, 98, 205), InkColour2 = new(245, 224, 135) },
 		new(252, -25, "Marina", Rarity.Fresh, "Iida", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, I, 0, I, 0, 0 },
@@ -2525,7 +2525,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, 0, I, 0, 0 },
 			{ 0, S, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}) { InkColour1 = new(242, 159, 104), InkColour2 = new(27, 27, 186) },
+		}) { InkColour1 = new(170, 99, 253), InkColour2 = new(254, 151, 146) },
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;

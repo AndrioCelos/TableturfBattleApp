@@ -20,8 +20,8 @@ class Card {
 	private maxX: number;
 	private maxY: number;
 
-	static DEFAULT_INK_COLOUR_1: Colour = { r: 116, g: 96, b: 240 };
-	static DEFAULT_INK_COLOUR_2: Colour = { r: 224, g: 242, b: 104 };
+	static DEFAULT_INK_COLOUR_1: Colour = { r: 224, g: 242, b: 104 };
+	static DEFAULT_INK_COLOUR_2: Colour = { r: 116, g: 96, b: 240 };
 	private static textScaleCalculationContext: OffscreenCanvasRenderingContext2D | null = null;
 
 	private static getTextScaleCalculationContext() {

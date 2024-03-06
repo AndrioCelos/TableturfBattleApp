@@ -30,8 +30,8 @@ const galleryCardEditorDeleteYesButton = document.getElementById('galleryCardEdi
 
 const colourPresets: {[key: string]: [ Colour, Colour ]} = {
 	"Default": [ Card.DEFAULT_INK_COLOUR_1, Card.DEFAULT_INK_COLOUR_2 ],
-	"Octarian": [ { r: 166, g: 105, b: 169 }, { r: 121, g: 111, b: 174 } ],
-	"Salmonid": [ { r: 84, g: 142, b: 122 }, { r: 193, g: 111, b: 98 } ],
+	"Octarian": [ { r: 121, g: 111, b: 174 }, { r: 166, g: 105, b: 169 } ],
+	"Salmonid": [ { r: 193, g: 111, b: 98 }, { r: 84, g: 142, b: 122 } ],
 };
 
 const ownedCards: {[key: number]: number} = { 6: 0, 34: 0, 159: 0, 13: 0, 45: 0, 137: 0, 22: 0, 52: 0, 141: 0, 28: 0, 55: 0, 103: 0, 40: 0, 56: 0, 92: 0 };
