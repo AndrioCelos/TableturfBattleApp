@@ -58,11 +58,15 @@ class CardDisplay implements ICardElement {
 		svg.appendChild(image);
 
 		if (level > 0) {
+			const r1 = card.inkColour1.r / 255;
+			const g1 = card.inkColour1.g / 255;
+			const b1 = card.inkColour1.b / 255;
+			const dr = (card.inkColour2.r - card.inkColour1.r) / 255;
+			const dg = (card.inkColour2.g - card.inkColour1.g) / 255;
+			const db = (card.inkColour2.b - card.inkColour1.b) / 255;
 			svg.insertAdjacentHTML('beforeend', `
-				<filter id="ink1-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour1.r / 255} 0 0 0 0 0 ${card.inkColour1.g / 255} 0 0 0 0 0 ${card.inkColour1.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-1.webp" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink1-${this.idNumber})"/>
-				<filter id="ink2-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour2.r / 255} 0 0 0 0 0 ${card.inkColour2.g / 255} 0 0 0 0 0 ${card.inkColour2.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-2.webp" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink2-${this.idNumber})"/>
+				<filter id="ink-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${dr} 0 0 0 ${r1} 0 ${dg} 0 0 ${g1} 0 0 ${db} 0 ${b1} 0 0 0 0.88 0"/></filter>
+				<image href="assets/external/CardInk_00.png" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink-${this.idNumber})"/>
 				<image href="assets/external/CardFrame_01.webp" width="100%" height="100%" clip-path="url(#cardBorder)"/>
 			`);
 		}

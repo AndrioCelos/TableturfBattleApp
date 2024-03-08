@@ -396,15 +396,23 @@ galleryCardEditorColour2.addEventListener('change', galleryCardEditorColour_chan
 
 function galleryCardEditorColour_change() {
 	const display = galleryCardDisplay!;
-	const filters = display.svg.getElementsByClassName('inkFilter');
+	const filter = display.svg.getElementsByClassName('inkFilter')[0];
 	const selectedColours = [];
 
 	for (let i = 0; i < 2; i++) {
 		const value = [galleryCardEditorColour1, galleryCardEditorColour2][i].value;
 		const colour = { r: parseInt(value.substring(1, 3), 16), g: parseInt(value.substring(3, 5), 16), b: parseInt(value.substring(5, 7), 16) };
 		selectedColours.push(colour);
-		filters[i].getElementsByTagName('feColorMatrix')[0].setAttribute('values', `${colour.r / 255} 0 0 0 0 0 ${colour.g / 255} 0 0 0 0 0 ${colour.b / 255} 0 0 0 0 0 0.88 0`)
 	}
+
+	const r1 = selectedColours[0].r / 255;
+	const g1 = selectedColours[0].g / 255;
+	const b1 = selectedColours[0].b / 255;
+	const dr = (selectedColours[1].r - selectedColours[0].r) / 255;
+	const dg = (selectedColours[1].g - selectedColours[0].g) / 255;
+	const db = (selectedColours[1].b - selectedColours[0].b) / 255;
+	filter.getElementsByTagName('feColorMatrix')[0].setAttribute('values', `${dr} 0 0 0 ${r1} 0 ${dg} 0 0 ${g1} 0 0 ${db} 0 ${b1} 0 0 0 0.88 0`);
+
 	updateSelectedPreset(selectedColours);
 }
 
