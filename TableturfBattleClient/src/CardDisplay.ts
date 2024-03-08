@@ -39,7 +39,7 @@ class CardDisplay implements ICardElement {
 		this.element = element;
 
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-		svg.setAttribute('viewBox', '0 0 635 885');
+		svg.setAttribute('viewBox', '0 0 442 616');
 		svg.setAttribute('alt', card.name);
 		this.svg = svg;
 		element.appendChild(svg);
@@ -57,14 +57,13 @@ class CardDisplay implements ICardElement {
 		image.setAttribute('height', '100%');
 		svg.appendChild(image);
 
-		if (level == 0) {
-			svg.insertAdjacentHTML('beforeend', `<image href="assets/external/CardInk.webp" width="635" height="885" clip-path="url(#myClip)"/>`);
-		} else {
+		if (level > 0) {
 			svg.insertAdjacentHTML('beforeend', `
 				<filter id="ink1-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour1.r / 255} 0 0 0 0 0 ${card.inkColour1.g / 255} 0 0 0 0 0 ${card.inkColour1.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-1.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink1-${this.idNumber})"/>
+				<image href="assets/external/CardInk-1.webp" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink1-${this.idNumber})"/>
 				<filter id="ink2-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${card.inkColour2.r / 255} 0 0 0 0 0 ${card.inkColour2.g / 255} 0 0 0 0 0 ${card.inkColour2.b / 255} 0 0 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk-2.webp" width="635" height="885" clip-path="url(#myClip)" filter="url(#ink2-${this.idNumber})"/>
+				<image href="assets/external/CardInk-2.webp" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink2-${this.idNumber})"/>
+				<image href="assets/external/CardFrame_01.webp" width="100%" height="100%" clip-path="url(#cardBorder)"/>
 			`);
 		}
 
@@ -81,7 +80,7 @@ class CardDisplay implements ICardElement {
 		// Grid
 		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 		g.setAttribute('class', 'cardGrid');
-		g.setAttribute('transform', 'translate(380 604) rotate(6.5) scale(0.283)');
+		g.setAttribute('transform', 'translate(264 420) rotate(6.5) scale(0.197)');
 		svg.appendChild(g);
 
 		CardDisplay.CreateSvgCardGrid(card, g);
@@ -90,12 +89,12 @@ class CardDisplay implements ICardElement {
 		const text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 		text1.setAttribute('class', 'cardDisplayName');
 		text1.setAttribute('x', '50%');
-		text1.setAttribute('y', '168');
+		text1.setAttribute('y', '19%');
 		text1.setAttribute('text-anchor', 'middle');
-		text1.setAttribute('font-size', '76');
+		text1.setAttribute('font-size', '53');
 		text1.setAttribute('font-weight', 'bold');
 		text1.setAttribute('stroke', 'black');
-		text1.setAttribute('stroke-width', '15');
+		text1.setAttribute('stroke-width', '10.5');
 		text1.setAttribute('stroke-linejoin', 'round');
 		text1.setAttribute('paint-order', 'stroke');
 		text1.setAttribute('word-spacing', '-10');
@@ -114,7 +113,7 @@ class CardDisplay implements ICardElement {
 		}
 		if (card.line1 != null && card.line2 != null) {
 			const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-			tspan1.setAttribute('y', '122');
+			tspan1.setAttribute('y', '13.8%');
 			tspan1.appendChild(document.createTextNode(card.line1));
 			text1.appendChild(tspan1);
 
@@ -122,14 +121,14 @@ class CardDisplay implements ICardElement {
 				// Add a space in the middle, to be included when copying the card name.
 				const tspanBr = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 				tspanBr.setAttribute('x', '50%');
-				tspanBr.setAttribute('y', '169');
+				tspanBr.setAttribute('y', '19%');
 				tspanBr.appendChild(document.createTextNode(' '));
 				text1.appendChild(tspanBr);
 			}
 
 			const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 			tspan2.setAttribute('x', '50%');
-			tspan2.setAttribute('y', '216');
+			tspan2.setAttribute('y', '24.4%');
 			tspan2.appendChild(document.createTextNode(card.line2));
 			text1.appendChild(tspan2);
 		} else
@@ -138,15 +137,15 @@ class CardDisplay implements ICardElement {
 		svg.appendChild(text1);
 
 		// Size
-		svg.insertAdjacentHTML('beforeend', `<image class='cardSizeBackground' href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='80' height='80' transform='translate(12 798) rotate(-45) scale(1.33)'/>`);
-		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='48' y='816' x='87' text-anchor='middle'>${card.size}</text>`);
+		svg.insertAdjacentHTML('beforeend', `<image class='cardSizeBackground' href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='74.1' height='74.1' transform='translate(8.4 555) rotate(-45)'/>`);
+		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='33.4' x='13.7%' y='92.2%' text-anchor='middle'>${card.size}</text>`);
 		this.sizeElement = svg.lastElementChild as SVGTextElement;
 
 		// Special cost
 		const g2 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 		this.specialCostGroup = g2;
 		g2.setAttribute('class', 'specialCost');
-		g2.setAttribute('transform', 'translate(170 806) scale(0.32)');
+		g2.setAttribute('transform', 'translate(118 561) scale(0.222)');
 		svg.appendChild(g2);
 
 		this.setSpecialCost(card.specialCost);
