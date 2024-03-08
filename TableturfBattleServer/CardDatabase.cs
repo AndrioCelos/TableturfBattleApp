@@ -2345,7 +2345,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 7 },
 		new(235, -36, "Foil Flingza\nRoller", Rarity.Common, "RollerHunter01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2355,7 +2355,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 24 },
 		new(236, -37, "New Squiffer", Rarity.Common, "ChargerQuick01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
@@ -2365,7 +2365,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, S, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 27 },
 		new(237, -38, "Custom E-liter\n4K", Rarity.Common, "ChargerLong01", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, S, 0, 0, 0 },
@@ -2375,7 +2375,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 30 },
 		new(238, -39, "Custom E-liter\n4K Scope", Rarity.Common, "ChargerLongScope01", new Space[,] {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -2385,7 +2385,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 31 },
 		new(239, -40, "Custom\nExplosher", Rarity.Common, "SlosherWashtub01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -2395,7 +2395,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 38 },
 		new(240, -41, "Dread Wringer D", Rarity.Common, "SlosherDouble01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2405,7 +2405,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 215 },
 		new(241, -42, "Nautilus 79", Rarity.Common, "SpinnerSerein01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -2415,7 +2415,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 43 },
 		new(242, -43, "Glooga\nDualies Deco", Rarity.Common, "ManeuverGallon01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2425,7 +2425,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 46 },
 		new(243, -33, "Douser\nDualies FF", Rarity.Common, "ManeuverLong00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, S, 0, 0, 0 },
@@ -2532,8 +2532,8 @@ public static class CardDatabase {
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(7, 0, 0, 0);
-	public static DateTime LastModified { get; } = new(2024, 2, 21, 1, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(7, 0, 1, 0);
+	public static DateTime LastModified { get; } = new(2024, 3, 8, 4, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
