@@ -33,7 +33,7 @@ body {
 	--player-special-accent-colour: var(--special-accent-colour-1);
 	--theme-colour: #0c92f2;
 	color: white;
-	background: url('assets/external/BannerBackground.png') black;
+	background: url('assets/external/BannerBackground.webp') black;
 	background-position: 50% -72px;
 	color-scheme: dark;
 }
@@ -593,7 +593,7 @@ dialog::backdrop {
 .cardSpecialPoint, .playHintSpecial {
 	display: inline-block;
 	color: transparent;
-	background: url('assets/SpecialOverlay.png') center/cover, var(--player-special-colour);
+	background: url('assets/SpecialOverlay.webp') center/cover, var(--player-special-colour);
 	width: 1ch;
 	height: 1ch;
 	vertical-align: middle;
@@ -605,10 +605,10 @@ dialog::backdrop {
 	width: 1.5ch;
 	height: 1.5ch;
 }
-.playHintSpecial:nth-of-type(1):not(:last-of-type) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1); }
-.playHintSpecial:nth-of-type(2) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
-.playHintSpecial:nth-of-type(3) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
-.playHintSpecial:nth-of-type(4) { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
+.playHintSpecial:nth-of-type(1):not(:last-of-type) { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-1); }
+.playHintSpecial:nth-of-type(2) { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-2); }
+.playHintSpecial:nth-of-type(3) { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-3); }
+.playHintSpecial:nth-of-type(4) { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-4); }
 
 .card {
 	position: relative;
@@ -712,19 +712,19 @@ rect.special, g.specialCost rect {
 }
 
 #gameBoard td.Empty { background: #000000C0; outline: 1px solid #80808080; outline-offset: -1px; }
-#gameBoard td.Wall { background: url('assets/Wall.png') center/cover, grey; }
-#gameBoard td.Ink1 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-1); }
-#gameBoard td.Ink2 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-2); }
-#gameBoard td.Ink3 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-3); }
-#gameBoard td.Ink4 { background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-4); }
-#gameBoard td.SpecialInactive1 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1); }
-#gameBoard td.SpecialInactive2 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-2); }
-#gameBoard td.SpecialInactive3 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-3); }
-#gameBoard td.SpecialInactive4 { background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-4); }
-#gameBoard td.SpecialActive1 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
-#gameBoard td.SpecialActive2 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
-#gameBoard td.SpecialActive3 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
-#gameBoard td.SpecialActive4 { background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
+#gameBoard td.Wall { background: url('assets/Wall.webp') center/cover, grey; }
+#gameBoard td.Ink1 { background: url('assets/InkOverlay.webp') center/cover, var(--primary-colour-1); }
+#gameBoard td.Ink2 { background: url('assets/InkOverlay.webp') center/cover, var(--primary-colour-2); }
+#gameBoard td.Ink3 { background: url('assets/InkOverlay.webp') center/cover, var(--primary-colour-3); }
+#gameBoard td.Ink4 { background: url('assets/InkOverlay.webp') center/cover, var(--primary-colour-4); }
+#gameBoard td.SpecialInactive1 { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-1); }
+#gameBoard td.SpecialInactive2 { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-2); }
+#gameBoard td.SpecialInactive3 { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-3); }
+#gameBoard td.SpecialInactive4 { background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-4); }
+#gameBoard td.SpecialActive1 { background: url('assets/SpecialOverlay.webp') center/cover, radial-gradient(circle, var(--special-accent-colour-1) 25%, var(--special-colour-1) 75%); }
+#gameBoard td.SpecialActive2 { background: url('assets/SpecialOverlay.webp') center/cover, radial-gradient(circle, var(--special-accent-colour-2) 25%, var(--special-colour-2) 75%); }
+#gameBoard td.SpecialActive3 { background: url('assets/SpecialOverlay.webp') center/cover, radial-gradient(circle, var(--special-accent-colour-3) 25%, var(--special-colour-3) 75%); }
+#gameBoard td.SpecialActive4 { background: url('assets/SpecialOverlay.webp') center/cover, radial-gradient(circle, var(--special-accent-colour-4) 25%, var(--special-colour-4) 75%); }
 
 #gameBoard.specialAttackVisual td:is(.Ink1, .Ink2, .Ink3, .Ink4) {
 	opacity: 0.5;
@@ -1300,10 +1300,10 @@ rect.special, g.specialCost rect {
 .playerBar .specialPoint {
 	position: relative;
 	color: transparent;
-  background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour);
+  background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour);
 }
 .playerBar .specialPoint.specialAnimation {
-	background: url('assets/SpecialOverlay.png') center/cover, radial-gradient(circle, var(--special-accent-colour) 25%, var(--special-colour) 75%);
+	background: url('assets/SpecialOverlay.webp') center/cover, radial-gradient(circle, var(--special-accent-colour) 25%, var(--special-colour) 75%);
 }
 .playerBar .specialPoint.specialAnimation > div {
 	background: color-mix(in srgb, var(--special-colour), var(--special-accent-colour) 75%);
@@ -1968,11 +1968,11 @@ button.dragging {
 }
 #galleryCardEditorGrid button[data-state="4"] {
 	border: 1px solid grey;
-	background: url('assets/InkOverlay.png') center/cover, var(--primary-colour-1);
+	background: url('assets/InkOverlay.webp') center/cover, var(--primary-colour-1);
 }
 #galleryCardEditorGrid button[data-state="8"] {
 	border: 1px solid grey;
-	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1);
+	background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-1);
 }
 
 .galleryCardEditorToolbar {
@@ -2018,7 +2018,7 @@ button.dragging {
 	position: relative;
 }
 #galleryCardEditorSpecialCost button.active {
-	background: url('assets/SpecialOverlay.png') center/cover, var(--special-colour-1);
+	background: url('assets/SpecialOverlay.webp') center/cover, var(--special-colour-1);
 }
 
 #galleryCardEditorSpecialCost label {

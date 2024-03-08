@@ -37,7 +37,7 @@ class StageButton extends CheckButton {
 
 					if (stage.grid[x][y] & Space.SpecialInactive1) {
 						const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-						image.setAttribute('href', 'assets/SpecialOverlay.png');
+						image.setAttribute('href', 'assets/SpecialOverlay.webp');
 						image.setAttribute('x', rect.getAttribute('x')!);
 						image.setAttribute('y', rect.getAttribute('y')!);
 						image.setAttribute('width', rect.getAttribute('width')!);
@@ -45,7 +45,7 @@ class StageButton extends CheckButton {
 						gridSvg.appendChild(image);
 					} else if (stage.grid[x][y] & Space.Ink1) {
 						const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-						image.setAttribute('href', 'assets/InkOverlay.png');
+						image.setAttribute('href', 'assets/InkOverlay.webp');
 						image.setAttribute('x', rect.getAttribute('x')!);
 						image.setAttribute('y', rect.getAttribute('y')!);
 						image.setAttribute('width', rect.getAttribute('width')!);
@@ -82,7 +82,7 @@ class StageButton extends CheckButton {
 			cell.setAttribute('class', `SpecialInactive${i + 1}`);
 
 			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-			image.setAttribute('href', 'assets/SpecialOverlay.png');
+			image.setAttribute('href', 'assets/SpecialOverlay.webp');
 			image.setAttribute('x', cell.getAttribute('x')!);
 			image.setAttribute('y', cell.getAttribute('y')!);
 			image.setAttribute('width', cell.getAttribute('width')!);

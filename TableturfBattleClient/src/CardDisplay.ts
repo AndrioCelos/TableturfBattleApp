@@ -66,7 +66,7 @@ class CardDisplay implements ICardElement {
 			const db = (card.inkColour2.b - card.inkColour1.b) / 255;
 			svg.insertAdjacentHTML('beforeend', `
 				<filter id="ink-${this.idNumber}" class="inkFilter" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${dr} 0 0 0 ${r1} 0 ${dg} 0 0 ${g1} 0 0 ${db} 0 ${b1} 0 0 0 0.88 0"/></filter>
-				<image href="assets/external/CardInk_00.png" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink-${this.idNumber})"/>
+				<image href="assets/external/CardInk_00.webp" width="100%" height="100%" clip-path="url(#cardBorder)" filter="url(#ink-${this.idNumber})"/>
 				<image href="assets/external/CardFrame_01.webp" width="100%" height="100%" clip-path="url(#cardBorder)"/>
 			`);
 		}
@@ -141,7 +141,7 @@ class CardDisplay implements ICardElement {
 		svg.appendChild(text1);
 
 		// Size
-		svg.insertAdjacentHTML('beforeend', `<image class='cardSizeBackground' href='assets/external/Game Assets/CardCost_0${card.rarity}.png' width='74.1' height='74.1' transform='translate(8.4 555) rotate(-45)'/>`);
+		svg.insertAdjacentHTML('beforeend', `<image class='cardSizeBackground' href='assets/external/CardCost_0${card.rarity}.webp' width='74.1' height='74.1' transform='translate(8.4 555) rotate(-45)'/>`);
 		svg.insertAdjacentHTML('beforeend', `<text fill='white' stroke='${card.rarity == Rarity.Common ? '#482BB4' : card.rarity == Rarity.Rare ? '#8B7E25' : '#481EF9'}' paint-order='stroke' stroke-width='5' font-size='33.4' x='13.7%' y='92.2%' text-anchor='middle'>${card.size}</text>`);
 		this.sizeElement = svg.lastElementChild as SVGTextElement;
 
@@ -171,7 +171,7 @@ class CardDisplay implements ICardElement {
 					rect.classList.add(card.grid[x][y] == Space.SpecialInactive1 ? 'special' : 'ink');
 					const elements: Element[] = [rect];
 					const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-					image.setAttribute('href', card.grid[x][y] == Space.SpecialInactive1 ? 'assets/SpecialOverlay.png' : 'assets/InkOverlay.png');
+					image.setAttribute('href', card.grid[x][y] == Space.SpecialInactive1 ? 'assets/SpecialOverlay.webp' : 'assets/InkOverlay.webp');
 					elements.push(image);
 
 					for (const el of elements) {
@@ -191,7 +191,7 @@ class CardDisplay implements ICardElement {
 		for (let i = 0; i < value; i++) {
 			let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 			const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-			image.setAttribute('href', 'assets/SpecialOverlay.png');
+			image.setAttribute('href', 'assets/SpecialOverlay.webp');
 			for (const el of [ rect, image ]) {
 				el.setAttribute('x', (110 * (i % 5)).toString());
 				el.setAttribute('y', (-125 * Math.floor(i / 5)).toString());

@@ -385,7 +385,7 @@ galleryCardEditorRarityBox.addEventListener('change', () => {
 	display.element.classList.add(Rarity[parseInt(galleryCardEditorRarityBox.value)].toLowerCase());
 
 	const sizeImage = <SVGImageElement> display.svg.getElementsByClassName('cardSizeBackground')[0];
-	sizeImage.setAttribute('href', `assets/external/Game Assets/CardCost_0${galleryCardEditorRarityBox.value}.png`);
+	sizeImage.setAttribute('href', `assets/external/CardCost_0${galleryCardEditorRarityBox.value}.webp`);
 
 	const backgroundImage = <SVGImageElement> display.svg.getElementsByClassName('cardDisplayBackground')[0];
 	backgroundImage.setAttribute('href', `assets/external/CardBackground-custom-${galleryCardEditorRarityBox.value}-1.webp`);
