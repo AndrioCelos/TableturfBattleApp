@@ -269,8 +269,10 @@ function setupWebSocket(gameID: string) {
 				}
 				setLoadingMessage(null);
 				if (!payload.data) {
+					joinGameError('The game was not found.', false);
+					currentGame = null;
+					webSocket.removeEventListener('close', webSocket_close);
 					webSocket.close();
-					alert('The game was not found.');
 				} else {
 					currentGame = {
 						id: gameID,

@@ -276,6 +276,7 @@ function joinGameError(message: string, fromInitialLoad: boolean) {
 		if (fromInitialLoad)
 			clearPreGameForm(true);
 		else {
+			showPage('preGame');
 			gameIDBox.focus();
 			gameIDBox.setSelectionRange(0, gameIDBox.value.length);
 		}
