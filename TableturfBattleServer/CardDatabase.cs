@@ -2436,7 +2436,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
-		new(244, -34, "Recycle Brella\n24 Mk I" /* [sic] */, Rarity.Common, "ShelterFocus00", new Space[,] {
+		new(244, -34, "Recycled Brella\n24 Mk I", Rarity.Common, "ShelterFocus00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, I, 0, 0 },
@@ -2526,14 +2526,154 @@ public static class CardDatabase {
 			{ 0, S, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}) { InkColour1 = new(170, 99, 253), InkColour2 = new(254, 151, 146) },
+		new(253, "Custom\nRange Blaster", Rarity.Common, "BlasterLong01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(254, "Bamboozler\n14 Mk II", Rarity.Common, "ChargerLight01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, S, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(255, "Custom Hydra\nSplatling", Rarity.Common, "SpinnerHyper01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, S, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(256, "Heavy Edit\nSplatling Nouveau", Rarity.Common, "SpinnerHyperShort01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, S, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(257, "Custom Douser\nDualies FF", Rarity.Common, "ManeuverLong01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, S, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(258, "Recycled Brella\n24 Mk II", Rarity.Common, "ShelterFocus01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, I, I, I, 0, 0 },
+			{ 0, 0, S, I, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(259, "Wellstring V", Rarity.Common, "StringerExplosion00", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, I, I, 0, 0 },
+			{ 0, I, 0, S, I, 0, 0, 0 },
+			{ 0, I, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(260, "Custom\nWellstring V", Rarity.Common, "StringerExplosion01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, 0, I, I, 0, 0 },
+			{ 0, I, 0, I, I, 0, 0, 0 },
+			{ 0, I, I, I, S, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(261, "Mint Decavitator", Rarity.Common, "SaberHeavy00", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, S, 0, 0 },
+			{ 0, I, I, I, I, I, I, 0 },
+			{ 0, I, I, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(262, "Charcoal\nDecavitator", Rarity.Common, "SaberHeavy01", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, I, I, I, I, I, 0, 0 },
+			{ 0, I, I, I, I, I, I, 0 },
+			{ 0, 0, 0, 0, 0, S, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(263, "Crusty Sean", Rarity.Rare, "Robu", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, S, I, 0, I, I, 0, 0 },
+			{ 0, I, I, 0, I, 0, 0, 0 },
+			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, I, I, 0, I, 0, 0, 0 },
+			{ 0, I, 0, 0, 0, I, I, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(264, "The Ursine\nAnomaly - #03", Rarity.Fresh, "Kumasan1", new Space[,] {
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, I, 0, I, I, I, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, I, 0, I, S, I, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(265, "Megalodontia", Rarity.Fresh, "Jaw", new Space[,] {
+			{ 0, I, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, I, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, 0, 0, I, I, 0, 0 },
+			{ 0, 0, 0, I, S, I, 0, 0 },
+			{ 0, I, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		}),
+		new(266, "Overlorder", Rarity.Fresh, "Odako", new Space[,] {
+			{ 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, I, 0, 0 },
+			{ 0, 0, I, I, I, 0, I, 0 },
+			{ 0, 0, I, I, I, 0, I, 0 },
+			{ 0, 0, I, S, I, I, 0, 0 },
+			{ 0, I, 0, 0, I, 0, 0, 0 },
+			{ 0, 0, I, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0 }
+		})
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
 
 	public static int LastOfficialCardNumber { get; }
 
-	public static Version Version { get; } = new(7, 0, 1, 0);
-	public static DateTime LastModified { get; } = new(2024, 3, 8, 4, 0, 0, DateTimeKind.Utc);
+	public static Version Version { get; } = new(8, 0, 0, 0);
+	public static DateTime LastModified { get; } = new(2024, 6, 2, 9, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
