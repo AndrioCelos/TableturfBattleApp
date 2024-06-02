@@ -2535,7 +2535,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 14 },
 		new(254, "Bamboozler\n14 Mk II", Rarity.Common, "ChargerLight01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -2545,7 +2545,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 32 },
 		new(255, "Custom Hydra\nSplatling", Rarity.Common, "SpinnerHyper01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, S, 0, 0, 0 },
@@ -2555,7 +2555,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, I, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 41 },
 		new(256, "Heavy Edit\nSplatling Nouveau", Rarity.Common, "SpinnerHyperShort01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2565,7 +2565,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 217 },
 		new(257, "Custom Douser\nDualies FF", Rarity.Common, "ManeuverLong01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
@@ -2575,7 +2575,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, I, 0, S, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 243 },
 		new(258, "Recycled Brella\n24 Mk II", Rarity.Common, "ShelterFocus01", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2585,7 +2585,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 244 },
 		new(259, "Wellstring V", Rarity.Common, "StringerExplosion00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, 0, 0, 0 },
@@ -2605,7 +2605,7 @@ public static class CardDatabase {
 			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 259 },
 		new(261, "Mint Decavitator", Rarity.Common, "SaberHeavy00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2625,7 +2625,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { IsVariantOf = 261 },
 		new(263, "Crusty Sean", Rarity.Rare, "Robu", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, S, I, 0, I, I, 0, 0 },
@@ -2635,7 +2635,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, 0, I, I, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { InkColour1 = new(125, 93, 223), InkColour2 = new(238, 106, 30) },
 		new(264, "The Ursine\nAnomaly - #03", Rarity.Fresh, "Kumasan1", new Space[,] {
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, I, I, I, 0, 0, 0 },
@@ -2645,7 +2645,7 @@ public static class CardDatabase {
 			{ 0, 0, I, I, I, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { InkColour1 = new(132, 84, 227), InkColour2 = new(213, 88, 252) },
 		new(265, "Megalodontia", Rarity.Fresh, "Jaw", new Space[,] {
 			{ 0, I, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, I, I, I, 0, 0 },
@@ -2655,7 +2655,7 @@ public static class CardDatabase {
 			{ 0, 0, 0, I, S, I, 0, 0 },
 			{ 0, I, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		}),
+		}) { InkColour1 = new(193, 111, 98), InkColour2 = new(84, 142, 122) },
 		new(266, "Overlorder", Rarity.Fresh, "Odako", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, I, 0, 0 },
@@ -2665,7 +2665,7 @@ public static class CardDatabase {
 			{ 0, I, 0, 0, I, 0, 0, 0 },
 			{ 0, 0, I, I, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
-		})
+		}) { InkColour1 = new(254, 220, 210), InkColour2 = new(102, 91, 147) }
 	];
 
 	private static readonly Dictionary<int, Card> byAltNumber;
@@ -2673,7 +2673,7 @@ public static class CardDatabase {
 	public static int LastOfficialCardNumber { get; }
 
 	public static Version Version { get; } = new(8, 0, 0, 0);
-	public static DateTime LastModified { get; } = new(2024, 6, 2, 9, 0, 0, DateTimeKind.Utc);
+	public static DateTime LastModified { get; } = new(2024, 6, 2, 10, 0, 0, DateTimeKind.Utc);
 	public static string JSON { get; }
 	public static ReadOnlyCollection<Card> Cards { get; }
 
