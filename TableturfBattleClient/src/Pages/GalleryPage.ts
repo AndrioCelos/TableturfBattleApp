@@ -25,6 +25,7 @@ const galleryCardEditorSpecialCostDefaultBox = document.getElementById('galleryC
 const galleryCardEditorEditButton = document.getElementById('galleryCardEditorEditButton') as HTMLButtonElement;
 const galleryCardEditorSubmitButton = document.getElementById('galleryCardEditorSubmitButton') as HTMLButtonElement;
 const galleryCardEditorDeleteButton = document.getElementById('galleryCardEditorDeleteButton') as HTMLButtonElement;
+const galleryCardEditorSnapshotButton = document.getElementById('galleryCardEditorSnapshotButton') as HTMLButtonElement;
 const galleryCardEditorCancelButton = document.getElementById('galleryCardEditorCancelButton') as HTMLButtonElement;
 const galleryCardEditorDeleteYesButton = document.getElementById('galleryCardEditorDeleteYesButton') as HTMLButtonElement;
 
@@ -492,4 +493,134 @@ galleryCardEditorDeleteYesButton.addEventListener('click', () => {
 
 	saveCustomCards();
 	saveDecks();
+});
+
+galleryCardEditorSnapshotButton.addEventListener('click', async () => {
+	//const canvas = new OffscreenCanvas(635, 885);
+	const card = galleryCardDisplay!.card;
+	const canvas = document.createElement('canvas');
+	canvas.id = 'cardSnapshotCanvas';
+	canvas.width = 442; canvas.height = 616; //canvas.setAttribute('style', 'position: absolute; left: 0; top: 0; width: 100%;');
+	//galleryCardDisplay!.svg.parentElement!.appendChild(canvas);
+	const ctx = canvas.getContext('2d')!;
+
+	function toPx(length: SVGLength, referenceLength: number) {
+		switch (length.unitType) {
+			case SVGLength.SVG_LENGTHTYPE_NUMBER:
+			case SVGLength.SVG_LENGTHTYPE_PX:
+				return length.valueInSpecifiedUnits;
+			case SVGLength.SVG_LENGTHTYPE_PERCENTAGE:
+				return length.valueInSpecifiedUnits * referenceLength / 100;
+			default:
+				throw new Error(`Unknown unit type: ${length.unitType}`);
+		}
+	}
+
+	function drawElements(parent: SVGElement) {
+		for (const node of parent.childNodes) {
+			if (!(node instanceof SVGGraphicsElement)) continue;
+			const el = <SVGGraphicsElement> node;
+
+			if (el.transform.baseVal.length > 0) {
+				const transformAboutCentre = el.getAttribute('transform-origin') == 'center';
+				if (transformAboutCentre) ctx.translate(canvas.width / 2, canvas.height / 2);
+				for (const transformElement of el.transform.baseVal) {
+					const matrix = transformElement.matrix;
+					ctx.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f);
+				}
+				if (transformAboutCentre) ctx.translate(-canvas.width / 2, -canvas.height / 2);
+			}
+
+			if (el instanceof SVGGElement) {
+				drawElements(el);
+			} else if (el instanceof SVGImageElement) {
+				ctx.save();
+				ctx.filter = el.getAttribute('filter') ?? 'none';
+				if (el.hasAttribute('clip-path')) {
+					ctx.beginPath();
+					ctx.roundRect(canvas.width * 19 / 442, canvas.height * 20 / 616, canvas.width * 404 / 442, canvas.height * 576 / 616, canvas.width * 18 / 442);
+					ctx.clip();
+				}
+				ctx.drawImage(<SVGImageElement> el, el.x.baseVal.value, el.y.baseVal.value, toPx(el.width.baseVal, canvas.width), toPx(el.height.baseVal, canvas.height));
+				ctx.filter = 'none';
+				ctx.restore();
+			} else if (el instanceof SVGRectElement) {
+				if (el.classList[0] == 'empty') {
+					ctx.fillStyle = '#00000080';
+					ctx.strokeStyle = '#60606080';
+					ctx.lineWidth = 6;
+					ctx.strokeRect(toPx(el.x.baseVal, canvas.width), toPx(el.y.baseVal, canvas.height), toPx(el.width.baseVal, canvas.width), toPx(el.height.baseVal, canvas.height));
+				} else if (el.classList[0] == 'ink') {
+					ctx.fillStyle = document.body.style.getPropertyValue('--primary-colour-1');
+				} else {
+					ctx.fillStyle = document.body.style.getPropertyValue('--special-colour-1');
+				}
+				ctx.fillRect(toPx(el.x.baseVal, canvas.width), toPx(el.y.baseVal, canvas.height), toPx(el.width.baseVal, canvas.width), toPx(el.height.baseVal, canvas.height));
+			} else if (el instanceof SVGTextElement) {
+				const text = <SVGTextElement> el;
+				ctx.textAlign = 'center';
+
+				switch (text.classList.contains('cardDisplayName') ? card.rarity : Rarity.Common) {
+					case Rarity.Rare:
+						const rareGradient = ctx.createLinearGradient(canvas.width * 0.029, canvas.height * 0.273, canvas.width * 1.081, canvas.height * 0.041);
+						rareGradient.addColorStop(0, '#E0AE12');
+						rareGradient.addColorStop(0.25, '#FBFFCC');
+						rareGradient.addColorStop(0.5, '#E0AE12');
+						rareGradient.addColorStop(0.75, '#FBFFCC');
+						rareGradient.addColorStop(1, '#E0AE12');
+						ctx.fillStyle = rareGradient;
+						break;
+					case Rarity.Fresh:
+						const freshGradient = ctx.createLinearGradient(canvas.width * (0.5 - 0.325 / card.textScale), canvas.height * -0.025, canvas.width * (0.5 + 0.335 / card.textScale), canvas.height * 0.32);
+						freshGradient.addColorStop(0, '#FF93DD');
+						freshGradient.addColorStop(0.2, '#FEF499');
+						freshGradient.addColorStop(0.5, '#C9448A');
+						freshGradient.addColorStop(0.75, '#1EFBC3');
+						freshGradient.addColorStop(0.95, '#FD97DB');
+						freshGradient.addColorStop(1, '#FFBAC2');
+						ctx.fillStyle = freshGradient;
+						break;
+					default:
+						ctx.fillStyle = text.getAttribute('fill')!;
+						break;
+				}
+
+				ctx.strokeStyle = text.getAttribute('stroke')!;
+				ctx.lineWidth = parseFloat(text.getAttribute('stroke-width')!);
+				ctx.font = `bold ${text.getAttribute('font-size')!}px 'Splatoon 1'`;
+				(<any> ctx).wordSpacing = `${text.getAttribute('word-spacing') ?? '0'}px`;
+				for (const node2 of text.childNodes) {
+					const textContent = node2.textContent!;
+					if (node2 instanceof CharacterData) {
+						ctx.strokeText(textContent, toPx(text.x.baseVal[0], canvas.width), toPx(text.y.baseVal[0], canvas.height));
+						ctx.fillText(textContent, toPx(text.x.baseVal[0], canvas.width), toPx(text.y.baseVal[0], canvas.height));
+					} else if (node2 instanceof SVGTSpanElement) {
+						const tspan = <SVGTSpanElement> node2;
+						ctx.strokeText(textContent, toPx(text.x.baseVal[0], canvas.width), toPx(tspan.y.baseVal[0], canvas.height));
+						ctx.fillText(textContent, toPx(text.x.baseVal[0], canvas.width), toPx(tspan.y.baseVal[0], canvas.height));
+					}
+				}
+			}
+
+			if (el.transform.baseVal.length > 0) ctx.resetTransform();
+		}
+	}
+
+	drawElements(galleryCardDisplay!.svg);
+
+	canvas.toBlob(blob => {
+		if (blob == null) {
+			alert('Could not create the image.');
+			return;
+		}
+		const url = URL.createObjectURL(blob);
+		try {
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'card.png';
+			link.click();
+		} finally {
+			URL.revokeObjectURL(url);
+		}
+	});
 });
