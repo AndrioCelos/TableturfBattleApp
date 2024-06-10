@@ -41,65 +41,78 @@ const cardDatabase = {
 	},
 	loadAsync() {
 		return new Promise<Card[]>((resolve, reject) => {
-			if (cardDatabase.cards != null) {
-				resolve(cardDatabase.cards);
-				return;
-			}
-			const cardListRequest = new XMLHttpRequest();
-			cardListRequest.open('GET', `${config.apiBaseUrl}/cards`);
-			cardListRequest.addEventListener('load', e => {
-				const cards: Card[] = [ ];
-				if (cardListRequest.status == 200) {
-					const s = cardListRequest.responseText;
-					const response = JSON.parse(s) as object[];
-					for (const o of response) {
-						const card = Card.fromJson(o);
-						cards.push(card);
-						cardDatabase.lastOfficialCardNumber = Math.max(cardDatabase.lastOfficialCardNumber, card.number);
-						if (card.number < 0) cardDatabase._byAltNumber[-card.number] = card;
-						else if (card.altNumber != null && card.altNumber < 0) cardDatabase._byAltNumber[-card.altNumber] = card;
-					}
-					cardDatabase.cards = cards;
-
-					if (window.location.protocol == 'file:') {
-						// If debugging locally, just read the files from the assets directory.
-						for (const card of cardDatabase.cards!) {
-							card.imageUrl = `assets/external/card/${card.artFileName}.webp`
-						}
-						resolve(cards);
-						return;
-					}
-					// Otherwise, download and extract card images from a .tar package.
-					const imagesRequest = new XMLHttpRequest();
-					imagesRequest.responseType = 'arraybuffer';
-					imagesRequest.open('GET', 'assets/external/card.tar');
-					imagesRequest.addEventListener('load', () => {
-						if (imagesRequest.status == 200 && imagesRequest.response) {
-							const buffer = imagesRequest.response as ArrayBuffer;
-							untar(buffer).then(files => {
-								for (const tarFile of files) {
-									const card = cardDatabase.cards!.find(c => tarFile.name == `${c.artFileName}.webp`);
-									if (!card) continue;
-									card.imageUrl = tarFile.getBlobUrl();
-								}
-								resolve(cards);
-							});
-						} else {
-							reject(new Error(`Error downloading card images: response was ${imagesRequest.status}`));
-						}
-					});
-					imagesRequest.addEventListener('error', () => {
-						reject(new Error('Error downloading card images: no further information.'))
-					});
-					imagesRequest.send();
-				} else {
-					reject(new Error(`Error downloading card database: response was ${cardListRequest.status}`));
+			function afterFontLoaded() {
+				if (cardDatabase.cards != null) {
+					resolve(cardDatabase.cards);
+					return;
 				}
-			});
-			cardListRequest.addEventListener('error', e => {
-				reject(new Error('Error downloading card database: no further information.'))
-			});
-			cardListRequest.send();
+				const cardListRequest = new XMLHttpRequest();
+				cardListRequest.open('GET', `${config.apiBaseUrl}/cards`);
+				cardListRequest.addEventListener('load', e => {
+					const cards: Card[] = [ ];
+					if (cardListRequest.status == 200) {
+						const s = cardListRequest.responseText;
+						const response = JSON.parse(s) as object[];
+						for (const o of response) {
+							const card = Card.fromJson(o);
+							cards.push(card);
+							cardDatabase.lastOfficialCardNumber = Math.max(cardDatabase.lastOfficialCardNumber, card.number);
+							if (card.number < 0) cardDatabase._byAltNumber[-card.number] = card;
+							else if (card.altNumber != null && card.altNumber < 0) cardDatabase._byAltNumber[-card.altNumber] = card;
+						}
+						cardDatabase.cards = cards;
+
+						if (window.location.protocol == 'file:') {
+							// If debugging locally, just read the files from the assets directory.
+							for (const card of cardDatabase.cards!) {
+								card.imageUrl = `assets/external/card/${card.artFileName}.webp`
+							}
+							resolve(cards);
+							return;
+						}
+						// Otherwise, download and extract card images from a .tar package.
+						const imagesRequest = new XMLHttpRequest();
+						imagesRequest.responseType = 'arraybuffer';
+						imagesRequest.open('GET', 'assets/external/card.tar');
+						imagesRequest.addEventListener('load', () => {
+							if (imagesRequest.status == 200 && imagesRequest.response) {
+								const buffer = imagesRequest.response as ArrayBuffer;
+								untar(buffer).then(files => {
+									for (const tarFile of files) {
+										const card = cardDatabase.cards!.find(c => tarFile.name == `${c.artFileName}.webp`);
+										if (!card) continue;
+										card.imageUrl = tarFile.getBlobUrl();
+									}
+									resolve(cards);
+								});
+							} else {
+								reject(new Error(`Error downloading card images: response was ${imagesRequest.status}`));
+							}
+						});
+						imagesRequest.addEventListener('error', () => {
+							reject(new Error('Error downloading card images: no further information.'))
+						});
+						imagesRequest.send();
+					} else {
+						reject(new Error(`Error downloading card database: response was ${cardListRequest.status}`));
+					}
+				});
+				cardListRequest.addEventListener('error', e => {
+					reject(new Error('Error downloading card database: no further information.'))
+				});
+				cardListRequest.send();
+			}
+
+			// Preload the font first; calculating text scale depends on this.
+			const link = document.createElement('link');
+			link.rel = 'preload';
+			link.href = 'assets/external/splatoon1.woff2';
+			link.as = 'font';
+			link.type = 'font/woff';
+			link.crossOrigin = '';
+			link.addEventListener('load', afterFontLoaded);
+			link.addEventListener('error', afterFontLoaded);
+			document.head.appendChild(link);
 		});
 	}
 }
