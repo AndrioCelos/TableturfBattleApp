@@ -643,7 +643,7 @@ public class Game(int maxPlayers) {
 	}
 
 	public void WriteReplayData(Stream stream) {
-		const int VERSION = 4;
+		const int VERSION = 5;
 
 		if (this.State < GameState.SetEnded)
 			throw new InvalidOperationException("Can't save a replay until the set has ended.");

@@ -114,7 +114,7 @@ class ReplayLoader {
 				}
 				break;
 			}
-			case 3: case 4: {
+			case 3: case 4: case 5: {
 				const n = this.readUint8();
 				const numPlayers = n & 0x0F;
 				goalWinCount = n >> 4;
@@ -131,8 +131,7 @@ class ReplayLoader {
 						const line2 = this.readString();
 						const name = line2 != '' ? `${line1} ${line2}` : line1;
 						const b = this.readUint8();
-						const rarity = <Rarity> b & 0x7F;
-						const wordWrap = (b & 0x80) != 0;
+						const rarity = <Rarity> b;
 						const specialCost = this.readUint8();
 						const inkColour1 = this.readColour();
 						const inkColour2 = this.readColour();
@@ -293,6 +292,15 @@ class ReplayLoader {
 					turn.push({ card, isPass: true, isTimeout: (b & 0x20) != 0 });
 				else {
 					const move: PlayMove = { card, isPass: false, isTimeout: (b & 0x20) != 0, x, y, rotation: b & 0x03, isSpecialAttack: (b & 0x40) != 0 };
+					if (version < 5 && card.number == 217) {
+						// Heavy Edit Splatling: originally had the ink pattern transposed down one space
+						switch (move.rotation) {
+							case 0: move.y++; break;
+							case 1: move.x--; break;
+							case 2: move.y--; break;
+							default: move.x++; break;
+						}
+					}
 					turn.push(move);
 				}
 			}

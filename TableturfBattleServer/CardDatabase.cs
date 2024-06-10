@@ -2168,12 +2168,12 @@ public static class CardDatabase {
 		}) { IsVariantOf = 42 },
 		new(217,  -3, "Heavy Edit\nSplatling", Rarity.Common, "SpinnerHyperShort00", new Space[,] {
 			{ 0, 0, 0, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, I, I, 0, 0 },
-			{ 0, 0, 0, I, I, I, 0, 0 },
-			{ 0, 0, 0, I, I, S, 0, 0 },
-			{ 0, 0, 0, I, 0, I, 0, 0 },
-			{ 0, 0, 0, I, 0, 0, 0, 0 },
-			{ 0, 0, 0, I, 0, 0, 0, 0 },
+			{ 0, 0, 0, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, I, 0, 0, 0 },
+			{ 0, 0, I, I, S, 0, 0, 0 },
+			{ 0, 0, I, 0, I, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
+			{ 0, 0, I, 0, 0, 0, 0, 0 },
 			{ 0, 0, 0, 0, 0, 0, 0, 0 }
 		}),
 		new(218, -11, "Sorella Brella", Rarity.Common, "ShelterNormal01", new Space[,] {
