@@ -298,7 +298,7 @@ internal static class ApiEndpoints {
 				return;
 			}
 			var deckSleeves = 0;
-			if (d.TryGetValue("deckSleeves", out var deckSleevesString) && (!int.TryParse(deckSleevesString, out deckSleeves) || deckSleeves is < 0 or >= 25)) {
+			if (d.TryGetValue("deckSleeves", out var deckSleevesString) && !int.TryParse(deckSleevesString, out deckSleeves)) {
 				response.SetErrorResponse(new(HttpStatusCode.BadRequest, "InvalidDeckSleeves", "Invalid deck sleeves."));
 				return;
 			}
