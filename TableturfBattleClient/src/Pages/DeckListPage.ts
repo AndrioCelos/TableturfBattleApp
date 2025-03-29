@@ -426,7 +426,6 @@ function deckExportJsonReplacer(key: string, value: any) {
 		case 'number':
 		case 'altNumber':
 		case 'artFileName':
-		case 'specialCost':
 		case 'size':
 		case 'textScale':
 		case 'isVariantOf':

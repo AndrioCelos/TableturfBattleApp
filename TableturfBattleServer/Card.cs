@@ -58,7 +58,6 @@ public class Card {
 			}
 		}
 		this.Size = size;
-
 		this.SpecialCost = specialCost ?? size switch { <= 3 => 1, <= 5 => 2, <= 8 => 3, <= 11 => 4, <= 15 => 5, _ => 6 };
 	}
 

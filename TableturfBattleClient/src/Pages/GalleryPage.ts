@@ -114,11 +114,43 @@ function openGalleryCardView(card: Card) {
 		updateSelectedPreset([card.inkColour1, card.inkColour2]);
 
 		galleryCardEditorName.value = card.line2 == null ? card.name : `${card.line1}\n${card.line2}`;
+
+		let size = 0; let hasSpecialSpace = false;
 		for (let y = 0; y < 8; y++) {
 			for (let x = 0; x < 8; x++) {
 				galleryCardEditorGridButtons[y][x].dataset.state = card.grid[y][x].toString();
+				switch (card.grid[y][x]) {
+					case Space.Ink1:
+						size++;
+						break;
+					case Space.SpecialInactive1:
+						size++;
+						hasSpecialSpace = true;
+						break;
+				}
 			}
 		}
+
+		let defaultSpecialCost =
+			size <= 3 ? 1
+				: size <= 5 ? 2
+					: size <= 8 ? 3
+						: size <= 11 ? 4
+							: size <= 15 ? 5
+								: 6;
+		if (!hasSpecialSpace && defaultSpecialCost > 3)
+			defaultSpecialCost = 3;
+
+		galleryCardEditorSpecialCostDefaultBox.checked = card.specialCost == defaultSpecialCost;
+		customCardSpecialCost = card.specialCost;
+		for (let i = 0; i < galleryCardEditorSpecialCostButtons.length; i++) {
+			const button = galleryCardEditorSpecialCostButtons[i];
+			if (parseInt(button.dataset.value!) <= card.specialCost)
+				button.classList.add('active');
+			else
+				button.classList.remove('active');
+		}
+
 		updateCustomCardSize();
 	}
 

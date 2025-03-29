@@ -1987,13 +1987,13 @@ button.dragging {
 	font-size: 60%;
 }
 
-.galleryCardEditorToolbar:nth-last-child(3) { bottom: 18%; }
-.galleryCardEditorToolbar:nth-last-child(2) { bottom: 12%; }
-.galleryCardEditorToolbar:nth-last-child(1) { bottom: 6%; }
+#galleryCardEditorImageToolbar { bottom: 18%; }
+#galleryCardEditorColoursToolbar { bottom: 12%; }
+#galleryCardEditorRarityToolbar { bottom: 6%; }
 
 #galleryCardEditorImageFile { display: none; }
 
-#galleryCardEditorImageToolbar2 input {
+#galleryCardEditorColoursToolbar input {
 	width: 3em;
 }
 
@@ -2002,17 +2002,17 @@ button.dragging {
 }
 
 #galleryCardEditorSpecialCost {
-	display: none;
+	display: grid;
 	position: absolute;
 	grid-template-columns: repeat(5, 1fr);
 	left: 26.8%;
-	top: 86.8%;
-	gap: 0.072em;
+	top: 86.2%;
+	gap: 0.15em 0.075em;
 }
 
 #galleryCardEditorSpecialCost button {
-	width: 1.7em;
-	height: 1.7em;
+	width: 2.5vh;
+	aspect-ratio: 1;
 	border: none;
 	background: #00000080;
 	position: relative;
