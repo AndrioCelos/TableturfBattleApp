@@ -115,7 +115,7 @@ function clearUrlFromGame() {
 
 function onGameSettingsChange() {
 	if (currentGame == null) return;
-	if (lobbyTimeLimitBox.value != currentGame.game.turnTimeLimit?.toString() ?? '')
+	if (lobbyTimeLimitBox.value != (currentGame.game.turnTimeLimit?.toString() ?? ''))
 		lobbyTimeLimitBox.value = currentGame.game.turnTimeLimit?.toString() ?? '';
 	lobbyAllowUpcomingCardsBox.checked = currentGame.game.allowUpcomingCards;
 	lobbyAllowCustomCardsBox.checked = currentGame.game.allowCustomCards;
@@ -347,6 +347,7 @@ function setupWebSocket(gameID: string) {
 					case 'settingsChange':
 						currentGame.game.turnTimeLimit = payload.data.turnTimeLimit;
 						currentGame.game.allowUpcomingCards = payload.data.allowUpcomingCards;
+						currentGame.game.allowCustomCards  = payload.data.allowCustomCards;
 						onGameSettingsChange();
 						break;
 					case 'join':
