@@ -155,12 +155,14 @@ function onGameStateChange(game: any, playerData: PlayerData | null) {
 		case GameState.ChoosingStage:
 			initLobbyPage(window.location.toString());
 			showPage('lobby');
+			clearShowDeck();
 			clearConfirmLeavingGame();
 			showStageSelectionForm(playerData?.stageSelectionPrompt ?? null, playerData && game.players[playerData.playerIndex]?.isReady);
 			lobbySelectedStageSection.hidden = true;
 			break;
 		case GameState.ChoosingDeck:
 			showPage('lobby');
+			clearShowDeck();
 			if (currentGame.me) setConfirmLeavingGame();
 			if (selectedStageIndicator)
 				lobbySelectedStageSection.removeChild(selectedStageIndicator.buttonElement);
